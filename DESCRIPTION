@@ -1,0 +1,28 @@
+Package: topicdict
+Title: Topic Modeling Informed by a Content Analysis Dictionary
+Version: 0.0.0.9000
+Authors@R: person("Will", "Lowe", email = "wlowe@princeton.edu", role = c("aut", "cre"))
+Description: Fits a topic model using seeds from a content analysis dictionary.
+Depends: R (>= 3.4.2)
+License: GPL 3 (LICENSE)
+Encoding: UTF-8
+LazyData: true
+LinkingTo: Rcpp, 
+  BH,
+  RcppEigen
+Imports: Rcpp,
+  readr,
+  tidyr,
+  dplyr,
+  ggplot2,
+  purrr,
+  repurrrsive, 
+  stringi, 
+  tibble, 
+  LaplacesDemon, 
+  MCMCpack
+SystemRequirements: C++11     
+Suggests: knitr,
+  rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1
