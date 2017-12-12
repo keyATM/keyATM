@@ -12,8 +12,11 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-# include <random>
+#include <random>
 #include <chrono>
+
+#include "rand_gen_r.hpp"
+//#include "rand_gen.hpp" /* original c++ random number generators */
 
 using namespace std;
 using namespace Eigen;
@@ -22,54 +25,54 @@ using namespace boost::math;
 
 // [[Rcpp::plugins("cpp11")]]
 
+/* LOGGING NAMESPACE */
 namespace iter_log{
-NumericMatrix iter_alpha;
-NumericMatrix iter_n_x0_k;
-NumericMatrix iter_n_x1_k;
-NumericMatrix iter_p_k;
+  NumericMatrix iter_alpha;
+  NumericMatrix iter_n_x0_k;
+  NumericMatrix iter_n_x1_k;
+  NumericMatrix iter_p_k;
 
-template <class EigenVec>
-void store_values(NumericMatrix &rmat, int &iter_num, EigenVec &vec);
+  template <class EigenVec>
+  void store_values(NumericMatrix &rmat, int &iter_num, EigenVec &vec);
 
-void initialize(int &iter_num, int &num_topics){
-  static int set = 1;
+  void initialize(int &iter_num, int &num_topics){
+    static int set = 1;
 
-  if(set){
-    NumericMatrix temp(iter_num, num_topics);
-    iter_alpha = clone(temp);
-    iter_n_x0_k = clone(temp);
-    iter_n_x1_k = clone(temp);
-    iter_p_k = clone(temp);
+    if(set){
+      NumericMatrix temp(iter_num, num_topics);
+      iter_alpha = clone(temp);
+      iter_n_x0_k = clone(temp);
+      iter_n_x1_k = clone(temp);
+      iter_p_k = clone(temp);
 
-    set = 0; // initialize only once
+      set = 0; // initialize only once
+    }
   }
-}
 
-void store_alpha(int &iter_num, VectorXd &vec){
-  store_values(iter_alpha, iter_num, vec);
-}
-
-void store_n_x0_k(int &iter_num, VectorXi &vec){
-  store_values(iter_n_x0_k, iter_num, vec);
-}
-
-void store_n_x1_k(int &iter_num, VectorXi &vec){
-  store_values(iter_n_x1_k, iter_num, vec);
-}
-
-void store_p_k(int &iter_num, VectorXd &vec){
-  store_values(iter_p_k, iter_num, vec);
-}
-
-template <class EigenVec>
-void store_values(NumericMatrix &rmat, int &iter_num, EigenVec &vec){
-  int num = vec.size();
-
-  for(int i=0; i<num; i++){
-    rmat(iter_num, i) = vec(i);
+  void store_alpha(int &iter_num, VectorXd &vec){
+    store_values(iter_alpha, iter_num, vec);
   }
-}
 
+  void store_n_x0_k(int &iter_num, VectorXi &vec){
+    store_values(iter_n_x0_k, iter_num, vec);
+  }
+
+  void store_n_x1_k(int &iter_num, VectorXi &vec){
+    store_values(iter_n_x1_k, iter_num, vec);
+  }
+
+  void store_p_k(int &iter_num, VectorXd &vec){
+    store_values(iter_p_k, iter_num, vec);
+  }
+
+  template <class EigenVec>
+  void store_values(NumericMatrix &rmat, int &iter_num, EigenVec &vec){
+    int num = vec.size();
+
+    for(int i=0; i<num; i++){
+      rmat(iter_num, i) = vec(i);
+    }
+  }
 }
 
 
@@ -112,58 +115,6 @@ void output_EigenVec(const string &file_name, VectorXi &vec){ // for int value
   outfile.close();
 }
 
-namespace randgen{
-// Default seed
-int seed = chrono::system_clock::now().time_since_epoch().count();
-mt19937 mt(seed);
-mt19937 rand_gen = mt;
-
-void set_seed(int use_seed){
-  static int set = 1;
-
-  if(set){
-    mt19937 mt(use_seed);
-    seed = use_seed;
-    rand_gen = mt;
-
-    set = 0; // no more change
-  }
-}
-int bernoulli(double &p){
-  uniform_real_distribution<double> rand(0.0, 1.0);
-  double r = rand(rand_gen);
-  if(r <= p){
-    return 1;
-  }
-  return 0;
-}
-double gamma(double a, double b){
-  gamma_distribution<double> rand(a, 1.0 / b);
-  return rand(rand_gen);
-}
-double beta(double a, double b){
-  double ga = gamma(a, 1.0);
-  double gb = gamma(b, 1.0);
-  return ga / (ga + gb);
-}
-double uniform(double min = 0.0, double max = 1.0){
-  uniform_real_distribution<double> rand(min, max);
-  return rand(rand_gen);
-}
-int uniformint(int &size){
-  uniform_int_distribution<int> rand(0, size);
-  return rand(rand_gen);
-}
-vector<int> randomized_id_vec(int &num){
-  vector<int> v(num);
-  iota(v.begin(), v.end(), 0); // fill the vector
-  shuffle(v.begin(), v.end(), rand_gen);
-  return v;
-}
-}
-
-
-
 // Stats func
 int random_vec(vector<int> &vec){
   int length = static_cast<int>( vec.size() - 1 );
@@ -182,8 +133,12 @@ int regular_or_seed(double &prob){
   }
 }
 
+vector<int> randomized_id_vec(int &num){
+  return randgen::randomized_id_vec(num);
+}
+
 int Bern(double &prob0, double &prob1){
-  return randgen::bernoulli(prob1);
+  return randgen::bernoulli(prob1); /// !!!!
 }
 
 int multi1(VectorXd &prob){
@@ -204,7 +159,6 @@ int multi1(VectorXd &prob){
 double gammapdfln(double x, double a, double b){
   return a * log(b) - lgamma(a) + (a-1.0) * log(x) - b * x;
 }
-
 
 // Strings
 void split_string_by(const string &str, char delim, vector<string> &elems){
@@ -245,9 +199,7 @@ void split_word_by(const string &str, char delim, vector<string> &elems){
   }
 }
 
-// Iteration info
 
-// Others
 double logsumexp (double &x, double &y, bool flg){
   if (flg) return y; // init mode
   if (x == y) return x + 0.69314718055; // log(2)
@@ -263,16 +215,15 @@ double logsumexp (double &x, double &y, bool flg){
 double logsumexp_Eigen(VectorXd &vec){
   double sum = 0.0;
   int index;
-
   for(size_t i=0; i<vec.size(); ++i){
     index = static_cast<int>(i);
     sum = logsumexp (sum, vec[index], (index == 0));
   }
-
   return sum;
-
 }
 
+
+// STRING COMPARISONS
 bool sortbysec_descend(const pair<string,int> &a, const pair<string,int> &b){
   // Sort pair by the second element, descending
   return (a.second > b.second);
@@ -284,13 +235,9 @@ struct comp{
   bool operator () (pair<string,int> const& p){
     return (p.first == _s);
   }
-
   std::string _s;
 };
 
-vector<int> randomized_id_vec(int &num){
-  return randgen::randomized_id_vec(num);
-}
 
 
 class FilesList{

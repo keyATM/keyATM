@@ -1,5 +1,3 @@
-#pragma once
-
 #include <Rcpp.h>
 #include <RcppEigen.h>
 #include <math.h>
@@ -11,13 +9,14 @@
 #include <boost/math/special_functions/digamma.hpp> // for digamma
 #include <boost/math/special_functions/gamma.hpp> // for gamma functions
 #include "rand_gen.hpp"
-#include "log.hpp"
-#include "util.hpp"
+
 using namespace boost::math;
 
 using namespace std;
 using namespace Rcpp;
 using namespace Eigen;
+
+
 
 class Trainer{
 public:
@@ -89,7 +88,7 @@ public:
 	void initialize();
 	void initialize_alpha();
 	void initialize_Z();
-	void initialize_X();	
+	void initialize_X();
 	void initialize_counters();
 	void count_n_x_kv(int &x, int &z, int &word_id);
 	void count_n_x_k(int &x, int &z);
@@ -130,7 +129,7 @@ public:
 	void update_alpha();
 	double alpha_loglik(VectorXd &input_alpha);
 	void slice_sampling_alpha(double min_v, double max_v, int max_shrink_time);
-	
+
 
 	// Calc_loglik and perplexity
 	void tracking(int &iter);
@@ -148,66 +147,10 @@ public:
 	void make_TopWords(List &TopWords, int &show_words_num);
 	void make_wordscount(vector< vector< pair<string,int> > > &wordscount);
 	void sort_wordscount(vector< vector< pair<string,int> > > &wordscount);
-	void make_TopWordsRList(vector< vector< pair<string,int> > > &wordscount, 
+	void make_TopWordsRList(vector< vector< pair<string,int> > > &wordscount,
 													List &TopWords, int &show_words_num);
 	void make_Words(List &RawWords, List &WordIDs);
 	void make_iter_info(List &IterInfo);
 };
 
-// Constructor and Destructor
-Trainer::Trainer(string &datafolder, string &seed_path, int &rand_seed, int &iter_num){ // constructor
 
-	// Set seed
-	if (rand_seed != 0){
-		randgen::set_seed(rand_seed);
-	}
-
-	// Make a file list
-	files_c = new FilesList(datafolder);
-
-	// Read files
-	vocab_c = new Vocab;
-	read_data();
-
-	// Read Seed
-	read_seed(seed_path);
-
-	// Summary Output
-	read_data_summary();
-
-	// Prepare logger
-	iter_log::initialize(iter_num, num_topics);
-
-}
-
-Trainer::~Trainer(){
-	delete files_c;
-	delete vocab_c;
-}
-
-
-///////////////
-// Read Data //
-///////////////
-// read_data.h
-
-
-////////////////////
-// Initialization //
-////////////////////
-// initialization.h
-
-///////////////
-// Iteration //
-///////////////
-// iteration.h
-
-////////////////////////////////
-// Calc_loglik and perplexity //
-////////////////////////////////
-// loglik.cpp
-
-///////////////// 
-// Make output //
-/////////////////
-// output.cpp

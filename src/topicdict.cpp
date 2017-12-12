@@ -12,18 +12,7 @@ using namespace Eigen;
 // [[Rcpp::depends("RcppEigen")]]
 // [[Rcpp::depends("BH")]]
 
-// Self Defined Functions (be careful with the dependency)
-//#include "body/make_filelist.hpp"
-//#include "body/corpus.hpp"
-//#include "body/read_data.hpp"
-//#include "body/initialization.hpp"
-//#include "body/iteration.hpp"
-//#include "body/loglik.hpp"
-//#include "body/output.hpp"
-//#include "body/util.hpp"
-//#include "body/trainer.hpp"
-
-#include "body/topicdict.hpp"
+#include "topicdict.hpp"
 
 // [[Rcpp::export]]
 List RunSeededLDA(std::string datafolder,
