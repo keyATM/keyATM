@@ -20,8 +20,8 @@ create_W <- function(files, encoding = "unknown", ...){
   vocab <- unique(unlist(toklist))
   wd_id <- as.numeric(factor(vocab))
   wd_map <- hashmap::hashmap(vocab, wd_id - 1) # because we're going into C++ code
-  doc_map <- hashmap(files, 1:length(files) - 1)
-  list(W = lapply(toklist, function(x){ map.find(x) }),
+  doc_map <- hashmap::hashmap(files, 1:length(files) - 1)
+  list(W = lapply(toklist, function(x){ wd_map[[x]] }),
        word_to_id = wd_map,
        doc_to_id = doc_map)
 }
