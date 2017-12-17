@@ -53,7 +53,10 @@ init_XWZ <- function(files, dict, k, encoding = "unknown", ...){
   }
   Z <- lapply(W, make_z)
 
-  list(W = W, Z = Z, X = X, vocab = vocab, files = files, dict = dict)
+  # dictionary category names -> vector of word_id
+  id_dict <- lapply(dict, function(x){ wd_map[[x]] })
+
+  list(W = W, Z = Z, X = X, vocab = vocab, files = files, dict = dict, id_dict = id_dict)
 }
 
 
