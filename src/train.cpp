@@ -49,12 +49,15 @@ int rcat(VectorXd &prob){
 
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
-List seeded_train(List W, List origX, List origZ, List id_dict,
+List train(List model, List id_dict,
                   StringVector files, StringVector vocab,
-                  int k_seeded, int k_free, double alpha_k, int iter = 0){
+                  int k_seeded, int k_free, double alpha_k,
+                  int iter = 0){
 
-  List X = clone(origX);
-  List Z = clone(origZ);
+  List W = model["W"];
+  List Z = model["Z"];
+  List X = model["X"];
+
 
   std::vector<int> seed_num;
   for (int ii; ii < id_dict.size(); ii++){
@@ -62,18 +65,28 @@ List seeded_train(List W, List origX, List origZ, List id_dict,
      seed_num.push_back(ids.size());
   }
 
+  // alpha-related constants
   int num_topics = k_seeded + k_free;
   VectorXd alpha = VectorXd::Constant(num_topics, alpha_k);
 
+  // document-related constants
   int num_vocab = vocab.size();
   int num_doc = files.size();
 
-  // sufficient statistics
+  // distributional constants
+  double gamma_1 = 1.0;
+  double gamma_2 = 1.0;
+  double lambda_1 = 1.0;
+  double lambda_2 = 2.0;
+  double beta = 0.01; // currently fixed
+  double beta_s = 0.1;
+
+  // storage for sufficient statistics
   SparseMatrix<int, RowMajor> n_x0_kv = SparseMatrix<int, RowMajor> (num_topics, num_vocab);
   SparseMatrix<int, RowMajor> n_x1_kv = SparseMatrix<int, RowMajor> (num_topics, num_vocab);
   MatrixXd n_dk = MatrixXd::Zero(num_doc, num_topics);
-  MatrixXd theta_dk = MatrixXd::Zero(num_doc, num_topics); // TODO initialize
-  // margins
+  MatrixXd theta_dk = MatrixXd::Zero(num_doc, num_topics); // TODO initialize?
+  // and their margins
   VectorXi n_x0_k = VectorXi::Zero(num_topics);
   VectorXi n_x1_k = VectorXi::Zero(num_topics);
 
@@ -97,14 +110,7 @@ List seeded_train(List W, List origX, List origZ, List id_dict,
     }
   }
 
-  double gamma_1 = 1.0;
-  double gamma_2 = 1.0;
-  double lambda_1 = 1.0;
-  double lambda_2 = 2.0;
-  double beta = 0.01; // currently fixed
-  double beta_s = 0.1;
-
-  // no randomized update sequence or alpha updates for dev
+  // Note: no randomized update sequence in dev
   for (int ii = 0; ii < iter; ii++){
     for (int doc_id = 0; doc_id < num_doc; doc_id++){
       IntegerVector doc_x = X[doc_id];
@@ -146,11 +152,11 @@ List seeded_train(List W, List origX, List origZ, List id_dict,
           std::vector<int> make_zero_later; // elements to zero out
           for (int k = 0; k < num_topics; k++){
             double numerator; // is this right? It will be zero, presumably
-            if (phi_s[k].find(w_position) == phi_s[k].end()){ // if not a seed
+            if (phi_s[k].find(w_position) == phi_s[k].end()){ // w isn't a seed
               z_prob_vec(k) = 1.0;
               make_zero_later.push_back(k);
               continue;
-            } else{
+            } else{ // w is a seed
               numerator = log(beta_s + (double)n_x1_kv.coeffRef(k, w_position)) +
                 log( ((double)n_x1_k(k) + gamma_1) ) +
                 log( ((double)n_dk.coeffRef(doc_id, k) + alpha(k)) );
@@ -171,7 +177,7 @@ List seeded_train(List W, List origX, List origZ, List id_dict,
         doc_z[w_position] = new_z;
         z = new_z;
 
-        // add data
+        // add back data counts
         if (x == 0){
           n_x0_kv.coeffRef(z, w_position) += 1;
           n_x0_k(z) += 1;

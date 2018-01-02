@@ -29,7 +29,7 @@ init <- function(files, dict, k, encoding = "unknown", ...){
   ## construct W and a vocab list (W entries are 0 based)
   vocab <- unique(unlist(toklist))
   wd_id <- as.numeric(factor(vocab))
-  wd_map <- hashmap::hashmap(vocab, as.integer(wd_id - 1)) # because we're going into C++ code
+  wd_map <- hashmap::hashmap(vocab, as.integer(wd_id - 1)) # -1 because C++
   W <- lapply(toklist, function(x){ wd_map[[x]] })
 
   # zx_assigner maps seed words to category ids
@@ -60,8 +60,14 @@ init <- function(files, dict, k, encoding = "unknown", ...){
        files = files, dict = dict, id_dict = id_dict)
 }
 
+train_seededlda <- function(files, dict, k, encoding = "unknown", ...){
+  model <- init(files, dict, k, encoding = "unknown", ...)
 
-## init_XWZ(list.files("inst/extdata", pattern = "macavity", full.names = TRUE),
+
+}
+
+
+## init(list.files("inst/extdata", pattern = "macavity", full.names = TRUE),
 ##     dict = dictionary(list(mac = c("macavity", "mystery", "cat"),
 ##                            victims = c("milk", "admiralty", "trellis", "drawings"))),
 ##     remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE,

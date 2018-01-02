@@ -1,6 +1,6 @@
 #' Get posterior quantities from model output
 #'
-#' @param model_results The result of running `\code{seededlda}
+#' @param model_results The result of running \code{seededlda}
 #' @param docnames Names of documents (not stored in the C++
 #'                 seeededlda yet)
 #'
