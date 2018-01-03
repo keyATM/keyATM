@@ -60,9 +60,12 @@ init <- function(files, dict, k, encoding = "unknown", ...){
        files = files, dict = dict, id_dict = id_dict)
 }
 
-train_seededlda <- function(files, dict, k, encoding = "unknown", ...){
+train_seededlda <- function(files, dict, k, encoding = "unknown", iter = ...){
   model <- init(files, dict, k, encoding = "unknown", ...)
-
+  train_model(List W, List X, List Z, List id_dict,
+    StringVector files, StringVector vocab,
+    int k_seeded, int k_free, double alpha_k,
+    int iter = 0)
 
 }
 

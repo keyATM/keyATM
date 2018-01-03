@@ -49,15 +49,15 @@ int rcat(VectorXd &prob){
 
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
-List train(List model, List id_dict,
-                  StringVector files, StringVector vocab,
-                  int k_seeded, int k_free, double alpha_k,
+List train(List model, int k_seeded, int k_free, double alpha_k,
                   int iter = 0){
 
   List W = model["W"];
   List Z = model["Z"];
   List X = model["X"];
-
+  StringVector files = model["files"];
+  StringVector vocab = model["vocab"];
+  List id_dict = model["id_dict"]; // map { word_id (int) -> topic_id (int) }
 
   std::vector<int> seed_num;
   for (int ii; ii < id_dict.size(); ii++){
