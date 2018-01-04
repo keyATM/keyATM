@@ -52,11 +52,8 @@ int rcat(VectorXd &prob){
 List train(List model, int k_seeded, int k_free, double alpha_k,
                   int iter = 0){
 
-  List W = model["W"];
-  List Z = model["Z"];
-  List X = model["X"];
-  StringVector files = model["files"];
-  StringVector vocab = model["vocab"];
+  List W = model["W"], Z = model["Z"], X = model["X"];
+  StringVector files = model["files"], vocab = model["vocab"];
   List id_dict = model["id_dict"]; // map { word_id (int) -> topic_id (int) }
 
   std::vector<int> seed_num;
@@ -92,13 +89,9 @@ List train(List model, int k_seeded, int k_free, double alpha_k,
 
   // fill n_x0_kv, n_x0_k, n_dk
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
-    IntegerVector doc_x = X[doc_id];
-    IntegerVector doc_z = Z[doc_id];
-    IntegerVector doc_w = W[doc_id];
+    IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     for(int w_position = 0; w_position < doc_x.size(); w_position++){
-      int x = doc_x[w_position];
-      int z = doc_z[w_position];
-      int w = doc_w[w_position];
+      int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
       if (x == 0){
         n_x0_kv.coeffRef(z, w) += 1;
         n_x0_k(z) += 1;
@@ -113,13 +106,9 @@ List train(List model, int k_seeded, int k_free, double alpha_k,
   // Note: no randomized update sequence in dev
   for (int ii = 0; ii < iter; ii++){
     for (int doc_id = 0; doc_id < num_doc; doc_id++){
-      IntegerVector doc_x = X[doc_id];
-      IntegerVector doc_z = Z[doc_id];
-      IntegerVector doc_w = W[doc_id];
+      IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
       for (int w_position = 0; w_position < doc_x.size(); w_position++){
-        int x = doc_x[w_position];
-        int z = doc_z[w_position];
-        int w = doc_w[w_position];
+        int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
 
         // remove data
         if (x == 0){
@@ -194,9 +183,7 @@ List train(List model, int k_seeded, int k_free, double alpha_k,
     // update_alpha();
   }
 
-  List res = List::create(_["X"] = X, _["Z"] = Z,
-                          _["W"] = W, _["vocab"] = vocab);
-  return res;
+  return model;
 }
 
 
