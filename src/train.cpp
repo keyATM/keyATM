@@ -31,7 +31,6 @@ double logsumexp_Eigen(Eigen::VectorXd &vec){
   return sum;
 }
 
-
 // [[Rcpp::depends(RcppEigen)]]
 int rcat(Eigen::VectorXd &prob){
   // Multi(x, 1), return category index
@@ -50,19 +49,18 @@ int rcat(Eigen::VectorXd &prob){
 
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
-List train(List model, int k_seeded, int k_free, double alpha_k,
-                  int iter = 0){
+List train(List model, int k_seeded, int k_free, double alpha_k, int iter = 0){
 
   List W = model["W"], Z = model["Z"], X = model["X"];
   StringVector files = model["files"], vocab = model["vocab"];
-  List seeds = model["seeds"]; // convert this to T&S's phi format
+  List seeds = model["seeds"]; // Now convert this to T&S's phi_s format
 
-  std::vector< std::map<int, double> > phi_s(seeds.size()); // TODO: change to unordered map
+  std::vector< std::unordered_map<int, double> > phi_s(seeds.size());
   std::vector<int> seed_num(seeds.size());
   for (int ii = 0; ii < seeds.size(); ii++){
     IntegerVector wd_ids = seeds[ii];
     seed_num[ii] = wd_ids.size();
-    std::map<int, double> phi_sk;
+    std::unordered_map<int, double> phi_sk;
     for (int jj = 0; jj < wd_ids.size(); jj++)
       phi_sk[wd_ids(jj)] = 1.0 / wd_ids.size();
     phi_s[ii] = phi_sk;
@@ -185,6 +183,7 @@ List train(List model, int k_seeded, int k_free, double alpha_k,
     } // end documents
 
     // update_alpha();
+    checkUserInterrupt();  // Stop! The user wants to get off.
   } // end iterations
 
   return model;

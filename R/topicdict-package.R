@@ -24,3 +24,11 @@
 #' @docType package
 #' @name topicdict
 NULL
+
+#' @useDynLib topicdict
+#' @importFrom Rcpp sourceCpp
+NULL
+
+.onUnload <- function(libpath) {
+  library.dynam.unload("topicdict", libpath)
+}
