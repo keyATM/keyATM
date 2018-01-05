@@ -1,54 +1,49 @@
 #' Get posterior quantities from model output
 #'
-#' @param model_results The result of running \code{seededlda}
-#' @param docnames Names of documents (not stored in the C++
-#'                 seeededlda yet)
+#' Constructs a (N x K) matrix \code{theta} and (K x V) matrix \code{beta}
+#' plus their margins from the sample of Z and W in \code{model}.
+#' These statistics implicitly marginalize over X.
+#'
+#' @param model a model, fitted or simply initialized
 #'
 #' @return a list with elements
 #'   \itemize{
-#'     \item{topics}{An N x K matrix of topic proportions}
-#'     \item{terms}{A K x V matrix of topic-specific term generation
-#'                  probabilities}
-#'     \item{doclens}{A vector of document lengths in words, with which
-#'                    Z can be reinflated from theta}
+#'     \item{seed_K}{Number of seeded topics}
+#'     \item{extra_K}{Number of regular unseeded topics}
+#'     \item{V}{Number of word types}
+#'     \item{N}{Number of documents}
+#'     \item{theta}{Normalized tpoic proportions for each document}
+#'     \item{beta}{Normalized topic specific word generation probabilities}
+#'     \item{topic_counts}{Number of tokens assigned to each topic}
+#'     \item{word_counts}{Number of times each word type appears}
+#'     \item{doc_lens}{Length of each document in tokens}
+#'     \item{vocab}{Words in the vocabulary}
 #'   }
 #' @export
-posterior <- function(x, docnames = NULL){
-  K <- Reduce(max, Map(max, x$Z)) # 0:K
-  V <- Reduce(max, Map(max, x$WordIDs)) # 0:V
-  N <- length(x$WordIDs)
-  vocab <- unique(data.frame(word = unlist(x$RawWords),
-                             id = unlist(x$WordIDs)))
-  vocab <- vocab[order(vocab$id),] # sorted by id
-  vocab_freq <- as.numeric(table(unlist(x$WordIDs)))
+posterior <- function(model){
+  allK <- model$extra_k + length(model$dict)
+  V <- length(model$vocab)
 
-  Z <- do.call(rbind,
-               lapply(x$Z, function(x){ table(factor(x, levels = 0:K)) }))
-  theta <- Z / rowSums(Z)
-  Ns <- unlist(lapply(x$WordIDs, length))
-  if (!is.null(docnames))
-    rownames(theta) <- names(Ns) <- docnames
-  else {
-    rownames(theta) <- 1:N
-    names(Ns) <- 1:N
-  }
-  z_freq <- colSums(Z)
-  beta <- Reduce(`+`,
-                 mapply(function(a, b){ table(factor(a, levels = 0:K),
-                                              factor(b, levels = 0:V)) },
-                        x$Z, x$WordIDs, SIMPLIFY = FALSE))
-  beta <- beta / rowSums(beta)
-  colnames(beta) <- vocab$word
+  tNZ <- do.call(rbind,
+                 lapply(model$Z, function(x){ table(factor(x, levels = 1:allK - 1)) }))
+  rownames(tNZ) <- basename(model$files)
+  doc_lens <- rowSums(tNZ)
+  tNZ <- tNZ / doc_lens
 
-  ll <- list(K = K,
-             V = V,
-             N = N,
-             theta = theta,
-             z_freq = z_freq,
-             beta = beta,
-             doclens = Ns,
-             vocab = vocab,
-             vocab_freq = vocab_freq)
+  tZW <- Reduce(`+`,
+                 mapply(function(a, b){ table(factor(a, levels = 1:allK - 1),
+                                              factor(b, levels = 1:V - 1)) },
+                        model$Z, model$W, SIMPLIFY = FALSE))
+  colnames(tZW) <- model$vocab
+  word_counts <- colSums(tZW)
+  topic_counts <- rowSums(tZW)
+  tZW <- tZW / topic_counts
+
+  ll <- list(seed_K = length(model$dict), extra_K = model$extra_k,
+             V = ncol(tZW), N = nrow(tNZ),
+             theta = tNZ, beta = as.matrix(as.data.frame.matrix(tZW)),
+             topic_counts = topic_counts, word_counts = word_counts,
+             doc_lens = doc_lens, vocab = model$vocab)
   class(ll) <- c("seededlda_posterior", class(ll))
   ll
 }
@@ -64,7 +59,7 @@ posterior <- function(x, docnames = NULL){
 suggest_topic_names <- function(x, n = 3,
                                 measure = c("probability", "lift")){
   tt <- top_terms(x, n, measure)
-  apply(tt, 2, function(x){ paste(x, collapse="-") })
+  apply(tt, 2, function(x){ paste(x, collapse = "-") })
 }
 
 #' Set topic names
@@ -77,7 +72,7 @@ suggest_topic_names <- function(x, n = 3,
 #'
 set_topic_names <- function(x, topic_names){
   colnames(x$theta) <- topic_names
-  names(x$z_freq) <- topic_names
+  names(x$topic_counts) <- topic_names
   rownames(x$beta) <- topic_names
   x
 }
@@ -92,7 +87,7 @@ set_topic_names <- function(x, topic_names){
 #'
 set_doc_names <- function(x, doc_names){
   rownames(x$theta) <- doc_names
-  names(x$doclens) <- doc_names
+  names(x$doc_lens) <- doc_names
   x
 }
 
@@ -107,16 +102,15 @@ set_doc_names <- function(x, doc_names){
 #'
 top_terms <- function(x, n = 10,
                       measure = c("probability", "lift")){
-  measure <- match.arg(measure)
   if (is.null(n))
     n <- nrow(x$theta)
-
+  measure <- match.arg(measure)
   if (measure == "probability"){
      measuref <- function(xrow){
        colnames(x$beta)[order(xrow, decreasing = TRUE)[1:n]]
      }
   } else if (measure == "lift"){
-     wfreq <- x$vocab_freq / sum(x$vocab_freq)
+     wfreq <- x$word_counts / sum(x$word_counts)
      measuref <- function(xrow){
        colnames(x$beta)[order(xrow / wfreq, decreasing = TRUE)[1:n]]
      }
@@ -135,16 +129,16 @@ top_terms <- function(x, n = 10,
 #'
 top_topics <- function(x, n = 2,
                        measure = c("probability", "lift")){
-  measure <- match.arg(measure)
   if (is.null(n))
     n <- nrow(x$theta)
 
+  measure <- match.arg(measure)
   if (measure == "probability"){
     measuref <- function(xrow){
       colnames(x$theta)[order(xrow, decreasing = TRUE)[1:n]]
     }
   } else if (measure == "lift"){
-    wfreq <- x$topic_freq / sum(x$topic_freq)
+    wfreq <- x$topic_counts / sum(x$topic_counts)
     measuref <- function(xrow){
       colnames(x$theta)[order(xrow / wfreq, decreasing = TRUE)[1:n]]
     }
@@ -161,17 +155,17 @@ top_topics <- function(x, n = 2,
 #' @return An n x k table of the top n documents for each topic
 #' @export
 top_docs <- function(x, n = 10, measure = c("probability", "lift")){
-  measure <- match.arg(measure)
   if (is.null(n))
     n <- nrow(x$theta)
 
+  measure <- match.arg(measure)
   if (measure == "probability"){
     measuref <- function(xcol){
       rownames(x$theta)[order(xcol, decreasing = TRUE)[1:n]]
     }
     apply(x$theta, 2, measuref)
   } else if (measure == "lift"){
-    tfreq <- x$z_freq / sum(x$z_freq)
+    tfreq <- x$topic_counts / sum(x$topic_counts)
     measuref <- function(xcol){
       rownames(x$theta)[order(xcol, decreasing = TRUE)[1:n]]
     }

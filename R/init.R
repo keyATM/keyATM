@@ -76,7 +76,8 @@ init <- function(files, dict, extra_k = 1, encoding = "unknown", ...){
   seeds <- lapply(dict, function(x){ wd_map[[x]] })
 
   list(W = W, Z = Z, X = X, vocab = vocab,
-       files = files, dict = dict, seeds = seeds)
+       files = files, dict = dict, seeds = seeds,
+       extra_k = extra_k)
 }
 
 
