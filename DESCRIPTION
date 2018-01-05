@@ -8,22 +8,17 @@ License: GPL 3 (LICENSE)
 Encoding: UTF-8
 LazyData: true
 LinkingTo: Rcpp, 
-  BH,
   RcppEigen
 Imports: Rcpp,
-  readr,
-  tidyr,
-  dplyr,
-  ggplot2,
-  purrr,
-  repurrrsive, 
-  stringi, 
-  tibble, 
-  LaplacesDemon, 
-  MCMCpack
+  hashmap,
+  quanteda
 SystemRequirements: C++11     
 Suggests: knitr,
   rmarkdown,
-    testthat
+  testthat,
+  purrr,
+  tidyr,
+  dplyr,
+  ggplot2
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1

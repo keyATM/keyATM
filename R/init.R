@@ -1,6 +1,3 @@
-## need wd_id -> wd   = vocab[wd_id+1])
-## dictcatid_id -> dictcatname  = names(dict)[[dictcat_id]]
-## docid -> docname  = files[docid]
 
 #' Initialize a model
 #'
@@ -39,7 +36,7 @@
 #' @export
 #'
 init <- function(files, dict, extra_k = 1, encoding = "unknown", ...){
-  K <- length(dict) + extra_k
+  K <- length(dict)
 
   tokenize_text <- function(x){
     x <- paste(readLines(x, encoding = encoding), collapse = "\n")
@@ -52,7 +49,7 @@ init <- function(files, dict, extra_k = 1, encoding = "unknown", ...){
 
   ## construct W and a vocab list (W elements are 0 based ids)
   vocab <- unique(unlist(toklist))
-  wd_map <- hashmap::hashmap(vocab, 1:length(vocab) - 1)
+  wd_map <- hashmap::hashmap(vocab, as.integer(1:length(vocab) - 1))
   W <- lapply(toklist, function(x){ wd_map[[x]] })
 
   # zx_assigner maps seed words to category ids
@@ -70,7 +67,7 @@ init <- function(files, dict, extra_k = 1, encoding = "unknown", ...){
   make_z <- function(x){
     zz <- zx_assigner$find(x)
     unseeded <- is.na(zz)
-    zz[unseeded] <- sample(1:K - 1, sum(unseeded), replace = TRUE)
+    zz[unseeded] <- sample((1:(K + extra_k)) - 1, sum(unseeded), replace = TRUE)
     zz
   }
   Z <- lapply(W, make_z)
@@ -81,6 +78,10 @@ init <- function(files, dict, extra_k = 1, encoding = "unknown", ...){
   list(W = W, Z = Z, X = X, vocab = vocab,
        files = files, dict = dict, seeds = seeds)
 }
+
+
+
+
 
 # train_seededlda <- function(files, dict, k, encoding = "unknown", iter = ...){
 #   model <- init(files, dict, k, encoding = "unknown", ...)

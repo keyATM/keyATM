@@ -6,25 +6,50 @@
 
 using namespace Rcpp;
 
-// RunSeededLDA
-List RunSeededLDA(std::string datafolder, std::string seed_path, int iter_num, int show_words_num, bool full_output, int seed);
-RcppExport SEXP _topicdict_RunSeededLDA(SEXP datafolderSEXP, SEXP seed_pathSEXP, SEXP iter_numSEXP, SEXP show_words_numSEXP, SEXP full_outputSEXP, SEXP seedSEXP) {
+// logsumexp
+double logsumexp(double& x, double& y, bool flg);
+RcppExport SEXP _topicdict_logsumexp(SEXP xSEXP, SEXP ySEXP, SEXP flgSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type datafolder(datafolderSEXP);
-    Rcpp::traits::input_parameter< std::string >::type seed_path(seed_pathSEXP);
-    Rcpp::traits::input_parameter< int >::type iter_num(iter_numSEXP);
-    Rcpp::traits::input_parameter< int >::type show_words_num(show_words_numSEXP);
-    Rcpp::traits::input_parameter< bool >::type full_output(full_outputSEXP);
-    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(RunSeededLDA(datafolder, seed_path, iter_num, show_words_num, full_output, seed));
+    Rcpp::traits::input_parameter< double& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< bool >::type flg(flgSEXP);
+    rcpp_result_gen = Rcpp::wrap(logsumexp(x, y, flg));
+    return rcpp_result_gen;
+END_RCPP
+}
+// logsumexp_Eigen
+double logsumexp_Eigen(Eigen::VectorXd& vec);
+RcppExport SEXP _topicdict_logsumexp_Eigen(SEXP vecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type vec(vecSEXP);
+    rcpp_result_gen = Rcpp::wrap(logsumexp_Eigen(vec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// train
+List train(List model, int k_seeded, int k_free, double alpha_k, int iter);
+RcppExport SEXP _topicdict_train(SEXP modelSEXP, SEXP k_seededSEXP, SEXP k_freeSEXP, SEXP alpha_kSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< int >::type k_seeded(k_seededSEXP);
+    Rcpp::traits::input_parameter< int >::type k_free(k_freeSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha_k(alpha_kSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    rcpp_result_gen = Rcpp::wrap(train(model, k_seeded, k_free, alpha_k, iter));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_topicdict_RunSeededLDA", (DL_FUNC) &_topicdict_RunSeededLDA, 6},
+    {"_topicdict_logsumexp", (DL_FUNC) &_topicdict_logsumexp, 3},
+    {"_topicdict_logsumexp_Eigen", (DL_FUNC) &_topicdict_logsumexp_Eigen, 1},
+    {"_topicdict_train", (DL_FUNC) &_topicdict_train, 5},
     {NULL, NULL, 0}
 };
 

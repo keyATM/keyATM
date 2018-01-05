@@ -1,10 +1,9 @@
 #include <RcppEigen.h>
 
-// [[Rcpp::plugins(cpp11)]]
-
 using namespace Eigen;
 using namespace Rcpp;
 
+// [[Rcpp::plugins(cpp11)]]
 
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
@@ -22,7 +21,7 @@ double logsumexp (double &x, double &y, bool flg){
 
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
-double logsumexp_Eigen(VectorXd &vec){
+double logsumexp_Eigen(Eigen::VectorXd &vec){
   double sum = 0.0;
   int index;
   for(size_t i = 0; i < vec.size(); i++){
@@ -34,7 +33,7 @@ double logsumexp_Eigen(VectorXd &vec){
 
 
 // [[Rcpp::depends(RcppEigen)]]
-int rcat(VectorXd &prob){
+int rcat(Eigen::VectorXd &prob){
   // Multi(x, 1), return category index
   double u = R::runif(0, 1);
   double temp = 0.0;
@@ -49,8 +48,6 @@ int rcat(VectorXd &prob){
   return index;
 }
 
-
-
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
 List train(List model, int k_seeded, int k_free, double alpha_k,
@@ -58,9 +55,9 @@ List train(List model, int k_seeded, int k_free, double alpha_k,
 
   List W = model["W"], Z = model["Z"], X = model["X"];
   StringVector files = model["files"], vocab = model["vocab"];
-  List seeds = model["seeds"]; // convert this to T&S's phi form
+  List seeds = model["seeds"]; // convert this to T&S's phi format
 
-  std::vector< std::map<int, double> > phi_s(seeds.size()); // change to unordered map later
+  std::vector< std::map<int, double> > phi_s(seeds.size()); // TODO: change to unordered map
   std::vector<int> seed_num(seeds.size());
   for (int ii = 0; ii < seeds.size(); ii++){
     IntegerVector wd_ids = seeds[ii];
@@ -76,24 +73,22 @@ List train(List model, int k_seeded, int k_free, double alpha_k,
   VectorXd alpha = VectorXd::Constant(num_topics, alpha_k);
 
   // document-related constants
-  int num_vocab = vocab.size();
-  int num_doc = files.size();
+  int num_vocab = vocab.size(), num_doc = files.size();
 
   // distributional constants
   double gamma_1 = 1.0, gamma_2 = 1.0;
   double lambda_1 = 1.0, lambda_2 = 2.0;
   double beta = 0.01, beta_s = 0.1;
 
-  // storage for sufficient statistics
+  // storage for sufficient statistics and their margins
   SparseMatrix<int, RowMajor> n_x0_kv = SparseMatrix<int, RowMajor> (num_topics, num_vocab);
   SparseMatrix<int, RowMajor> n_x1_kv = SparseMatrix<int, RowMajor> (num_topics, num_vocab);
   MatrixXd n_dk = MatrixXd::Zero(num_doc, num_topics);
-  MatrixXd theta_dk = MatrixXd::Zero(num_doc, num_topics); // TODO initialize?
-  // and their margins
+  MatrixXd theta_dk = MatrixXd::Zero(num_doc, num_topics); // Does this need initialization?
   VectorXi n_x0_k = VectorXi::Zero(num_topics);
   VectorXi n_x1_k = VectorXi::Zero(num_topics);
 
-  // fill n_x0_kv, n_x0_k, n_dk
+  // initialize n_x0_kv, n_x0_k, n_dk
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
     IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     for(int w_position = 0; w_position < doc_x.size(); w_position++){
@@ -109,10 +104,12 @@ List train(List model, int k_seeded, int k_free, double alpha_k,
     }
   }
 
-  // Note: no randomized update sequence in dev
-  for (int ii = 0; ii < iter; ii++){
-    for (int doc_id = 0; doc_id < num_doc; doc_id++){
+  // Note: No randomized update sequence in development so debugging is easier
+  for (int ii = 0; ii < iter; ii++){ // iterations
+    for (int doc_id = 0; doc_id < num_doc; doc_id++){ // documents
       IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
+
+      // loop over tokens and assign  Z
       for (int w_position = 0; w_position < doc_x.size(); w_position++){
         int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
 
@@ -181,20 +178,14 @@ List train(List model, int k_seeded, int k_free, double alpha_k,
           n_x1_k(z) += 1;
         }
         n_dk.coeffRef(doc_id, z) += 1;
-
-        //update_X(doc_id, w_position);
-
       }
-    }
+      // loop over tokens for X
+      //update_X(doc_id, w_position);
+
+    } // end documents
+
     // update_alpha();
-  }
+  } // end iterations
 
   return model;
 }
-
-
-//vector<int> each_doc_len(num_doc);
-//for(int doc_id = 0; doc_id < num_doc; doc_id++){
-//  IntegerVector w = W[doc_id];
-//  each_doc_len[doc_id] = w.size();
-//}

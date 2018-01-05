@@ -10,7 +10,7 @@ posterior(x, docnames = NULL)
 \item{docnames}{Names of documents (not stored in the C++
 seeededlda yet)}
 
-\item{model_results}{The result of running `\code{seededlda}}
+\item{model_results}{The result of running \code{seededlda}}
 }
 \value{
 a list with elements
