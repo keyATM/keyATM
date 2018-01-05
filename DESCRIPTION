@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: person("Will", "Lowe", email = "wlowe@princeton.edu", role = c("aut", "cre"))
 Description: Fits a topic model using seeds from a content analysis dictionary.
 Depends: R (>= 3.4.2)
-License: GPL 3 (LICENSE)
+License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 LinkingTo: Rcpp, 

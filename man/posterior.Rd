@@ -4,24 +4,28 @@
 \alias{posterior}
 \title{Get posterior quantities from model output}
 \usage{
-posterior(x, docnames = NULL)
+posterior(model)
 }
 \arguments{
-\item{docnames}{Names of documents (not stored in the C++
-seeededlda yet)}
-
-\item{model_results}{The result of running \code{seededlda}}
+\item{model}{a model, fitted or simply initialized}
 }
 \value{
 a list with elements
   \itemize{
-    \item{topics}{An N x K matrix of topic proportions}
-    \item{terms}{A K x V matrix of topic-specific term generation
-                 probabilities}
-    \item{doclens}{A vector of document lengths in words, with which
-                   Z can be reinflated from theta}
+    \item{seed_K}{Number of seeded topics}
+    \item{extra_K}{Number of regular unseeded topics}
+    \item{V}{Number of word types}
+    \item{N}{Number of documents}
+    \item{theta}{Normalized tpoic proportions for each document}
+    \item{beta}{Normalized topic specific word generation probabilities}
+    \item{topic_counts}{Number of tokens assigned to each topic}
+    \item{word_counts}{Number of times each word type appears}
+    \item{doc_lens}{Length of each document in tokens}
+    \item{vocab}{Words in the vocabulary}
   }
 }
 \description{
-Get posterior quantities from model output
+Constructs a (N x K) matrix \code{theta} and (K x V) matrix \code{beta}
+plus their margins from the sample of Z and W in \code{model}.
+These statistics implicitly marginalize over X.
 }
