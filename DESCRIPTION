@@ -23,6 +23,7 @@ Imports: Rcpp,
   MCMCpack
 SystemRequirements: C++11     
 Suggests: knitr,
-  rmarkdown
+  rmarkdown,
+    testthat
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1

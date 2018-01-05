@@ -1,9 +1,11 @@
 #include <RcppEigen.h>
 
+// [[Rcpp::plugins(cpp11)]]
+
 using namespace Eigen;
 using namespace Rcpp;
 
-// log sum exp-ing
+
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
 double logsumexp (double &x, double &y, bool flg){
@@ -47,6 +49,8 @@ int rcat(VectorXd &prob){
   return index;
 }
 
+
+
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
 List train(List model, int k_seeded, int k_free, double alpha_k,
@@ -54,12 +58,17 @@ List train(List model, int k_seeded, int k_free, double alpha_k,
 
   List W = model["W"], Z = model["Z"], X = model["X"];
   StringVector files = model["files"], vocab = model["vocab"];
-  List id_dict = model["id_dict"]; // map { word_id (int) -> topic_id (int) }
+  List seeds = model["seeds"]; // convert this to T&S's phi form
 
-  std::vector<int> seed_num;
-  for (int ii; ii < id_dict.size(); ii++){
-     IntegerVector ids = id_dict[ii]; // assumes integers
-     seed_num.push_back(ids.size());
+  std::vector< std::map<int, double> > phi_s(seeds.size()); // change to unordered map later
+  std::vector<int> seed_num(seeds.size());
+  for (int ii = 0; ii < seeds.size(); ii++){
+    IntegerVector wd_ids = seeds[ii];
+    seed_num[ii] = wd_ids.size();
+    std::map<int, double> phi_sk;
+    for (int jj = 0; jj < wd_ids.size(); jj++)
+      phi_sk[wd_ids(jj)] = 1.0 / wd_ids.size();
+    phi_s[ii] = phi_sk;
   }
 
   // alpha-related constants
@@ -71,12 +80,9 @@ List train(List model, int k_seeded, int k_free, double alpha_k,
   int num_doc = files.size();
 
   // distributional constants
-  double gamma_1 = 1.0;
-  double gamma_2 = 1.0;
-  double lambda_1 = 1.0;
-  double lambda_2 = 2.0;
-  double beta = 0.01; // currently fixed
-  double beta_s = 0.1;
+  double gamma_1 = 1.0, gamma_2 = 1.0;
+  double lambda_1 = 1.0, lambda_2 = 2.0;
+  double beta = 0.01, beta_s = 0.1;
 
   // storage for sufficient statistics
   SparseMatrix<int, RowMajor> n_x0_kv = SparseMatrix<int, RowMajor> (num_topics, num_vocab);
