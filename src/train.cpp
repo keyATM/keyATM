@@ -1,11 +1,11 @@
 #include <RcppEigen.h>
 
+// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::depends(RcppEigen)]]
+
 using namespace Eigen;
 using namespace Rcpp;
 
-// [[Rcpp::plugins(cpp11)]]
-
-// [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
 double logsumexp (double &x, double &y, bool flg){
   if (flg) return y; // init mode
@@ -19,7 +19,6 @@ double logsumexp (double &x, double &y, bool flg){
   }
 }
 
-// [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
 double logsumexp_Eigen(Eigen::VectorXd &vec){
   double sum = 0.0;
@@ -31,7 +30,7 @@ double logsumexp_Eigen(Eigen::VectorXd &vec){
   return sum;
 }
 
-// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::export]]
 int rcat(Eigen::VectorXd &prob){
   // Multi(x, 1), return category index
   double u = R::runif(0, 1);
@@ -47,7 +46,15 @@ int rcat(Eigen::VectorXd &prob){
   return index;
 }
 
-// [[Rcpp::depends(RcppEigen)]]
+//' Run the Gibbs sampler
+//'
+//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param k_seeded How many topics are seeded
+//' @param k_free How many regular unseeded topics are required
+//' @param alpha_k A starting value for alpha (will be removed when alpha updates are back in)
+//' @param iter Required number of iterations
+//'
+//' @export
 // [[Rcpp::export]]
 List train(List model, int k_seeded, int k_free, double alpha_k, int iter = 0){
 
@@ -142,7 +149,7 @@ List train(List model, int k_seeded, int k_free, double alpha_k, int iter = 0){
           std::vector<int> make_zero_later; // elements to zero out
           for (int k = 0; k < num_topics; k++){
             double numerator; // is this right? It will be zero, presumably
-            if (phi_s[k].find(w_position) == phi_s[k].end()){ // w isn't a seed
+            if (phi_s[k].find(w_position) == phi_s[k].end()){ // TODO: k indexing bug is here
               z_prob_vec(k) = 1.0;
               make_zero_later.push_back(k);
               continue;
