@@ -11,14 +11,16 @@ init(files, dict, extra_k = 1, encoding = "unknown", ...)
 
 \item{dict}{a quanteda dictionary or named list of character vectors}
 
-\item{extra_k}{number of unseeded topics in addition to the topics seeded by \code{dict}}
+\item{extra_k}{number of unseeded topics in addition to the topics seeded by
+\code{dict}}
 
 \item{encoding}{File encoding (defaults to \code{readLines}'s default)}
 
-\item{...}{Additional arguments to \code{quanteda::tokens}. (Only lowercasing happens by default).}
+\item{...}{Additional arguments to \code{quanteda::tokens}. (Only lowercasing
+happens by default).}
 }
 \value{
-A list containing \itemize{
+A list containing \describe{
         \item{W}{a list of vectors of word indexes}
         \item{Z}{a list of vectors of topic indicators isomorphic to W},
         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
@@ -41,9 +43,10 @@ as 1.
 
 \code{X} is 1 when a word is generated from one of the topics from the dictionary ('seeded')
 and 0 when it was generated from one of the \code{extra_k} normal topics.
-\code{X} is initialized randomly except when the word is contained in \code{dict}.
+\code{X} is initialized randomly except when the word is contained in
+\code{dict}.
 
-Note that all indicators are zero-based for ease of later processing in C++, so
-\code{mod$vocab[mod$W + 1]} recovers the (tokenized) words of the i-th document from
-model \code{mod}.
+Note that all indicators are zero-based for ease of later processing in C++,
+so \code{mod$vocab[mod$W + 1]} recovers the (tokenized) words of the i-th
+document from model \code{mod}.
 }

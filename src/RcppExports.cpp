@@ -6,41 +6,6 @@
 
 using namespace Rcpp;
 
-// logsumexp
-double logsumexp(double& x, double& y, bool flg);
-RcppExport SEXP _topicdict_logsumexp(SEXP xSEXP, SEXP ySEXP, SEXP flgSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< bool >::type flg(flgSEXP);
-    rcpp_result_gen = Rcpp::wrap(logsumexp(x, y, flg));
-    return rcpp_result_gen;
-END_RCPP
-}
-// logsumexp_Eigen
-double logsumexp_Eigen(Eigen::VectorXd& vec);
-RcppExport SEXP _topicdict_logsumexp_Eigen(SEXP vecSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type vec(vecSEXP);
-    rcpp_result_gen = Rcpp::wrap(logsumexp_Eigen(vec));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rcat
-int rcat(Eigen::VectorXd& prob);
-RcppExport SEXP _topicdict_rcat(SEXP probSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type prob(probSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcat(prob));
-    return rcpp_result_gen;
-END_RCPP
-}
 // train
 List train(List model, int k_seeded, int k_free, double alpha_k, int iter);
 RcppExport SEXP _topicdict_train(SEXP modelSEXP, SEXP k_seededSEXP, SEXP k_freeSEXP, SEXP alpha_kSEXP, SEXP iterSEXP) {
@@ -58,9 +23,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_topicdict_logsumexp", (DL_FUNC) &_topicdict_logsumexp, 3},
-    {"_topicdict_logsumexp_Eigen", (DL_FUNC) &_topicdict_logsumexp_Eigen, 1},
-    {"_topicdict_rcat", (DL_FUNC) &_topicdict_rcat, 1},
     {"_topicdict_train", (DL_FUNC) &_topicdict_train, 5},
     {NULL, NULL, 0}
 };

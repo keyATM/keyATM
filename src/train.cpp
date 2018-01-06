@@ -6,7 +6,6 @@
 using namespace Eigen;
 using namespace Rcpp;
 
-// [[Rcpp::export]]
 double logsumexp (double &x, double &y, bool flg){
   if (flg) return y; // init mode
   if (x == y) return x + 0.69314718055; // log(2)
@@ -19,7 +18,6 @@ double logsumexp (double &x, double &y, bool flg){
   }
 }
 
-// [[Rcpp::export]]
 double logsumexp_Eigen(Eigen::VectorXd &vec){
   double sum = 0.0;
   int index;
@@ -30,7 +28,10 @@ double logsumexp_Eigen(Eigen::VectorXd &vec){
   return sum;
 }
 
-// [[Rcpp::export]]
+double gammapdfln(double x, double a, double b){
+ return a * log(b) - lgamma(a) + (a-1.0) * log(x) - b * x;
+}
+
 int rcat(Eigen::VectorXd &prob){
   // Multi(x, 1), return category index
   double u = R::runif(0, 1);
@@ -45,6 +46,166 @@ int rcat(Eigen::VectorXd &prob){
   }
   return index;
 }
+
+// int bern(double &prob0, double &prob1){
+//  double value = R::runif(0,1);
+//  if(value <= prob1)
+//    return 1;
+//  return 0;
+//}
+//
+// This function replaced by:   R::runif(0,1) <= prob1
+
+int sample_z(Eigen::SparseMatrix<int, Eigen::RowMajor>& n_x0_kv,
+             Eigen::SparseMatrix<int, Eigen::RowMajor>& n_x1_kv,
+             Eigen::VectorXi& n_x0_k,
+             Eigen::VectorXi& n_x1_k,
+             Eigen::MatrixXd& n_dk,
+             Eigen::VectorXd& alpha,
+             std::vector<int>& seed_num,
+             int x, int z, int w, int doc_id, int num_vocab,
+             int num_topics, int k_seeded,
+             double gamma_1, double gamma_2, double beta, double beta_s,
+             std::vector< std::unordered_map<int, double> > & phi_s){
+  // remove data
+  if (x == 0){
+    n_x0_kv.coeffRef(z, w) -= 1;
+    n_x0_k(z) -= 1;
+  } else {
+    n_x1_kv.coeffRef(z, w) -= 1;
+    n_x1_k(z) -= 1;
+  }
+  n_dk.coeffRef(doc_id, z) -= 1;
+
+  // draw z
+  VectorXd z_prob_vec = VectorXd::Zero(num_topics);
+  int new_z = -1; // debug
+  double numerator, denominator;
+  if (x == 0){
+    for (int k = 0; k < num_topics; k++){
+      numerator = log(beta + (double)n_x0_kv.coeffRef(k, w)) +
+        log((double)n_x0_k(k) + gamma_2) +
+        log((double)n_dk.coeffRef(doc_id, k) + alpha(k));
+      denominator = log((double)num_vocab * beta + (double)n_x0_kv.row(k).sum()) +
+        log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+      z_prob_vec(k) = numerator - denominator;
+    }
+    double sum = logsumexp_Eigen(z_prob_vec); // normalize
+    for (int k = 0; k < num_topics; k++)
+      z_prob_vec(k) = exp(z_prob_vec(k) - sum);
+    new_z = rcat(z_prob_vec); // take a sample
+
+  } else {
+    std::vector<int> make_zero_later;
+    for (int k = 0; k < k_seeded; k++){ // <--------- NOTE: using k_seeded
+      if (phi_s[k].find(w) == phi_s[k].end()){
+        z_prob_vec(k) = 1.0;
+        make_zero_later.push_back(k);
+        continue;
+      } else{ // w not one of the seeds
+        numerator = log(beta_s + (double)n_x1_kv.coeffRef(k, w)) +
+          log( ((double)n_x1_k(k) + gamma_1) ) +
+          log( ((double)n_dk.coeffRef(doc_id, k) + alpha(k)) );
+      }
+      denominator = log((double)seed_num[k] * beta_s + (double)n_x1_kv.row(k).sum() ) +
+        log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+      z_prob_vec(k) = numerator - denominator;
+    }
+    double sum = logsumexp_Eigen(z_prob_vec);
+    for (int k = 0; k < num_topics; k++)
+      z_prob_vec(k) = exp(z_prob_vec(k) - sum);
+    for (int k = 0; k < make_zero_later.size(); k++) // zero out elements
+      z_prob_vec(k) = 0.0;
+    z_prob_vec = z_prob_vec / z_prob_vec.sum(); // and renormalize
+    new_z = rcat(z_prob_vec); // take a sample
+  }
+
+  // add back data counts
+  if (x == 0){
+    n_x0_kv.coeffRef(z, w) += 1;
+    n_x0_k(z) += 1;
+  } else {
+    n_x1_kv.coeffRef(z, w) += 1;
+    n_x1_k(z) += 1;
+  }
+  n_dk.coeffRef(doc_id, z) += 1;
+
+  return new_z;
+}
+
+int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
+             SparseMatrix<int, RowMajor>& n_x1_kv,
+             VectorXi& n_x0_k,
+             VectorXi& n_x1_k,
+             MatrixXd& n_dk,
+             VectorXd& alpha,
+             std::vector<int>& seed_num,
+             int x, int z, int w, int doc_id, int num_vocab,
+             int num_topics, int k_seeded,
+             double gamma_1, double gamma_2, double beta, double beta_s,
+             std::vector< std::unordered_map<int, double> > & phi_s){
+  // remove data
+  if (x == 0){
+    n_x0_kv.coeffRef(z, w) -= 1;
+    n_x0_k(z) -= 1;
+  } else {
+    n_x1_kv.coeffRef(z, w) -= 1;
+    n_x1_k(z) -= 1;
+  }
+  n_dk.coeffRef(doc_id, z) -= 1;
+
+  // newprob_x1()
+  double x1_logprob;
+  int k = z;
+  double numerator;
+  double denominator;
+  if(phi_s[k].find(w) == phi_s[k].end()){ // not a seed word
+    x1_logprob = -1.0;
+  } else {
+    numerator = log(beta_s + (double)n_x1_kv.coeffRef(k, w)) +
+      log( ((double)n_x1_k(k) + gamma_1) );
+    denominator = log((double)seed_num[k] * beta_s + (double)n_x1_kv.row(k).sum() ) +
+      log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+    x1_logprob = numerator - denominator;
+  }
+
+  int new_x;
+  if(x1_logprob == -1.0){
+    // if probability of x_di = 1 case is 0, it should be x=0 (regular topic)
+    new_x = 0;
+  } else {
+    // newprob_x0()
+    int k = z;
+    numerator = log(beta + (double)n_x0_kv.coeffRef(k, w)) +
+      log((double)n_x0_k(k) + gamma_2);
+    denominator = log((double)num_vocab * beta + (double)n_x0_kv.row(k).sum() ) +
+      log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+    double x0_logprob = numerator - denominator;
+
+    // Normalize
+    double sum = 0.0;
+    double prob_array[] = {x0_logprob, x1_logprob};
+    for (int i = 0; i < 2; i++)
+      sum = logsumexp(sum, prob_array[i], (i == 0));
+
+    double x0_prob = exp( x0_logprob - sum);
+    double x1_prob = exp( x1_logprob - sum);
+    new_x = R::runif(0,1) <= x1_prob;  //new_x = Bern(x0_prob, x1_prob);
+  }
+
+  // add back data counts
+  if (x == 0){
+    n_x0_kv.coeffRef(z, w) += 1;
+    n_x0_k(z) += 1;
+  } else {
+    n_x1_kv.coeffRef(z, w) += 1;
+    n_x1_k(z) += 1;
+  }
+  n_dk.coeffRef(doc_id, z) += 1;
+
+  return new_x;
+}
+
 
 //' Run the Gibbs sampler
 //'
@@ -93,7 +254,6 @@ List train(List model, int k_seeded, int k_free, double alpha_k, int iter = 0){
   VectorXi n_x0_k = VectorXi::Zero(num_topics);
   VectorXi n_x1_k = VectorXi::Zero(num_topics);
 
-  // initialize n_x0_kv, n_x0_k, n_dk
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
     IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     for(int w_position = 0; w_position < doc_x.size(); w_position++){
@@ -108,90 +268,79 @@ List train(List model, int k_seeded, int k_free, double alpha_k, int iter = 0){
       n_dk.coeffRef(doc_id, z) += 1.0;
     }
   }
+  int total_words = n_dk.sum();
 
-  // Note: No randomized update sequence in development so debugging is easier
-  for (int ii = 0; ii < iter; ii++){ // iterations
-    for (int doc_id = 0; doc_id < num_doc; doc_id++){ // documents
+  // Sampler: No randomized update sequence this time
+  for (int ii = 0; ii < iter; ii++){
+    for (int doc_id = 0; doc_id < num_doc; doc_id++){
       IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
-
-      // loop over tokens and assign  Z
       for (int w_position = 0; w_position < doc_x.size(); w_position++){
         int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
 
-        // remove data
-        if (x == 0){
-          n_x0_kv.coeffRef(z, w_position) -= 1;
-          n_x0_k(z) -= 1;
-        } else {
-          n_x1_kv.coeffRef(z, w_position) -= 1;
-          n_x1_k(z) -= 1;
-        }
-        n_dk.coeffRef(doc_id, z) -= 1;
+        doc_z[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
+                                     alpha,seed_num, x, z, w, doc_id,
+                                     num_vocab, num_topics, k_seeded, gamma_1,
+                                     gamma_2, beta, beta_s, phi_s);
 
-        // draw z
-        VectorXd z_prob_vec = VectorXd::Zero(num_topics);
-        int new_z = -1; // debug
-        if (x == 0){
-          for (int k = 0; k < num_topics; k++){
-            double numerator = log(beta + (double)n_x0_kv.coeffRef(k, w_position)) +
-              log((double)n_x0_k(k) + gamma_2) +
-              log((double)n_dk.coeffRef(doc_id, k) + alpha(k));
-            double denominator = log((double)num_vocab * beta + (double)n_x0_kv.row(k).sum()) +
-              log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
-            z_prob_vec(k) = numerator - denominator;
-          }
-          double sum = logsumexp_Eigen(z_prob_vec); // normalize
-          for (int k = 0; k < num_topics; k++)
-            z_prob_vec(k) = exp(z_prob_vec(k) - sum);
-          new_z = rcat(z_prob_vec); // take a sample
-
-        } else {
-          std::vector<int> make_zero_later; // elements to zero out
-          for (int k = 0; k < num_topics; k++){
-            double numerator; // is this right? It will be zero, presumably
-            if (phi_s[k].find(w_position) == phi_s[k].end()){ // TODO: k indexing bug is here
-              z_prob_vec(k) = 1.0;
-              make_zero_later.push_back(k);
-              continue;
-            } else{ // w is a seed
-              numerator = log(beta_s + (double)n_x1_kv.coeffRef(k, w_position)) +
-                log( ((double)n_x1_k(k) + gamma_1) ) +
-                log( ((double)n_dk.coeffRef(doc_id, k) + alpha(k)) );
-            }
-            double denominator = log((double)seed_num[k] * beta_s + (double)n_x1_kv.row(k).sum() ) +
-              log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
-            z_prob_vec(k) = numerator - denominator;
-          }
-          double sum = logsumexp_Eigen(z_prob_vec);
-          for (int k = 0; k < num_topics; k++)
-            z_prob_vec(k) = exp(z_prob_vec(k) - sum);
-          for (int k = 0; k < make_zero_later.size(); k++) // zero out elements
-            z_prob_vec(k) = 0.0;
-          z_prob_vec = z_prob_vec / z_prob_vec.sum(); // and renormalize
-          new_z = rcat(z_prob_vec); // take a sample
-        }
-        // swap in the new z
-        doc_z[w_position] = new_z;
-        z = new_z;
-
-        // add back data counts
-        if (x == 0){
-          n_x0_kv.coeffRef(z, w_position) += 1;
-          n_x0_k(z) += 1;
-        } else {
-          n_x1_kv.coeffRef(z, w_position) += 1;
-          n_x1_k(z) += 1;
-        }
-        n_dk.coeffRef(doc_id, z) += 1;
+        doc_x[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
+                                    alpha,seed_num, x, z, w, doc_id,
+                                    num_vocab, num_topics, k_seeded, gamma_1,
+                                    gamma_2, beta, beta_s, phi_s);
       }
-      // loop over tokens for X
-      //update_X(doc_id, w_position);
-
-    } // end documents
-
+    }
     // update_alpha();
-    checkUserInterrupt();  // Stop! The user wants to get off.
-  } // end iterations
 
+    // log likelihood
+    double prod_k = 0.0;// calc_loglik_prod_k();
+    for(int k=0; k<num_topics; ++k){
+      // (a) Seed Topic Part
+      prod_k += lgamma((double)num_vocab * beta_s); // first term numerator
+      prod_k -= lgamma(beta_s) * (double)num_vocab; // first term denominator
+      prod_k -= lgamma( (double)num_vocab * beta_s + (double)n_x1_kv.row(k).sum()  ); // second term denominator
+      // Regular Topic Part
+      prod_k += lgamma((double)num_vocab * beta); //probably constant
+      prod_k -= lgamma(beta) * (double)num_vocab; // probably constant
+      prod_k -= lgamma( (double)num_vocab * beta + (double)n_x0_kv.row(k).sum()  ); // last part denominator
+      // (b) second part
+      prod_k += lgamma((double)n_x1_k(k) + gamma_1) + lgamma((double)n_x0_k(k) + gamma_2);
+      prod_k -=  lgamma( (double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2); // probably constant
+      // (c) prior for alpha
+      prod_k += gammapdfln(alpha(k), lambda_1, lambda_2);
+    }
+    int v = 0, prod_v = 0.0; // calc_loglik_prod_v();
+    for(size_t v_sizet = 0; v_sizet < num_vocab; v_sizet++){
+      v = static_cast<int>(v_sizet);
+      for (int k = 0; k < k_seeded; k++){ // <--------- NOTE: using k_seeded
+        // (a), seed topic part, second part numerator
+        if (phi_s[k].find(v) == phi_s[k].end()){ // not a seed word
+          prod_v += lgamma(beta_s);
+        } else {
+          prod_v += lgamma(beta_s + (double)n_x1_kv.coeffRef(k, v) );
+        }
+        // (a) regular part numerator
+        prod_v += lgamma(beta + (double)n_x0_kv.coeffRef(k, v) );
+      }
+    }
+    double prod_d = 0.0; // calc_loglik_prod_d();
+    for (int d = 0; d < num_doc; d++){ // (c)
+      prod_d += lgamma(alpha.sum());
+      for(int k = 0; k < k_seeded; k++){ // <--------- NOTE: using k_seeded
+        prod_d += lgamma(n_dk.coeffRef(d,k) + alpha(k)); // second numerator
+        prod_d -= lgamma(alpha(k)); // first denominator
+      }
+      prod_d -= lgamma(n_dk.row(d).sum() + alpha.sum()); // second denominator
+    }
+    // (b) first part
+    double others = (double)num_topics *
+      ( lgamma(gamma_1 + gamma_2) - lgamma(gamma_1) - lgamma(gamma_2)); // constant?
+    double loglik = prod_k + prod_v + prod_d + others;
+    double perplexity = exp(-loglik / (double)total_words);
+
+    Rcerr << "log likelihood: " << loglik <<
+             " (perplexity: " << perplexity << ")" << std::endl;
+
+    checkUserInterrupt();
+  }
   return model;
 }
+

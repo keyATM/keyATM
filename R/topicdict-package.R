@@ -6,8 +6,8 @@
 #'
 #' @format A quanteda corpus
 #' \describe{
-#'   \item{speaker}{Name of speaker}
-#'   \item{vote}{Whether they voted yes, no, or abstained}
+#'   \item{speaker}{ Name of speaker}
+#'   \item{vote}{ Whether they voted yes, no, or abstained}
 #'   ...
 #' }
 #' @source Bara et al. 2007 Swiss Political Science Review
