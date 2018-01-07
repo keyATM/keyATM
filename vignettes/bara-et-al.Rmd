@@ -13,11 +13,12 @@ vignette: >
 
 ```{r warning=FALSE, message=FALSE}
 library(knitr)
-knitr::opts_chunk$set(comment = "", eval = FALSE)
+knitr::opts_chunk$set(comment = "")
 ```
 
 ## Prepare
-```{r, eval = TRUE, include = FALSE}
+
+```{r, include = FALSE}
 library(topicdict)
 library(purrr)
 library(tidyr)
@@ -28,7 +29,7 @@ library(ggplot2)
 
 We'll use the Bara data, and seeds extracted from the dictionary.  These are all in 
 package extdata:
-```{r, eval = TRUE}
+```{r}
 library(quanteda)
 
 folder <- system.file(file.path("extdata", "bara_paras"), package = "topicdict")
@@ -42,9 +43,8 @@ names(seed_list) <- c("debate", "legal", "abortion", "religion", "house", "mothe
 dict <- dictionary(seed_list)
 ```
 
-
 Initialize a model with some sensible tokenization options
-```{r, eval = TRUE}
+```{r}
 ## about 5 seconds, essentially all of it in quanteda's tokenizer
 model <- init(docs,
              dict = dict,
@@ -55,26 +55,13 @@ model <- init(docs,
 ```
 And run a model with one iteration to check everything works
 ```{r}
-
-
-
-```
-
-```{r}
-#res <- seededlda(data_folder_path = "bara_paras",
-#                 seed_csv_path = "bara_seeds.txt",
-#                 num_regular_topic = 1,
-#                 iter_num = 100,
-#                 show_words_num = 20,
-#                 full_output = TRUE,
-#                 rand_seed = 919)
+model <- train(model, k_seeded = length(dict), 
+               k_free = 1, alpha_k = 50, iter = 1)
 ```
 
 Now let's bundle up the posterior and use the new functions on it
 ```{r}
-post <- posterior(res)
-# add document names
-post <- set_doc_names(post, docnames)
+post <- posterior(model)
 top_terms(post)
 # suggest some names for topics
 tnames <- suggest_topic_names(post, n = 4)
@@ -87,44 +74,12 @@ head(top_topics(post, 2))
 top_docs(post)
 # we know how people voted
 unique(docvars(corp))
-# so it's not so surprising that the child related topic
-# is represented by the dissenters
-top_docs(post, 15)
 ```
-
-What difference does it make if there are more than one non-seeded topics?
-
-To make things crash, remove `eval=FALSE` from the following code chunks:
-```{r, eval = FALSE}
-res5 <- seededlda(data_folder_path = "bara_paras",
-                  seed_csv_path = "bara_seeds.txt",
-                  num_regular_topic = 3,
-                  iter_num = 100,
-                  show_words_num = 20,
-                  full_output = TRUE,
-                  rand_seed = 919)
-```
-
-```{r, eval = FALSE}
-post <- posterior(res)
-# add document names
-post <- set_doc_names(post, docnames)
-top_terms(post)
-```
-
-How does this compare to regular LDA?
-```{r, eval = FALSE}
-library(topicmodels)
-dtm_lda <- as.DocumentTermMatrix(dtm_orig)
-```
-
-
-
 
 
 ## Appendix: How the seeds were chosen
 
-```{r}
+```{r, eval = FALSE}
 data(corpus_bara_para)
 corp <- corpus_subset(corpus_bara_para, 
                       speaker != "Mrs Anne Kerr")

@@ -18,7 +18,7 @@ double logsumexp (double &x, double &y, bool flg){
   }
 }
 
-double logsumexp_Eigen(Eigen::VectorXd &vec){
+double logsumexp_Eigen(VectorXd &vec){
   double sum = 0.0;
   int index;
   for(size_t i = 0; i < vec.size(); i++){
@@ -32,14 +32,13 @@ double gammapdfln(double x, double a, double b){
  return a * log(b) - lgamma(a) + (a-1.0) * log(x) - b * x;
 }
 
-int rcat(Eigen::VectorXd &prob){
-  // Multi(x, 1), return category index
+int rcat(Eigen::VectorXd &prob){ // was function 'multi1'
   double u = R::runif(0, 1);
   double temp = 0.0;
   int index = 0;
-  for(int ii = 0; ii < prob.size(); ii++){
+  for (int ii = 0; ii < prob.size(); ii++){
     temp += prob(ii);
-    if(u < temp){
+    if (u < temp){
       index = ii;
       break;
     }
@@ -47,21 +46,10 @@ int rcat(Eigen::VectorXd &prob){
   return index;
 }
 
-// int bern(double &prob0, double &prob1){
-//  double value = R::runif(0,1);
-//  if(value <= prob1)
-//    return 1;
-//  return 0;
-//}
-//
-// This function replaced by:   R::runif(0,1) <= prob1
-
-int sample_z(Eigen::SparseMatrix<int, Eigen::RowMajor>& n_x0_kv,
-             Eigen::SparseMatrix<int, Eigen::RowMajor>& n_x1_kv,
-             Eigen::VectorXi& n_x0_k,
-             Eigen::VectorXi& n_x1_k,
-             Eigen::MatrixXd& n_dk,
-             Eigen::VectorXd& alpha,
+int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
+             SparseMatrix<int, RowMajor>& n_x1_kv,
+             VectorXi& n_x0_k, VectorXi& n_x1_k,
+             MatrixXd& n_dk, VectorXd& alpha,
              std::vector<int>& seed_num,
              int x, int z, int w, int doc_id, int num_vocab,
              int num_topics, int k_seeded,
@@ -77,7 +65,6 @@ int sample_z(Eigen::SparseMatrix<int, Eigen::RowMajor>& n_x0_kv,
   }
   n_dk.coeffRef(doc_id, z) -= 1;
 
-  // draw z
   VectorXd z_prob_vec = VectorXd::Zero(num_topics);
   int new_z = -1; // debug
   double numerator, denominator;
@@ -119,26 +106,23 @@ int sample_z(Eigen::SparseMatrix<int, Eigen::RowMajor>& n_x0_kv,
     z_prob_vec = z_prob_vec / z_prob_vec.sum(); // and renormalize
     new_z = rcat(z_prob_vec); // take a sample
   }
-
   // add back data counts
   if (x == 0){
-    n_x0_kv.coeffRef(z, w) += 1;
-    n_x0_k(z) += 1;
+    n_x0_kv.coeffRef(new_z, w) += 1;
+    n_x0_k(new_z) += 1;
   } else {
-    n_x1_kv.coeffRef(z, w) += 1;
-    n_x1_k(z) += 1;
+    n_x1_kv.coeffRef(new_z, w) += 1;
+    n_x1_k(new_z) += 1;
   }
-  n_dk.coeffRef(doc_id, z) += 1;
+  n_dk.coeffRef(doc_id, new_z) += 1;
 
   return new_z;
 }
 
 int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
              SparseMatrix<int, RowMajor>& n_x1_kv,
-             VectorXi& n_x0_k,
-             VectorXi& n_x1_k,
-             MatrixXd& n_dk,
-             VectorXd& alpha,
+             VectorXi& n_x0_k, VectorXi& n_x1_k,
+             MatrixXd& n_dk, VectorXd& alpha,
              std::vector<int>& seed_num,
              int x, int z, int w, int doc_id, int num_vocab,
              int num_topics, int k_seeded,
@@ -192,7 +176,6 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
     double x1_prob = exp( x1_logprob - sum);
     new_x = R::runif(0,1) <= x1_prob;  //new_x = Bern(x0_prob, x1_prob);
   }
-
   // add back data counts
   if (x == 0){
     n_x0_kv.coeffRef(z, w) += 1;
@@ -205,7 +188,6 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
 
   return new_x;
 }
-
 
 //' Run the Gibbs sampler
 //'
@@ -278,69 +260,80 @@ List train(List model, int k_seeded, int k_free, double alpha_k, int iter = 0){
         int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
 
         doc_z[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
-                                     alpha,seed_num, x, z, w, doc_id,
+                                     alpha, seed_num, x, z, w, doc_id,
                                      num_vocab, num_topics, k_seeded, gamma_1,
                                      gamma_2, beta, beta_s, phi_s);
 
         doc_x[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
-                                    alpha,seed_num, x, z, w, doc_id,
+                                    alpha, seed_num, x, z, w, doc_id,
                                     num_vocab, num_topics, k_seeded, gamma_1,
                                     gamma_2, beta, beta_s, phi_s);
       }
     }
-    // update_alpha();
+      // update_alpha(); // <-------- Reinsert later
 
-    // log likelihood
-    double prod_k = 0.0;// calc_loglik_prod_k();
-    for(int k=0; k<num_topics; ++k){
-      // (a) Seed Topic Part
-      prod_k += lgamma((double)num_vocab * beta_s); // first term numerator
-      prod_k -= lgamma(beta_s) * (double)num_vocab; // first term denominator
-      prod_k -= lgamma( (double)num_vocab * beta_s + (double)n_x1_kv.row(k).sum()  ); // second term denominator
-      // Regular Topic Part
-      prod_k += lgamma((double)num_vocab * beta); //probably constant
-      prod_k -= lgamma(beta) * (double)num_vocab; // probably constant
-      prod_k -= lgamma( (double)num_vocab * beta + (double)n_x0_kv.row(k).sum()  ); // last part denominator
-      // (b) second part
-      prod_k += lgamma((double)n_x1_k(k) + gamma_1) + lgamma((double)n_x0_k(k) + gamma_2);
-      prod_k -=  lgamma( (double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2); // probably constant
-      // (c) prior for alpha
-      prod_k += gammapdfln(alpha(k), lambda_1, lambda_2);
-    }
-    int v = 0, prod_v = 0.0; // calc_loglik_prod_v();
-    for(size_t v_sizet = 0; v_sizet < num_vocab; v_sizet++){
-      v = static_cast<int>(v_sizet);
-      for (int k = 0; k < k_seeded; k++){ // <--------- NOTE: using k_seeded
-        // (a), seed topic part, second part numerator
-        if (phi_s[k].find(v) == phi_s[k].end()){ // not a seed word
-          prod_v += lgamma(beta_s);
-        } else {
-          prod_v += lgamma(beta_s + (double)n_x1_kv.coeffRef(k, v) );
+      // log likelihood
+      double prod_k = 0.0;// calc_loglik_prod_k();
+      for (int k = 0; k < num_topics; k++){
+        // (a) Seed Topic Part
+        prod_k += lgamma((double)num_vocab * beta_s); // first term numerator
+        prod_k -= lgamma(beta_s) * (double)num_vocab; // first term denominator
+        prod_k -= lgamma( (double)num_vocab * beta_s + (double)n_x1_kv.row(k).sum()  ); // second term denominator
+        // Regular Topic Part
+        prod_k += lgamma((double)num_vocab * beta); //probably constant
+        prod_k -= lgamma(beta) * (double)num_vocab; // probably constant
+        prod_k -= lgamma( (double)num_vocab * beta + (double)n_x0_kv.row(k).sum()  ); // last part denominator
+        // (b) second part
+        prod_k += lgamma((double)n_x1_k(k) + gamma_1) + lgamma((double)n_x0_k(k) + gamma_2);
+        prod_k -=  lgamma( (double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2); // probably constant
+        // (c) prior for alpha
+        prod_k += gammapdfln(alpha(k), lambda_1, lambda_2);
+      }
+      int v = 0, prod_v = 0.0; // calc_loglik_prod_v();
+      for (size_t v_sizet = 0; v_sizet < num_vocab; v_sizet++){
+        v = static_cast<int>(v_sizet);
+        for (int k = 0; k < k_seeded; k++){ // <--------- NOTE: using k_seeded
+          // (a), seed topic part, second part numerator
+          if (phi_s[k].find(v) == phi_s[k].end()){ // not a seed word
+            prod_v += lgamma(beta_s);
+          } else {
+            prod_v += lgamma(beta_s + (double)n_x1_kv.coeffRef(k, v) );
+          }
+          // (a) regular part numerator
+          prod_v += lgamma(beta + (double)n_x0_kv.coeffRef(k, v) );
         }
-        // (a) regular part numerator
-        prod_v += lgamma(beta + (double)n_x0_kv.coeffRef(k, v) );
       }
-    }
-    double prod_d = 0.0; // calc_loglik_prod_d();
-    for (int d = 0; d < num_doc; d++){ // (c)
-      prod_d += lgamma(alpha.sum());
-      for(int k = 0; k < k_seeded; k++){ // <--------- NOTE: using k_seeded
-        prod_d += lgamma(n_dk.coeffRef(d,k) + alpha(k)); // second numerator
-        prod_d -= lgamma(alpha(k)); // first denominator
+      double prod_d = 0.0; // calc_loglik_prod_d();
+      for (int d = 0; d < num_doc; d++){ // (c)
+        prod_d += lgamma(alpha.sum());
+        for (int k = 0; k < k_seeded; k++){ // <--------- NOTE: using k_seeded
+          prod_d += lgamma(n_dk.coeffRef(d,k) + alpha(k)); // second numerator
+          prod_d -= lgamma(alpha(k)); // first denominator
+        }
+        prod_d -= lgamma(n_dk.row(d).sum() + alpha.sum()); // second denominator
       }
-      prod_d -= lgamma(n_dk.row(d).sum() + alpha.sum()); // second denominator
-    }
-    // (b) first part
-    double others = (double)num_topics *
-      ( lgamma(gamma_1 + gamma_2) - lgamma(gamma_1) - lgamma(gamma_2)); // constant?
-    double loglik = prod_k + prod_v + prod_d + others;
-    double perplexity = exp(-loglik / (double)total_words);
+      // (b) first part
+      double others = (double)num_topics *
+        (lgamma(gamma_1 + gamma_2) - lgamma(gamma_1) - lgamma(gamma_2)); // constant?
+      double loglik = prod_k + prod_v + prod_d + others;
+      double perplexity = exp(-loglik / (double)total_words);
 
-    Rcerr << "log likelihood: " << loglik <<
-             " (perplexity: " << perplexity << ")" << std::endl;
+      Rcerr << prod_k << "/" << prod_d << "/" << prod_v << "/" << others << std::endl;
 
-    checkUserInterrupt();
+      Rcerr << "log likelihood: " << loglik <<
+               " (perplexity: " << perplexity << ")" << std::endl;
+
+      checkUserInterrupt();
+
   }
   return model;
 }
 
+// int bern(double &prob0, double &prob1){
+//  double value = R::runif(0,1);
+//  if(value <= prob1)
+//    return 1;
+//  return 0;
+//}
+//
+// This function replaced by:   R::runif(0,1) <= prob1
