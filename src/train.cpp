@@ -6,33 +6,32 @@
 using namespace Eigen;
 using namespace Rcpp;
 
-double logsumexp (double &x, double &y, bool flg){
+
+double logsumexp(double &x, double &y, bool flg){
   if (flg) return y; // init mode
   if (x == y) return x + 0.69314718055; // log(2)
-  double vmin = std::min (x, y);
-  double vmax = std::max (x, y);
-  if (vmax > vmin + 50) {
+  double vmin = std::min(x, y);
+  double vmax = std::max(x, y);
+  if (vmax > vmin + 50){
     return vmax;
   } else {
-    return vmax + std::log (std::exp (vmin - vmax) + 1.0);
+    return vmax + std::log(std::exp(vmin - vmax) + 1.0);
   }
 }
 
 double logsumexp_Eigen(VectorXd &vec){
   double sum = 0.0;
-  int index;
-  for(size_t i = 0; i < vec.size(); i++){
-    index = static_cast<int>(i);
-    sum = logsumexp(sum, vec[index], (index == 0));
+  for(int i = 0; i < vec.size(); i++){
+    sum = logsumexp(sum, vec[i], (i == 0));
   }
   return sum;
 }
 
 double gammapdfln(double x, double a, double b){
- return a * log(b) - lgamma(a) + (a-1.0) * log(x) - b * x;
+  return a * log(b) - lgamma(a) + (a - 1.0) * log(x) - b * x;
 }
 
-int rcat(Eigen::VectorXd &prob){ // was function 'multi1'
+int rcat(Eigen::VectorXd &prob){ // was called 'multi1'
   double u = R::runif(0, 1);
   double temp = 0.0;
   int index = 0;
@@ -80,6 +79,8 @@ double loglikelihood1(SparseMatrix<int, RowMajor>& n_x0_kv,
   return loglik;
 }
 
+// takes the sufficient statistics and parameters of the model and
+// returns a new value for z
 int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
              SparseMatrix<int, RowMajor>& n_x1_kv,
              VectorXi& n_x0_k, VectorXi& n_x1_k,
@@ -153,6 +154,8 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
   return new_z;
 }
 
+// takes the sufficient statistics and parameters of the model and
+// returns a new value for x
 int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
              SparseMatrix<int, RowMajor>& n_x1_kv,
              VectorXi& n_x0_k, VectorXi& n_x1_k,
@@ -223,7 +226,86 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
   return new_x;
 }
 
+// Wrapper around R's uniform random number generator for std shuffles
+inline int rand_wrapper(const int n) { return floor(unif_rand() * n); }
 
+// Turns K into random permutation of 0 to K-1 using R's RNG
+std::vector<int> shuffled_indexes(int m) {
+  std::vector<int> v(m);
+  std::iota(v.begin(), v.end(), 0);
+  std::random_shuffle(v.begin(), v.end(), rand_wrapper);
+  return v;
+}
+
+// a version of randgen::uniform(lower, upper) that uses R's RNG
+double slice_uniform(double lower, double upper){
+  return lower + (upper - lower) * unif_rand();
+}
+
+// This used to differentiate between input_alpha and alpha
+// for reasons I could not understand.  TODO: check this is still correct?
+double alpha_loglik(VectorXd &alpha,  MatrixXd& n_dk,
+                    int num_topics, int num_doc){
+  double loglik = 0.0;
+  double fixed_part = 0.0;
+  VectorXd ndk_ak;
+
+  fixed_part += lgamma(alpha.sum()); // first term numerator
+  for(int k = 0; k < num_topics; k++){
+    fixed_part -= lgamma(alpha(k)); // first term denominator
+    // Add prior
+    loglik += gammapdfln(alpha(k), 1.0, 2.0);
+  }
+  for(int d = 0; d < num_doc; d++){
+    loglik += fixed_part;
+    ndk_ak = n_dk.row(d) + alpha;
+    // second term numerator
+    for(int k = 0; k < num_topics; k++){
+      loglik += lgamma(ndk_ak(k));
+    }
+    // second term denominator
+    loglik -= lgamma(ndk_ak.sum());
+  }
+  return loglik;
+}
+
+// updates alpha in place, currently just hands back alpha (by reference)
+VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
+                             int num_topics, int num_doc,
+                             double min_v = 1e-9, double max_v = 100.0,
+                             int max_shrink_time = 3000){
+
+  double start, end, previous_p, new_p, newlikelihood, slice_;
+  VectorXd keep_current_param = alpha;
+  std::vector<int> topic_ids = shuffled_indexes(num_topics);
+  for(int i = 0; i < num_topics; i++){
+    int k = topic_ids[i];
+    start = min_v / (1.0 + min_v); // shrinkp
+    end = 1.0;
+    // end = shrinkp(max_v);
+    previous_p = alpha(k) / (1.0 + alpha(k)); // shrinkp
+    slice_ = alpha_loglik(alpha, n_dk, num_topics, num_doc)
+              - 2.0 * log(1.0 - previous_p)
+              + log(unif_rand()); // <-- using R random uniform
+
+    for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
+      new_p = slice_uniform(start, end); // <-- using R function above
+      alpha(k) = new_p / (1.0 - new_p); // expandp
+      newlikelihood = alpha_loglik(alpha, n_dk, num_topics, num_doc)
+                      - 2.0 * log(1.0 - new_p);
+      if (slice_ < newlikelihood){
+        break;
+      } else if (previous_p < new_p){
+        end = new_p;
+      } else if (new_p < previous_p){
+        start = new_p;
+      } else {
+        alpha(k) = keep_current_param(k);
+      }
+    }
+  }
+  return alpha;
+}
 
 //' Run the Gibbs sampler
 //'
@@ -306,7 +388,7 @@ List train(List model, int k_seeded, int k_free, double alpha_k, int iter = 0){
                                     gamma_2, beta, beta_s, phi_s);
       }
     }
-    // update_alpha(); // <-------- Reinsert later
+    slice_sample_alpha(alpha, n_dk, num_topics, num_doc);
 
     double loglik = loglikelihood1(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk, alpha,
                                    beta, beta_s, gamma_1, gamma_2, lambda_1, lambda_2,
