@@ -6,7 +6,6 @@
 using namespace Eigen;
 using namespace Rcpp;
 
-
 double logsumexp(double &x, double &y, bool flg){
   if (flg) return y; // init mode
   if (x == y) return x + 0.69314718055; // log(2)
@@ -310,19 +309,19 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
 //' Run the Gibbs sampler
 //'
 //' @param model A model, from \code{init} or a previous invocation of \code{train}
-//' @param k_seeded How many topics are seeded
-//' @param k_free How many regular unseeded topics are required
 //' @param alpha_k A starting value for alpha (will be removed when alpha updates are back in)
 //' @param iter Required number of iterations
 //'
 //' @export
 // [[Rcpp::export]]
-List train(List model, int k_seeded, int k_free, double alpha_k, int iter = 0){
+List topicdict_train(List model, double alpha_k, int iter = 0){
 
   List W = model["W"], Z = model["Z"], X = model["X"];
   StringVector files = model["files"], vocab = model["vocab"];
-  List seeds = model["seeds"]; // Now convert this to T&S's phi_s format
+  int k_free = model["extra_k"];
 
+  List seeds = model["seeds"]; // Now convert this to T&S's phi_s format
+  int k_seeded = seeds.size();
   std::vector< std::unordered_map<int, double> > phi_s(seeds.size());
   std::vector<int> seed_num(seeds.size());
   for (int ii = 0; ii < seeds.size(); ii++){

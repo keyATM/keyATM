@@ -5,13 +5,13 @@ set.seed(1234)
 dict_list <- list(mac = c("macavity", "mystery", "cat"),
                   victims = c("milk", "admiralty", "trellis", "drawings"))
 folder <- system.file("extdata/macavity", package = "topicdict")
-docs <- list.files(folder, pattern = "macavity", full.names = TRUE)
-ll <- init(docs,
-           dict = quanteda::dictionary(dict_list),
-           remove_numbers = TRUE,
-           remove_punct = TRUE,
-           remove_symbols = TRUE,
-           remove_separators = TRUE)
+# docs <- list.files(folder, pattern = "macavity", full.names = TRUE)
+ll <- topicdict_model(file.path(folder, "macavity*"),
+                      dict = quanteda::dictionary(dict_list),
+                      remove_numbers = TRUE,
+                      remove_punct = TRUE,
+                      remove_symbols = TRUE,
+                      remove_separators = TRUE)
 
 test_that("posterior function", {
   post <- posterior(ll)
@@ -20,9 +20,10 @@ test_that("posterior function", {
   expect_equal(dim(post$beta), c(3, 220))
   expect_equal(post$seed_K, 2)
   expect_equal(post$extra_K, 1)
-  expect_equal(post$topic_counts, c(`0` = 161, `1` = 143, `2` = 135))
+  expect_equal(post$topic_counts, c(`0` = 159, `1` = 143, `2` = 137))
   expect_equal(dim(post$theta), c(7, 3))
-  expect_equal(post$theta[7,] * post$doc_lens[7], c(`0` = 29, `1` = 19, `2` = 31))
+  expect_equal(post$theta[7,] * post$doc_lens[7],
+               c(`0` = 27, `1` = 24, `2` = 28))
 })
 
 

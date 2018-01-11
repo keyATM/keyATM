@@ -4,7 +4,7 @@
 #' plus their margins from the sample of Z and W in \code{model}.
 #' These statistics implicitly marginalize over X.
 #'
-#' @param model a model, fitted or simply initialized
+#' @param model a topicdict model, fitted or simply initialized
 #'
 #' @return a list with elements
 #'   \itemize{
@@ -44,7 +44,7 @@ posterior <- function(model){
              theta = tNZ, beta = as.matrix(as.data.frame.matrix(tZW)),
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = doc_lens, vocab = model$vocab)
-  class(ll) <- c("seededlda_posterior", class(ll))
+  class(ll) <- c("topicdict_posterior", class(ll))
   ll
 }
 

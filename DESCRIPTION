@@ -1,6 +1,6 @@
 Package: topicdict
 Title: Topic Modeling Informed by a Content Analysis Dictionary
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: person("Will", "Lowe", email = "wlowe@princeton.edu", role = c("aut", "cre"))
 Description: Fits a topic model using seeds from a content analysis dictionary.
 Depends: R (>= 3.4.2)
@@ -11,7 +11,8 @@ LinkingTo: Rcpp,
   RcppEigen
 Imports: Rcpp,
   hashmap,
-  quanteda
+  quanteda,
+  readtext
 SystemRequirements: C++11     
 Suggests: knitr,
   rmarkdown,

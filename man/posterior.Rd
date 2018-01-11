@@ -7,7 +7,7 @@
 posterior(model)
 }
 \arguments{
-\item{model}{a model, fitted or simply initialized}
+\item{model}{a topicdict model, fitted or simply initialized}
 }
 \value{
 a list with elements

@@ -4,13 +4,11 @@
 #' Run the Gibbs sampler
 #'
 #' @param model A model, from \code{init} or a previous invocation of \code{train}
-#' @param k_seeded How many topics are seeded
-#' @param k_free How many regular unseeded topics are required
 #' @param alpha_k A starting value for alpha (will be removed when alpha updates are back in)
 #' @param iter Required number of iterations
 #'
 #' @export
-train <- function(model, k_seeded, k_free, alpha_k, iter = 0L) {
-    .Call('_topicdict_train', PACKAGE = 'topicdict', model, k_seeded, k_free, alpha_k, iter)
+topicdict_train <- function(model, alpha_k, iter = 0L) {
+    .Call('_topicdict_topicdict_train', PACKAGE = 'topicdict', model, alpha_k, iter)
 }
 
