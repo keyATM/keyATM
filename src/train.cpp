@@ -179,8 +179,8 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
   int k = z;
   double numerator;
   double denominator;
-  if(phi_s[k].find(w) == phi_s[k].end()){ // not a seed word
-    x1_logprob = -1.0;
+  if ((k < k_seeded) && (phi_s[k].find(w) == phi_s[k].end())){ // <---- stopgap fix....
+       x1_logprob = -1.0;
   } else {
     numerator = log(beta_s + (double)n_x1_kv.coeffRef(k, w)) +
       log( ((double)n_x1_k(k) + gamma_1) );
@@ -381,7 +381,7 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
                                      num_vocab, num_topics, k_seeded, gamma_1,
                                      gamma_2, beta, beta_s, phi_s);
 
-        doc_x[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
+        doc_x[w_position] = sample_x(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
                                     alpha, seed_num, x, z, w, doc_id,
                                     num_vocab, num_topics, k_seeded, gamma_1,
                                     gamma_2, beta, beta_s, phi_s);
