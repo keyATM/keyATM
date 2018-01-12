@@ -20,10 +20,10 @@ test_that("posterior function", {
   expect_equal(dim(post$beta), c(3, 220))
   expect_equal(post$seed_K, 2)
   expect_equal(post$extra_K, 1)
-  expect_equal(post$topic_counts, c(`0` = 159, `1` = 143, `2` = 137))
+  expect_equal(post$topic_counts, c(`0` = 149, `1` = 147, `2` = 143))
   expect_equal(dim(post$theta), c(7, 3))
   expect_equal(post$theta[7,] * post$doc_lens[7],
-               c(`0` = 27, `1` = 24, `2` = 28))
+               c(`0` = 30, `1` = 26, `2` = 23))
 })
 
 

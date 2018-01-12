@@ -100,7 +100,12 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
   cat_ids <- rep(1:K - 1, unlist(lapply(dtoks, length)))
   zx_assigner <- hashmap(as.integer(seed_wdids), as.integer(cat_ids))
 
-  X <- lapply(W, function(x){ as.numeric(zx_assigner$has_keys(x)) })
+  X <- lapply(W, function(x){
+    xx <- sample(0:1, length(x), prob = c(0.4, .6), replace = TRUE)
+    seeded <- as.numeric(zx_assigner$has_keys(x)) # 1 if they're a seed
+    xx[seeded == 1] <- 1
+    xx
+  })
 
   # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
   make_z <- function(x){

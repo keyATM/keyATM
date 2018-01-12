@@ -6,8 +6,10 @@
 \alias{topicdict-package}
 \title{topicdict: Topic Modeling Informed by a Content Analysis Dictionary}
 \description{
-The init function initializes a model from a seed dictionary and
-a list of documents. The train function runs a Gibbs sampler
-on the same data structure. The posterior function generates
+The \code{\link{topicdict_model}} function initializes a model from a
+seed dictionary and
+a file pattern specifying documents.  The \code{\link{topicdict_train}}
+function runs a Gibbs sampler
+on the this structure. The \code{\link{posterior}} function generates
 useful summary statistics, e.g. theta and beta matrices.
 }
