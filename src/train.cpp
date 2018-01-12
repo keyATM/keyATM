@@ -179,8 +179,8 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
   int k = z;
   double numerator;
   double denominator;
-  if(phi_s[k].find(w) == phi_s[k].end()){ // not a seed word
-    x1_logprob = -1.0;
+  if ((k < k_seeded) && (phi_s[k].find(w) == phi_s[k].end())){ // <---- stopgap fix....
+       x1_logprob = -1.0;
   } else {
     numerator = log(beta_s + (double)n_x1_kv.coeffRef(k, w)) +
       log( ((double)n_x1_k(k) + gamma_1) );
