@@ -369,11 +369,15 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
   }
   int total_words = n_dk.sum();
 
-  // Sampler: No randomized update sequence this time
-  for (int ii = 0; ii < iter; ii++){
-    for (int doc_id = 0; doc_id < num_doc; doc_id++){
+  // Randomized update sequence
+  for (int it = 0; it < iter; it++){
+    std::vector<int> doc_indexes = shuffled_indexes(num_doc); // shuffle
+    for (int ii = 0; ii < num_doc; ii++){
+      int doc_id = doc_indexes[ii];
       IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
-      for (int w_position = 0; w_position < doc_x.size(); w_position++){
+      std::vector<int> token_indexes = shuffled_indexes(doc_x.size()); //shuffle
+      for (int jj = 0; jj < doc_x.size(); jj++){
+        int w_position = token_indexes[jj];
         int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
 
         doc_z[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
