@@ -335,6 +335,7 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
 
   // alpha-related constants
   int num_topics = k_seeded + k_free;
+	alpha_k /= (double)num_topics; // recommended alpha initialization in Griffiths and Steyvers (2004)
   VectorXd alpha = VectorXd::Constant(num_topics, alpha_k);
 
   // document-related constants
