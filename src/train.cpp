@@ -118,7 +118,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
 
   } else {
     std::vector<int> make_zero_later;
-    for (int k = 0; k < k_seeded; k++){ // <--------- NOTE: using k_seeded
+    for (int k = 0; k < num_topics; k++){ 
       if (phi_s[k].find(w) == phi_s[k].end()){
         z_prob_vec(k) = 1.0;
         make_zero_later.push_back(k);
@@ -179,7 +179,7 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
   int k = z;
   double numerator;
   double denominator;
-  if ((k < k_seeded) && (phi_s[k].find(w) == phi_s[k].end())){ // <---- stopgap fix....
+  if ( (phi_s[k].find(w) == phi_s[k].end())){ // <---- stopgap fix....
        x1_logprob = -1.0;
   } else {
     numerator = log(beta_s + (double)n_x1_kv.coeffRef(k, w)) +
@@ -316,15 +316,23 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
 // [[Rcpp::export]]
 List topicdict_train(List model, double alpha_k, int iter = 0){
 
+	// Data
   List W = model["W"], Z = model["Z"], X = model["X"];
   StringVector files = model["files"], vocab = model["vocab"];
   int k_free = model["extra_k"];
-
-  List seeds = model["seeds"]; // Now convert this to T&S's phi_s format
+  List seeds = model["seeds"];
   int k_seeded = seeds.size();
-  std::vector< std::unordered_map<int, double> > phi_s(seeds.size());
-  std::vector<int> seed_num(seeds.size());
-  for (int ii = 0; ii < seeds.size(); ii++){
+
+  // alpha-related constants
+  int num_topics = k_seeded + k_free;
+	alpha_k /= (double)num_topics; // recommended alpha initialization in Griffiths and Steyvers (2004)
+  VectorXd alpha = VectorXd::Constant(num_topics, alpha_k);
+
+
+	// phi_s
+  std::vector< std::unordered_map<int, double> > phi_s(num_topics);
+  std::vector<int> seed_num(num_topics);
+  for (int ii = 0; ii < k_seeded; ii++){
     IntegerVector wd_ids = seeds[ii];
     seed_num[ii] = wd_ids.size();
     std::unordered_map<int, double> phi_sk;
@@ -332,11 +340,11 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
       phi_sk[wd_ids(jj)] = 1.0 / wd_ids.size();
     phi_s[ii] = phi_sk;
   }
-
-  // alpha-related constants
-  int num_topics = k_seeded + k_free;
-	alpha_k /= (double)num_topics; // recommended alpha initialization in Griffiths and Steyvers (2004)
-  VectorXd alpha = VectorXd::Constant(num_topics, alpha_k);
+	for(int i=k_seeded; i<num_topics; i++){
+		std::unordered_map<int, double> phi_sk{ {-1, -1.0} };
+		seed_num[i] = 0;
+		phi_s[i] = phi_sk;
+	}
 
   // document-related constants
   int num_vocab = vocab.size(), num_doc = files.size();
