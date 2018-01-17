@@ -1,4 +1,5 @@
 #include <RcppEigen.h>
+#include <cassert> // Put NDEBUG later
 
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
@@ -65,6 +66,9 @@ double loglikelihood1(SparseMatrix<int, RowMajor>& n_x0_kv,
     // x
     loglik += lgamma( (double)n_x0_k(k) + gamma_2 ) - lgamma((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2)
       + lgamma( (double)n_x1_k(k) + gamma_1 ) ;
+
+		// std::cout << (double)n_x0_k(k) << " / " << (double)n_x1_k(k) << std::endl; // debug
+
     // x normalization
     loglik += lgamma(gamma_1 + gamma_2) - lgamma(gamma_1) - lgamma(gamma_2);
   }
@@ -133,10 +137,15 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
       z_prob_vec(k) = numerator - denominator;
     }
     double sum = logsumexp_Eigen(z_prob_vec);
+
     for (int k = 0; k < num_topics; k++)
       z_prob_vec(k) = exp(z_prob_vec(k) - sum);
-    for (int k = 0; k < make_zero_later.size(); k++) // zero out elements
-      z_prob_vec(k) = 0.0;
+
+    for (int k = 0; k < make_zero_later.size(); k++){ // zero out elements
+			int change_k = make_zero_later[k];
+      z_prob_vec(change_k) = 0.0; // make it 0 explicitly
+		}
+
     z_prob_vec = z_prob_vec / z_prob_vec.sum(); // and renormalize
     new_z = rcat(z_prob_vec); // take a sample
   }
@@ -172,14 +181,14 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
     n_x1_kv.coeffRef(z, w) -= 1;
     n_x1_k(z) -= 1;
   }
-  n_dk.coeffRef(doc_id, z) -= 1;
+  n_dk.coeffRef(doc_id, z) -= 1; // can we remove this as well?
 
   // newprob_x1()
   double x1_logprob;
   int k = z;
   double numerator;
   double denominator;
-  if ( (phi_s[k].find(w) == phi_s[k].end())){ // <---- stopgap fix....
+  if ( phi_s[k].find(w) == phi_s[k].end() ){
        x1_logprob = -1.0;
   } else {
     numerator = log(beta_s + (double)n_x1_kv.coeffRef(k, w)) +
@@ -198,6 +207,7 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
     int k = z;
     numerator = log(beta + (double)n_x0_kv.coeffRef(k, w)) +
       log((double)n_x0_k(k) + gamma_2);
+
     denominator = log((double)num_vocab * beta + (double)n_x0_kv.row(k).sum() ) +
       log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
     double x0_logprob = numerator - denominator;
@@ -213,7 +223,7 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
     new_x = R::runif(0,1) <= x1_prob;  //new_x = Bern(x0_prob, x1_prob);
   }
   // add back data counts
-  if (x == 0){
+  if (new_x == 0){
     n_x0_kv.coeffRef(z, w) += 1;
     n_x0_k(z) += 1;
   } else {
@@ -346,6 +356,7 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
 		phi_s[i] = phi_sk;
 	}
 
+
   // document-related constants
   int num_vocab = vocab.size(), num_doc = files.size();
 
@@ -378,6 +389,7 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
   }
   int total_words = n_dk.sum();
 
+
   // Randomized update sequence
   for (int it = 0; it < iter; it++){
     std::vector<int> doc_indexes = shuffled_indexes(num_doc); // shuffle
@@ -394,10 +406,16 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
                                      num_vocab, num_topics, k_seeded, gamma_1,
                                      gamma_2, beta, beta_s, phi_s);
 
-        doc_x[w_position] = sample_x(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
-                                    alpha, seed_num, x, z, w, doc_id,
-                                    num_vocab, num_topics, k_seeded, gamma_1,
-                                    gamma_2, beta, beta_s, phi_s);
+		// Debug
+	for(int z=0; z<num_topics; z++){
+		if((double)n_x0_k(z) < 0 | (double)n_x1_k(z) < 0)
+			std::cout << (double)n_x0_k(z) << " / " << (double)n_x1_k(z) << std::endl;
+	}
+
+        // doc_x[w_position] = sample_x(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
+        //                             alpha, seed_num, x, z, w, doc_id,
+        //                             num_vocab, num_topics, k_seeded, gamma_1,
+        //                             gamma_2, beta, beta_s, phi_s);
       }
     }
     slice_sample_alpha(alpha, n_dk, num_topics, num_doc);
