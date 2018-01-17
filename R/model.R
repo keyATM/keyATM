@@ -100,18 +100,24 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
   cat_ids <- rep(1:K - 1, unlist(lapply(dtoks, length)))
   zx_assigner <- hashmap(as.integer(seed_wdids), as.integer(cat_ids))
 
-  X <- lapply(W, function(x){
-    xx <- sample(0:1, length(x), prob = c(0.4, .6), replace = TRUE)
+	## xx indicates whether the word comes from a seed topic-word distribution or not
+	make_x <- function(x){
     seeded <- as.numeric(zx_assigner$has_keys(x)) # 1 if they're a seed
-    xx[seeded == 1] <- 1
-    xx
-  })
+		# Use x structure
+    x[seeded == 0] <- 0 # non-seeded words have x=0
+		x[seeded == 1] <- sample(0:1, length(x[seeded == 1]), prob = c(0.3, 0.7), replace = TRUE)
+			# seeded words have x=1 probabilistically
+    x
+	}
+
+  X <- lapply(W, make_x)
 
   # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
   make_z <- function(x){
-    zz <- sample(1:(K + extra_k) - 1, length(x), replace = TRUE)
-    seeds <- zx_assigner$find(x) # topic number or NA if word not a seed
-    zz[!is.na(seeds)] <- seeds[!is.na(seeds)]
+		zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
+		zz[is.na(zx_assigner[[x]])] <- sample(1:(K + extra_k) - 1, 
+																					sum(as.numeric(is.na(zx_assigner[[x]]))),
+																					replace = TRUE)
     zz
   }
   Z <- lapply(W, make_z)
