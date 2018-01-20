@@ -66,7 +66,7 @@ double loglikelihood1(SparseMatrix<int, RowMajor>& n_x0_kv,
     loglik += lgamma( (double)n_x0_k(k) + gamma_2 ) - lgamma((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2)
       + lgamma( (double)n_x1_k(k) + gamma_1 ) ;
 
-		// std::cout << (double)n_x0_k(k) << " / " << (double)n_x1_k(k) << std::endl; // debug
+		// Rcout << (double)n_x0_k(k) << " / " << (double)n_x1_k(k) << std::endl; // debug
 
     // x normalization
     loglik += lgamma(gamma_1 + gamma_2) - lgamma(gamma_1) - lgamma(gamma_2);
@@ -100,7 +100,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
     n_x1_kv.coeffRef(z, w) -= 1;
     n_x1_k(z) -= 1;
   } else {
-		std::cout << "Error at sample_z, remove" << std::endl;
+		Rcerr << "Error at sample_z, remove" << std::endl;
 	}
 
   n_dk.coeffRef(doc_id, z) -= 1;
@@ -124,7 +124,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
 
   } else {
     std::vector<int> make_zero_later;
-    for (int k = 0; k < num_topics; ++k){ 
+    for (int k = 0; k < num_topics; ++k){
       if (phi_s[k].find(w) == phi_s[k].end()){
         z_prob_vec(k) = 1.0;
         make_zero_later.push_back(k);
@@ -161,7 +161,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
     n_x1_kv.coeffRef(new_z, w) += 1;
     n_x1_k(new_z) += 1;
   } else {
-		std::cout << "Error at sample_z, add" << std::endl;
+		Rcerr << "Error at sample_z, add" << std::endl;
 	}
   n_dk.coeffRef(doc_id, new_z) += 1;
 
@@ -187,7 +187,7 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
     n_x1_kv.coeffRef(z, w) -= 1;
     n_x1_k(z) -= 1;
   }
-  n_dk.coeffRef(doc_id, z) -= 1; // not necessary to remove 
+  n_dk.coeffRef(doc_id, z) -= 1; // not necessary to remove
 
   // newprob_x1()
   double x1_logprob;
@@ -259,7 +259,7 @@ double slice_uniform(double lower, double upper){
 
 // This used to differentiate between input_alpha and alpha
 // for reasons I could not understand.  TODO: check this is still correct?
-double alpha_loglik(VectorXd &alpha,  MatrixXd& n_dk,
+double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
                     int num_topics, int num_doc){
   double loglik = 0.0;
   double fixed_part = 0.0;
@@ -365,7 +365,6 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
 		phi_s[i] = phi_sk;
 	}
 
-
   // document-related constants
   int num_vocab = vocab.size(), num_doc = files.size();
 
@@ -397,37 +396,35 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
   }
   int total_words = (int)n_dk.sum();
 
-
   // Randomized update sequence
   for (int it = 0; it < iter; it++){
     std::vector<int> doc_indexes = shuffled_indexes(num_doc); // shuffle
     for (int ii = 0; ii < num_doc; ii++){
       int doc_id = doc_indexes[ii];
       IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
-				
+
       std::vector<int> token_indexes = shuffled_indexes(doc_x.size()); //shuffle
       for (int jj = 0; jj < doc_x.size(); jj++){
         int w_position = token_indexes[jj];
         int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
-				
+
         doc_z[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
                                      alpha, seed_num, x, z, w, doc_id,
                                      num_vocab, num_topics, k_seeded, gamma_1,
                                      gamma_2, beta, beta_s, phi_s);
-				
+
 				z = doc_z[w_position]; // use updated z
-				
+
         doc_x[w_position] = sample_x(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
                                     alpha, seed_num, x, z, w, doc_id,
                                     num_vocab, num_topics, k_seeded, gamma_1,
                                     gamma_2, beta, beta_s, phi_s);
       }
 
-			X[doc_id] = doc_x;
+			X[doc_id] = doc_x; // is doc_x not a pointer/ref to X[doc_id]?
 			Z[doc_id] = doc_z;
     }
     slice_sample_alpha(alpha, n_dk, num_topics, num_doc);
-
 
     double loglik = loglikelihood1(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk, alpha,
                                    beta, beta_s, gamma_1, gamma_2,

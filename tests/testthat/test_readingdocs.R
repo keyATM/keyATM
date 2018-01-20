@@ -23,6 +23,6 @@ test_that("topicdict_model function", {
   expect_equal(ll$dict[[1]], c("macavity", "mystery", "cat"))
   expect_equal(v1$wd[1:4], c("macavity's", "a", "mystery", "cat"))
   expect_equal(v1$id[1:6], 0:5)
-  expect_equal(v1$z[1:6], c(1,2,0,0,1,2))
-  expect_equal(v1$x[1:6], c(1,0,1,1,0,0))
+  expect_equal(v1$z[1:11], c(0, 0, 0, 0, 0, 0, 0, 2, 1, 2, 2))
+  expect_equal(v1$x[1:11], c(0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0))
 })
