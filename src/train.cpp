@@ -1,5 +1,4 @@
 #include <RcppEigen.h>
-#include <cassert> // Put NDEBUG later
 
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
@@ -107,7 +106,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
   int new_z = -1; // debug
   double numerator, denominator;
   if (x == 0){
-    for (int k = 0; k < num_topics; k++){
+    for (int k = 0; k < num_topics; ++k){
       numerator = log(beta + (double)n_x0_kv.coeffRef(k, w)) +
         log((double)n_x0_k(k) + gamma_2) +
         log((double)n_dk.coeffRef(doc_id, k) + alpha(k));
@@ -122,7 +121,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
 
   } else {
     std::vector<int> make_zero_later;
-    for (int k = 0; k < num_topics; k++){ 
+    for (int k = 0; k < num_topics; ++k){ 
       if (phi_s[k].find(w) == phi_s[k].end()){
         z_prob_vec(k) = 1.0;
         make_zero_later.push_back(k);
@@ -148,7 +147,9 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
 
     z_prob_vec = z_prob_vec / z_prob_vec.sum(); // and renormalize
     new_z = rcat(z_prob_vec); // take a sample
+
   }
+
   // add back data counts
   if (x == 0){
     n_x0_kv.coeffRef(new_z, w) += 1;
@@ -181,7 +182,7 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
     n_x1_kv.coeffRef(z, w) -= 1;
     n_x1_k(z) -= 1;
   }
-  n_dk.coeffRef(doc_id, z) -= 1; // can we remove this as well?
+  n_dk.coeffRef(doc_id, z) -= 1; // not necessary to remove 
 
   // newprob_x1()
   double x1_logprob;
@@ -387,7 +388,7 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
       n_dk.coeffRef(doc_id, z) += 1.0;
     }
   }
-  int total_words = n_dk.sum();
+  int total_words = (int)n_dk.sum();
 
 
   // Randomized update sequence
@@ -396,6 +397,7 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
     for (int ii = 0; ii < num_doc; ii++){
       int doc_id = doc_indexes[ii];
       IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
+
       std::vector<int> token_indexes = shuffled_indexes(doc_x.size()); //shuffle
       for (int jj = 0; jj < doc_x.size(); jj++){
         int w_position = token_indexes[jj];
@@ -406,16 +408,18 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
                                      num_vocab, num_topics, k_seeded, gamma_1,
                                      gamma_2, beta, beta_s, phi_s);
 
-		// Debug
-	for(int z=0; z<num_topics; z++){
-		if((double)n_x0_k(z) < 0 | (double)n_x1_k(z) < 0)
-			std::cout << (double)n_x0_k(z) << " / " << (double)n_x1_k(z) << std::endl;
-	}
+				// Debug
+				for(int s=0; s<num_topics; ++s){
+					if((double)n_x0_k(s) < 0 | (double)n_x1_k(s) < 0)
+						std::cout << (double)n_x0_k(s) << " / " << (double)n_x1_k(s) << std::endl;
+				}
 
-        // doc_x[w_position] = sample_x(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
-        //                             alpha, seed_num, x, z, w, doc_id,
-        //                             num_vocab, num_topics, k_seeded, gamma_1,
-        //                             gamma_2, beta, beta_s, phi_s);
+				z = doc_z[w_position]; // use updated z
+
+        doc_x[w_position] = sample_x(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
+                                    alpha, seed_num, x, z, w, doc_id,
+                                    num_vocab, num_topics, k_seeded, gamma_1,
+                                    gamma_2, beta, beta_s, phi_s);
       }
     }
     slice_sample_alpha(alpha, n_dk, num_topics, num_doc);
