@@ -3,6 +3,7 @@
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
 
+
 using namespace Eigen;
 using namespace Rcpp;
 
@@ -96,10 +97,13 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
   if (x == 0){
     n_x0_kv.coeffRef(z, w) -= 1;
     n_x0_k(z) -= 1;
-  } else {
+  } else if (x==1) {
     n_x1_kv.coeffRef(z, w) -= 1;
     n_x1_k(z) -= 1;
-  }
+  } else {
+		std::cout << "Error at sample_z, remove" << std::endl;
+	}
+
   n_dk.coeffRef(doc_id, z) -= 1;
 
   VectorXd z_prob_vec = VectorXd::Zero(num_topics);
@@ -154,10 +158,12 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
   if (x == 0){
     n_x0_kv.coeffRef(new_z, w) += 1;
     n_x0_k(new_z) += 1;
-  } else {
+  } else if (x==1) {
     n_x1_kv.coeffRef(new_z, w) += 1;
     n_x1_k(new_z) += 1;
-  }
+  } else {
+		std::cout << "Error at sample_z, add" << std::endl;
+	}
   n_dk.coeffRef(doc_id, new_z) += 1;
 
   return new_z;
@@ -397,32 +403,30 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
     for (int ii = 0; ii < num_doc; ii++){
       int doc_id = doc_indexes[ii];
       IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
-
+				
       std::vector<int> token_indexes = shuffled_indexes(doc_x.size()); //shuffle
       for (int jj = 0; jj < doc_x.size(); jj++){
         int w_position = token_indexes[jj];
         int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
-
+				
         doc_z[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
                                      alpha, seed_num, x, z, w, doc_id,
                                      num_vocab, num_topics, k_seeded, gamma_1,
                                      gamma_2, beta, beta_s, phi_s);
-
-				// Debug
-				for(int s=0; s<num_topics; ++s){
-					if((double)n_x0_k(s) < 0 | (double)n_x1_k(s) < 0)
-						std::cout << (double)n_x0_k(s) << " / " << (double)n_x1_k(s) << std::endl;
-				}
-
+				
 				z = doc_z[w_position]; // use updated z
-
+				
         doc_x[w_position] = sample_x(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
                                     alpha, seed_num, x, z, w, doc_id,
                                     num_vocab, num_topics, k_seeded, gamma_1,
                                     gamma_2, beta, beta_s, phi_s);
       }
+
+			X[doc_id] = doc_x;
+			Z[doc_id] = doc_z;
     }
     slice_sample_alpha(alpha, n_dk, num_topics, num_doc);
+
 
     double loglik = loglikelihood1(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk, alpha,
                                    beta, beta_s, gamma_1, gamma_2, lambda_1, lambda_2,
@@ -435,6 +439,8 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
   }
   return model;
 }
+
+
 
 // int bern(double &prob0, double &prob1){
 //  double value = R::runif(0,1);
