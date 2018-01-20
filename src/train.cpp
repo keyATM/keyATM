@@ -51,7 +51,6 @@ double loglikelihood1(SparseMatrix<int, RowMajor>& n_x0_kv,
                       MatrixXd& n_dk, VectorXd& alpha,
                       double beta, double beta_s,
                       double gamma_1, double gamma_2,
-                      double lambda_1, double lambda_2,
                       int num_topics, int k_seeded, int num_vocab, int num_doc,
                       std::vector< std::unordered_map<int, double> > & phi_s) {
   double loglik = 0.0;
@@ -264,13 +263,16 @@ double alpha_loglik(VectorXd &alpha,  MatrixXd& n_dk,
                     int num_topics, int num_doc){
   double loglik = 0.0;
   double fixed_part = 0.0;
+	double lambda_1 = 0.5;
+	double lambda_2 = 5;
   VectorXd ndk_ak;
 
   fixed_part += lgamma(alpha.sum()); // first term numerator
   for(int k = 0; k < num_topics; k++){
     fixed_part -= lgamma(alpha(k)); // first term denominator
     // Add prior
-    loglik += gammapdfln(alpha(k), 1.0, 2.0);
+    loglik += gammapdfln(alpha(k), lambda_1, lambda_2);
+
   }
   for(int d = 0; d < num_doc; d++){
     loglik += fixed_part;
@@ -369,7 +371,6 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
 
   // distributional constants
   double gamma_1 = 1.0, gamma_2 = 1.0;
-  double lambda_1 = 1.0, lambda_2 = 2.0;
   double beta = 0.01, beta_s = 0.1;
 
   // storage for sufficient statistics and their margins
@@ -429,7 +430,7 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
 
 
     double loglik = loglikelihood1(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk, alpha,
-                                   beta, beta_s, gamma_1, gamma_2, lambda_1, lambda_2,
+                                   beta, beta_s, gamma_1, gamma_2,
                                    num_topics, k_seeded, num_vocab, num_doc, phi_s);
     double perplexity = exp(-loglik / (double)total_words);
     Rcerr << "log likelihood: " << loglik <<
