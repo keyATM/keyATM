@@ -265,15 +265,19 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
   double fixed_part = 0.0;
 	double lambda_1 = 0.5;
 	double lambda_2 = 5;
+  int K = alpha.size();
   VectorXd ndk_ak;
 
   fixed_part += lgamma(alpha.sum()); // first term numerator
   for(int k = 0; k < num_topics; k++){
     fixed_part -= lgamma(alpha(k)); // first term denominator
     // Add prior
-    loglik += gammapdfln(alpha(k), lambda_1, lambda_2);
-
+    // loglik += gammapdfln(alpha(k), lambda_1, lambda_2);
+    loglik += (lambda_1 - 1) * log(alpha(k));
+    loglik -= lambda_2 * alpha(k);
   }
+  loglik += K * (lambda_1 * log(lambda_2) - lgamma(lambda_1));
+ 
   for(int d = 0; d < num_doc; d++){
     loglik += fixed_part;
     ndk_ak = n_dk.row(d) + alpha;
