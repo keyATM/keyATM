@@ -263,26 +263,28 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
                     int num_topics, int num_doc){
   double loglik = 0.0;
   double fixed_part = 0.0;
-	double lambda_1 = 0.5;
-	double lambda_2 = 5;
+	double eta_1 = 0.5;
+	double eta_2 = 5;
   VectorXd ndk_ak;
+
 
   fixed_part += lgamma(alpha.sum()); // first term numerator
   for(int k = 0; k < num_topics; k++){
     fixed_part -= lgamma(alpha(k)); // first term denominator
     // Add prior
-    loglik += gammapdfln(alpha(k), lambda_1, lambda_2);
+    loglik += gammapdfln(alpha(k), eta_1, eta_2);
 
   }
   for(int d = 0; d < num_doc; d++){
     loglik += fixed_part;
-    ndk_ak = n_dk.row(d) + alpha;
+    ndk_ak = n_dk.row(d) + alpha.transpose();
     // second term numerator
     for(int k = 0; k < num_topics; k++){
       loglik += lgamma(ndk_ak(k));
     }
     // second term denominator
     loglik -= lgamma(ndk_ak.sum());
+		
   }
   return loglik;
 }
@@ -291,11 +293,12 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
 VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
                              int num_topics, int num_doc,
                              double min_v = 1e-9, double max_v = 100.0,
-                             int max_shrink_time = 3000){
+                             int max_shrink_time = 10){
 
   double start, end, previous_p, new_p, newlikelihood, slice_;
   VectorXd keep_current_param = alpha;
   std::vector<int> topic_ids = shuffled_indexes(num_topics);
+
   for(int i = 0; i < num_topics; i++){
     int k = topic_ids[i];
     start = min_v / (1.0 + min_v); // shrinkp
@@ -311,6 +314,7 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
       alpha(k) = new_p / (1.0 - new_p); // expandp
       newlikelihood = alpha_loglik(alpha, n_dk, num_topics, num_doc)
                       - 2.0 * log(1.0 - new_p);
+
       if (slice_ < newlikelihood){
         break;
       } else if (previous_p < new_p){
@@ -318,6 +322,7 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
       } else if (new_p < previous_p){
         start = new_p;
       } else {
+				std::cout << "Something goes wrong in slice_sample_alpha()" << std::endl;
         alpha(k) = keep_current_param(k);
       }
     }
