@@ -263,9 +263,8 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
                     int num_topics, int num_doc){
   double loglik = 0.0;
   double fixed_part = 0.0;
-	double lambda_1 = 0.5;
-	double lambda_2 = 5;
-  int K = alpha.size();
+	double eta_1 = 0.5;
+	double eta_2 = 5;
   VectorXd ndk_ak;
 
   fixed_part += lgamma(alpha.sum()); // first term numerator
@@ -273,10 +272,10 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
     fixed_part -= lgamma(alpha(k)); // first term denominator
     // Add prior
     // loglik += gammapdfln(alpha(k), lambda_1, lambda_2);
-    loglik += (lambda_1 - 1) * log(alpha(k));
-    loglik -= lambda_2 * alpha(k);
+    loglik += (eta_1 - 1) * log(alpha(k));
+    loglik -= eta_2 * alpha(k);
   }
-  loglik += K * (lambda_1 * log(lambda_2) - lgamma(lambda_1));
+  loglik += num_topics * (eta_1 * log(eta_2) - lgamma(eta_1));
  
   for(int d = 0; d < num_doc; d++){
     loglik += fixed_part;
