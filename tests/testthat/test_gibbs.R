@@ -16,6 +16,6 @@ ll <- topicdict_model(file.path(folder, "macavity*"),
 test_that("posterior function", {
   mod <- topicdict_train(ll, 50, iter = 0)
   expect_equal(mod, ll)
-  mod <- topicdict_train(ll, 50, iter = 1)
+  mod <- topicdict_train(ll, 50, iter = 20)
   expect_equal(mod$W, ll$W)
 })

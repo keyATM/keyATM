@@ -284,7 +284,7 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
     }
     // second term denominator
     loglik -= lgamma(ndk_ak.sum());
-		
+
   }
   return loglik;
 }
@@ -322,7 +322,7 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
       } else if (new_p < previous_p){
         start = new_p;
       } else {
-				std::cout << "Something goes wrong in slice_sample_alpha()" << std::endl;
+				Rcerr << "Something goes wrong in slice_sample_alpha()" << std::endl;
         alpha(k) = keep_current_param(k);
       }
     }
