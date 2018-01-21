@@ -18,6 +18,6 @@ the package passes CRAN checks.
 ## Remaining:
 
 * ~~log likielihood is not yet right (nans and infs)~~
-* slice sampler not working yet
+* ~~slice sampler not working yet~~
 
 Will Lowe. Jan 2018
