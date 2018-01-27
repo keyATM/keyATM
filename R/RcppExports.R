@@ -4,11 +4,10 @@
 #' Run the Gibbs sampler
 #'
 #' @param model A model, from \code{init} or a previous invocation of \code{train}
-#' @param alpha_k A starting value for alpha (will be removed when alpha updates are back in)
 #' @param iter Required number of iterations
 #'
 #' @export
-topicdict_train <- function(model, alpha_k, iter = 0L) {
-    .Call('_topicdict_topicdict_train', PACKAGE = 'topicdict', model, alpha_k, iter)
+topicdict_train <- function(model, iter = 0L) {
+    .Call('_topicdict_topicdict_train', PACKAGE = 'topicdict', model, iter)
 }
 

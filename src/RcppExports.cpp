@@ -7,21 +7,20 @@
 using namespace Rcpp;
 
 // topicdict_train
-List topicdict_train(List model, double alpha_k, int iter);
-RcppExport SEXP _topicdict_topicdict_train(SEXP modelSEXP, SEXP alpha_kSEXP, SEXP iterSEXP) {
+List topicdict_train(List model, int iter);
+RcppExport SEXP _topicdict_topicdict_train(SEXP modelSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha_k(alpha_kSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(topicdict_train(model, alpha_k, iter));
+    rcpp_result_gen = Rcpp::wrap(topicdict_train(model, iter));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_topicdict_topicdict_train", (DL_FUNC) &_topicdict_topicdict_train, 3},
+    {"_topicdict_topicdict_train", (DL_FUNC) &_topicdict_topicdict_train, 2},
     {NULL, NULL, 0}
 };
 

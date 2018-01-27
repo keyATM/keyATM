@@ -51,20 +51,20 @@ model <- topicdict_model(file.path(doc_folder, "*.txt"), dict)
 ```
 And run a model with one iteration to check everything works
 ```{r}
-model <- topicdict_train(model, alpha_k = 50, iter = 1)
+model <- topicdict_train(model, iter = 30)
 ```
 
 Now let's bundle up the posterior and use the new functions on it
 ```{r}
 post <- posterior(model)
-top_terms(post)
+top_terms(post, "lift")
 # suggest some names for topics
-tnames <- suggest_topic_names(post, n = 4)
+tnames <- suggest_topic_names(post, "lift", n = 4)
 tnames
 # assign them
 post <- set_topic_names(post, tnames)
 # top 2 topics in each document
-head(top_topics(post, 2))
+head(top_topics(post))
 # and now the document that the most of each topic
 top_docs(post)
 ```

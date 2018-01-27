@@ -8,7 +8,7 @@ topicdict_model(file_pattern, dict, extra_k = 1, encoding = NULL,
   lowercase = TRUE, remove_numbers = TRUE, remove_punct = TRUE,
   remove_symbols = TRUE, remove_separators = TRUE, remove_twitter = FALSE,
   remove_hyphens = FALSE, remove_url = TRUE, stem_language = NULL,
-  stopwords = NULL)
+  stopwords = NULL, alpha = 50/(length(dict) + extra_k))
 }
 \arguments{
 \item{file_pattern}{name of a file or a wildcard, e.g. \code{"docs/*.txt"}}
@@ -40,6 +40,8 @@ topicdict_model(file_pattern, dict, extra_k = 1, encoding = NULL,
 
 \item{stopwords}{if not NULL, a character vector of words to remove,
 e.g. \code{quanteda::stopwords("english")}}
+
+\item{alpha}{Starting value for all the model's topic proportion hyperparameters (default: 50 / number of topics)}
 }
 \value{
 A list containing \describe{
@@ -50,6 +52,7 @@ A list containing \describe{
         \item{files}{a vector of document filenames}
         \item{dict}{a tokenized version of the dictionary}
         \item{seeds}{a list of words for the seed words in dict, named by dictionary category}
+        \item{alpha}{a vector of topic proportion hyperparameters}
         \item{call}{details of the function call}
         }.
 }
@@ -74,4 +77,8 @@ except when the word is contained in \code{dict}.
 Note that all indicators are zero-based for ease of later processing
 in C++, so \code{mod$vocab[mod$W + 1]} recovers the (tokenized) words
 of the i-th document from model \code{mod}.
+
+If \code{alpha} is a scalar this is the value given to all elements of
+alpha. If it is a vector of the correct length those values are used
+as the starting alphas.
 }

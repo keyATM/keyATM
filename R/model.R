@@ -21,6 +21,10 @@
 #' in C++, so \code{mod$vocab[mod$W + 1]} recovers the (tokenized) words
 #' of the i-th document from model \code{mod}.
 #'
+#' If \code{alpha} is a scalar this is the value given to all elements of
+#' alpha. If it is a vector of the correct length those values are used
+#' as the starting alphas.
+#'
 #' @param file_pattern name of a file or a wildcard, e.g. \code{"docs/*.txt"}
 #' @param dict a quanteda dictionary or named list of character vectors
 #' @param extra_k number of unseeded topics in addition to the topics seeded by
@@ -37,6 +41,7 @@
 #' @param stem_language if not NULL, the language to use for stemming
 #' @param stopwords if not NULL, a character vector of words to remove,
 #'                  e.g. \code{quanteda::stopwords("english")}
+#' @param alpha Starting value for all the model's topic proportion hyperparameters (default: 50 / number of topics)
 #'
 #' @return A list containing \describe{
 #'         \item{W}{a list of vectors of word indexes}
@@ -46,6 +51,7 @@
 #'         \item{files}{a vector of document filenames}
 #'         \item{dict}{a tokenized version of the dictionary}
 #'         \item{seeds}{a list of words for the seed words in dict, named by dictionary category}
+#'         \item{alpha}{a vector of topic proportion hyperparameters}
 #'         \item{call}{details of the function call}
 #'         }.
 #' @importFrom quanteda corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
@@ -58,8 +64,17 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
                             remove_symbols = TRUE, remove_separators = TRUE,
                             remove_twitter = FALSE, remove_hyphens = FALSE,
                             remove_url = TRUE, stem_language = NULL,
-                            stopwords = NULL){
+                            stopwords = NULL,
+                            alpha = 50/(length(dict)+extra_k)){
   cl <- match.call()
+
+  proper_len <- length(dict) + extra_k
+  if (length(alpha) == 1){
+    message("All ", proper_len, " values for alpha starting as ", alpha)
+    alpha = rep(alpha, proper_len)
+  } else if (length(alpha) != proper_len)
+    stop("Starting alpha must be a scalar or a vector of length ", proper_len)
+
   args <- list(remove_numbers = remove_numbers,
                remove_punct = remove_punct,
                remove_symbols = remove_symbols,
@@ -128,7 +143,8 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
 
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names,
              files = doc_names, dict = dtoks, seeds = seeds,
-             extra_k = extra_k, call = cl)
+             extra_k = extra_k,
+             alpha = alpha, call = cl)
   class(ll) <- c("topicdict", class(ll))
   ll
 }

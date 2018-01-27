@@ -65,10 +65,10 @@ check_arg_type <- function(arg, typename){
 #'
 #' @return A vector of new topic names constructed from top terms
 #' @export
-suggest_topic_names <- function(x,
-                          measure = c("probability", "lift"), n = 3){
+suggest_topic_names <- function(x, measure = c("probability", "lift"), n = 3){
   check_arg_type(x, "topicdict_posterior")
-  tt <- top_terms(x, n, measure)
+  meas <- match.arg(measure)
+  tt <- top_terms(x, measure = meas, n = n)
   apply(tt, 2, function(x){ paste(x, collapse = "-") })
 }
 

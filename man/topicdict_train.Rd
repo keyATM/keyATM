@@ -4,12 +4,10 @@
 \alias{topicdict_train}
 \title{Run the Gibbs sampler}
 \usage{
-topicdict_train(model, alpha_k, iter = 0L)
+topicdict_train(model, iter = 0L)
 }
 \arguments{
 \item{model}{A model, from \code{init} or a previous invocation of \code{train}}
-
-\item{alpha_k}{A starting value for alpha (will be removed when alpha updates are back in)}
 
 \item{iter}{Required number of iterations}
 }

@@ -333,25 +333,23 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
 //' Run the Gibbs sampler
 //'
 //' @param model A model, from \code{init} or a previous invocation of \code{train}
-//' @param alpha_k A starting value for alpha (will be removed when alpha updates are back in)
 //' @param iter Required number of iterations
 //'
 //' @export
 // [[Rcpp::export]]
-List topicdict_train(List model, double alpha_k, int iter = 0){
+List topicdict_train(List model, int iter = 0){
 
 	// Data
   List W = model["W"], Z = model["Z"], X = model["X"];
   StringVector files = model["files"], vocab = model["vocab"];
+  NumericVector nv_alpha = model["alpha"];
   int k_free = model["extra_k"];
   List seeds = model["seeds"];
   int k_seeded = seeds.size();
 
-  // alpha-related constants
+  // alpha
   int num_topics = k_seeded + k_free;
-	alpha_k /= (double)num_topics; // recommended alpha initialization in Griffiths and Steyvers (2004)
-  VectorXd alpha = VectorXd::Constant(num_topics, alpha_k);
-
+	VectorXd alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
 
 	// phi_s
   std::vector< std::unordered_map<int, double> > phi_s(num_topics);
@@ -430,12 +428,13 @@ List topicdict_train(List model, double alpha_k, int iter = 0){
 			Z[doc_id] = doc_z;
     }
     slice_sample_alpha(alpha, n_dk, num_topics, num_doc);
+    model["alpha"] = alpha;
 
     double loglik = loglikelihood1(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk, alpha,
                                    beta, beta_s, gamma_1, gamma_2,
                                    num_topics, k_seeded, num_vocab, num_doc, phi_s);
     double perplexity = exp(-loglik / (double)total_words);
-    Rcerr << "log likelihood: " << loglik <<
+    Rcerr << " log likelihood: " << loglik <<
              " (perplexity: " << perplexity << ")" << std::endl;
 
     checkUserInterrupt();
