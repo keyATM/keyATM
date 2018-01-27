@@ -4,14 +4,14 @@
 \alias{top_docs}
 \title{Show the top documents for each topic}
 \usage{
-top_docs(x, n = 10, measure = c("probability", "lift"))
+top_docs(x, measure = c("probability", "lift"), n = 10)
 }
 \arguments{
 \item{x}{The posterior from a fitted model (see \code{posterior})}
 
-\item{n}{How many documents to show: default 10}
-
 \item{measure}{How to sort the terms: 'probability' (default) or 'lift'}
+
+\item{n}{How many documents to show. Default: 10}
 }
 \value{
 An n x k table of the top n documents for each topic

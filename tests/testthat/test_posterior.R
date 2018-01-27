@@ -26,4 +26,11 @@ test_that("posterior function", {
                c(`0` = 28, `1` = 24, `2` = 27))
 })
 
+test_that("top_* functions", {
+  post <- posterior(ll)
+  expect_equal(nrow(top_terms(post, "probability", n = 10)), 10)
+  expect_equal(nrow(top_topics(post, "lift", n = 1)), 1)
+  expect_equal(nrow(top_docs(post, "probability", n = NULL)), nrow(post$theta))
+})
+
 

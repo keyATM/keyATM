@@ -4,14 +4,14 @@
 \alias{suggest_topic_names}
 \title{Suggest composite names for each topic}
 \usage{
-suggest_topic_names(x, n = 3, measure = c("probability", "lift"))
+suggest_topic_names(x, measure = c("probability", "lift"), n = 3)
 }
 \arguments{
 \item{x}{The posterior from a fitted model (see \code{posterior})}
 
-\item{n}{How many topic terms to use in the name: default 2}
-
 \item{measure}{Method to find topics for new names. See \code{top_terms}}
+
+\item{n}{How many topic terms to use in the name: default 2}
 }
 \value{
 A vector of new topic names constructed from top terms

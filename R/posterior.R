@@ -21,6 +21,7 @@
 #'   }
 #' @export
 posterior <- function(model){
+  check_arg_type(model, "topicdict")
   allK <- model$extra_k + length(model$dict)
   V <- length(model$vocab)
 
@@ -48,16 +49,25 @@ posterior <- function(model){
   ll
 }
 
+# a more than usually informative error message for handing in the
+# wrong type to a function
+check_arg_type <- function(arg, typename){
+  argname <- deparse(match.call()[['arg']])
+  if (!inherits(arg, typename))
+    stop(paste("'", argname, '" is not a ', typename))
+}
+
 #' Suggest composite names for each topic
 #'
 #' @param x The posterior from a fitted model (see \code{posterior})
-#' @param n How many topic terms to use in the name: default 2
 #' @param measure Method to find topics for new names. See \code{top_terms}
+#' @param n How many topic terms to use in the name: default 2
 #'
 #' @return A vector of new topic names constructed from top terms
 #' @export
-suggest_topic_names <- function(x, n = 3,
-                                measure = c("probability", "lift")){
+suggest_topic_names <- function(x,
+                          measure = c("probability", "lift"), n = 3){
+  check_arg_type(x, "topicdict_posterior")
   tt <- top_terms(x, n, measure)
   apply(tt, 2, function(x){ paste(x, collapse = "-") })
 }
@@ -71,6 +81,7 @@ suggest_topic_names <- function(x, n = 3,
 #' @export
 #'
 set_topic_names <- function(x, topic_names){
+  check_arg_type(x, "topicdict_posterior")
   colnames(x$theta) <- topic_names
   names(x$topic_counts) <- topic_names
   rownames(x$beta) <- topic_names
@@ -86,6 +97,7 @@ set_topic_names <- function(x, topic_names){
 #' @export
 #'
 set_doc_names <- function(x, doc_names){
+  check_arg_type(x, "topicdict_posterior")
   rownames(x$theta) <- doc_names
   names(x$doc_lens) <- doc_names
   x
@@ -94,14 +106,14 @@ set_doc_names <- function(x, doc_names){
 #' Show the top terms for each topic
 #'
 #' @param x The posterior from a fitted model (see \code{posterior})
-#' @param n How many terms to show: default NULL shows all
 #' @param measure How to sort the terms: 'probability' (default) or 'lift'
+#' @param n How many terms to show. Default: NULL, which shows all
 #'
 #' @return An n x k table of the top n words in each topic
 #' @export
 #'
-top_terms <- function(x, n = 10,
-                      measure = c("probability", "lift")){
+top_terms <- function(x, measure = c("probability", "lift"), n = 10){
+  check_arg_type(x, "topicdict_posterior")
   if (is.null(n))
     n <- nrow(x$theta)
   measure <- match.arg(measure)
@@ -121,14 +133,14 @@ top_terms <- function(x, n = 10,
 #' Show the top topics for each document
 #'
 #' @param x The posterior from a fitted model (see \code{posterior})
-#' @param n How many topics to show: default 2
 #' @param measure How to sort the topics: 'probability' (default) or 'lift'
+#' @param n How many topics to show. Default: 2
 #'
 #' @return An n x k table of the top n topics in each document
 #' @export
 #'
-top_topics <- function(x, n = 2,
-                       measure = c("probability", "lift")){
+top_topics <- function(x, measure = c("probability", "lift"), n = 2){
+  check_arg_type(x, "topicdict_posterior")
   if (is.null(n))
     n <- nrow(x$theta)
 
@@ -149,12 +161,13 @@ top_topics <- function(x, n = 2,
 #' Show the top documents for each topic
 #'
 #' @param x The posterior from a fitted model (see \code{posterior})
-#' @param n How many documents to show: default 10
 #' @param measure How to sort the terms: 'probability' (default) or 'lift'
+#' @param n How many documents to show. Default: 10
 #'
 #' @return An n x k table of the top n documents for each topic
 #' @export
-top_docs <- function(x, n = 10, measure = c("probability", "lift")){
+top_docs <- function(x, measure = c("probability", "lift"), n = 10){
+  check_arg_type(x, "topicdict_posterior")
   if (is.null(n))
     n <- nrow(x$theta)
 

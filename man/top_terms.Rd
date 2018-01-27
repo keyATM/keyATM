@@ -4,14 +4,14 @@
 \alias{top_terms}
 \title{Show the top terms for each topic}
 \usage{
-top_terms(x, n = 10, measure = c("probability", "lift"))
+top_terms(x, measure = c("probability", "lift"), n = 10)
 }
 \arguments{
 \item{x}{The posterior from a fitted model (see \code{posterior})}
 
-\item{n}{How many terms to show: default NULL shows all}
-
 \item{measure}{How to sort the terms: 'probability' (default) or 'lift'}
+
+\item{n}{How many terms to show. Default: NULL, which shows all}
 }
 \value{
 An n x k table of the top n words in each topic

@@ -115,7 +115,7 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
   # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
   make_z <- function(x){
 		zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
-		zz[is.na(zx_assigner[[x]])] <- sample(1:(K + extra_k) - 1, 
+		zz[is.na(zx_assigner[[x]])] <- sample(1:(K + extra_k) - 1,
 																					sum(as.numeric(is.na(zx_assigner[[x]]))),
 																					replace = TRUE)
     zz
@@ -126,9 +126,11 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
   # (Later processes ignore names)
   seeds <- lapply(dtoks, function(x){ wd_map$find(x) })
 
-  list(W = W, Z = Z, X = X, vocab = wd_names,
-       files = doc_names, dict = dtoks, seeds = seeds,
-       extra_k = extra_k, call = cl)
+  ll <- list(W = W, Z = Z, X = X, vocab = wd_names,
+             files = doc_names, dict = dtoks, seeds = seeds,
+             extra_k = extra_k, call = cl)
+  class(ll) <- c("topicdict", class(ll))
+  ll
 }
 
 
