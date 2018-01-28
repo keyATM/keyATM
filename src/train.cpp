@@ -293,7 +293,7 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
 VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
                              int num_topics, int num_doc,
                              double min_v = 1e-9, double max_v = 100.0,
-                             int max_shrink_time = 10){
+                             int max_shrink_time = 1000){
 
   double start, end, previous_p, new_p, newlikelihood, slice_;
   VectorXd keep_current_param = alpha;
