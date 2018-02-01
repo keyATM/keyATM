@@ -24,12 +24,14 @@ posterior <- function(model){
   check_arg_type(model, "topicdict")
   allK <- model$extra_k + length(model$dict)
   V <- length(model$vocab)
+  tnames <- c(names(model$seeds), paste0("T_", 1:model$extra_k))
 
   tNZ <- do.call(rbind,
                  lapply(model$Z, function(x){ table(factor(x, levels = 1:allK - 1)) }))
   rownames(tNZ) <- basename(model$files)
   doc_lens <- rowSums(tNZ)
   tNZ <- tNZ / doc_lens
+  colnames(tNZ) <- tnames # label seeded topics
 
   tZW <- Reduce(`+`,
                  mapply(function(a, b){ table(factor(a, levels = 1:allK - 1),
@@ -39,12 +41,18 @@ posterior <- function(model){
   word_counts <- colSums(tZW)
   topic_counts <- rowSums(tZW)
   tZW <- tZW / topic_counts
+  rownames(tZW) <- tnames
+
+  ## TODO fix this naming nonsense
+  dict <- model$dict
+  names(dict) <- names(model$seeds)
 
   ll <- list(seed_K = length(model$dict), extra_K = model$extra_k,
              V = ncol(tZW), N = nrow(tNZ),
              theta = tNZ, beta = as.matrix(as.data.frame.matrix(tZW)),
              topic_counts = topic_counts, word_counts = word_counts,
-             doc_lens = doc_lens, vocab = model$vocab)
+             doc_lens = doc_lens, vocab = model$vocab,
+             dict = dict)
   class(ll) <- c("topicdict_posterior", class(ll))
   ll
 }
@@ -105,29 +113,47 @@ set_doc_names <- function(x, doc_names){
 
 #' Show the top terms for each topic
 #'
+#' If \code{show_seed} is true then words in their seeded categories
+#' are suffixed with a check mark. Words from another seeded category
+#' are labeled with the name of that category.
+#'
 #' @param x The posterior from a fitted model (see \code{posterior})
 #' @param measure How to sort the terms: 'probability' (default) or 'lift'
 #' @param n How many terms to show. Default: NULL, which shows all
+#' @param show_seed Mark seeded vocabulary. See below for details.
 #'
 #' @return An n x k table of the top n words in each topic
 #' @export
 #'
-top_terms <- function(x, measure = c("probability", "lift"), n = 10){
+top_terms <- function(x, measure = c("probability", "lift"), n = 10,
+                      show_seed = FALSE){
   check_arg_type(x, "topicdict_posterior")
   if (is.null(n))
     n <- nrow(x$theta)
   measure <- match.arg(measure)
-  if (measure == "probability"){
+  if (measure == "probability") {
      measuref <- function(xrow){
        colnames(x$beta)[order(xrow, decreasing = TRUE)[1:n]]
      }
-  } else if (measure == "lift"){
+  } else if (measure == "lift") {
      wfreq <- x$word_counts / sum(x$word_counts)
      measuref <- function(xrow){
        colnames(x$beta)[order(xrow / wfreq, decreasing = TRUE)[1:n]]
      }
   }
-  apply(x$beta, 1, measuref)
+  res <- apply(x$beta, 1, measuref)
+  if (show_seed) {
+    for (i in 1:ncol(res)) {
+      for (j in 1:length(post$dict)) {
+         inds <- which(post$dict[[j]] %in% res[,i])
+         label <- ifelse(i == j,
+                         paste0("[", "\U2713" ,"]"),
+                         paste0("[", names(post$dict)[j], "]"))
+         res[inds, i] <- paste(res[inds, i], label)
+      }
+    }
+  }
+  res
 }
 
 #' Show the top topics for each document
@@ -145,7 +171,7 @@ top_topics <- function(x, measure = c("probability", "lift"), n = 2){
     n <- nrow(x$theta)
 
   measure <- match.arg(measure)
-  if (measure == "probability"){
+  if (measure == "probability") {
     measuref <- function(xrow){
       colnames(x$theta)[order(xrow, decreasing = TRUE)[1:n]]
     }

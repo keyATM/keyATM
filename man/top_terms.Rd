@@ -4,7 +4,8 @@
 \alias{top_terms}
 \title{Show the top terms for each topic}
 \usage{
-top_terms(x, measure = c("probability", "lift"), n = 10)
+top_terms(x, measure = c("probability", "lift"), n = 10,
+  show_seed = FALSE)
 }
 \arguments{
 \item{x}{The posterior from a fitted model (see \code{posterior})}
@@ -12,10 +13,14 @@ top_terms(x, measure = c("probability", "lift"), n = 10)
 \item{measure}{How to sort the terms: 'probability' (default) or 'lift'}
 
 \item{n}{How many terms to show. Default: NULL, which shows all}
+
+\item{show_seed}{Mark seeded vocabulary. See below for details.}
 }
 \value{
 An n x k table of the top n words in each topic
 }
 \description{
-Show the top terms for each topic
+If \code{show_seed} is true then words in their seeded categories
+are suffixed with a check mark. Words from another seeded category
+are labeled with the name of that category.
 }

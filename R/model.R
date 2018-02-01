@@ -140,6 +140,7 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
   # dictionary category names -> vector of word_id.
   # (Later processes ignore names)
   seeds <- lapply(dtoks, function(x){ wd_map$find(x) })
+  names(seeds) <- names(dict)
 
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names,
              files = doc_names, dict = dtoks, seeds = seeds,
