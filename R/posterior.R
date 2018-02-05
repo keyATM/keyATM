@@ -144,11 +144,11 @@ top_terms <- function(x, measure = c("probability", "lift"), n = 10,
   res <- apply(x$beta, 1, measuref)
   if (show_seed) {
     for (i in 1:ncol(res)) {
-      for (j in 1:length(post$dict)) {
-         inds <- which(post$dict[[j]] %in% res[,i])
+      for (j in 1:length(x$dict)) {
+         inds <- which(res[,i] %in% x$dict[[j]])
          label <- ifelse(i == j,
                          paste0("[", "\U2713" ,"]"),
-                         paste0("[", names(post$dict)[j], "]"))
+                         paste0("[", names(x$dict)[j], "]"))
          res[inds, i] <- paste(res[inds, i], label)
       }
     }

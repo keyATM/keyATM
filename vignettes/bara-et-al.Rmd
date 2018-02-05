@@ -11,34 +11,32 @@ vignette: >
 
 ## Set Chunk Options
 
-```{r warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE, echo = FALSE}
 library(knitr)
 knitr::opts_chunk$set(comment = "")
 ```
 
 ## Prepare
 
-```{r, include = FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(topicdict)
-library(purrr)
-library(tidyr)
-library(dplyr)
-library(ggplot2)
+library(quanteda)
 ```
 
 
 We'll use the Bara data, and seeds extracted from the dictionary.  
 These are all in package `extdata`:
 ```{r}
-library(quanteda)
-
 doc_folder <- system.file(file.path("extdata", "bara_paras"), package = "topicdict")
 seed_file <- system.file(file.path("extdata", "bara_seeds.txt"), package = "topicdict")
+
 ## turn this flat file of seeds into a (quanteda dictionary) list as it would be used
 seed_list <- Map(function(x){ unlist(strsplit(x, " ")) }, 
                  Filter(function(x){ !grepl(x, pattern = "#") }, # remove comments
                         readLines(seed_file)))
-names(seed_list) <- c("debate", "legal", "abortion", "religion", "house", "mother-child")
+
+# Original topic names from Bara dictionary
+names(seed_list) <- c("advocacy", "legal", "medical", "moral", "procedural", "social")
 dict <- dictionary(seed_list)
 dict
 ```
@@ -46,8 +44,11 @@ dict
 Initialize a model with the default tokenization options, without removing
 stopwords or stemming
 ```{r}
-## about 5 seconds, essentially all of it in quanteda's tokenizer
-model <- topicdict_model(file.path(doc_folder, "*.txt"), dict)
+set.seed(12345)
+
+stops <- setdiff(c(stopwords("english"), letters), 
+                  c("he", "his", "him", "himself", "she", "hers", "her", "herself"))
+model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, stopwords = stops)
 ```
 And run a model.  Takes about 50 iterations to converge.
 ```{r}

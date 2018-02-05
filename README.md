@@ -15,9 +15,5 @@ Post processing functions for a fitted model are all in `posterior.R`
 With the exception of some otherwise innocent unused variables in the C++, 
 the package passes CRAN checks.
 
-## Remaining:
+Will Lowe with C++ code from Tomo and Shusei. Jan 2018.
 
-* ~~log likielihood is not yet right (nans and infs)~~
-* ~~slice sampler not working yet~~
-
-Will Lowe. Jan 2018
