@@ -343,6 +343,8 @@ List topicdict_train(List model, int iter = 0){
   List W = model["W"], Z = model["Z"], X = model["X"];
   StringVector files = model["files"], vocab = model["vocab"];
   NumericVector nv_alpha = model["alpha"];
+  double gamma_1 = model["gamma_1"], gamma_2 = model["gamma_2"];
+  double beta = model["beta"], beta_s = model["beta_s"];
   int k_free = model["extra_k"];
   List seeds = model["seeds"];
   int k_seeded = seeds.size();
@@ -370,10 +372,6 @@ List topicdict_train(List model, int iter = 0){
 
   // document-related constants
   int num_vocab = vocab.size(), num_doc = files.size();
-
-  // distributional constants
-  double gamma_1 = 1.0, gamma_2 = 1.0;
-  double beta = 0.01, beta_s = 0.1;
 
   // storage for sufficient statistics and their margins
   SparseMatrix<int, RowMajor> n_x0_kv = SparseMatrix<int, RowMajor> (num_topics, num_vocab);
@@ -441,71 +439,4 @@ List topicdict_train(List model, int iter = 0){
   }
   return model;
 }
-
-
-
-// int bern(double &prob0, double &prob1){
-//  double value = R::runif(0,1);
-//  if(value <= prob1)
-//    return 1;
-//  return 0;
-//}
-//
-// This function replaced by:   R::runif(0,1) <= prob1
-
-/*
- double loglikelihood2(SparseMatrix<int, RowMajor>& n_x0_kv,
-                       SparseMatrix<int, RowMajor>& n_x1_kv,
-VectorXi& n_x0_k, VectorXi& n_x1_k,
-MatrixXd& n_dk, VectorXd& alpha,
-double beta, double beta_s,
-double gamma_1, double gamma_2,
-double lambda_1, double lambda_2,
-int num_topics, int num_doc) {
-double prod_k = 0.0;// calc_loglik_prod_k();
-for (int k = 0; k < num_topics; k++){
-// (a) Seed Topic Part
-prod_k += lgamma((double)num_vocab * beta_s); // first term numerator
-prod_k -= lgamma(beta_s) * (double)num_vocab; // first term denominator
-prod_k -= lgamma( (double)num_vocab * beta_s + (double)n_x1_kv.row(k).sum()  ); // second term denominator
-// Regular Topic Part
-prod_k += lgamma((double)num_vocab * beta); //probably constant
-prod_k -= lgamma(beta) * (double)num_vocab; // probably constant
-prod_k -= lgamma( (double)num_vocab * beta + (double)n_x0_kv.row(k).sum()  ); // last part denominator
-// (b) second part
-prod_k += lgamma((double)n_x1_k(k) + gamma_1) + lgamma((double)n_x0_k(k) + gamma_2);
-prod_k -=  lgamma( (double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2); // probably constant
-// (c) prior for alpha
-prod_k += gammapdfln(alpha(k), lambda_1, lambda_2);
-}
-int v = 0, prod_v = 0.0; // calc_loglik_prod_v();
-for (size_t v_sizet = 0; v_sizet < num_vocab; v_sizet++){
-v = static_cast<int>(v_sizet);
-for (int k = 0; k < k_seeded; k++){ // <--------- NOTE: using k_seeded
-// (a), seed topic part, second part numerator
-if (phi_s[k].find(v) == phi_s[k].end()){ // not a seed word
-prod_v += lgamma(beta_s);
-} else {
-prod_v += lgamma(beta_s + (double)n_x1_kv.coeffRef(k, v) );
-}
-// (a) regular part numerator
-prod_v += lgamma(beta + (double)n_x0_kv.coeffRef(k, v) );
-}
-}
-double prod_d = 0.0; // calc_loglik_prod_d();
-for (int d = 0; d < num_doc; d++){ // (c)
-prod_d += lgamma(alpha.sum());
-for (int k = 0; k < k_seeded; k++){ // <--------- NOTE: using k_seeded
-prod_d += lgamma(n_dk.coeffRef(d,k) + alpha(k)); // second numerator
-prod_d -= lgamma(alpha(k)); // first denominator
-}
-prod_d -= lgamma(n_dk.row(d).sum() + alpha.sum()); // second denominator
-}
-// (b) first part
-double others = (double)num_topics *
-(lgamma(gamma_1 + gamma_2) - lgamma(gamma_1) - lgamma(gamma_2)); // constant?
-double loglik = prod_k + prod_v + prod_d + others;
-return loglik;
-}
-*/
 

@@ -51,7 +51,12 @@
 #'         \item{files}{a vector of document filenames}
 #'         \item{dict}{a tokenized version of the dictionary}
 #'         \item{seeds}{a list of words for the seed words in dict, named by dictionary category}
+#'         \item{extra_k}{how many extra non-seeded topics are required}
 #'         \item{alpha}{a vector of topic proportion hyperparameters}
+#'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
+#'         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
+#'         \item{beta}{prior parameter for the non-seeded word generation probabilities}
+#'         \item{betas}{prior parameter for the seeded word generation probabilities}
 #'         \item{call}{details of the function call}
 #'         }.
 #' @importFrom quanteda corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
@@ -143,19 +148,10 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
   names(seeds) <- names(dict)
 
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names,
-             files = doc_names, dict = dtoks, seeds = seeds,
-             extra_k = extra_k,
-             alpha = alpha, call = cl)
+             files = doc_names, dict = dtoks, seeds = seeds, extra_k = extra_k,
+             alpha = alpha, gamma_1 = 1.0, gamma_2 = 1.0,
+             beta = 0.01, beta_s = 0.1, call = cl)
   class(ll) <- c("topicdict", class(ll))
   ll
 }
 
-
-# train_seededlda <- function(files, dict, k, encoding = "unknown", iter = ...){
-#   model <- init(files, dict, k, encoding = "unknown", ...)
-#   train_model(List W, List X, List Z, List id_dict,
-#     StringVector files, StringVector vocab,
-#     int k_seeded, int k_free, double alpha_k,
-#     int iter = 0)
-#
-# }
