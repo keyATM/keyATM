@@ -9,20 +9,17 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Set Chunk Options
 
 ```{r warning=FALSE, message=FALSE, echo = FALSE}
 library(knitr)
 knitr::opts_chunk$set(comment = "")
 ```
 
-## Prepare
 
 ```{r, warning=FALSE, message=FALSE}
 library(topicdict)
 library(quanteda)
 ```
-
 
 We'll use the Bara data, and seeds extracted from the dictionary.  
 These are all in package `extdata`:

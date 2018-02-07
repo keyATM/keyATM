@@ -24,21 +24,25 @@ posterior <- function(model){
   check_arg_type(model, "topicdict")
   allK <- model$extra_k + length(model$dict)
   V <- length(model$vocab)
+  N = length(model$W)
+  doc_lens <- sapply(model$W, length)
   tnames <- c(names(model$seeds), paste0("T_", 1:model$extra_k))
 
-  tNZ <- do.call(rbind,
-                 lapply(model$Z, function(x){ table(factor(x, levels = 1:allK - 1)) }))
-  rownames(tNZ) <- basename(model$files)
-  doc_lens <- rowSums(tNZ)
-  tNZ <- tNZ / doc_lens
-  colnames(tNZ) <- tnames # label seeded topics
+  posterior_z <- function(zvec){
+    tt <- table(factor(zvec, levels = 1:allK - 1))
+    (tt + model$alpha) / (sum(tt) + sum(model$alpha)) # posterior mean
+  }
+  theta <- do.call(rbind, lapply(model$Z, posterior_z))
+  rownames(theta) <- basename(model$files)
+  colnames(theta) <- tnames # label seeded topics
 
   tZW <- Reduce(`+`,
-                 mapply(function(a, b){ table(factor(a, levels = 1:allK - 1),
-                                              factor(b, levels = 1:V - 1)) },
+                 mapply(function(z, w){ table(factor(z, levels = 1:allK - 1),
+                                              factor(w, levels = 1:V - 1)) },
                         model$Z, model$W, SIMPLIFY = FALSE))
-  colnames(tZW) <- model$vocab
   word_counts <- colSums(tZW)
+
+  colnames(tZW) <- model$vocab
   topic_counts <- rowSums(tZW)
   tZW <- tZW / topic_counts
   rownames(tZW) <- tnames
@@ -48,8 +52,8 @@ posterior <- function(model){
   names(dict) <- names(model$seeds)
 
   ll <- list(seed_K = length(model$dict), extra_K = model$extra_k,
-             V = ncol(tZW), N = nrow(tNZ),
-             theta = tNZ, beta = as.matrix(as.data.frame.matrix(tZW)),
+             V = V, N = N,
+             theta = theta, beta = as.matrix(as.data.frame.matrix(tZW)),
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = doc_lens, vocab = model$vocab,
              dict = dict)

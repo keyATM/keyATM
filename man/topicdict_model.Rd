@@ -52,7 +52,12 @@ A list containing \describe{
         \item{files}{a vector of document filenames}
         \item{dict}{a tokenized version of the dictionary}
         \item{seeds}{a list of words for the seed words in dict, named by dictionary category}
+        \item{extra_k}{how many extra non-seeded topics are required}
         \item{alpha}{a vector of topic proportion hyperparameters}
+        \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
+        \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
+        \item{beta}{prior parameter for the non-seeded word generation probabilities}
+        \item{betas}{prior parameter for the seeded word generation probabilities}
         \item{call}{details of the function call}
         }.
 }
