@@ -47,6 +47,23 @@ posterior <- function(model){
   tZW <- tZW / topic_counts
   rownames(tZW) <- tnames
 
+	# alpha
+	res_alpha <- data.frame(model$alpha)
+	colnames(res_alpha) <- NULL
+	res_alpha <- data.frame(t(res_alpha))
+	if(nrow(res_alpha) > 0){
+		colnames(res_alpha) <- paste0("EstTopic", 1:ncol(res_alpha))
+		res_alpha$iter <- 1:nrow(res_alpha)
+	}
+
+	# model fit
+	modelfit <- data.frame(model$model_fit)
+	colnames(modelfit) <- NULL
+	if(nrow(modelfit) > 0){
+		modelfit <- data.frame(t(modelfit))
+		colnames(modelfit) <-	c("Iteration", "Log Likelihood", "Perplexity") 
+	}
+
   ## TODO fix this naming nonsense
   dict <- model$dict
   names(dict) <- names(model$seeds)
@@ -56,7 +73,8 @@ posterior <- function(model){
              theta = theta, beta = as.matrix(as.data.frame.matrix(tZW)),
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = doc_lens, vocab = model$vocab,
-             dict = dict)
+             dict = dict,
+						 alpha=res_alpha, modelfit=modelfit)
   class(ll) <- c("topicdict_posterior", class(ll))
   ll
 }
@@ -216,3 +234,84 @@ top_docs <- function(x, measure = c("probability", "lift"), n = 10){
   }
 }
 
+
+#' Show a diagnosis plot of alpha
+#'
+#' @param x The posterior from a fitted model (see \code{posterior})
+#' @param start Slice iteration 
+#' @param show_topic a vector to specify topic indexes to show 
+#' @param true_vec a vector to visualize true values of alpha 
+#'
+#' @return ggplot2 object 
+#' @import ggplot2
+#' @export
+diagnosis_alpha <- function(res, start=NULL, show_topic=NULL, true_vec=NULL, scale=""){
+	num_topic <-	res$seed_K + res$extra_k 
+	res_alpha <- res$alpha
+
+	if(!is.null(show_topic)){
+		# show topic is a vector of column index e.g., c(1,3,5)
+		res_alpha <- res_alpha[, show_topic]
+	}
+	res_alpha$iter <- 1:nrow(res_alpha)
+
+	if(!is.null(start)){
+		res_alpha <- res_alpha[start:nrow(res_alpha), ]
+	}
+
+
+	parameters <- tidyr::gather(res_alpha, key=parameter, value=value, -iter)
+
+	p <- ggplot(data=parameters, aes(x=iter, y=value, group=parameter, color=parameter)) +
+     geom_line() +
+     geom_point(size=0.3) 
+
+	if(scale==""){
+		p <- p + facet_wrap(~parameter, ncol=2)
+	}else if(scale == "free"){
+	  p <- p + facet_wrap(~parameter, ncol=2, scales = "free") 
+	}
+
+	if(!is.null(true_vec)){
+		true <- data.frame(
+			 parameter = paste0("EstTopic", 1:length(true_vec)),
+			 value = true_vec
+			 )
+		if(!is.null(show_topic)){
+			true <- true[show_topic,]
+		}
+
+		p <- p + geom_hline(data = true, aes(yintercept = value), color="black")
+	}
+
+	p <- p + ggtitle("Estimated Alpha") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+	return(p)
+}
+
+#' Show a diagnosis plot of log-likelihood and perplexity
+#'
+#' @param x The posterior from a fitted model (see \code{posterior})
+#' @param start Slice iteration 
+#'
+#' @return ggplot2 object 
+#' @import ggplot2
+#' @export
+diagnosis_model_fit <- function(res, start=NULL){
+	modelfit <- res$modelfit
+
+	if(!is.null(start)){
+		modelfit <- modelfit[ modelfit$Iteration >= start, ] 
+	}
+
+	modelfit <- tidyr::gather(modelfit, key=Measures, value=value, -Iteration)
+
+	p <- ggplot(data=modelfit, aes(x=Iteration, y=value, group=Measures, color=Measures)) +
+     geom_line(show.legend = F) +
+     geom_point(size=0.3, show.legend = F) +
+     facet_wrap(~Measures, ncol=2, scales = "free") 
+
+	p <- p + ggtitle("Model Fit") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+	return(p)
+}

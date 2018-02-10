@@ -69,7 +69,7 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
                             remove_symbols = TRUE, remove_separators = TRUE,
                             remove_twitter = FALSE, remove_hyphens = FALSE,
                             remove_url = TRUE, stem_language = NULL,
-                            stopwords = NULL,
+                            stopwords = NULL, 
                             alpha = 50/(length(dict)+extra_k)){
   cl <- match.call()
 
@@ -150,7 +150,9 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names,
              files = doc_names, dict = dtoks, seeds = seeds, extra_k = extra_k,
              alpha = alpha, gamma_1 = 1.0, gamma_2 = 1.0,
-             beta = 0.01, beta_s = 0.1, call = cl)
+             beta = 0.01, beta_s = 0.1,
+						 alpha_iter = list(), model_fit = list(),
+						 call = cl)
   class(ll) <- c("topicdict", class(ll))
   ll
 }

@@ -258,3 +258,57 @@ diagnosis_model_fit(post, start=2)
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
 diagnosis_topic_recovery(post)
 ```
+
+## Simulation 3 (numtopic = 15, flat alpha)
+```{r, warning=FALSE, message=FALSE, fig.width=5, fig.height=5}
+data_folder <- tempfile()
+p_vec <- c(0.01, 0.03, 0.05, 0.1, rep(0.2, 11))
+create_sim_data(saveDir=paste0(data_folder, "Sim1"), D=1000, K=15, TotalV=3000, alpha=0.1, beta_r=0.1, beta_s=0.1, p=rep(0.2, 15), lambda=200, seeds_len=5)
+```
+
+### Number of Topic is the same as the truth, use part of seed (4 topic)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=11, cull_seed=c(4, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+
+### Topic number misspecification (fewer), use part of seed (4 topic)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=5, cull_seed=c(4, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 9))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+
+### Topic number misspecification (more), use part of seed (4 topic)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=15, cull_seed=c(4, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```

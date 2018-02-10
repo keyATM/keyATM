@@ -7,7 +7,7 @@
 #' @param iter Required number of iterations
 #'
 #' @export
-topicdict_train <- function(model, iter = 0L) {
-    .Call('_topicdict_topicdict_train', PACKAGE = 'topicdict', model, iter)
+topicdict_train <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_topicdict_topicdict_train', PACKAGE = 'topicdict', model, iter, output_per)
 }
 

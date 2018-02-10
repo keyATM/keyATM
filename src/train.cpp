@@ -31,6 +31,16 @@ double gammapdfln(double x, double a, double b){
   return a * log(b) - lgamma(a) + (a - 1.0) * log(x) - b * x;
 }
 
+NumericVector alpha_reformat(VectorXd& alpha, int& num_topics){
+	NumericVector alpha_rvec(num_topics);
+
+	for(int i=0; i<num_topics; ++i){
+		alpha_rvec[i] = alpha(i);
+	}
+
+	return alpha_rvec;
+}
+
 int rcat(Eigen::VectorXd &prob){ // was called 'multi1'
   double u = R::runif(0, 1);
   double temp = 0.0;
@@ -337,7 +347,7 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
 //'
 //' @export
 // [[Rcpp::export]]
-List topicdict_train(List model, int iter = 0){
+List topicdict_train(List model, int iter = 0, int output_per = 10){
 
 	// Data
   List W = model["W"], Z = model["Z"], X = model["X"];
@@ -348,6 +358,7 @@ List topicdict_train(List model, int iter = 0){
   int k_free = model["extra_k"];
   List seeds = model["seeds"];
   int k_seeded = seeds.size();
+	List model_fit = model["model_fit"];
 
   // alpha
   int num_topics = k_seeded + k_free;
@@ -428,15 +439,36 @@ List topicdict_train(List model, int iter = 0){
     slice_sample_alpha(alpha, n_dk, num_topics, num_doc);
     model["alpha"] = alpha;
 
-    double loglik = loglikelihood1(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk, alpha,
-                                   beta, beta_s, gamma_1, gamma_2,
-                                   num_topics, k_seeded, num_vocab, num_doc, phi_s);
-    double perplexity = exp(-loglik / (double)total_words);
-    Rcerr << " log likelihood: " << loglik <<
-             " (perplexity: " << perplexity << ")" << std::endl;
+		// Store Alpha
+		NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
+		List alpha_iter = model["alpha_iter"];
+		alpha_iter.push_back(alpha_rvec);
+		model["alpha_iter"] = alpha_iter;
+
+		// Log-likelihood and Perplexity
+		int r_index = it + 1;
+		if(r_index % output_per == 0 || r_index == 1 || r_index == iter ){
+			double loglik = loglikelihood1(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk, alpha,
+																		 beta, beta_s, gamma_1, gamma_2,
+																		 num_topics, k_seeded, num_vocab, num_doc, phi_s);
+			double perplexity = exp(-loglik / (double)total_words);
+
+			NumericVector model_fit_vec;
+			model_fit_vec.push_back(r_index);
+			model_fit_vec.push_back(loglik);
+			model_fit_vec.push_back(perplexity);
+			model_fit.push_back(model_fit_vec);
+
+			Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
+							 " (perplexity: " << perplexity << ")" << std::endl;
+
+		}
 
     checkUserInterrupt();
   }
+
+	model["model_fit"] = model_fit;
+
   return model;
 }
 
