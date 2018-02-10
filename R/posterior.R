@@ -48,7 +48,7 @@ posterior <- function(model){
   rownames(tZW) <- tnames
 
 	# alpha
-	res_alpha <- data.frame(model$alpha)
+	res_alpha <- data.frame(model$alpha_iter)
 	colnames(res_alpha) <- NULL
 	res_alpha <- data.frame(t(res_alpha))
 	if(nrow(res_alpha) > 0){
