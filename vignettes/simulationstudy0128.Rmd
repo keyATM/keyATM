@@ -58,7 +58,7 @@ topicdict_simulation_run <- function(data_folder_name, iter, extra_k, seed_file_
 							 remove_symbols = TRUE,
 							 remove_separators = TRUE)
 
-	res <- topicdict_train(model, alpha_k = 50, iter = iter)
+	res <- topicdict_train(model, iter = iter)
 	
 	return(res)
 }
