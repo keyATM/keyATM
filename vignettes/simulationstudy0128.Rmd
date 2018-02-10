@@ -1,0 +1,260 @@
+---
+title: "Simulation Study"
+author: "Shusei Eshima and Tomoya Sasaki"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SimulationStudy}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Set Chunk Options
+
+```{r warning=FALSE, message=FALSE}
+library(knitr)
+knitr::opts_chunk$set(comment = "")
+```
+
+# Preparation
+
+## Prepare Packages
+
+```{r, message=FALSE}
+library(topicdict)
+library(tidyverse)
+library(quanteda)
+num_iteration <- 1000
+```
+
+## Define a function
+Run simulation code:
+```{r, warning=FALSE, message=FALSE}
+topicdict_simulation_run <- function(data_folder_name, iter, extra_k, seed_file_name="SeedWords.csv", cull_seed=NULL){
+
+	# cull_seed: Which row (=topic) and column (=number of seed) to use
+
+	set.seed(225)
+
+	folder <- paste0(data_folder, data_folder_name, "/W")
+	docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
+
+	seed_file <- paste0(data_folder, data_folder_name, "/", seed_file_name)
+
+	seeddata <- invisible(readr::read_csv(seed_file))
+
+	if(!is.null(cull_seed)){
+		seeddata <- seeddata[1:cull_seed[1], 1:cull_seed[2]]
+	}
+
+	seed_list <- as.list( apply(seeddata, 1, function(x){return(paste0(x, collapse=" "))}) )
+	names(seed_list) <- 1:length(seed_list)
+	dict <- quanteda::dictionary(seed_list)
+
+	model <- topicdict_model(docs,
+							 dict = dict, extra_k = extra_k,
+							 remove_numbers = FALSE, # For simulation, make it false
+							 remove_punct = TRUE,
+							 remove_symbols = TRUE,
+							 remove_separators = TRUE)
+
+	res <- topicdict_train(model, alpha_k = 50, iter = iter)
+	
+	return(res)
+}
+```
+
+Visualization:
+```{r, warning=FALSE, message=FALSE}
+diagnosis_topic_recovery <- function(post, n=25){
+	topwords <- top_terms(post, n)
+	topwords <- data.frame(topwords)
+	colnames(topwords) <- paste0("EstTopic", 1:ncol(topwords))
+
+	topwords <- tidyr::gather(topwords, key=EstTopic, value=Word)
+
+	topwords %>%
+		mutate(RawWord = Word) %>%
+		separate(Word,
+				into=c("TrueTopic", "word_id"),
+				sep="r|s") %>%
+		mutate(TrueTopic = paste0("True", as.character(TrueTopic))) %>%
+		group_by(EstTopic, TrueTopic) %>%
+		summarise(counts = n()) %>%
+		ungroup() %>%
+		group_by(EstTopic) %>% 
+		mutate(topicsum = sum(counts)) %>%
+		ungroup() %>%
+		mutate(Proportion = counts / topicsum * 100,
+					 Estimated = EstTopic) -> res
+
+		num <- length(unique(res$Estimated))
+		truenum <- length(unique(res$TrueTopic))
+
+		title <- paste0("Top ", as.character(n), " words")
+
+		g <- ggplot(res, aes(x=Estimated, y=Proportion, fill=TrueTopic)) +
+					geom_bar(stat="identity") +
+					scale_x_discrete(limits = rev(paste0("EstTopic", 1:num))) +
+					coord_flip() +
+					scale_fill_hue(name = "True Topics", breaks=paste0("True", 1:truenum)) + 
+					xlab("Estimated Topics") + ylab("Proportion (%)") + theme_bw(base_size=16) +
+					ggtitle(title) +
+					theme(plot.title = element_text(hjust = 0.5))
+
+		return(g)
+}
+```
+
+# Simulation
+
+## Simulation 1 (numtopic = 15, flat alpha)
+```{r, warning=FALSE, message=FALSE, fig.width=5, fig.height=5}
+data_folder <- tempfile()
+create_sim_data(saveDir=paste0(data_folder, "Sim1"), D=1000, K=15, TotalV=3000, alpha=0.1, beta_r=0.1, beta_s=0.1, p=rep(0.2, 15), lambda=200, seeds_len=5)
+```
+
+### Number of Topic is the same as the truth, use part of seed (4 topic)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=11, cull_seed=c(4, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+### Number of Topic is the same as the truth, use part of seed (2 topic)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=4}
+res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=13, cull_seed=c(2, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2), true_vec=rep(0.1, 15))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+### Topic number misspecification (fewer), use part of seed (4 topic)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=5, cull_seed=c(4, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 9))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+### Topic number misspecification (fewer), use part of seed (2 topic)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=4}
+res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=5, cull_seed=c(2, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2), true_vec=rep(0.1, 7))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+
+### Topic number misspecification (more), use part of seed (4 topic)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=15, cull_seed=c(4, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+### Topic number misspecification (more), use part of seed (2 topic)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=4}
+res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=15, cull_seed=c(2, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2), true_vec=rep(0.1, 15))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+
+## Simulation 2 (numtopic = 10, uneven alpha)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+data_folder <- tempfile()
+alpha_vec <- c(0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1)
+create_sim_data(saveDir=paste0(data_folder, "Sim2"), D=1000, K=10, TotalV=3000, alpha=alpha_vec, beta_r=0.1, beta_s=0.1, p=rep(0.2, 10), lambda=200, seeds_len=5)
+```
+
+### Topic number is the same as truth
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+res <- topicdict_simulation_run("Sim2", iter=num_iteration, extra_k=7, cull_seed=c(3, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3), true_vec=alpha_vec)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+### Topic number misspecification (less)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+res <- topicdict_simulation_run("Sim2", iter=num_iteration, extra_k=3, cull_seed=c(3, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3), true_vec=alpha_vec)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+
+### Topic number misspecification (more)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+res <- topicdict_simulation_run("Sim2", iter=num_iteration, extra_k=12, cull_seed=c(3, 3))
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3), true_vec=alpha_vec)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
