@@ -3,6 +3,7 @@ title: "Simulation Study"
 author: "Shusei Eshima and Tomoya Sasaki"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+toc: true
 vignette: >
   %\VignetteIndexEntry{SimulationStudy}
   %\VignetteEngine{knitr::rmarkdown}
@@ -24,13 +25,23 @@ knitr::opts_chunk$set(comment = "")
 library(topicdict)
 library(tidyverse)
 library(quanteda)
-num_iteration <- 1000
+num_iteration <- 10
 ```
 
 ## Define a function
 Run simulation code:
 ```{r, warning=FALSE, message=FALSE}
-topicdict_simulation_run <- function(data_folder_name, iter, extra_k, seed_file_name="SeedWords.csv", cull_seed=NULL){
+show_true_seed <- function(data_folder_name, seed_file_name = "SeedWords.csv"){
+	seed_file <- paste0(data_folder, data_folder_name, "/", seed_file_name)
+	true_seed <- invisible(readr::read_csv(seed_file))
+	message("Row: Topic / Column: Seed word")
+	print(true_seed)
+}
+
+
+topicdict_simulation_run <- function(data_folder_name, iter, extra_k, 
+																		 seed_file_name="SeedWords.csv", seed_list = NULL,
+																		 cull_seed=NULL){
 
 	# cull_seed: Which row (=topic) and column (=number of seed) to use
 
@@ -47,7 +58,9 @@ topicdict_simulation_run <- function(data_folder_name, iter, extra_k, seed_file_
 		seeddata <- seeddata[1:cull_seed[1], 1:cull_seed[2]]
 	}
 
-	seed_list <- as.list( apply(seeddata, 1, function(x){return(paste0(x, collapse=" "))}) )
+	if(is.null(seed_list)){
+		seed_list <- as.list( apply(seeddata, 1, function(x){return(paste0(x, collapse=" "))}) )
+	}
 	names(seed_list) <- 1:length(seed_list)
 	dict <- quanteda::dictionary(seed_list)
 
@@ -114,9 +127,15 @@ data_folder <- tempfile()
 create_sim_data(saveDir=paste0(data_folder, "Sim1"), D=1000, K=15, TotalV=3000, alpha=0.1, beta_r=0.1, beta_s=0.1, p=rep(0.2, 15), lambda=200, seeds_len=5)
 ```
 
-### Number of Topic is the same as the truth, use part of seed (4 topic)
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
-res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=11, cull_seed=c(4, 3))
+### Split True Seed, number of topics is truth
+```{r, warning=FALSE, message=FALSE}
+show_true_seed("Sim1")
+seed_list <- list(c("1S3 1S140"),
+								 c("1S42 1S154"),
+								 c("3S42 3S75 3S83"),
+								 c("4S11 4S200 4S97"))
+
+res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=11)
 post <- posterior(res)
 diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
 ```
@@ -129,55 +148,15 @@ diagnosis_model_fit(post, start=2)
 diagnosis_topic_recovery(post)
 ```
 
-### Number of Topic is the same as the truth, use part of seed (2 topic)
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=4}
-res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=13, cull_seed=c(2, 3))
-post <- posterior(res)
-diagnosis_alpha(post, start=5, show_topic=c(1,2), true_vec=rep(0.1, 15))
-```
+### Split True Seed, underestimated number of topics 
+```{r, warning=FALSE, message=FALSE}
+show_true_seed("Sim1")
+seed_list <- list(c("1S3 1S140"),
+								 c("1S42 1S154"),
+								 c("3S42 3S75 3S83"),
+								 c("4S11 4S200 4S97"))
 
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-diagnosis_model_fit(post, start=2)
-```
-
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
-diagnosis_topic_recovery(post)
-```
-
-### Topic number misspecification (fewer), use part of seed (4 topic)
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
-res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=5, cull_seed=c(4, 3))
-post <- posterior(res)
-diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 9))
-```
-
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-diagnosis_model_fit(post, start=2)
-```
-
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
-diagnosis_topic_recovery(post)
-```
-
-### Topic number misspecification (fewer), use part of seed (2 topic)
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=4}
-res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=5, cull_seed=c(2, 3))
-post <- posterior(res)
-diagnosis_alpha(post, start=5, show_topic=c(1,2), true_vec=rep(0.1, 7))
-```
-
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-diagnosis_model_fit(post, start=2)
-```
-
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
-diagnosis_topic_recovery(post)
-```
-
-
-### Topic number misspecification (more), use part of seed (4 topic)
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
-res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=15, cull_seed=c(4, 3))
+res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=8)
 post <- posterior(res)
 diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
 ```
@@ -190,11 +169,17 @@ diagnosis_model_fit(post, start=2)
 diagnosis_topic_recovery(post)
 ```
 
-### Topic number misspecification (more), use part of seed (2 topic)
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=4}
-res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=15, cull_seed=c(2, 3))
+### Split True Seed, overestimated number of topics 
+```{r, warning=FALSE, message=FALSE}
+show_true_seed("Sim1")
+seed_list <- list(c("1S3 1S140"),
+								 c("1S42 1S154"),
+								 c("3S42 3S75 3S83"),
+								 c("4S11 4S200 4S97"))
+
+res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=15)
 post <- posterior(res)
-diagnosis_alpha(post, start=5, show_topic=c(1,2), true_vec=rep(0.1, 15))
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
 ```
 
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
@@ -205,6 +190,67 @@ diagnosis_model_fit(post, start=2)
 diagnosis_topic_recovery(post)
 ```
 
+### Merge True Seed, number of topics is truth
+```{r, warning=FALSE, message=FALSE}
+show_true_seed("Sim1")
+seed_list <- list(c("1S3 1S140 1S42"),
+								 c("2S190 2S163 3S42 3S75"),
+								 c("4S11 4S200 6S200"))
+
+res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=12)
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+
+
+### Merge True Seed, underestimated number of topics 
+```{r, warning=FALSE, message=FALSE}
+show_true_seed("Sim1")
+seed_list <- list(c("1S3 1S140 1S42"),
+								 c("2S190 2S163 3S42 3S75"),
+								 c("4S11 4S200 6S200"))
+
+res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=8)
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
+
+### Merge True Seed, overestimated number of topics 
+```{r, warning=FALSE, message=FALSE}
+show_true_seed("Sim1")
+seed_list <- list(c("1S3 1S140 1S42"),
+								 c("2S190 2S163 3S42 3S75"),
+								 c("4S11 4S200 6S200"))
+
+res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=15)
+post <- posterior(res)
+diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
+diagnosis_topic_recovery(post)
+```
 
 ## Simulation 2 (numtopic = 10, uneven alpha)
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
@@ -213,9 +259,14 @@ alpha_vec <- c(0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1)
 create_sim_data(saveDir=paste0(data_folder, "Sim2"), D=1000, K=10, TotalV=3000, alpha=alpha_vec, beta_r=0.1, beta_s=0.1, p=rep(0.2, 10), lambda=200, seeds_len=5)
 ```
 
-### Topic number is the same as truth
+### Split True Seed, number of topics is truth
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
-res <- topicdict_simulation_run("Sim2", iter=num_iteration, extra_k=7, cull_seed=c(3, 3))
+show_true_seed("Sim2")
+seed_list <- list(c("1S4 1S210"),
+								 c("1S63 1S232"),
+								 c("3S63 3S113 3S118"),
+								 c("4S16 4S17 4S146"))
+res <- topicdict_simulation_run("Sim2", iter=num_iteration, extra_k=6)
 post <- posterior(res)
 diagnosis_alpha(post, start=5, show_topic=c(1,2,3), true_vec=alpha_vec)
 ```
@@ -228,9 +279,14 @@ diagnosis_model_fit(post, start=2)
 diagnosis_topic_recovery(post)
 ```
 
-### Topic number misspecification (less)
+### Merge True Seed, number of topics is truth
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
-res <- topicdict_simulation_run("Sim2", iter=num_iteration, extra_k=3, cull_seed=c(3, 3))
+show_true_seed("Sim2")
+seed_list <- list(c("1S4 1S210"),
+								 c("2S284 2S245 5S184 5S192"),
+								 c("3S63 3S113 3S118"),
+								 c("4S16 4S17 4S146"))
+res <- topicdict_simulation_run("Sim2", iter=num_iteration, extra_k=6)
 post <- posterior(res)
 diagnosis_alpha(post, start=5, show_topic=c(1,2,3), true_vec=alpha_vec)
 ```
@@ -244,30 +300,20 @@ diagnosis_topic_recovery(post)
 ```
 
 
-### Topic number misspecification (more)
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
-res <- topicdict_simulation_run("Sim2", iter=num_iteration, extra_k=12, cull_seed=c(3, 3))
-post <- posterior(res)
-diagnosis_alpha(post, start=5, show_topic=c(1,2,3), true_vec=alpha_vec)
-```
-
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-diagnosis_model_fit(post, start=2)
-```
-
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=8}
-diagnosis_topic_recovery(post)
-```
-
-## Simulation 3 (numtopic = 15, flat alpha)
+## Simulation 3 (numtopic = 15, flat alpha, uneven p)
 ```{r, warning=FALSE, message=FALSE, fig.width=5, fig.height=5}
 data_folder <- tempfile()
 p_vec <- c(0.01, 0.03, 0.05, 0.1, rep(0.2, 11))
-create_sim_data(saveDir=paste0(data_folder, "Sim1"), D=1000, K=15, TotalV=3000, alpha=0.1, beta_r=0.1, beta_s=0.1, p=rep(0.2, 15), lambda=200, seeds_len=5)
+create_sim_data(saveDir=paste0(data_folder, "Sim3"), D=1000, K=15, TotalV=3000, alpha=0.1, beta_r=0.1, beta_s=0.1, p=p_vec, lambda=200, seeds_len=5)
 ```
 
 ### Number of Topic is the same as the truth, use part of seed (4 topic)
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+show_true_seed("Sim3")
+seed_list <- list(c("1S4 1S210"),
+								 c("2S284 2S245 5S184 5S192"),
+								 c("3S63 3S113 3S118"),
+								 c("4S16 4S17 4S146"))
 res <- topicdict_simulation_run("Sim1", iter=num_iteration, extra_k=11, cull_seed=c(4, 3))
 post <- posterior(res)
 diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
