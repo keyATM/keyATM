@@ -33,130 +33,130 @@ num_iteration <- 1000
 Run simulation code:
 ```{r, warning=FALSE, message=FALSE}
 show_true_seed <- function(data_folder_name, seed_file_name = "SeedWords.csv"){
-	seed_file <- paste0(data_folder, data_folder_name, "/", seed_file_name)
-	true_seed <- invisible(readr::read_csv(seed_file))
-	message("Row: Topic / Column: Seed word")
-	print(true_seed)
+  seed_file <- paste0(data_folder, data_folder_name, "/", seed_file_name)
+  true_seed <- invisible(readr::read_csv(seed_file))
+  message("Row: Topic / Column: Seed word")
+  print(true_seed)
 }
 
 
 topicdict_simulation_run <- function(data_folder_name, iter, extra_k, 
-																		 seed_file_name="SeedWords.csv", seed_list = NULL,
-																		 cull_seed=NULL){
+                                     seed_file_name="SeedWords.csv", seed_list = NULL,
+                                     cull_seed=NULL){
 
-	# cull_seed: Which row (=topic) and column (=number of seed) to use
+  # cull_seed: Which row (=topic) and column (=number of seed) to use
 
-	set.seed(225)
+  set.seed(225)
 
-	folder <- paste0(data_folder, data_folder_name, "/W")
-	docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
+  folder <- paste0(data_folder, data_folder_name, "/W")
+  docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
 
-	seed_file <- paste0(data_folder, data_folder_name, "/", seed_file_name)
+  seed_file <- paste0(data_folder, data_folder_name, "/", seed_file_name)
 
-	seeddata <- invisible(readr::read_csv(seed_file))
+  seeddata <- invisible(readr::read_csv(seed_file))
 
-	if(!is.null(cull_seed)){
-		seeddata <- seeddata[1:cull_seed[1], 1:cull_seed[2]]
-	}
+  if(!is.null(cull_seed)){
+    seeddata <- seeddata[1:cull_seed[1], 1:cull_seed[2]]
+  }
 
-	if(is.null(seed_list)){
-		seed_list <- as.list( apply(seeddata, 1, function(x){return(paste0(x, collapse=" "))}) )
-	}
-	names(seed_list) <- 1:length(seed_list)
-	dict <- quanteda::dictionary(seed_list)
+  if(is.null(seed_list)){
+    seed_list <- as.list( apply(seeddata, 1, function(x){return(paste0(x, collapse=" "))}) )
+  }
+  names(seed_list) <- 1:length(seed_list)
+  dict <- quanteda::dictionary(seed_list)
 
-	model <- topicdict_model(docs,
-							 dict = dict, extra_k = extra_k,
-							 remove_numbers = FALSE, # For simulation, make it false
-							 remove_punct = TRUE,
-							 remove_symbols = TRUE,
-							 remove_separators = TRUE)
+  model <- topicdict_model(docs,
+               dict = dict, extra_k = extra_k,
+               remove_numbers = FALSE, # For simulation, make it false
+               remove_punct = TRUE,
+               remove_symbols = TRUE,
+               remove_separators = TRUE)
 
-	res <- topicdict_train(model, iter = iter)
-	
-	return(res)
+  res <- topicdict_train(model, iter = iter)
+  
+  return(res)
 }
 ```
 
 Visualization:
 ```{r, warning=FALSE, message=FALSE}
 diagnosis_topic_recovery <- function(post, n=25){
-	topwords <- top_terms(post, n=n)
-	topwords <- data.frame(topwords)
-	colnames(topwords) <- paste0("EstTopic", 1:ncol(topwords))
+  topwords <- top_terms(post, n=n)
+  topwords <- data.frame(topwords)
+  colnames(topwords) <- paste0("EstTopic", 1:ncol(topwords))
 
-	topwords <- tidyr::gather(topwords, key=EstTopic, value=Word)
+  topwords <- tidyr::gather(topwords, key=EstTopic, value=Word)
 
-	topwords %>%
-		mutate(RawWord = Word) %>%
-		separate(Word,
-				into=c("TrueTopic", "word_id"),
-				sep="r|s") %>%
-		mutate(TrueTopic = paste0("True", as.character(TrueTopic))) %>%
-		group_by(EstTopic, TrueTopic) %>%
-		summarise(counts = n()) %>%
-		ungroup() %>%
-		group_by(EstTopic) %>% 
-		mutate(topicsum = sum(counts)) %>%
-		ungroup() %>%
-		mutate(Proportion = counts / topicsum * 100,
-					 Estimated = EstTopic) -> res
+  topwords %>%
+    mutate(RawWord = Word) %>%
+    separate(Word,
+        into=c("TrueTopic", "word_id"),
+        sep="r|s") %>%
+    mutate(TrueTopic = paste0("True", as.character(TrueTopic))) %>%
+    group_by(EstTopic, TrueTopic) %>%
+    summarise(counts = n()) %>%
+    ungroup() %>%
+    group_by(EstTopic) %>% 
+    mutate(topicsum = sum(counts)) %>%
+    ungroup() %>%
+    mutate(Proportion = counts / topicsum * 100,
+           Estimated = EstTopic) -> res
 
-		num <- length(unique(res$Estimated))
-		truenum <- length(unique(res$TrueTopic))
+    num <- length(unique(res$Estimated))
+    truenum <- length(unique(res$TrueTopic))
 
-		title <- paste0("Top ", as.character(n), " words")
+    title <- paste0("Top ", as.character(n), " words")
 
-		g <- ggplot(res, aes(x=Estimated, y=Proportion, fill=TrueTopic)) +
-					geom_bar(stat="identity") +
-					scale_x_discrete(limits = rev(paste0("EstTopic", 1:num))) +
-					coord_flip() +
-					scale_fill_hue(name = "True Topics", breaks=paste0("True", 1:truenum)) + 
-					xlab("Estimated Topics") + ylab("Proportion (%)") + theme_bw(base_size=16) +
-					ggtitle(title) +
-					theme(plot.title = element_text(hjust = 0.5))
+    g <- ggplot(res, aes(x=Estimated, y=Proportion, fill=TrueTopic)) +
+          geom_bar(stat="identity") +
+          scale_x_discrete(limits = rev(paste0("EstTopic", 1:num))) +
+          coord_flip() +
+          scale_fill_hue(name = "True Topics", breaks=paste0("True", 1:truenum)) + 
+          xlab("Estimated Topics") + ylab("Proportion (%)") + theme_bw(base_size=16) +
+          ggtitle(title) +
+          theme(plot.title = element_text(hjust = 0.5))
 
-		return(g)
+    return(g)
 }
 
 diagnosis_topic_recovery_heatmap <- function(post, n=25){
-	topwords <- top_terms(post, n=n)
-	topwords <- data.frame(topwords)
-	colnames(topwords) <- paste0("EstTopic", 1:ncol(topwords))
+  topwords <- top_terms(post, n=n)
+  topwords <- data.frame(topwords)
+  colnames(topwords) <- paste0("EstTopic", 1:ncol(topwords))
 
-	topwords <- tidyr::gather(topwords, key=EstTopic, value=Word)
+  topwords <- tidyr::gather(topwords, key=EstTopic, value=Word)
 
-	topwords %>%
-		mutate(RawWord = Word) %>%
-		separate(Word,
-				into=c("TrueTopic", "word_id"),
-				sep="r|s") %>%
-		mutate(TrueTopic = paste0("True", as.character(TrueTopic))) %>%
-		group_by(EstTopic, TrueTopic) %>%
-		summarise(counts = n()) %>%
-		ungroup() %>%
-		group_by(EstTopic) %>% 
-		mutate(topicsum = sum(counts)) %>%
-		ungroup() %>%
-		mutate(Proportion = counts / topicsum * 100,
-					 Estimated = EstTopic) -> res
+  topwords %>%
+    mutate(RawWord = Word) %>%
+    separate(Word,
+        into=c("TrueTopic", "word_id"),
+        sep="r|s") %>%
+    mutate(TrueTopic = paste0("True", as.character(TrueTopic))) %>%
+    group_by(EstTopic, TrueTopic) %>%
+    summarise(counts = n()) %>%
+    ungroup() %>%
+    group_by(EstTopic) %>% 
+    mutate(topicsum = sum(counts)) %>%
+    ungroup() %>%
+    mutate(Proportion = counts / topicsum * 100,
+           Estimated = EstTopic) -> res
 
-		num <- length(unique(res$Estimated))
-		truenum <- length(unique(res$TrueTopic))
+    num <- length(unique(res$Estimated))
+    truenum <- length(unique(res$TrueTopic))
 
-		title <- paste0("Seeded LDA: Top ", as.character(n), " words")
+    title <- paste0("Seeded LDA: Top ", as.character(n), " words")
 
-		g <- ggplot(res, aes(EstTopic, TrueTopic)) +
-					geom_tile(aes(fill=Proportion)) + 
-					scale_fill_gradient(limits=c(0, 100), low="#e8e8e8", high="#0072B2") +
-					scale_x_discrete(limits = rev(paste0("EstTopic", 1:num))) +
-					coord_flip() +
-					scale_y_discrete(limits = paste0("True", 1:truenum)) +
-					xlab("Estimated Topics") + ylab("True Topic") + theme_bw(base_size=13) +
-					ggtitle(title) +
-					theme(plot.title = element_text(hjust = 0.5))
+    g <- ggplot(res, aes(EstTopic, TrueTopic)) +
+          geom_tile(aes(fill=Proportion)) + 
+          scale_fill_gradient(limits=c(0, 100), low="#e8e8e8", high="#0072B2") +
+          scale_x_discrete(limits = rev(paste0("EstTopic", 1:num))) +
+          coord_flip() +
+          scale_y_discrete(limits = paste0("True", 1:truenum)) +
+          xlab("Estimated Topics") + ylab("True Topic") + theme_bw(base_size=13) +
+          ggtitle(title) +
+          theme(plot.title = element_text(hjust = 0.5))
 
-		return(g)
+    return(g)
 }
 ```
 
@@ -167,52 +167,57 @@ library(tidytext)
 library(tm)
 
 get_lda_result <- function(data_folder_name, iter, k, show_n=25){
-	folder <- paste0(data_folder, data_folder_name, "/W")
+  folder <- paste0(data_folder, data_folder_name, "/W")
 
-	# Prepare Data
-	corpus <- Corpus(DirSource(folder))
-	strsplit_space_tokenizer <- function(x)
-			unlist(strsplit(as.character(x), "[[:space:]]+"))
+  # Prepare Data
+  corpus <- Corpus(DirSource(folder))
+  strsplit_space_tokenizer <- function(x)
+      unlist(strsplit(as.character(x), "[[:space:]]+"))
 
-	dtm <- DocumentTermMatrix(corpus,
-													 control = list(tokenize=strsplit_space_tokenizer, 
-													 stopwords = F, tolower = F, 
+  dtm <- DocumentTermMatrix(corpus,
+                           control = list(tokenize=strsplit_space_tokenizer, 
+                           stopwords = F, tolower = F, 
                            stemming = F, wordLengths = c(1, Inf)))
 
-	lda <- LDA(dtm, k = k, control = list(seed = 225, iter=iter), method="Gibbs")
+  lda <- LDA(dtm, k = k, control = list(seed = 225, iter=iter), method="Gibbs")
 
-	assign <- augment(lda, dtm)
-	assign %>% 
-				mutate(Word=term) %>%
-				separate(term,
-								into=c("True", "raw_word_id"),
-								sep="S|R") %>%
-				mutate(TrueTopic = paste0("True", as.character(True))) %>%
-				group_by(.topic, TrueTopic, Word) %>%
-				summarise(counts = sum(count)) %>%
+  assign <- augment(lda, dtm)
+  assign %>% 
+        mutate(Word=term) %>%
+        separate(term,
+                into=c("True", "raw_word_id"),
+                sep="S|R") %>%
+        mutate(TrueTopic = paste0("True", as.character(True))) %>%
+        group_by(.topic, TrueTopic, Word) %>%
+        summarise(counts = sum(count)) %>%
+        ungroup() %>%
+				group_by(.topic) %>%
+        top_n(show_n, counts) %>%
 				ungroup() %>%
-				group_by(.topic) %>% 
-				top_n(show_n, counts) %>%
+				group_by(.topic, TrueTopic) %>%
+				summarise(counts = sum(counts)) %>%
+        ungroup() %>%
+				group_by(.topic) %>%
 				mutate(topicsum = sum(counts)) %>%
 				ungroup() %>%
-				mutate(Proportion = counts / topicsum * 100,
-							 EstTopic = paste0("EstTopic", .topic)) -> res
+        mutate(Proportion = counts / topicsum * 100,
+               EstTopic = paste0("EstTopic", .topic)) -> res
 
-	num <- length(unique(res$EstTopic))
-	truenum <- length(unique(res$TrueTopic))
-	title <- paste0("LDA: Top ", as.character(show_n), " words")
+  num <- length(unique(res$EstTopic))
+  truenum <- length(unique(res$TrueTopic))
+  title <- paste0("LDA: Top ", as.character(show_n), " words")
 
-	g <- ggplot(res, aes(EstTopic, TrueTopic)) +
-				geom_tile(aes(fill=Proportion)) + 
-				scale_fill_gradient(limits=c(0, 100), low="#e8e8e8", high="#0072B2") +
-				scale_x_discrete(limits = rev(paste0("EstTopic", 1:num))) +
-				coord_flip() +
-				scale_y_discrete(limits = paste0("True", 1:truenum)) +
-				xlab("Estimated Topics") + ylab("True Topic") + theme_bw(base_size=13) +
-				ggtitle(title) +
-				theme(plot.title = element_text(hjust = 0.5))
+  g <- ggplot(res, aes(EstTopic, TrueTopic)) +
+        geom_tile(aes(fill=Proportion)) + 
+        scale_fill_gradient(limits=c(0, 100), low="#e8e8e8", high="#0072B2") +
+        scale_x_discrete(limits = rev(paste0("EstTopic", 1:num))) +
+        coord_flip() +
+        scale_y_discrete(limits = paste0("True", 1:truenum)) +
+        xlab("Estimated Topics") + ylab("True Topic") + theme_bw(base_size=13) +
+        ggtitle(title) +
+        theme(plot.title = element_text(hjust = 0.5))
 
-	return(g)
+  return(g)
 }
 ```
 
@@ -228,9 +233,9 @@ create_sim_data(saveDir=paste0(data_folder, "Sim1"), D=1000, K=15, TotalV=3000, 
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
 # show_true_seed("Sim1")
 seed_list <- list(c("1S3 1S140"),
-								 c("1S42 1S154"),
-								 c("3S42 3S75 3S83"),
-								 c("4S11 4S200 4S97"))
+                 c("1S42 1S154"),
+                 c("3S42 3S75 3S83"),
+                 c("4S11 4S200 4S97"))
 
 res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=11)
 post <- topicdict::posterior(res)
@@ -254,9 +259,9 @@ diagnosis_topic_recovery_heatmap(post)
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
 # show_true_seed("Sim1")
 seed_list <- list(c("1S3 1S140"),
-								 c("1S42 1S154"),
-								 c("3S42 3S75 3S83"),
-								 c("4S11 4S200 4S97"))
+                 c("1S42 1S154"),
+                 c("3S42 3S75 3S83"),
+                 c("4S11 4S200 4S97"))
 
 res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=8)
 post <- topicdict::posterior(res)
@@ -279,9 +284,9 @@ diagnosis_topic_recovery_heatmap(post)
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
 # show_true_seed("Sim1")
 seed_list <- list(c("1S3 1S140"),
-								 c("1S42 1S154"),
-								 c("3S42 3S75 3S83"),
-								 c("4S11 4S200 4S97"))
+                 c("1S42 1S154"),
+                 c("3S42 3S75 3S83"),
+                 c("4S11 4S200 4S97"))
 
 res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=15)
 post <- topicdict::posterior(res)
@@ -304,8 +309,8 @@ diagnosis_topic_recovery_heatmap(post)
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
 # show_true_seed("Sim1")
 seed_list <- list(c("1S3 1S140 1S42"),
-								 c("2S190 2S163 3S42 3S75"),
-								 c("4S11 4S200 6S200"))
+                 c("2S190 2S163 3S42 3S75"),
+                 c("4S11 4S200 6S200"))
 
 res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=12)
 post <- topicdict::posterior(res)
@@ -329,8 +334,8 @@ diagnosis_topic_recovery_heatmap(post)
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
 # show_true_seed("Sim1")
 seed_list <- list(c("1S3 1S140 1S42"),
-								 c("2S190 2S163 3S42 3S75"),
-								 c("4S11 4S200 6S200"))
+                 c("2S190 2S163 3S42 3S75"),
+                 c("4S11 4S200 6S200"))
 
 res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=8)
 post <- topicdict::posterior(res)
@@ -353,8 +358,8 @@ diagnosis_topic_recovery_heatmap(post)
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
 # show_true_seed("Sim1")
 seed_list <- list(c("1S3 1S140 1S42"),
-								 c("2S190 2S163 3S42 3S75"),
-								 c("4S11 4S200 6S200"))
+                 c("2S190 2S163 3S42 3S75"),
+                 c("4S11 4S200 6S200"))
 
 res <- topicdict_simulation_run("Sim1", seed_list=seed_list, iter=num_iteration, extra_k=15)
 post <- topicdict::posterior(res)
@@ -405,9 +410,9 @@ create_sim_data(saveDir=paste0(data_folder, "Sim2"), D=1000, K=10, TotalV=3000, 
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
 # show_true_seed("Sim2")
 seed_list <- list(c("1S4 1S210"),
-								 c("1S63 1S232"),
-								 c("3S63 3S113 3S118"),
-								 c("4S16 4S17 4S146"))
+                 c("1S63 1S232"),
+                 c("3S63 3S113 3S118"),
+                 c("4S16 4S17 4S146"))
 res <- topicdict_simulation_run("Sim2", seed_list=seed_list, iter=num_iteration, extra_k=6)
 post <- topicdict::posterior(res)
 diagnosis_alpha(post, start=5, show_topic=c(1,2,3), true_vec=alpha_vec)
@@ -429,9 +434,9 @@ diagnosis_topic_recovery_heatmap(post)
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
 # show_true_seed("Sim2")
 seed_list <- list(c("1S4 1S210"),
-								 c("2S284 2S245 5S184 5S192"),
-								 c("3S63 3S113 3S118"),
-								 c("4S16 4S17 4S146"))
+                 c("2S284 2S245 5S184 5S192"),
+                 c("3S63 3S113 3S118"),
+                 c("4S16 4S17 4S146"))
 res <- topicdict_simulation_run("Sim2",seed_list=seed_list, iter=num_iteration, extra_k=6)
 post <- topicdict::posterior(res)
 diagnosis_alpha(post, start=5, show_topic=c(1,2,3), true_vec=alpha_vec)
@@ -481,9 +486,9 @@ create_sim_data(saveDir=paste0(data_folder, "Sim3"), D=1000, K=15, TotalV=3000, 
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
 # show_true_seed("Sim3")
 seed_list <- list(c("1S3 1S140"),
-								 c("1S42 1S154"),
-								 c("3S42 3S75 3S83"),
-								 c("4S11 4S200 4S97"))
+                 c("1S42 1S154"),
+                 c("3S42 3S75 3S83"),
+                 c("4S11 4S200 4S97"))
 res <- topicdict_simulation_run("Sim3", seed_list=seed_list, iter=num_iteration, extra_k=11)
 post <- topicdict::posterior(res)
 diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
@@ -505,9 +510,9 @@ diagnosis_topic_recovery_heatmap(post)
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
 # show_true_seed("Sim3")
 seed_list <- list(c("1S3 1S140 1S42"),
-								 c("2S190 2S163 5S123 5S128"),
-								 c("3S42 3S75 3S83"),
-								 c("4S11 4S200 4S97"))
+                 c("2S190 2S163 5S123 5S128"),
+                 c("3S42 3S75 3S83"),
+                 c("4S11 4S200 4S97"))
 res <- topicdict_simulation_run("Sim3", seed_list=seed_list, iter=num_iteration, extra_k=11)
 post <- topicdict::posterior(res)
 diagnosis_alpha(post, start=5, show_topic=c(1,2,3,4), true_vec=rep(0.1, 15))
