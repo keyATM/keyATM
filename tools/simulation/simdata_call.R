@@ -1,5 +1,7 @@
-#' @import repurrrsive dplyr tibble purrr
+#' @import dplyr tibble purrr
 NULL
+
+source("simdata_functions.R")
 
 #' Create Simulation Data
 #' 
@@ -16,9 +18,14 @@ NULL
 #' @param lambda a parameter of poisson (average length of documents)
 #' @param seeds_len the number of seeds words per each topic
 #' @param prop_seeds the proportion of seed words 
+#' @param rand_seed a seed for `set.seed()` 
 #' @examples
-#' create_sim_data(saveDir="/Users/Shusei/Desktop/temp/SimulationData/", D=200, K=10, TotalV=8000, alpha=0.1, beta_r=0.1, beta_s=0.1, gamma1=1, gamma2=20, lambda=300, seeds_len=5)
-#' create_sim_data(saveDir="/Users/Shusei/Desktop/temp/SimulationData/", D=200, K=10, TotalV=8000, alpha=0.1, beta_r=0.1, beta_s=0.1, p=rep(0.2, 10), lambda=300, seeds_len=5)
+#' create_sim_data(saveDir="/Users/Desktop/SimulationData/",
+#'   D=200, K=10, TotalV=8000, alpha=0.1, beta_r=0.1, beta_s=0.1, 
+#'   gamma1=1, gamma2=20, lambda=300, seeds_len=5)
+#' create_sim_data(saveDir="/Users/Desktop/SimulationData/", 
+#'   D=200, K=10, TotalV=8000, alpha=0.1, beta_r=0.1, beta_s=0.1, 
+#'   p=rep(0.2, 10), lambda=300, seeds_len=5)
 #'
 #' @export
 create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000, alpha=0.1, beta_r=0.1, beta_s=0.1, p=NULL, gamma1=NULL, gamma2=NULL, lambda=300, seeds_len=5, prop_seeds=NULL, rand_seed=123){

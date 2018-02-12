@@ -4,12 +4,12 @@
 \alias{diagnosis_model_fit}
 \title{Show a diagnosis plot of log-likelihood and perplexity}
 \usage{
-diagnosis_model_fit(res, start = NULL)
+diagnosis_model_fit(x, start = NULL)
 }
 \arguments{
-\item{start}{Slice iteration}
-
 \item{x}{The posterior from a fitted model (see \code{posterior})}
+
+\item{start}{Slice iteration}
 }
 \value{
 ggplot2 object

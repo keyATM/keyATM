@@ -1,13 +1,10 @@
-#' @import repurrrsive dplyr tibble purrr
+#' @import dplyr tibble purrr
 NULL
 
 
 ## Create simulation data
 ########################################################################################
 
-# library(MCMCpack)
-# library(LaplacesDemon)
-# library(repurrrsive)
 # library(dplyr)
 # library(tibble)
 # library(purrr)
@@ -27,11 +24,40 @@ NULL
 ## functions
 ########################################################################################
 
+# Distributions
+# from LaplacesDemon
+rbern <- function(n, prob){
+  return(rbinom(n, 1, prob))
+}
+rcat <- function(n, p){
+  if (is.vector(p)) {
+    x <- as.vector(which(rmultinom(n, size=1, prob=p) == 1, arr.ind=TRUE)[, "row"])
+  } else {
+    d <- dim(p)
+    n <- d[1]
+    k <- d[2]
+    lev <- dimnames(p)[[2]]
+    if (!length(lev)) lev <- 1:k
+    z <- colSums(p)
+    U <- apply(p, 1, cumsum)
+    U[,k] <- 1
+    un <- rep(runif(n), rep(k,n))
+    x <- lev[1 + colSums(un > U)]}
+    return(x)
+}
+## From MCMCpack
+rdirichlet <- function(n, alpha) {
+  l <- length(alpha)
+  x <- matrix(rgamma(l*n,alpha), ncol=l, byrow=TRUE)
+  sm <- x %*% rep(1,l)
+  return(x / as.vector(sm))
+}
+
 ## generate regular topic word distribution
 ## beta_vec: a vector with length V
 ## topic_len: a integer K, the number of dirichlet draws you want to create
 Gen_phiR <- function(topic_len, beta_vec){
-	phiR <- MCMCpack::rdirichlet(topic_len, beta_vec)
+	phiR <- rdirichlet(topic_len, beta_vec)
 	return(phiR)
 }
 
@@ -51,7 +77,7 @@ manual_phiS <- function(topic_len, prob){
 }
 
 Gen_phiS <- function(topic_len, beta_vec){
-	phiS <- MCMCpack::rdirichlet(topic_len, beta_vec)
+	phiS <- rdirichlet(topic_len, beta_vec)
 	return(phiS)
 }
 
@@ -77,25 +103,25 @@ Gen_alpha <- function(alpha, K){
 }
 
 Gen_theta <- function(doc_len, alpha_vec){
-	theta <- MCMCpack::rdirichlet(doc_len, alpha_vec)
+	theta <- rdirichlet(doc_len, alpha_vec)
 	return(theta)
 }
 
 ## generate topic (z) given topic-document distribution
 Gen_z <- function(theta, d, doc_len){
-	z <- LaplacesDemon::rcat(doc_len, theta[d,])
+	z <- rcat(doc_len, theta[d,])
 	return(z)
 }
 
 ## generate indicator (x) whether draw from seeds or usual topic-word distribution
 Gen_x <- function(topic_num, probX){
-	x <- LaplacesDemon::rbern(1, probX[topic_num])
+	x <- rbern(1, probX[topic_num])
 	return(x)
 }
 
 ## generate word (w) given topic and topic-word distribution
 Gen_w <- function(phi, topic){
-	tmp <- LaplacesDemon::rcat(1, phi[topic,])
+	tmp <- rcat(1, phi[topic,])
 	return(tmp)
 }
 
@@ -110,7 +136,7 @@ Gen_w_seeds <- function(index, phiR, phiS, z, x, seed_words){
 		word <- paste0(as.character(topic), "R", as.character(word)) # no overlap of words between topics
 	} else {
 		# Seed words
-		seed_index <- LaplacesDemon::rcat(1, phiS[topic, ])
+		seed_index <- rcat(1, phiS[topic, ])
 		word <- seed_words[topic, seed_index]
 	}
 	return(word)

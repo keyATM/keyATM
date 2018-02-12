@@ -241,13 +241,15 @@ top_docs <- function(x, measure = c("probability", "lift"), n = 10){
 #' @param start Slice iteration 
 #' @param show_topic a vector to specify topic indexes to show 
 #' @param true_vec a vector to visualize true values of alpha 
+#' @param scale a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters
 #'
 #' @return ggplot2 object 
+#' @importFrom stats as.formula
 #' @import ggplot2
 #' @export
-diagnosis_alpha <- function(res, start=NULL, show_topic=NULL, true_vec=NULL, scale=""){
-	num_topic <-	res$seed_K + res$extra_k 
-	res_alpha <- res$alpha
+diagnosis_alpha <- function(x, start=NULL, show_topic=NULL, true_vec=NULL, scale=""){
+	num_topic <-	x$seed_K + x$extra_k 
+	res_alpha <- x$alpha
 
 	if(!is.null(show_topic)){
 		# show topic is a vector of column index e.g., c(1,3,5)
@@ -260,16 +262,17 @@ diagnosis_alpha <- function(res, start=NULL, show_topic=NULL, true_vec=NULL, sca
 	}
 
 
-	parameters <- tidyr::gather(res_alpha, key=parameter, value=value, -iter)
+	parameters <- tidyr::gather(res_alpha, key="parameter", value="value", -"iter")
 
-	p <- ggplot(data=parameters, aes(x=iter, y=value, group=parameter, color=parameter)) +
+	p <- ggplot(data=parameters, aes_string(x='iter', y='value',
+																					group='parameter', color='parameter')) +
      geom_line() +
      geom_point(size=0.3) 
 
 	if(scale==""){
-		p <- p + facet_wrap(~parameter, ncol=2)
+		p <- p + facet_wrap(as.formula(paste("~", "parameter")), ncol=2)
 	}else if(scale == "free"){
-	  p <- p + facet_wrap(~parameter, ncol=2, scales = "free") 
+	  p <- p + facet_wrap(as.formula(paste("~", "parameter")), ncol=2, scales = "free") 
 	}
 
 	if(!is.null(true_vec)){
@@ -281,7 +284,7 @@ diagnosis_alpha <- function(res, start=NULL, show_topic=NULL, true_vec=NULL, sca
 			true <- true[show_topic,]
 		}
 
-		p <- p + geom_hline(data = true, aes(yintercept = value), color="black")
+		p <- p + geom_hline(data = true, aes_string(yintercept = 'value'), color="black")
 	}
 
 	p <- p + ggtitle("Estimated Alpha") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
@@ -296,20 +299,22 @@ diagnosis_alpha <- function(res, start=NULL, show_topic=NULL, true_vec=NULL, sca
 #'
 #' @return ggplot2 object 
 #' @import ggplot2
+#' @importFrom stats as.formula
 #' @export
-diagnosis_model_fit <- function(res, start=NULL){
-	modelfit <- res$modelfit
+diagnosis_model_fit <- function(x, start=NULL){
+	modelfit <- x$modelfit
 
 	if(!is.null(start)){
 		modelfit <- modelfit[ modelfit$Iteration >= start, ] 
 	}
 
-	modelfit <- tidyr::gather(modelfit, key=Measures, value=value, -Iteration)
+	modelfit <- tidyr::gather(modelfit, key="Measures", value="value", -"Iteration")
 
-	p <- ggplot(data=modelfit, aes(x=Iteration, y=value, group=Measures, color=Measures)) +
+	p <- ggplot(data=modelfit, aes_string(x='Iteration', y='value',
+																				group='Measures', color='Measures')) +
      geom_line(show.legend = F) +
      geom_point(size=0.3, show.legend = F) +
-     facet_wrap(~Measures, ncol=2, scales = "free") 
+     facet_wrap(as.formula(paste("~", "Measures")), ncol=2, scales = "free") 
 
 	p <- p + ggtitle("Model Fit") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
 

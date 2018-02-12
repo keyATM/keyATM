@@ -23,6 +23,8 @@ knitr::opts_chunk$set(comment = "")
 ## Prepare Packages
 
 ```{r, message=FALSE}
+setwd("/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict/tools/simulation")
+source("simdata_call.R")
 library(topicdict)
 library(tidyverse)
 library(quanteda)
