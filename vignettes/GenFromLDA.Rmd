@@ -1,0 +1,288 @@
+---
+title: "Generate a simulation dataset from LDA results"
+author: "Shusei Eshima"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GenSimDataLDA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r warning=FALSE, message=FALSE, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(comment = "")
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+library(topicdict)
+library(quanteda)
+library(tibble)
+library(dplyr)
+library(topicmodels)
+iter_num <- 10
+extra_k <- 2
+```
+
+# Fit Seeded LDA
+We'll use the Bara data, and seeds extracted from the dictionary.  
+These are all in package `extdata`:
+```{r}
+doc_folder <- system.file(file.path("extdata", "bara_paras"), package = "topicdict")
+seed_file <- system.file(file.path("extdata", "bara_seeds.txt"), package = "topicdict")
+
+## turn this flat file of seeds into a (quanteda dictionary) list as it would be used
+seed_list <- Map(function(x){ unlist(strsplit(x, " ")) }, 
+                 Filter(function(x){ !grepl(x, pattern = "#") }, # remove comments
+                        readLines(seed_file)))
+
+# Original topic names from Bara dictionary
+names(seed_list) <- c("advocacy", "legal", "medical", "moral", "procedural", "social")
+dict <- dictionary(seed_list)
+dict
+```
+
+Initialize a model with the default tokenization options, without removing
+stopwords or stemming
+```{r}
+set.seed(225)
+
+stops <- setdiff(c(stopwords("english"), letters), 
+                  c("he", "his", "him", "himself", "she", "hers", "her", "herself"))
+model <- topicdict_model(file.path(doc_folder, "*.txt"), extra_k=extra_k,
+												 dict, stopwords = stops)
+```
+And run a model.  Takes about 50 iterations to converge.
+```{r}
+res <- topicdict_train(model, iter = iter_num)
+```
+
+# Create Data 
+## Organize fitted data
+```{r, warning=FALSE, message=FALSE}
+collapse <- function(obj){
+	temp <- unlist(obj) 
+	names(temp) <- NULL
+	return(temp)
+}
+W <- collapse(res$W)
+Z <- collapse(res$Z)
+X <- collapse(res$X)
+fit <- tibble(W=W, Z=Z, X=X)
+
+
+# phiR
+fit %>%
+	filter(X == 0) %>%
+	group_by(W, Z) %>%
+	summarize(count_wordtopic = n()) %>%
+	ungroup() %>%
+	group_by(Z) %>%
+	mutate(count_topicsum = sum(count_wordtopic)) %>%
+	ungroup() %>%
+	mutate(phi_r = count_wordtopic / count_topicsum) %>%
+	select(W, Z, phi_r) %>%
+	tidyr::spread(W, phi_r, fill=1e-12) %>%
+	select(-Z) -> fitted
+
+phiR <- t(apply(fitted%>%as.matrix(), 1, function(x)( return(x / sum(x)) )))
+
+# phiS
+fit %>%
+	filter(X == 1) %>%
+	group_by(W, Z) %>%
+	summarize(count_wordtopic = n()) %>%
+	ungroup() %>%
+	group_by(Z) %>%
+	mutate(count_topicsum = sum(count_wordtopic)) %>%
+	ungroup() %>%
+	mutate(phi_s = count_wordtopic / count_topicsum) %>%
+	select(W, Z, phi_s) %>%
+	tidyr::spread(W, phi_s, fill=1e-12) %>%
+	select(-Z) -> fitted
+
+phiS <- t(apply(fitted%>%as.matrix(), 1, function(x)( return(x / sum(x)) )))
+
+
+# p
+fit %>% 
+	group_by(X, Z) %>%
+	summarize(count_xtopic = n()) %>%
+	ungroup() %>%
+	group_by(Z) %>%
+	mutate(count_topicsum = sum(count_xtopic)) %>%
+	ungroup() %>%
+	mutate(p = count_xtopic / count_topicsum) %>%
+	filter(X==1) %>%
+	select(p) %>% as.matrix() %>% as.vector() -> p 
+
+# alpha
+alpha_vec <- res$alpha
+```
+
+## Preparation for creating simulation data 
+```{r, warning=FALSE, message=FALSE}
+rbern <- function(n, prob){
+  return(rbinom(n, 1, prob))
+}
+rcat <- function(n, p){
+  if (is.vector(p)) {
+    x <- as.vector(which(rmultinom(n, size=1, prob=p) == 1, arr.ind=TRUE)[, "row"])
+  } else {
+    d <- dim(p)
+    n <- d[1]
+    k <- d[2]
+    lev <- dimnames(p)[[2]]
+    if (!length(lev)) lev <- 1:k
+    z <- colSums(p)
+    U <- apply(p, 1, cumsum)
+    U[,k] <- 1
+    un <- rep(runif(n), rep(k,n))
+    x <- lev[1 + colSums(un > U)]}
+    return(x)
+}
+## From MCMCpack
+rdirichlet <- function(n, alpha) {
+  l <- length(alpha)
+  x <- matrix(rgamma(l*n,alpha), ncol=l, byrow=TRUE)
+  sm <- x %*% rep(1,l)
+  return(x / as.vector(sm))
+}
+
+CreateDir_wzx <- function(saveDir){
+	dir1 <- paste0(saveDir, "W")
+	dir.create(dir1)
+	dir2 <- paste0(saveDir, "Z")
+	dir.create(dir2)
+	dir3 <- paste0(saveDir, "X")
+	dir.create(dir3)
+	return(list(dir1, dir2, dir3))
+}
+
+Gen_ND <- function(document, lambda){
+	nd <- numeric(document)
+	## generate document length
+	nd <- rpois(document, lambda)
+	return(nd)
+}
+
+Gen_theta <- function(doc_len, alpha_vec){
+	theta <- rdirichlet(doc_len, alpha_vec)
+	return(theta)
+}
+
+Gen_z <- function(theta, d, doc_len){
+	z <- rcat(doc_len, theta[d,])
+	return(z)
+}
+
+Gen_x <- function(topic_num, probX){
+	x <- rbern(1, probX[topic_num])
+	return(x)
+}
+
+Gen_w <- function(phi, topic){
+	tmp <- rcat(1, phi[topic,])
+	words <- colnames(phi)
+	return(words[tmp])
+}
+
+Gen_w_seeds <- function(index, phiR, phiS, z, x){
+	topic <- z[index]
+	indicator <- x[index]
+
+	if (indicator == 0){
+		# Regular words
+		word <- Gen_w(phiR, topic)
+		word <- paste0("W", as.character(word))
+	} else {
+		# Seed words
+		word <- Gen_w(phiS, topic)
+		word <- paste0("W", as.character(word))
+	}
+	return(word)
+}
+
+Gen_wzx <- function(doc_id, doc_len, phiR, phiS, p_vec, theta){
+	z <- Gen_z(theta, doc_id, doc_len)
+	x <- sapply(z, Gen_x, probX=p_vec)
+	w <- sapply(1:doc_len, Gen_w_seeds, phiR=phiR, phiS=phiS, z=z, x=x)
+	# print(w)
+	return(list(doc_id=rep(doc_id, doc_len), w=w,z=z,x=x))
+}
+
+Write_wzx <- function(content, name, saveDir){
+	txt <- paste(as.character(content), collapse = " ")
+	name <- paste0(saveDir, name, ".txt")
+	write(txt, name)
+}
+
+Save_wzx <- function(data, i, saveDir){
+	## save W for document i
+
+	Write_wzx(data[["w"]], paste0("text", i), paste0(saveDir,"W/"))
+
+	## save Z for document i
+	Write_wzx(data[["z"]], paste0("z_", i), paste0(saveDir,"Z/"))
+
+	## save X for document i
+	Write_wzx(data[["x"]], paste0("x_", i), paste0(saveDir,"X/"))
+}
+
+create_sim_data_from_fitted <- function(
+	saveDir, alpha, phiR, phiS,
+	D=200, lambda=300, rand_seed=123
+){
+	# Set Seed
+	set.seed(rand_seed)
+
+	# Prepare Directory
+	dir.create(saveDir)
+	Dirs <- CreateDir_wzx(saveDir)
+
+	# Set the number of topics
+	K <- nrow(phiS)
+	phiR <- phiR[1:K, ]
+	alpha_vec <- alpha[1:K]
+	V <- ncol(phiR)
+	p_vec <- p[1:K]
+
+	# Length of the documents
+	nd <- Gen_ND(D, lambda)
+
+	# Get theta
+	theta <- Gen_theta(D, alpha_vec)
+
+	## Generate topic and word for each word in each document
+	doc_list <- vector("list", D)
+	
+	for (i in 1:D){
+		# the length of the document i
+		tmp_nd <- nd[i]
+	
+		# ## a list of vector to contain the results
+		# tmp <- WZX_Vec(tmp_nd)
+	
+		## Generate W, Z, and X
+		wzx_list <- Gen_wzx(i, tmp_nd, phiR, phiS, p_vec, theta)
+	
+		## save W, Z, X for document i
+		Save_wzx(wzx_list, i, saveDir)
+	
+		## Store Created Docs
+		doc_list[[i]] <- wzx_list
+	
+	}
+}
+```
+
+
+## Generate Data
+```{r, warning=FALSE, message=FALSE}
+data_folder <- tempfile()
+create_sim_data_from_fitted(saveDir=paste0(data_folder, "Sim1"), alpha_vec, phiR, phiS,
+								D=200, lambda=200)
+```
+
+
