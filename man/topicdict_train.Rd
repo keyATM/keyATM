@@ -4,12 +4,14 @@
 \alias{topicdict_train}
 \title{Run the Gibbs sampler}
 \usage{
-topicdict_train(model, iter = 0L)
+topicdict_train(model, iter = 0L, output_per = 10L)
 }
 \arguments{
 \item{model}{A model, from \code{init} or a previous invocation of \code{train}}
 
 \item{iter}{Required number of iterations}
+
+\item{output_per}{Show log-likelihood and perplexity per this number during the iteration}
 }
 \description{
 Run the Gibbs sampler
