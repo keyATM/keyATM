@@ -54,7 +54,7 @@ model <- topicdict_train(model, iter = 60)
 
 Now let's bundle up the posterior and use the new functions on it
 ```{r}
-post <- posterior(model)
+post <- topicdict::posterior(model)
 top_terms(post, show_seed = TRUE) 
 ```
 

@@ -44,17 +44,14 @@ dict
 ```
 
 Initialize a model with the default tokenization options, without removing
-stopwords or stemming
-```{r}
+stopwords or stemming, and run the model.
+```{r, warning=FALSE, message=FALSE}
 set.seed(225)
 
 stops <- setdiff(c(stopwords("english"), letters), 
                   c("he", "his", "him", "himself", "she", "hers", "her", "herself"))
 model <- topicdict_model(file.path(doc_folder, "*.txt"), extra_k=extra_k,
 												 dict, stopwords = stops)
-```
-And run a model.  Takes about 50 iterations to converge.
-```{r}
 res <- topicdict_train(model, iter = iter_num)
 ```
 
@@ -285,4 +282,15 @@ create_sim_data_from_fitted(saveDir=paste0(data_folder, "Sim1"), alpha_vec, phiR
 								D=200, lambda=200)
 ```
 
+# Use Simulation Data
 
+# Analysis
+```{r, warning=FALSE, message=FALSE}
+# Recovery of p
+
+
+# Change order
+
+
+# Visualize raw data
+```
