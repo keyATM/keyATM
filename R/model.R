@@ -180,19 +180,15 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
 #'  \itemize{
 #'    \item initialize
 #'    \item check_existence
-#'    \item show_words
-#'    \item top_words
+#'    \item{show_words(word, type="count", n_show=100, xaxis=F)}{show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+#'    \item{top_words(n_show=10)}{show top words}
 #'  }
 #'
-#' @return A R4 objects \describe{
-#'         \item{show_words(word, type="count", n_show=100, xaxis=F)}{show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
-#'         \item{top_words(n_show=10)}{show top words}
-#'         }.
 #' @importFrom tidytext tidy 
 #' @import ggplot2 
 #' @import dplyr 
 #' @export
-explore_class <- setRefClass(
+ExploreDocuments <- setRefClass(
 	Class = "ExploreDocuments",
 
 	fields = list(
@@ -258,8 +254,8 @@ explore_class <- setRefClass(
 			}
 
 			if(!xaxis){
-				p <- p + theme(axis.title.x=element_blank(),
-											axis.text.x=element_blank(),
+				p <- p + xlab("Documents") +
+										theme(axis.text.x=element_blank(),
 											axis.ticks.x=element_blank(),
 											plot.title = element_text(hjust = 0.5))
 			}else{
@@ -279,6 +275,7 @@ explore_class <- setRefClass(
 					group_by(Word) %>%
 					summarize(WordCount = sum(count)) %>%
 					ungroup() %>%
+					mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
 					top_n(n_show, WordCount) %>%
 					arrange(-WordCount) %>%
 					print(n=nrow(.))
@@ -346,7 +343,7 @@ explore <- function(file_pattern, encoding = NULL,
 	dfm_ <- dfm(toks)
 	tidy_ <- tidy(dfm_)
 
-	res <- explore_class$new(tidy_)
+	res <- ExploreDocuments$new(tidy_)
 
 	return(res)
 

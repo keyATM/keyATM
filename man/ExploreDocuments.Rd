@@ -3,14 +3,7 @@
 \docType{class}
 \name{ExploreDocuments}
 \alias{ExploreDocuments}
-\alias{explore_class}
 \title{Explore Documents Class}
-\value{
-A R4 objects \describe{
-        \item{show_words(word, type="count", n_show=100, xaxis=F)}{show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
-        \item{top_words(n_show=10)}{show top words}
-        }.
-}
 \description{
 Explore Documents Class
 }
@@ -34,8 +27,8 @@ NULL
  \itemize{
    \item initialize
    \item check_existence
-   \item show_words
-   \item top_words
+   \item{show_words(word, type="count", n_show=100, xaxis=F)}{show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+   \item{top_words(n_show=10)}{show top words}
  }
 }
 

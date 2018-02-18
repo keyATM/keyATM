@@ -1,3 +1,7 @@
+# Vim File
+*.swp
+.DS_Store
+
 # History files
 .Rhistory
 .Rapp.history
