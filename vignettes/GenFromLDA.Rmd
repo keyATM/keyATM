@@ -272,17 +272,80 @@ create_sim_data_from_fitted <- function(
 	
 	}
 }
+
+show_true_seeds <- function(phiS){
+	n <- nrow(phiS)
+	seeds_ <- c()
+	for(i in 1:n){
+		temp <- phiS[i, ]
+		seeds_ <- c(seeds_, names(temp[temp > 1e-8]))
+	}
+	return(seeds_)
+}
+
+create_model <- function(data_folder_name, extra_k, 
+                                     seed_file_name="", seed_list = NULL,
+                                     cull_seed=NULL){
+
+  # cull_seed: Which row (=topic) and column (=number of seed) to use
+
+  set.seed(225)
+
+  folder <- paste0(data_folder, data_folder_name, "/W")
+  docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
+
+	if(seed_file_name != ""){
+		seed_file <- paste0(data_folder, data_folder_name, "/", seed_file_name)
+		seeddata <- invisible(readr::read_csv(seed_file))
+	}
+
+  if(!is.null(cull_seed)){
+    seeddata <- seeddata[1:cull_seed[1], 1:cull_seed[2]]
+  }
+
+  if(is.null(seed_list)){
+    seed_list <- as.list( apply(seeddata, 1, function(x){return(paste0(x, collapse=" "))}) )
+  }
+  names(seed_list) <- 1:length(seed_list)
+  dict <- quanteda::dictionary(seed_list)
+
+  model <- topicdict_model(docs,
+               dict = dict, extra_k = extra_k,
+               remove_numbers = FALSE, # For simulation, make it false
+               remove_punct = TRUE,
+               remove_symbols = TRUE,
+               remove_separators = TRUE)
+
+  return(model)
+}
 ```
 
 
 ## Generate Data
 ```{r, warning=FALSE, message=FALSE}
 data_folder <- tempfile()
-create_sim_data_from_fitted(saveDir=paste0(data_folder, "Sim1"), alpha_vec, phiR, phiS,
-								D=200, lambda=200)
+name <- "Sim1"
+create_sim_data_from_fitted(saveDir=paste0(data_folder, name, "/"), alpha_vec, phiR, phiS, D=200, lambda=200)
 ```
 
 # Use Simulation Data
+```{r, warning=FALSE, message=FALSE}
+# Show seeds 
+show_true_seeds(phiS)
+
+# Explore
+folder <- paste0(data_folder, "Sim1", "/W")
+docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
+explore_ <- explore(docs,
+						 remove_numbers = FALSE, # For simulation, make it false
+						 remove_punct = TRUE,
+						 remove_symbols = TRUE,
+						 remove_separators = TRUE)
+
+seed_list <- list(c("11 93 97"),
+                 c("556 568"))
+model <- create_model("Sim1", seed_list=seed_list, extra_k=11)
+```
 
 # Analysis
 ```{r, warning=FALSE, message=FALSE}

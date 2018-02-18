@@ -14,7 +14,8 @@ Imports: Rcpp,
   quanteda,
   readtext,
 	ggplot2,
-	dplyr
+	dplyr,
+	tidytext
 SystemRequirements: C++11     
 Suggests: knitr,
   rmarkdown,
