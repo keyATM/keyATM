@@ -670,7 +670,7 @@ diagnosis_topic_recovery <- function(post, n=25){
     return(g)
 }
 
-diagnosis_topic_recovery_heatmap <- function(post, n=25){
+diagnosis_topic_recovery_heatmap <- function(post, n=25, topicvec=c()){
   topwords <- top_terms(post, n=n)
   topwords <- data.frame(topwords)
   colnames(topwords) <- paste0("EstTopic", 1:ncol(topwords))
@@ -693,6 +693,10 @@ diagnosis_topic_recovery_heatmap <- function(post, n=25){
            Estimated = EstTopic) -> res
 
     num <- length(unique(res$Estimated))
+		if(is.null(topicvec) || length(topicvec) != num){
+			topicvec <- 1:num
+		}
+
     truenum <- length(unique(res$TrueTopic))
 
     title <- paste0("Seeded LDA: Top ", as.character(n), " words")
@@ -700,7 +704,7 @@ diagnosis_topic_recovery_heatmap <- function(post, n=25){
     g <- ggplot(res, aes(EstTopic, TrueTopic)) +
           geom_tile(aes(fill=Proportion)) + 
           scale_fill_gradient(limits=c(0, 100), low="#e8e8e8", high="#0072B2") +
-          scale_x_discrete(limits = rev(paste0("EstTopic", 1:num))) +
+          scale_x_discrete(limits = rev(paste0("EstTopic", topicvec))) +
           coord_flip() +
           scale_y_discrete(limits = paste0("True", 1:truenum)) +
           xlab("Estimated Topics") + ylab("True Topic") + theme_bw(base_size=13) +

@@ -320,3 +320,44 @@ diagnosis_model_fit <- function(x, start=NULL){
 
 	return(p)
 }
+
+
+#' Show a diagnosis plot of p 
+#'
+#' @param x The posterior from a fitted model (see \code{posterior})
+#'
+#' @return ggplot2 object 
+#' @import ggplot2 dplyr
+#' @importFrom stats as.formula
+#' @export
+diagnosis_p <- function(x){
+
+	collapse <- function(obj){
+	temp <- unlist(obj) 
+	names(temp) <- NULL
+	return(temp)
+	}
+
+	data <- tibble::tibble(Z=collapse(x$Z), X=collapse(x$X))
+	
+	data %>%
+		group_by(Z) %>%
+		summarize(count = n(), sumx=sum(X)) %>%
+		ungroup() %>%
+		mutate(Proportion=round(sumx/count*100, 3)) -> res
+
+	p	<- ggplot(res, aes(x=paste0("Topic", Z+1), y=Proportion)) +
+			geom_bar(stat="identity") +
+			theme_bw() +
+			ylab("Proportion (%)") +
+			xlab("Topic") +
+			ggtitle("Proportion of words drawn from seed topic-word distribution") +
+			theme(plot.title = element_text(hjust = 0.5))
+
+	res %>% select(Z, Proportion) %>%
+		mutate(Topic=Z+1) %>%
+		select(-Z) %>%
+		print(n=nrow(.))
+
+	return(p)
+}
