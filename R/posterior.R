@@ -18,6 +18,9 @@
 #'     \item{word_counts}{ Number of times each word type appears}
 #'     \item{doc_lens}{ Length of each document in tokens}
 #'     \item{vocab}{ Words in the vocabulary}
+#'     \item{alpha}{ \code{alpha} during the iteration}
+#'     \item{modelfit}{ Perplexity and log-likelihood}
+#'     \item{p}{ Estimated p}
 #'   }
 #' @export
 posterior <- function(model){
@@ -26,7 +29,12 @@ posterior <- function(model){
   V <- length(model$vocab)
   N = length(model$W)
   doc_lens <- sapply(model$W, length)
-  tnames <- c(names(model$seeds), paste0("T_", 1:model$extra_k))
+	
+	if(model$extra_k > 0){
+		tnames <- c(names(model$seeds), paste0("T_", 1:model$extra_k))
+	}else{
+		tnames <- c(names(model$seeds))
+	}
 
   posterior_z <- function(zvec){
     tt <- table(factor(zvec, levels = 1:allK - 1))
@@ -64,6 +72,22 @@ posterior <- function(model){
 		colnames(modelfit) <-	c("Iteration", "Log Likelihood", "Perplexity") 
 	}
 
+	# p
+	collapse <- function(obj){
+	temp <- unlist(obj) 
+	names(temp) <- NULL
+	return(temp)
+	}
+
+	data <- data.frame(Z=collapse(model$Z), X=collapse(model$X))
+	data %>%
+		mutate_(Topic='Z+1') %>%
+		select(-starts_with("Z")) %>%
+		group_by_('Topic') %>%
+		summarize_(count = 'n()', sumx='sum(X)') %>%
+		ungroup() %>%
+		mutate_(Proportion='round(sumx/count*100, 3)') -> p_estimated
+
   ## TODO fix this naming nonsense
   dict <- model$dict
   names(dict) <- names(model$seeds)
@@ -74,7 +98,7 @@ posterior <- function(model){
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = doc_lens, vocab = model$vocab,
              dict = dict,
-						 alpha=res_alpha, modelfit=modelfit)
+						 alpha=res_alpha, modelfit=modelfit, p=p_estimated)
   class(ll) <- c("topicdict_posterior", class(ll))
   ll
 }
@@ -287,7 +311,9 @@ diagnosis_alpha <- function(x, start=NULL, show_topic=NULL, true_vec=NULL, scale
 		p <- p + geom_hline(data = true, aes_string(yintercept = 'value'), color="black")
 	}
 
-	p <- p + ggtitle("Estimated Alpha") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+	p <- p + ylab("Value") +
+		ggtitle("Estimated Alpha") + theme_bw() +
+		theme(plot.title = element_text(hjust = 0.5))
 
 	return(p)
 }
@@ -314,7 +340,8 @@ diagnosis_model_fit <- function(x, start=NULL){
 																				group='Measures', color='Measures')) +
      geom_line(show.legend = F) +
      geom_point(size=0.3, show.legend = F) +
-     facet_wrap(as.formula(paste("~", "Measures")), ncol=2, scales = "free") 
+     facet_wrap(as.formula(paste("~", "Measures")), ncol=2, scales = "free") +
+		 ylab("Value")
 
 	p <- p + ggtitle("Model Fit") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
 
@@ -325,39 +352,32 @@ diagnosis_model_fit <- function(x, start=NULL){
 #' Show a diagnosis plot of p 
 #'
 #' @param x The posterior from a fitted model (see \code{posterior})
+#' @param topicvec A topic vector to reorder 
 #'
 #' @return ggplot2 object 
-#' @import ggplot2 dplyr
-#' @importFrom stats as.formula
+#' @import ggplot2 
+#' @import dplyr
 #' @export
-diagnosis_p <- function(x){
+diagnosis_p <- function(x, topicvec=c()){
 
-	collapse <- function(obj){
-	temp <- unlist(obj) 
-	names(temp) <- NULL
-	return(temp)
+	num <- length(unique(x$p$Topic))
+	if(is.null(topicvec)){
+		topicvec <- 1:num
+	}else if(length(topicvec) != num){
+		message("Topicvec length does not match with the topic number")
+		topicvec <- 1:num
 	}
 
-	data <- tibble::tibble(Z=collapse(x$Z), X=collapse(x$X))
-	
-	data %>%
-		group_by(Z) %>%
-		summarize(count = n(), sumx=sum(X)) %>%
-		ungroup() %>%
-		mutate(Proportion=round(sumx/count*100, 3)) -> res
-
-	p	<- ggplot(res, aes(x=paste0("Topic", Z+1), y=Proportion)) +
+	temp <- x$p
+	temp$Topic <- paste0("EstTopic", temp$Topic)
+	g	<- ggplot(temp, aes_string(x='Topic', y='Proportion')) +
 			geom_bar(stat="identity") +
 			theme_bw() +
+			scale_x_discrete(limits = paste0("EstTopic", get("topicvec"))) +
 			ylab("Proportion (%)") +
 			xlab("Topic") +
 			ggtitle("Proportion of words drawn from seed topic-word distribution") +
 			theme(plot.title = element_text(hjust = 0.5))
 
-	res %>% select(Z, Proportion) %>%
-		mutate(Topic=Z+1) %>%
-		select(-Z) %>%
-		print(n=nrow(.))
-
-	return(p)
+	return(g)
 }

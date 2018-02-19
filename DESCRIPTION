@@ -15,7 +15,8 @@ Imports: Rcpp,
   readtext,
 	ggplot2,
 	dplyr,
-	tidytext
+	tidytext,
+	methods
 SystemRequirements: C++11     
 Suggests: knitr,
   rmarkdown,

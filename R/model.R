@@ -159,35 +159,33 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
   ll
 }
 
-#' Explore Documents Class
+#' A Reference Class to explore documents 
 #'
 #' Explore Documents Class
 #'
-#' @name ExploreDocuments
 #' @docType class
 #'
 #' @section Fields:
-#' \itemize{
-#'    \item data data in tidytext format
-#'    \item uniquewords a vector of unique words
-#'    \item totalwords number of words in the entire documents
-#' }
+#'  \describe{
+#'    \item{\code{data}}{ data in tidytext format}
+#'    \item{\code{uniquewords}}{ a vector of unique words}
+#'    \item{\code{totalwords}}{ number of words in the entire documents}
+#'  }
 #'
-#' @section Contains:
-#' NULL
 #'
 #' @section Methods:
-#'  \itemize{
-#'    \item initialize
-#'    \item check_existence
-#'    \item{show_words(word, type="count", n_show=100, xaxis=F)}{show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
-#'    \item{top_words(n_show=10)}{show top words}
+#'  \describe{
+#'    \item{\code{initialize}}{ Constructor}
+#'    \item{\code{check_existence}}{ Check whether the word exists in the corpus}
+#'    \item{\code{show_words(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+#'    \item{\code{top_words(n_show=10)}}{ show top words}
 #'  }
 #'
 #' @importFrom tidytext tidy 
 #' @import ggplot2 
 #' @import dplyr 
-#' @export
+#' @export ExploreDocuments
+#' @exportClass ExploreDocuments
 ExploreDocuments <- setRefClass(
 	Class = "ExploreDocuments",
 
@@ -218,7 +216,7 @@ ExploreDocuments <- setRefClass(
 		},
 
 		show_words = function(word, type="count", n_show=100, xaxis=F){
-			## Visualize a word distribution 
+			"Visualize a word distribution" 
 			# check the words existence						
 			c <- check_existence(word)
 			if(c){ return()}
@@ -269,6 +267,7 @@ ExploreDocuments <- setRefClass(
 		},
 
 		top_words = function(n_show=20){
+			"Show frequent words" 
 				data %>%
 					mutate(Word = term) %>%
 					select(-term) %>%
@@ -304,13 +303,14 @@ ExploreDocuments <- setRefClass(
 #'                  e.g. \code{quanteda::stopwords("english")}
 #'
 #' @return A R4 objects \describe{
-#'         \item{show_words(word, type="count", n_show=100, xaxis=F)}{show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
-#'         \item{top_words(n_show=10)}{show top words}
+#'         \item{show_words(word, type="count", n_show=100, xaxis=F)}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+#'         \item{top_words(n_show=10)}{ show top words}
 #'         }.
 #' @importFrom quanteda corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary dfm
 #' @importFrom readtext readtext
 #' @importFrom tidytext tidy 
 #' @import ggplot2 
+#' @import methods
 #' @import dplyr 
 #' @export
 explore <- function(file_pattern, encoding = NULL,
