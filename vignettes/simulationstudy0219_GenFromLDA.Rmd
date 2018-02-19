@@ -22,7 +22,7 @@ library(tibble)
 library(ggplot2)
 library(dplyr)
 library(topicmodels)
-iter_num <- 20
+iter_num <- 800
 extra_k <- 2
 ```
 
