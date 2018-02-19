@@ -555,7 +555,7 @@ EstTopic7 is a regular topic.
 diagnosis_p(post)
 ```
 
-### Best LDA result (true number of topics)
+# Best LDA result (true number of topics)
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
 get_lda_result("Sim1", iter=iter_num, k=6)
 ```
