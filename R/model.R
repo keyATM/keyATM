@@ -242,7 +242,7 @@ ExploreDocuments <- setRefClass(
 			p <- ggplot(temp, aes(x=reorder(document, -focus), y=focus)) +
 				geom_bar(stat="identity")
 
-			p <- p + ggtitle(paste0("Ditribution of '", word, "' across documents")) + 
+			p <- p + ggtitle(paste0("Distribution of '", word, "' across documents")) + 
 				theme_bw() 
 
 			if(type=="count"){
