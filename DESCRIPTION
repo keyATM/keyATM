@@ -22,6 +22,9 @@ Suggests: knitr,
   rmarkdown,
   testthat,
   purrr,
-  tidyr
+  tidyr,
+  readtext,
+  ggplot2,
+  dplyr
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1

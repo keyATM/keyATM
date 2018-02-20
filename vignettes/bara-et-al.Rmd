@@ -58,7 +58,7 @@ post <- topicdict::posterior(model)
 top_terms(post, show_seed = TRUE) 
 ```
 
-But let's look at these in terms of lift (higher proabbility relative to a corpus frequency baseline)
+But let's look at these in terms of lift (higher probability relative to a corpus frequency baseline)
 ```{r}
 top_terms(post, "lift", show_seed = TRUE)
 ```

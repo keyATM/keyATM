@@ -8,7 +8,8 @@ topicdict_model(file_pattern, dict, extra_k = 1, encoding = NULL,
   lowercase = TRUE, remove_numbers = TRUE, remove_punct = TRUE,
   remove_symbols = TRUE, remove_separators = TRUE, remove_twitter = FALSE,
   remove_hyphens = FALSE, remove_url = TRUE, stem_language = NULL,
-  stopwords = NULL, alpha = 50/(length(dict) + extra_k))
+  stopwords = NULL, alpha = 50/(length(dict) + extra_k), beta = 0.01,
+  beta_s = 0.1, gamma_1 = 1, gamma_2 = 1)
 }
 \arguments{
 \item{file_pattern}{name of a file or a wildcard, e.g. \code{"docs/*.txt"}}
@@ -59,7 +60,7 @@ A list containing \describe{
         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
         \item{beta}{prior parameter for the non-seeded word generation probabilities}
-        \item{betas}{prior parameter for the seeded word generation probabilities}
+        \item{beta_s}{prior parameter for the seeded word generation probabilities}
         \item{call}{details of the function call}
         }.
 }

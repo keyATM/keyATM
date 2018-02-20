@@ -1,0 +1,129 @@
+---
+title: "Consequences of differing confidence in the seed words in Bara et al."
+author: "Will Lowe"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{dictionary-confidence}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r warning=FALSE, message=FALSE, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(comment = "")
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+library(topicdict)
+library(quanteda)
+library(ggplot2)
+```
+
+We'll use the Bara data, and seeds extracted from the dictionary.  
+These are all in package `extdata`:
+```{r}
+doc_folder <- system.file(file.path("extdata", "bara_paras"), package = "topicdict")
+seed_file <- system.file(file.path("extdata", "bara_seeds.txt"), package = "topicdict")
+
+## turn this flat file of seeds into a (quanteda dictionary) list as it would be used
+seed_list <- Map(function(x){ unlist(strsplit(x, " ")) }, 
+                 Filter(function(x){ !grepl(x, pattern = "#") }, # remove comments
+                        readLines(seed_file)))
+
+# Original topic names from Bara dictionary
+names(seed_list) <- c("advocacy", "legal", "medical", "moral", "procedural", "social")
+dict <- dictionary(seed_list)
+dict
+```
+
+Initialize a model with the default tokenization options, without removing
+stopwords or stemming
+```{r}
+set.seed(12345)
+
+stops <- setdiff(c(stopwords("english"), letters), 
+                  c("he", "his", "him", "himself", "she", "hers", "her", "herself", "our", "their"))
+model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, stopwords = stops)
+```
+And run three models: with weak, medium, and heavy confidence in the seed words
+
+Low confidence
+```{r}
+model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, 
+                         stopwords = stops, beta_s = 0.02)
+model <- topicdict_train(model, iter = 60)
+post <- posterior(model)
+tt <- top_terms(post, n = 100, show_seed = TRUE) 
+low_rank <- apply(tt, 2, function(x) median(which(grepl("✓", x)))) # average rank
+low_qual <- model$model_fit[[length(model$model_fit)]]
+```
+
+Medium confidence
+```{r}
+model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, 
+                         stopwords = stops, beta_s = 0.1)
+model <- topicdict_train(model, iter = 60)
+post <- posterior(model)
+tt <- top_terms(post, n = 100, show_seed = TRUE) 
+med_rank <- apply(tt, 2, function(x) median(which(grepl("✓", x)))) # average rank
+med_qual <- model$model_fit[[length(model$model_fit)]]
+```
+
+High confidence
+```{r}
+model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, 
+                         stopwords = stops, beta_s = 0.2)
+model <- topicdict_train(model, iter = 60)
+post <- posterior(model)
+tt <- top_terms(post, n = 100, show_seed = TRUE) 
+high_rank <- apply(tt, 2, function(x) median(which(grepl("✓", x)))) # average rank
+high_qual <- model$model_fit[[length(model$model_fit)]]
+```
+
+Overconfidence
+```{r}
+model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, 
+                         stopwords = stops, beta_s = 1.0)
+model <- topicdict_train(model, iter = 60)
+post <- posterior(model)
+tt <- top_terms(post, n = 100, show_seed = TRUE) 
+over_rank <- apply(tt, 2, function(x) median(which(grepl("✓", x)))) # average rank
+over_qual <- model$model_fit[[length(model$model_fit)]]
+```
+
+```{r, fig.height=5, fig.width=8, echo = FALSE}
+dd <- data.frame(condition = factor(c(rep("low", 7), rep("med", 7), rep("high", 7), 
+                               rep("over", 7)), levels = c("low", "med", "high", "over")),
+                 topic_n = rep(1:7, 4),
+                 topic = c(names(model$seeds), "T1"),
+                 median_rank = c(low_rank, med_rank, high_rank, over_rank))
+
+graded_palette <- colorRampPalette(c("blue", "red"))( 4 )
+ggplot(dd, aes(x = topic_n, y = median_rank, color = condition)) +
+  geom_line() + 
+  geom_point() +
+  theme_minimal() +
+  scale_colour_manual(values=graded_palette) + 
+  scale_x_discrete(limits=levels(dd$topic)) +
+  scale_y_continuous(breaks=seq(0, 90, 10)) +
+  labs(x = "Topic", y = "Median rank in top words list") 
+```
+
+Model fit (perplexity)
+```{r, fig.height=5, fig.width=8,  echo = FALSE}
+df <- data.frame(levels = c("low", "med", "high", "over"),
+                 perplexity = c(low_qual[3], med_qual[3], high_qual[3], over_qual[3]),
+                 loglik = c(low_qual[2], med_qual[2], high_qual[2], over_qual[2]))
+ggplot(df, aes(x = 1:4, y = perplexity)) + 
+  geom_point() +
+  geom_line() +
+  theme_minimal() +
+  scale_x_discrete(limits=df$levels) + 
+  xlab("Confidence in seed words") + 
+  ylab("Perplexity") + 
+  ylim(0, 6000)
+         
+```
