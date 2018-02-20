@@ -56,7 +56,7 @@
 #'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
 #'         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
 #'         \item{beta}{prior parameter for the non-seeded word generation probabilities}
-#'         \item{betas}{prior parameter for the seeded word generation probabilities}
+#'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
 #'         \item{call}{details of the function call}
 #'         }.
 #' @importFrom quanteda corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
@@ -70,7 +70,9 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
                             remove_twitter = FALSE, remove_hyphens = FALSE,
                             remove_url = TRUE, stem_language = NULL,
                             stopwords = NULL,
-                            alpha = 50/(length(dict)+extra_k)){
+                            alpha = 50/(length(dict) + extra_k),
+                            beta = 0.01, beta_s = 0.1,
+                            gamma_1 = 1.0, gamma_2 = 1.0){
   cl <- match.call()
 
   proper_len <- length(dict) + extra_k
@@ -149,8 +151,8 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
 
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names,
              files = doc_names, dict = dtoks, seeds = seeds, extra_k = extra_k,
-             alpha = alpha, gamma_1 = 1.0, gamma_2 = 1.0,
-             beta = 0.01, beta_s = 0.1, call = cl)
+             alpha = alpha, gamma_1 = gamma_1, gamma_2 = gamma_2,
+             beta = beta, beta_s = beta_s, call = cl)
   class(ll) <- c("topicdict", class(ll))
   ll
 }
