@@ -16,7 +16,7 @@ ll <- topicdict_model(file.path(folder, "macavity*"),
 test_that("posterior function", {
   post <- posterior(ll)
   expect_named(post, c("seed_K", "extra_K", "V", "N", "theta", "beta", "topic_counts",
-                       "word_counts", "doc_lens", "vocab", "dict"))
+                       "word_counts", "doc_lens", "vocab", "dict", "alpha", "modelfit"))
   expect_equal(dim(post$beta), c(3, 220))
   expect_equal(post$seed_K, 2)
   expect_equal(post$extra_K, 1)

@@ -152,7 +152,9 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names,
              files = doc_names, dict = dtoks, seeds = seeds, extra_k = extra_k,
              alpha = alpha, gamma_1 = gamma_1, gamma_2 = gamma_2,
-             beta = beta, beta_s = beta_s, call = cl)
+             beta = beta, beta_s = beta_s, call = cl,
+						 alpha_iter = list(), model_fit = list(),
+						 call = cl)
   class(ll) <- c("topicdict", class(ll))
   ll
 }

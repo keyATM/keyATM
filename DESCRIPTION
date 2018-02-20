@@ -12,14 +12,14 @@ LinkingTo: Rcpp,
 Imports: Rcpp,
   hashmap,
   quanteda,
-  readtext
+  readtext,
+	ggplot2,
+	dplyr
 SystemRequirements: C++11     
 Suggests: knitr,
   rmarkdown,
   testthat,
   purrr,
-  tidyr,
-  dplyr,
-  ggplot2
+  tidyr
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
