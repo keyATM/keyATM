@@ -11,7 +11,7 @@ Explore Documents Class
 \section{Methods}{
 
 \describe{
-\item{\code{show_words(word, type = "count", n_show = 100, xaxis = F)}}{Visualize a word distribution}
+\item{\code{show_words_documents(word, type = "count", n_show = 100, xaxis = F)}}{Visualize a word distribution}
 
 \item{\code{top_words(n_show = 20)}}{Show frequent words}
 }}
@@ -31,7 +31,8 @@ Explore Documents Class
  \describe{
    \item{\code{initialize}}{ Constructor}
    \item{\code{check_existence}}{ Check whether the word exists in the corpus}
-   \item{\code{show_words(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+   \item{\code{show_words_documents(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+   \item{\code{show_words(word, n_show=1:num_uniquewords)}}{ show a vector of words distribution.}
    \item{\code{top_words(n_show=10)}}{ show top words}
    \item{\code{words_distribution(n_show)}}{ show a distribution of words}
  }

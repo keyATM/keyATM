@@ -180,7 +180,8 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
 #'  \describe{
 #'    \item{\code{initialize}}{ Constructor}
 #'    \item{\code{check_existence}}{ Check whether the word exists in the corpus}
-#'    \item{\code{show_words(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+#'    \item{\code{show_words_documents(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+#'    \item{\code{show_words(word, n_show=1:num_uniquewords)}}{ show a vector of words distribution.}
 #'    \item{\code{top_words(n_show=10)}}{ show top words}
 #'    \item{\code{words_distribution(n_show)}}{ show a distribution of words}
 #'  }
@@ -221,7 +222,7 @@ ExploreDocuments <- setRefClass(
 			}
 		},
 
-		show_words = function(word, type="count", n_show=100, xaxis=F){
+		show_words_documents = function(word, type="count", n_show=100, xaxis=F){
 			"Visualize a word distribution" 
 			# check the words existence						
 			c <- check_existence(word)
@@ -268,6 +269,48 @@ ExploreDocuments <- setRefClass(
 											 plot.title = element_text(hjust = 0.5))
 			}
 
+		},
+
+		show_words = function(words, n_show=1:num_uniquewords){
+			# Distribution across words
+				data %>%
+					mutate(Word = term) %>%
+					select(-term) %>%
+					group_by(Word) %>%
+					summarize(WordCount = sum(count)) %>%
+					ungroup() %>%
+					mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
+					arrange(desc(WordCount)) %>%
+					mutate(Ranking = 1:n()) %>%
+					mutate(Show = if_else(.$Word %in% get("words"), "1", "0")) %>%
+					slice(n_show) -> temp
+
+				temp %>% 
+					mutate(Width=if_else(Show==1, length(get("n_show"))/15, 1)) -> temp
+				temp$right <- cumsum(temp$Width) + 30*c(0:(nrow(temp)-1))
+				temp$left <- temp$right - temp$Width
+
+				p <- ggplot(temp, aes(ymin = 0)) + 
+					geom_rect(aes(xmin = left, xmax = right, ymax = `Proportion(%)`, colour = Show, fill = Show)) +
+					scale_fill_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) + 
+					scale_colour_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) + 
+					xlab("Words") + ylab("Proportion (%)") + ggtitle("Distribution of words") +
+					theme_bw() +
+					theme(axis.text.x=element_blank(),
+								axis.ticks.x=element_blank(),
+								legend.position="none",
+								plot.title = element_text(hjust = 0.5))
+
+				# p <- ggplot(temp, aes(x=reorder(Word,-WordCount), y=`Proportion(%)`, fill=Show)) +
+				# 	geom_bar(stat="identity", width=1) +
+				# 	scale_fill_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) + 
+				# 	xlab("Words") + ylab("Proportion (%)") + ggtitle("Distribution of words") +
+				# 	theme(axis.text.x=element_blank(),
+				# 				axis.ticks.x=element_blank(),
+				# 				legend.position="none",
+				# 				plot.title = element_text(hjust = 0.5))
+
+
 			return(p)
 
 		},
@@ -299,6 +342,7 @@ ExploreDocuments <- setRefClass(
 		},
 
 		words_distribution = function(n_show=num_uniquewords){
+			# Distribution across documents
 				data %>%
 					mutate(Word = term) %>%
 					select(-term) %>%
@@ -307,14 +351,14 @@ ExploreDocuments <- setRefClass(
 					ungroup() %>%
 					mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
 					arrange(desc(WordCount)) %>%
-					mutate(Ranking = 1:n()) -> temp
+					mutate(Ranking = 1:n()) -> temp_all
 
 				if(length(n_show)>1){
-					temp %>%
+					temp_all %>%
 						slice(n_show) %>%
 						arrange(-WordCount) -> temp
 				}else{
-					temp %>%
+					temp_all %>%
 						top_n(n_show, WordCount) %>%
 						arrange(-WordCount) -> temp
 				}
@@ -337,8 +381,9 @@ ExploreDocuments <- setRefClass(
 									axis.ticks.x=element_blank(),
 									plot.title = element_text(hjust = 0.5))
 				}
+			
 
-				return(p)
+			return(p)
 
 		}
 	)
