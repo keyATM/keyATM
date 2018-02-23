@@ -55,6 +55,8 @@ A list containing \describe{
         \item{seeds}{a list of words for the seed words in dict, named by dictionary category}
         \item{extra_k}{how many extra non-seeded topics are required}
         \item{alpha}{a vector of topic proportion hyperparameters}
+        \item{alpha_iter}{a list to store topic proportion hyperparameters}
+        \item{model_fit}{a list to store perplexity and log-likelihood}
         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
         \item{beta}{prior parameter for the non-seeded word generation probabilities}

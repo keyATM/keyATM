@@ -53,6 +53,8 @@
 #'         \item{seeds}{a list of words for the seed words in dict, named by dictionary category}
 #'         \item{extra_k}{how many extra non-seeded topics are required}
 #'         \item{alpha}{a vector of topic proportion hyperparameters}
+#'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
+#'         \item{model_fit}{a list to store perplexity and log-likelihood}
 #'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
 #'         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
 #'         \item{beta}{prior parameter for the non-seeded word generation probabilities}
@@ -159,3 +161,192 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
   ll
 }
 
+#' A Reference Class to explore documents 
+#'
+#' Explore Documents Class
+#'
+#' @docType class
+#'
+#' @section Fields:
+#'  \describe{
+#'    \item{\code{data}}{ data in tidytext format}
+#'    \item{\code{uniquewords}}{ a vector of unique words}
+#'    \item{\code{totalwords}}{ number of words in the entire documents}
+#'  }
+#'
+#'
+#' @section Methods:
+#'  \describe{
+#'    \item{\code{initialize}}{ Constructor}
+#'    \item{\code{check_existence}}{ Check whether the word exists in the corpus}
+#'    \item{\code{show_words(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+#'    \item{\code{top_words(n_show=10)}}{ show top words}
+#'  }
+#'
+#' @importFrom tidytext tidy 
+#' @import ggplot2 
+#' @import dplyr 
+#' @export ExploreDocuments
+#' @exportClass ExploreDocuments
+ExploreDocuments <- setRefClass(
+	Class = "ExploreDocuments",
+
+	fields = list(
+		data = "data.frame",
+		uniquewords = "character",
+		totalwords = "numeric"
+	),
+
+	methods = list(
+		initialize = function(data_=tidy_){
+			data_ <- data_ %>%
+				group_by(document) %>%
+				mutate(countdoc = sum(count)) %>%
+				ungroup()
+			data <<- data_
+			uniquewords <<- unique(data$term)
+			totalwords <<- sum(data$count)
+		},
+
+		check_existence = function(word){
+			if(! (word %in% uniquewords)){
+				message(paste0("'", word, "' is not in a corpus"))
+				return (1)
+			}else{
+				return (0)
+			}
+		},
+
+		show_words = function(word, type="count", n_show=100, xaxis=F){
+			"Visualize a word distribution" 
+			# check the words existence						
+			c <- check_existence(word)
+			if(c){ return()}
+
+			# Visualize
+			data %>% filter(term==get("word")) %>%
+				summarize(total = sum(count)) %>% as.numeric() -> sumcount
+			message(paste0("Count of '", word, "': ", as.character(sumcount), " out of ", totalwords))
+			message(paste0("Proportion of '", word, "': ", as.character(round(sumcount/totalwords, 4))))
+
+			data %>% 
+				filter(term == get("word")) %>%
+				group_by(document) %>%
+				mutate(Proportion = count/countdoc*100) %>%
+				ungroup() -> temp
+
+			if(type=="count"){
+				temp <- temp %>% top_n(n_show, count) %>% mutate(focus=count)
+			}else{
+				temp <- temp %>% top_n(get("n_show"), Proportion) %>% mutate(focus=Proportion)
+			}
+
+			p <- ggplot(temp, aes(x=reorder(document, -focus), y=focus)) +
+				geom_bar(stat="identity")
+
+			p <- p + ggtitle(paste0("Distribution of '", word, "' across documents")) + 
+				theme_bw() 
+
+			if(type=="count"){
+				p <- p + ylab("Count")
+			}else{
+				p <- p + ylab("Proportion")
+			}
+
+			if(!xaxis){
+				p <- p + xlab("Documents") +
+										theme(axis.text.x=element_blank(),
+											axis.ticks.x=element_blank(),
+											plot.title = element_text(hjust = 0.5))
+			}else{
+				p <- p + xlab("Documents")
+				p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1),
+											 plot.title = element_text(hjust = 0.5))
+			}
+
+			return(p)
+
+		},
+
+		top_words = function(n_show=20){
+			"Show frequent words" 
+				data %>%
+					mutate(Word = term) %>%
+					select(-term) %>%
+					group_by(Word) %>%
+					summarize(WordCount = sum(count)) %>%
+					ungroup() %>%
+					mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
+					top_n(n_show, WordCount) %>%
+					arrange(-WordCount) %>%
+					print(n=nrow(.))
+
+		}
+	)
+)
+
+
+#' Explore Documents 
+#'
+#' Explore the documents.
+#'
+#' @param file_pattern name of a file or a wildcard, e.g. \code{"docs/*.txt"}
+#' @param encoding File encoding (Default: whatever \code{quanteda} guesses)
+#' @param lowercase whether to transform each token to lowercase letters
+#' @param remove_numbers whether to remove numbers
+#' @param remove_punct whether to remove punctuation
+#' @param remove_symbols whether to remove non-alphanumerical symbols
+#' @param remove_separators whether to remove tabs, spaces, newlines, etc.
+#' @param remove_twitter whether to remove Twitter detritus
+#' @param remove_hyphens whether to split hyphenated words
+#' @param remove_url whether to remove URLs
+#' @param stem_language if not NULL, the language to use for stemming
+#' @param stopwords if not NULL, a character vector of words to remove,
+#'                  e.g. \code{quanteda::stopwords("english")}
+#'
+#' @return A R4 objects \describe{
+#'         \item{show_words(word, type="count", n_show=100, xaxis=F)}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+#'         \item{top_words(n_show=10)}{ show top words}
+#'         }.
+#' @importFrom quanteda corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary dfm
+#' @importFrom readtext readtext
+#' @importFrom tidytext tidy 
+#' @import ggplot2 
+#' @import methods
+#' @import dplyr 
+#' @export
+explore <- function(file_pattern, encoding = NULL,
+                            lowercase = TRUE,
+                            remove_numbers = TRUE, remove_punct = TRUE,
+                            remove_symbols = TRUE, remove_separators = TRUE,
+                            remove_twitter = FALSE, remove_hyphens = FALSE,
+                            remove_url = TRUE, stem_language = NULL,
+                            stopwords = NULL){
+
+  args <- list(remove_numbers = remove_numbers,
+               remove_punct = remove_punct,
+               remove_symbols = remove_symbols,
+               remove_separators = remove_separators,
+               remove_twitter = remove_twitter,
+               remove_hyphens = remove_hyphens,
+               remove_url = remove_url)
+
+  ## preprocess each text
+  args$x <- corpus(readtext(file_pattern, encoding = encoding))
+  doc_names <- docvars(args$x, "doc_id") # docnames
+  toks <- do.call(tokens, args = args)
+  if (lowercase)
+    toks <- tokens_tolower(toks)
+  if (!is.null(stopwords))
+    toks <- tokens_remove(toks, stopwords)
+  if (!is.null(stem_language))
+    toks <- tokens_wordstem(toks, language = stem_language)
+
+	dfm_ <- dfm(toks)
+	tidy_ <- tidy(dfm_)
+
+	res <- ExploreDocuments$new(tidy_)
+
+	return(res)
+
+}

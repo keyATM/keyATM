@@ -22,6 +22,9 @@ a list with elements
     \item{word_counts}{ Number of times each word type appears}
     \item{doc_lens}{ Length of each document in tokens}
     \item{vocab}{ Words in the vocabulary}
+    \item{alpha}{ \code{alpha} during the iteration}
+    \item{modelfit}{ Perplexity and log-likelihood}
+    \item{p}{ Estimated p}
   }
 }
 \description{

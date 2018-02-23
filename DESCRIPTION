@@ -11,15 +11,17 @@ LinkingTo: Rcpp,
   RcppEigen
 Imports: Rcpp,
   hashmap,
-  quanteda
+  quanteda,
+  readtext,
+  ggplot2,
+  dplyr,
+  tidytext,
+  methods
 SystemRequirements: C++11     
 Suggests: knitr,
   rmarkdown,
   testthat,
   purrr,
-  tidyr,
-  readtext,
-  ggplot2,
-  dplyr
+  tidyr
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
