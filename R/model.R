@@ -25,7 +25,7 @@
 #' alpha. If it is a vector of the correct length those values are used
 #' as the starting alphas.
 #'
-#' @param file_pattern name of a file or a wildcard, e.g. \code{"docs/*.txt"}
+#' @param files names of each file to read
 #' @param dict a quanteda dictionary or named list of character vectors
 #' @param extra_k number of unseeded topics in addition to the topics seeded by
 #'                \code{dict}
@@ -62,10 +62,9 @@
 #'         \item{call}{details of the function call}
 #'         }.
 #' @importFrom quanteda corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
-#' @importFrom readtext readtext
 #' @importFrom hashmap hashmap
 #' @export
-topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
+topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
                             lowercase = TRUE,
                             remove_numbers = TRUE, remove_punct = TRUE,
                             remove_symbols = TRUE, remove_separators = TRUE,
@@ -93,7 +92,15 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
                remove_url = remove_url)
 
   ## preprocess each text
-  args$x <- corpus(readtext(file_pattern, encoding = encoding))
+  ## for debugging
+  df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
+                                                                collapse = "\n") })),
+                   stringsAsFactors = FALSE)
+  df$doc_id <- paste0("text", 1:nrow(df))
+  args$x <- corpus(df)
+  ## debugging until here
+
+  # args$x <- corpus(readtext(file_pattern, encoding = encoding))
   doc_names <- docvars(args$x, "doc_id") # docnames
   toks <- do.call(tokens, args = args)
   if (lowercase)
@@ -161,7 +168,7 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
   ll
 }
 
-#' A Reference Class to explore documents 
+#' A Reference Class to explore documents
 #'
 #' Explore Documents Class
 #'
@@ -183,9 +190,9 @@ topicdict_model <- function(file_pattern, dict, extra_k = 1, encoding = NULL,
 #'    \item{\code{top_words(n_show=10)}}{ show top words}
 #'  }
 #'
-#' @importFrom tidytext tidy 
-#' @import ggplot2 
-#' @import dplyr 
+#' @importFrom tidytext tidy
+#' @import ggplot2
+#' @import dplyr
 #' @export ExploreDocuments
 #' @exportClass ExploreDocuments
 ExploreDocuments <- setRefClass(
@@ -218,8 +225,8 @@ ExploreDocuments <- setRefClass(
 		},
 
 		show_words = function(word, type="count", n_show=100, xaxis=F){
-			"Visualize a word distribution" 
-			# check the words existence						
+			"Visualize a word distribution"
+			# check the words existence
 			c <- check_existence(word)
 			if(c){ return()}
 
@@ -229,7 +236,7 @@ ExploreDocuments <- setRefClass(
 			message(paste0("Count of '", word, "': ", as.character(sumcount), " out of ", totalwords))
 			message(paste0("Proportion of '", word, "': ", as.character(round(sumcount/totalwords, 4))))
 
-			data %>% 
+			data %>%
 				filter(term == get("word")) %>%
 				group_by(document) %>%
 				mutate(Proportion = count/countdoc*100) %>%
@@ -244,8 +251,8 @@ ExploreDocuments <- setRefClass(
 			p <- ggplot(temp, aes(x=reorder(document, -focus), y=focus)) +
 				geom_bar(stat="identity")
 
-			p <- p + ggtitle(paste0("Distribution of '", word, "' across documents")) + 
-				theme_bw() 
+			p <- p + ggtitle(paste0("Distribution of '", word, "' across documents")) +
+				theme_bw()
 
 			if(type=="count"){
 				p <- p + ylab("Count")
@@ -269,7 +276,7 @@ ExploreDocuments <- setRefClass(
 		},
 
 		top_words = function(n_show=20){
-			"Show frequent words" 
+			"Show frequent words"
 				data %>%
 					mutate(Word = term) %>%
 					select(-term) %>%
@@ -286,11 +293,11 @@ ExploreDocuments <- setRefClass(
 )
 
 
-#' Explore Documents 
+#' Explore Documents
 #'
 #' Explore the documents.
 #'
-#' @param file_pattern name of a file or a wildcard, e.g. \code{"docs/*.txt"}
+#' @param files names of each file to read
 #' @param encoding File encoding (Default: whatever \code{quanteda} guesses)
 #' @param lowercase whether to transform each token to lowercase letters
 #' @param remove_numbers whether to remove numbers
@@ -309,13 +316,12 @@ ExploreDocuments <- setRefClass(
 #'         \item{top_words(n_show=10)}{ show top words}
 #'         }.
 #' @importFrom quanteda corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary dfm
-#' @importFrom readtext readtext
-#' @importFrom tidytext tidy 
-#' @import ggplot2 
+#' @importFrom tidytext tidy
+#' @import ggplot2
 #' @import methods
-#' @import dplyr 
+#' @import dplyr
 #' @export
-explore <- function(file_pattern, encoding = NULL,
+explore <- function(files, encoding = "UTF-8",
                             lowercase = TRUE,
                             remove_numbers = TRUE, remove_punct = TRUE,
                             remove_symbols = TRUE, remove_separators = TRUE,
@@ -332,7 +338,15 @@ explore <- function(file_pattern, encoding = NULL,
                remove_url = remove_url)
 
   ## preprocess each text
-  args$x <- corpus(readtext(file_pattern, encoding = encoding))
+  ## for debugging
+  df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
+                                                                collapse = "\n") })),
+                   stringsAsFactors = FALSE)
+  df$doc_id <- paste0("text", 1:nrow(df))
+  args$x <- corpus(df)
+  ## debugging until here
+
+  # args$x <- corpus(readtext(file_pattern, encoding = encoding))
   doc_names <- docvars(args$x, "doc_id") # docnames
   toks <- do.call(tokens, args = args)
   if (lowercase)
