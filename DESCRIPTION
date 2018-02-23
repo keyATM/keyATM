@@ -12,7 +12,6 @@ LinkingTo: Rcpp,
 Imports: Rcpp,
   hashmap,
   quanteda,
-  readtext,
   ggplot2,
   dplyr,
   tidytext,
@@ -22,6 +21,7 @@ Suggests: knitr,
   rmarkdown,
   testthat,
   purrr,
+  readtext,
   tidyr
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
