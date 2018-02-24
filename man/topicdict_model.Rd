@@ -4,7 +4,7 @@
 \alias{topicdict_model}
 \title{Initialize a topicdict model}
 \usage{
-topicdict_model(file_pattern, dict, extra_k = 1, encoding = NULL,
+topicdict_model(files, dict, extra_k = 1, encoding = "UTF-8",
   lowercase = TRUE, remove_numbers = TRUE, remove_punct = TRUE,
   remove_symbols = TRUE, remove_separators = TRUE, remove_twitter = FALSE,
   remove_hyphens = FALSE, remove_url = TRUE, stem_language = NULL,
@@ -12,7 +12,7 @@ topicdict_model(file_pattern, dict, extra_k = 1, encoding = NULL,
   beta_s = 0.1, gamma_1 = 1, gamma_2 = 1)
 }
 \arguments{
-\item{file_pattern}{name of a file or a wildcard, e.g. \code{"docs/*.txt"}}
+\item{files}{names of each file to read}
 
 \item{dict}{a quanteda dictionary or named list of character vectors}
 

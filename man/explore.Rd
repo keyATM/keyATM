@@ -4,14 +4,14 @@
 \alias{explore}
 \title{Explore Documents}
 \usage{
-explore(file_pattern, encoding = NULL, lowercase = TRUE,
+explore(files, encoding = "UTF-8", lowercase = TRUE,
   remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE,
   remove_separators = TRUE, remove_twitter = FALSE,
   remove_hyphens = FALSE, remove_url = TRUE, stem_language = NULL,
   stopwords = NULL)
 }
 \arguments{
-\item{file_pattern}{name of a file or a wildcard, e.g. \code{"docs/*.txt"}}
+\item{files}{names of each file to read}
 
 \item{encoding}{File encoding (Default: whatever \code{quanteda} guesses)}
 

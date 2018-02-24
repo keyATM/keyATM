@@ -46,50 +46,55 @@ set.seed(12345)
 
 stops <- setdiff(c(stopwords("english"), letters), 
                   c("he", "his", "him", "himself", "she", "hers", "her", "herself", "our", "their"))
-model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, stopwords = stops)
+files <- list.files(doc_folder, "*.txt", full.names = TRUE)
+model <- topicdict_model(files, dict, stopwords = stops)
 ```
 And run three models: with weak, medium, and heavy confidence in the seed words
 
-Low confidence
+Low confidence: mean = 0.1, sd = 0.09
 ```{r}
-model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, 
-                         stopwords = stops, beta_s = 0.02)
+model <- topicdict_model(files, dict, 
+                         stopwords = stops, gamma_1 = 1,gamma_2 = 9)
 model <- topicdict_train(model, iter = 60)
 post <- posterior(model)
 tt <- top_terms(post, n = 100, show_seed = TRUE) 
+tt[1:20,]
 low_rank <- apply(tt, 2, function(x) median(which(grepl("✓", x)))) # average rank
 low_qual <- model$model_fit[[length(model$model_fit)]]
 ```
 
-Medium confidence
+Medium confidence: mean = 0.5, sd = 0.15
 ```{r}
-model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, 
-                         stopwords = stops, beta_s = 0.1)
+model <- topicdict_model(files, dict, 
+                         stopwords = stops, gamma_1 = 5,gamma_2 = 5)
 model <- topicdict_train(model, iter = 60)
 post <- posterior(model)
 tt <- top_terms(post, n = 100, show_seed = TRUE) 
+tt[1:20,]
 med_rank <- apply(tt, 2, function(x) median(which(grepl("✓", x)))) # average rank
 med_qual <- model$model_fit[[length(model$model_fit)]]
 ```
 
-High confidence
+High confidence: mean = 0.9, sd = 0.09
 ```{r}
-model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, 
-                         stopwords = stops, beta_s = 0.2)
+model <- topicdict_model(files, dict, 
+                         stopwords = stops, gamma_1 = 9, gamma_2 = 1)
 model <- topicdict_train(model, iter = 60)
 post <- posterior(model)
 tt <- top_terms(post, n = 100, show_seed = TRUE) 
+tt[1:20,]
 high_rank <- apply(tt, 2, function(x) median(which(grepl("✓", x)))) # average rank
 high_qual <- model$model_fit[[length(model$model_fit)]]
 ```
 
-Overconfidence
+Medium confidence but not so sure: mean = 0.5, sd = 0.2
 ```{r}
-model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, 
-                         stopwords = stops, beta_s = 1.0)
+model <- topicdict_model(files, dict, 
+                         stopwords = stops, gamma_1 = 2.5, gamma_2 = 2.5)
 model <- topicdict_train(model, iter = 60)
 post <- posterior(model)
 tt <- top_terms(post, n = 100, show_seed = TRUE) 
+tt[1:20,]
 over_rank <- apply(tt, 2, function(x) median(which(grepl("✓", x)))) # average rank
 over_qual <- model$model_fit[[length(model$model_fit)]]
 ```
@@ -106,9 +111,9 @@ ggplot(dd, aes(x = topic_n, y = median_rank, color = condition)) +
   geom_line() + 
   geom_point() +
   theme_minimal() +
-  scale_colour_manual(values=graded_palette) + 
-  scale_x_discrete(limits=levels(dd$topic)) +
-  scale_y_continuous(breaks=seq(0, 90, 10)) +
+  scale_colour_manual(values = graded_palette) + 
+  scale_x_discrete(limits = levels(dd$topic)) +
+  scale_y_continuous(breaks = seq(0, 90, 10)) +
   labs(x = "Topic", y = "Median rank in top words list") 
 ```
 
@@ -121,7 +126,7 @@ ggplot(df, aes(x = 1:4, y = perplexity)) +
   geom_point() +
   geom_line() +
   theme_minimal() +
-  scale_x_discrete(limits=df$levels) + 
+  scale_x_discrete(limits = df$levels) + 
   xlab("Confidence in seed words") + 
   ylab("Perplexity") + 
   ylim(0, 6000)
