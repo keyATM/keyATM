@@ -45,7 +45,7 @@ set.seed(12345)
 
 stops <- setdiff(c(stopwords("english"), letters), 
                   c("he", "his", "him", "himself", "she", "hers", "her", "herself"))
-model <- topicdict_model(file.path(doc_folder, "*.txt"), dict, stopwords = stops)
+model <- topicdict_model(dir(doc_folder, full.names = T), dict, stopwords = stops)
 ```
 And run a model.  Takes about 50 iterations to converge.
 ```{r}
