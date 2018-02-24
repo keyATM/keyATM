@@ -10,9 +10,9 @@ vignette: >
 ---
 
 ```{r warning=FALSE, message=FALSE, echo = FALSE}
-package_folder <- "/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict"
-setwd(package_folder)
-devtools::document() ; devtools::install() ; library(topicdict)
+# package_folder <- "/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict"
+# setwd(package_folder)
+# devtools::document() ; devtools::install() ; library(topicdict)
 library(knitr)
 knitr::opts_chunk$set(comment = "")
 ```
@@ -609,7 +609,7 @@ seed_list <- list(c("w1394t1 w27t1 w291t1"),
 model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
-new_order <- c(4,2,3,5,1,6)
+new_order <- c(1,6,2,10,3,8,7,4,5,9)
 ```
 
 ## Analysis
@@ -624,40 +624,8 @@ EstTopic1, EstTopic2, and EstTopic3 has a clear TrueTopic.
 diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
 ```
 
-
-# Middle and Low Proportion
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-# Explore
-folder <- paste0(data_folder, "Sim1", "/W")
-docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
-explore_ <- explore(docs,
-             remove_numbers = FALSE, # For simulation, make it false
-             remove_punct = TRUE,
-             remove_symbols = TRUE,
-             remove_separators = TRUE)
-explore_$top_words(1)
-explore_$show_words(c('w11t1','w64t1', 'w273t1'))
-```
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w65t5 w209t5"),
-                 c("w223t2 w536t2 w541t2"),
-                 c("w6t3 w2629t3 w1668t3 w1656t3"))
-model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
-res <- topicdict_train(model, iter = iter_num)
-post <- topicdict::posterior(res)
-new_order <- c(4,2,3,5,1,6)
-```
-
-## Analysis
-### Modelfit
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-diagnosis_model_fit(post, start=2)
-```
-
-### Heatmap
-EstTopic1, EstTopic2, and EstTopic3 has a clear TrueTopic.
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
+get_lda_result("Sim1", iter=iter_num, k=10, topicvec=c(7,8,10,6,9,2,1,4,5,3))
 ```
 
 
@@ -672,16 +640,94 @@ explore_ <- explore(docs,
              remove_symbols = TRUE,
              remove_separators = TRUE)
 explore_$top_words(10)
-explore_$show_words(c('w11t1','w64t1', 'w273t1'))
+explore_$show_words(c("w1077t1", "w1077t1", "w971t1", 
+											"w1986t2", "w386t2", "w1258t2",
+											"w926t3", "w851t3", "w984t3" ))
 ```
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w65t5 w209t5"),
-                 c("w223t2 w536t2 w541t2"),
-                 c("w6t3 w2629t3 w1668t3 w1656t3"))
+seed_list <- list(c("w1077t1 w1077t1 w971t1"),
+                 c("w1986t2 w386t2 w1258t2"),
+                 c("w926t3 w851t3 w984t3"))
 model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
-new_order <- c(4,2,3,5,1,6)
+new_order <- c(5,6,1,2,9,10,7,4,3,8)
+```
+
+## Analysis
+### Modelfit
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+### Heatmap
+Seed (EstTopic 1, 2 and 3) do not work.
+```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
+diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
+```
+
+
+# Low Proportion (More Seeds)
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+# Explore
+folder <- paste0(data_folder, "Sim1", "/W")
+docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
+explore_ <- explore(docs,
+             remove_numbers = FALSE, # For simulation, make it false
+             remove_punct = TRUE,
+             remove_symbols = TRUE,
+             remove_separators = TRUE)
+explore_$top_words(10)
+explore_$show_words(c("w1077t1", "w1077t1", "w971t1", "w3448t1", "w2757t1",
+											"w1986t2", "w386t2", "w1258t2", "w1986t2", "w1552t2",
+											"w926t3", "w851t3", "w984t3", "w2433t3", "w1038t3"))
+```
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+seed_list <- list(c("w1077t1 w1077t1 w971t1 w3448t1 w2757t1"),
+                 c("w1986t2 w386t2 w1258t2 w1986t2 w1552t2"),
+                 c("w926t3 w851t3 w984t3 w2433t3 w1038t3"))
+model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
+res <- topicdict_train(model, iter = iter_num)
+post <- topicdict::posterior(res)
+new_order <- c(5,7,9,10,1,8,2,4,3,6)
+```
+
+## Analysis
+### Modelfit
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+diagnosis_model_fit(post, start=2)
+```
+
+### Heatmap
+Seed (EstTopic 1, 2 and 3) do not work.
+```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
+diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
+```
+
+
+# Low and Middle Proportion
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+# Explore
+folder <- paste0(data_folder, "Sim1", "/W")
+docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
+explore_ <- explore(docs,
+             remove_numbers = FALSE, # For simulation, make it false
+             remove_punct = TRUE,
+             remove_symbols = TRUE,
+             remove_separators = TRUE)
+explore_$top_words(10)
+explore_$show_words(c("w1077t1", "w1077t1", "w971t1", "w249t1",
+											"w1986t2", "w386t2", "w1258t2", "w943t2",
+											"w926t3", "w851t3", "w984t3", "w263t3" ))
+```
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+seed_list <- list(c("w1077t1 w1077t1 w971t1 w249t1"),
+                 c("w1986t2 w386t2 w1258t2 w943t2"),
+                 c("w926t3 w851t3 w984t3 w263t3"))
+model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
+res <- topicdict_train(model, iter = iter_num)
+post <- topicdict::posterior(res)
+new_order <- c(1,4,2,3,6,5,10,7,8,9)
 ```
 
 ## Analysis
