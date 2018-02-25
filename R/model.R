@@ -93,6 +93,7 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
 
   ## preprocess each text
   ## for debugging
+	# Use files <- list.files(doc_folder, pattern="txt", full.names=T) when you pass
   df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
                                                                 collapse = "\n") })),
                    stringsAsFactors = FALSE)
@@ -178,6 +179,7 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
 #'  \describe{
 #'    \item{\code{data}}{ data in tidytext format}
 #'    \item{\code{uniquewords}}{ a vector of unique words}
+#'    \item{\code{num_uniquewords}}{ a number of unique words}
 #'    \item{\code{totalwords}}{ number of words in the entire documents}
 #'  }
 #'
@@ -186,8 +188,10 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
 #'  \describe{
 #'    \item{\code{initialize}}{ Constructor}
 #'    \item{\code{check_existence}}{ Check whether the word exists in the corpus}
-#'    \item{\code{show_words(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+#'    \item{\code{show_words_documents(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+#'    \item{\code{show_words(word, n_show=1:num_uniquewords)}}{ show a vector of words distribution.}
 #'    \item{\code{top_words(n_show=10)}}{ show top words}
+#'    \item{\code{words_distribution(n_show)}}{ show a distribution of words}
 #'  }
 #'
 #' @importFrom tidytext tidy
@@ -201,6 +205,7 @@ ExploreDocuments <- setRefClass(
 	fields = list(
 		data = "data.frame",
 		uniquewords = "character",
+		num_uniquewords = "numeric",
 		totalwords = "numeric"
 	),
 
@@ -212,6 +217,7 @@ ExploreDocuments <- setRefClass(
 				ungroup()
 			data <<- data_
 			uniquewords <<- unique(data$term)
+			num_uniquewords <<- length(uniquewords)
 			totalwords <<- sum(data$count)
 		},
 
@@ -224,9 +230,9 @@ ExploreDocuments <- setRefClass(
 			}
 		},
 
-		show_words = function(word, type="count", n_show=100, xaxis=F){
-			"Visualize a word distribution"
-			# check the words existence
+		show_words_documents = function(word, type="count", n_show=100, xaxis=F){
+			"Visualize a word distribution" 
+			# check the words existence						
 			c <- check_existence(word)
 			if(c){ return()}
 
@@ -271,6 +277,48 @@ ExploreDocuments <- setRefClass(
 											 plot.title = element_text(hjust = 0.5))
 			}
 
+		},
+
+		show_words = function(words, n_show=1:num_uniquewords){
+			# Distribution across words
+				data %>%
+					mutate(Word = term) %>%
+					select(-term) %>%
+					group_by(Word) %>%
+					summarize(WordCount = sum(count)) %>%
+					ungroup() %>%
+					mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
+					arrange(desc(WordCount)) %>%
+					mutate(Ranking = 1:n()) %>%
+					mutate(Show = if_else(.$Word %in% get("words"), "1", "0")) %>%
+					slice(n_show) -> temp
+
+				temp %>% 
+					mutate(Width=if_else(Show==1, length(get("n_show"))/10, 1)) -> temp
+				temp$right <- cumsum(temp$Width) + 30*c(0:(nrow(temp)-1))
+				temp$left <- temp$right - temp$Width
+
+				p <- ggplot(temp, aes(ymin = 0)) + 
+					geom_rect(aes(xmin = left, xmax = right, ymax = `Proportion(%)`, colour = Show, fill = Show)) +
+					scale_fill_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) + 
+					scale_colour_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) + 
+					xlab("Words") + ylab("Proportion (%)") + ggtitle("Distribution of words") +
+					theme_bw() +
+					theme(axis.text.x=element_blank(),
+								axis.ticks.x=element_blank(),
+								legend.position="none",
+								plot.title = element_text(hjust = 0.5))
+
+				# p <- ggplot(temp, aes(x=reorder(Word,-WordCount), y=`Proportion(%)`, fill=Show)) +
+				# 	geom_bar(stat="identity", width=1) +
+				# 	scale_fill_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) + 
+				# 	xlab("Words") + ylab("Proportion (%)") + ggtitle("Distribution of words") +
+				# 	theme(axis.text.x=element_blank(),
+				# 				axis.ticks.x=element_blank(),
+				# 				legend.position="none",
+				# 				plot.title = element_text(hjust = 0.5))
+
+
 			return(p)
 
 		},
@@ -284,9 +332,66 @@ ExploreDocuments <- setRefClass(
 					summarize(WordCount = sum(count)) %>%
 					ungroup() %>%
 					mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
-					top_n(n_show, WordCount) %>%
-					arrange(-WordCount) %>%
-					print(n=nrow(.))
+					arrange(desc(WordCount)) %>%
+					mutate(Ranking = 1:n()) -> temp
+
+				if(length(n_show)>1){
+					temp %>%
+						slice(n_show) %>%
+						arrange(-WordCount) %>%
+						print(n=nrow(.))
+				}else{
+					temp %>%
+						top_n(n_show, WordCount) %>%
+						arrange(-WordCount) %>%
+						print(n=nrow(.))
+				}
+
+		},
+
+		words_distribution = function(n_show=num_uniquewords){
+			# Distribution across documents
+				data %>%
+					mutate(Word = term) %>%
+					select(-term) %>%
+					group_by(Word) %>%
+					summarize(WordCount = sum(count)) %>%
+					ungroup() %>%
+					mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
+					arrange(desc(WordCount)) %>%
+					mutate(Ranking = 1:n()) -> temp_all
+
+				if(length(n_show)>1){
+					temp_all %>%
+						slice(n_show) %>%
+						arrange(-WordCount) -> temp
+				}else{
+					temp_all %>%
+						top_n(n_show, WordCount) %>%
+						arrange(-WordCount) -> temp
+				}
+
+				p <- ggplot(temp, aes(x=Word, y=`Proportion(%)`)) +
+					geom_bar(stat="identity") +
+					scale_x_discrete(limits = temp$Word)
+
+				p <- p +
+					ggtitle(paste0("Distribution of words")) +
+					ylab("Proportion (%)") +
+					theme_bw()
+
+				if(nrow(temp) <= 50){
+					p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1),,
+												 plot.title = element_text(hjust = 0.5))
+				}else{
+					p <- p + 
+						theme(axis.text.x=element_blank(),
+									axis.ticks.x=element_blank(),
+									plot.title = element_text(hjust = 0.5))
+				}
+			
+
+			return(p)
 
 		}
 	)
@@ -313,7 +418,7 @@ ExploreDocuments <- setRefClass(
 #'
 #' @return A R4 objects \describe{
 #'         \item{show_words(word, type="count", n_show=100, xaxis=F)}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
-#'         \item{top_words(n_show=10)}{ show top words}
+#'         \item{top_words(n_show=10)}{ It selects the top n rows. If \code{n_show} is negative, it selects the bottom n rows.}
 #'         }.
 #' @importFrom quanteda corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary dfm
 #' @importFrom tidytext tidy

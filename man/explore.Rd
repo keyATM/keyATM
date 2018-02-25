@@ -39,7 +39,7 @@ e.g. \code{quanteda::stopwords("english")}}
 \value{
 A R4 objects \describe{
         \item{show_words(word, type="count", n_show=100, xaxis=F)}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
-        \item{top_words(n_show=10)}{ show top words}
+        \item{top_words(n_show=10)}{ It selects the top n rows. If \code{n_show} is negative, it selects the bottom n rows.}
         }.
 }
 \description{
