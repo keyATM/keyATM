@@ -54,7 +54,7 @@ set.seed(225)
 
 stops <- setdiff(c(stopwords("english"), letters), 
                   c("he", "his", "him", "himself", "she", "hers", "her", "herself"))
-model <- topicdict_model(file.path(doc_folder, "*.txt"), extra_k=extra_k,
+model <- topicdict_model(list.files(doc_folder, pattern="txt", full.names=T), extra_k=extra_k,
                          dict, stopwords = stops)
 res <- topicdict_train(model, iter = 500)
 original_vocabulary <- model$vocab
@@ -197,12 +197,12 @@ Gen_w_seeds <- function(index, phiR, phiS, z, x){
   if (indicator == 0){
     # Regular words
     word <- Gen_w(phiR, topic)
-		# word <- original_vocabulary[as.numeric(word)] # original_vocabulary is extracted from the trained model outside
+    # word <- original_vocabulary[as.numeric(word)] # original_vocabulary is extracted from the trained model outside
     word <- paste0("W", as.character(word), "t", as.character(topic))
   } else {
     # Seed words
     word <- Gen_w(phiS, topic)
-		# word <- original_vocabulary[as.numeric(word)]
+    # word <- original_vocabulary[as.numeric(word)]
     word <- paste0("W", as.character(word), "t", as.character(topic))
   }
   return(word)
@@ -411,22 +411,22 @@ get_lda_result <- function(data_folder_name, iter, k, topicvec=1:k, show_n=25){
   assign <-tidytext::augment(lda, dtm)
   assign %>% 
         mutate(Word=term) %>%
-				tidyr::separate(term,
-						into=c("word_id", "TrueTopic"),
-						sep="t") %>%
+        tidyr::separate(term,
+            into=c("word_id", "TrueTopic"),
+            sep="t") %>%
         mutate(TrueTopic = paste0("True", as.character(TrueTopic))) %>%
         group_by(.topic, TrueTopic, Word) %>%
         summarise(counts = sum(count)) %>%
         ungroup() %>%
-				group_by(.topic) %>%
+        group_by(.topic) %>%
         top_n(show_n, counts) %>%
-				ungroup() %>%
-				group_by(.topic, TrueTopic) %>%
-				summarise(counts = sum(counts)) %>%
         ungroup() %>%
-				group_by(.topic) %>%
-				mutate(topicsum = sum(counts)) %>%
-				ungroup() %>%
+        group_by(.topic, TrueTopic) %>%
+        summarise(counts = sum(counts)) %>%
+        ungroup() %>%
+        group_by(.topic) %>%
+        mutate(topicsum = sum(counts)) %>%
+        ungroup() %>%
         mutate(Proportion = counts / topicsum * 100,
                EstTopic = paste0("EstTopic", .topic)) -> res
 
@@ -475,18 +475,18 @@ explore_$show_words(c('w11t1','w64t1', 'w273t1'))
 # Use Simulation Data 1 (more topic)
 Use high to middle proportion words:
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-explore_$show_words(c('w65t5','w209t5', 'w223t2', "w536t2", "w1656t3",
-											"w541t2", "w6t3", "w2629t3", "w1668t3"))
+explore_$show_words(c('w0t1','w67t1', 'w223t2', "w536t2", "w1656t3",
+                      "w541t2", "w6t3", "w2629t3", "w1668t3"))
 ```
 
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w65t5 w209t5"),
+seed_list <- list(c("w0t1 w67t1"),
                  c("w223t2 w536t2 w541t2"),
                  c("w6t3 w2629t3 w1668t3 w1656t3"))
 model <- create_model("Sim1", seed_list=seed_list, extra_k=8)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
-new_order <- c(4,2,3,5,1,6)
+new_order <- c(1,2,3,7,9,5,8,4,6,10,11)
 ```
 
 ## Analysis
@@ -502,18 +502,18 @@ diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
 ```
 
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-get_lda_result("Sim1", iter=iter_num, k=11, topicvec=c(8,10,2,5,9,3,1,4,11,6,7))
+get_lda_result("Sim1", iter=iter_num, k=11, topicvec=c(6,8,10,2,5,9,3,1,4,7,11))
 ```
 
 # Use Simulation Data 2 (more and more topic)
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w65t5 w209t5"),
+seed_list <- list(c("w0t1 w67t1"),
                  c("w223t2 w536t2 w541t2"),
                  c("w6t3 w2629t3 w1668t3 w1656t3"))
 model <- create_model("Sim1", seed_list=seed_list, extra_k=15)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
-new_order <- c(4,7,11,15,18,2,3,10,13,17,1,6,16,5,8,14,9,12)
+new_order <- c(1,4,2,9,3,13,14,5,7,8,11,6,12,15,17,10,16,18)
 ```
 
 ## Analysis
@@ -530,18 +530,17 @@ diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
 
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
 get_lda_result("Sim1", iter=iter_num, k=18, 
-							 topicvec=c(9,12,14,16,4,5,18,8,15,13,1,2,6,10,11,7,17,3))
+               topicvec=c(3,9,12,14,16,4,5,18,8,15,13,1,2,6,10,11,7,17))
 ```
 
 # Use Simulation Data 3 (fewer I)
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w65t5 w209t5"),
+seed_list <- list(c("w0t1 w67t1"),
                  c("w223t2 w536t2 w541t2"),
                  c("w6t3 w2629t3 w1668t3 w1656t3"))
 model <- create_model("Sim1", seed_list=seed_list, extra_k=1)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
-new_order <- c(4,2,3,1)
 ```
 
 ## Analysis
@@ -562,13 +561,12 @@ get_lda_result("Sim1", iter=iter_num, k=4, topicvec=c(3,4,2,1))
 
 # Use Simulation Data 4 (fewer II)
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w65t5 w209t5"),
+seed_list <- list(c("w0t1 w67t1"),
                  c("w223t2 w536t2 w541t2"),
                  c("w6t3 w2629t3 w1668t3 w1656t3"))
 model <- create_model("Sim1", seed_list=seed_list, extra_k=2)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
-new_order <- c(5,2,3,4,1)
 ```
 
 ## Analysis
@@ -578,7 +576,7 @@ diagnosis_model_fit(post, start=2)
 ```
 
 ### Heatmap
-If the number of topics is fewer than the truth, there are contaminated topics. Topic 4 and 5 are regular topic.
+If the number of topics is fewer than the truth, there is a contaminated topic. Topic 4 and 5 are regular topic.
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
 diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
 ```
@@ -599,8 +597,8 @@ explore_ <- explore(docs,
              remove_separators = TRUE)
 # explore_$top_words(250:300)
 explore_$show_words(c("w1394t1", "w27t1", "w291t1",
-											"w828t2", "w1571t2", "w650t2", 
-											"w24t3", "w1597t3", "w1564t3"))
+                      "w828t2", "w1571t2", "w650t2", 
+                      "w24t3", "w1597t3", "w1564t3"))
 ```
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
 seed_list <- list(c("w1394t1 w27t1 w291t1"),
@@ -625,7 +623,7 @@ diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
 ```
 
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-get_lda_result("Sim1", iter=iter_num, k=10, topicvec=c(7,8,10,6,9,2,1,4,5,3))
+get_lda_result("Sim1", iter=iter_num, k=10, topicvec=c(7,8,10,6,9,2,1,4,3,5))
 ```
 
 
@@ -641,8 +639,8 @@ explore_ <- explore(docs,
              remove_separators = TRUE)
 explore_$top_words(10)
 explore_$show_words(c("w1077t1", "w1077t1", "w971t1", 
-											"w1986t2", "w386t2", "w1258t2",
-											"w926t3", "w851t3", "w984t3" ))
+                      "w1986t2", "w386t2", "w1258t2",
+                      "w926t3", "w851t3", "w984t3" ))
 ```
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
 seed_list <- list(c("w1077t1 w1077t1 w971t1"),
@@ -651,7 +649,7 @@ seed_list <- list(c("w1077t1 w1077t1 w971t1"),
 model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
-new_order <- c(5,6,1,2,9,10,7,4,3,8)
+new_order <- c(5,6,1,2,8,9,10,7,4,3)
 ```
 
 ## Analysis
@@ -679,8 +677,8 @@ explore_ <- explore(docs,
              remove_separators = TRUE)
 explore_$top_words(10)
 explore_$show_words(c("w1077t1", "w1077t1", "w971t1", "w3448t1", "w2757t1",
-											"w1986t2", "w386t2", "w1258t2", "w1986t2", "w1552t2",
-											"w926t3", "w851t3", "w984t3", "w2433t3", "w1038t3"))
+                      "w1986t2", "w386t2", "w1258t2", "w1986t2", "w1552t2",
+                      "w926t3", "w851t3", "w984t3", "w2433t3", "w1038t3"))
 ```
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
 seed_list <- list(c("w1077t1 w1077t1 w971t1 w3448t1 w2757t1"),
@@ -689,7 +687,7 @@ seed_list <- list(c("w1077t1 w1077t1 w971t1 w3448t1 w2757t1"),
 model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
-new_order <- c(5,7,9,10,1,8,2,4,3,6)
+new_order <- c(5,7,9,10,1,6,8,2,4,3)
 ```
 
 ## Analysis
@@ -717,8 +715,8 @@ explore_ <- explore(docs,
              remove_separators = TRUE)
 explore_$top_words(10)
 explore_$show_words(c("w1077t1", "w1077t1", "w971t1", "w249t1",
-											"w1986t2", "w386t2", "w1258t2", "w943t2",
-											"w926t3", "w851t3", "w984t3", "w263t3" ))
+                      "w1986t2", "w386t2", "w1258t2", "w943t2",
+                      "w926t3", "w851t3", "w984t3", "w263t3" ))
 ```
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
 seed_list <- list(c("w1077t1 w1077t1 w971t1 w249t1"),
@@ -727,7 +725,7 @@ seed_list <- list(c("w1077t1 w1077t1 w971t1 w249t1"),
 model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
-new_order <- c(1,4,2,3,6,5,10,7,8,9)
+new_order <- c(1,4,2,3,6,5,9,10,7,8)
 ```
 
 ## Analysis

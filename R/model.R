@@ -93,6 +93,7 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
 
   ## preprocess each text
   ## for debugging
+	# Use files <- list.files(doc_folder, pattern="txt", full.names=T) when you pass
   df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
                                                                 collapse = "\n") })),
                    stringsAsFactors = FALSE)
@@ -293,7 +294,7 @@ ExploreDocuments <- setRefClass(
 					slice(n_show) -> temp
 
 				temp %>% 
-					mutate(Width=if_else(Show==1, length(get("n_show"))/15, 1)) -> temp
+					mutate(Width=if_else(Show==1, length(get("n_show"))/10, 1)) -> temp
 				temp$right <- cumsum(temp$Width) + 30*c(0:(nrow(temp)-1))
 				temp$left <- temp$right - temp$Width
 
