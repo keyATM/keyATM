@@ -468,14 +468,14 @@ explore_ <- explore(docs,
              remove_separators = TRUE)
 explore_$words_distribution(1:30)
 explore_$top_words(10)
-explore_$show_words_documents("w65t5")
-explore_$show_words(c('w11t1','w64t1', 'w273t1'))
+explore_$visualize_words_documents("w65t5")
+explore_$visualize_words(c('w11t1','w64t1', 'w273t1'))
 ```
 
 # Use Simulation Data 1 (more topic)
 Use high to middle proportion words:
 ```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-explore_$show_words(c('w0t1','w67t1', 'w223t2', "w536t2", "w1656t3",
+explore_$visualize_words(c('w0t1','w67t1', 'w223t2', "w536t2", "w1656t3",
                       "w541t2", "w6t3", "w2629t3", "w1668t3"))
 ```
 
@@ -596,7 +596,7 @@ explore_ <- explore(docs,
              remove_symbols = TRUE,
              remove_separators = TRUE)
 # explore_$top_words(250:300)
-explore_$show_words(c("w1394t1", "w27t1", "w291t1",
+explore_$visualize_words(c("w1394t1", "w27t1", "w291t1",
                       "w828t2", "w1571t2", "w650t2", 
                       "w24t3", "w1597t3", "w1564t3"))
 ```
@@ -638,7 +638,7 @@ explore_ <- explore(docs,
              remove_symbols = TRUE,
              remove_separators = TRUE)
 explore_$top_words(10)
-explore_$show_words(c("w1077t1", "w1077t1", "w971t1", 
+explore_$visualize_words(c("w1077t1", "w1077t1", "w971t1", 
                       "w1986t2", "w386t2", "w1258t2",
                       "w926t3", "w851t3", "w984t3" ))
 ```
@@ -676,7 +676,7 @@ explore_ <- explore(docs,
              remove_symbols = TRUE,
              remove_separators = TRUE)
 explore_$top_words(10)
-explore_$show_words(c("w1077t1", "w1077t1", "w971t1", "w3448t1", "w2757t1",
+explore_$visualize_words(c("w1077t1", "w1077t1", "w971t1", "w3448t1", "w2757t1",
                       "w1986t2", "w386t2", "w1258t2", "w1986t2", "w1552t2",
                       "w926t3", "w851t3", "w984t3", "w2433t3", "w1038t3"))
 ```
@@ -714,7 +714,7 @@ explore_ <- explore(docs,
              remove_symbols = TRUE,
              remove_separators = TRUE)
 explore_$top_words(10)
-explore_$show_words(c("w1077t1", "w1077t1", "w971t1", "w249t1",
+explore_$visualize_words(c("w1077t1", "w1077t1", "w971t1", "w249t1",
                       "w1986t2", "w386t2", "w1258t2", "w943t2",
                       "w926t3", "w851t3", "w984t3", "w263t3" ))
 ```
