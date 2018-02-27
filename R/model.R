@@ -189,6 +189,7 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
 #'  \describe{
 #'    \item{\code{initialize}}{ Constructor}
 #'    \item{\code{check_existence}}{ Check whether the word exists in the corpus}
+#'    \item{\code{show_dict_proportion}}{ Dictionary proportion list}
 #'    \item{\code{show_words_documents(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
 #'    \item{\code{show_words(word, n_show=1:num_uniquewords)}}{ show a vector of words distribution.}
 #'    \item{\code{top_words(n_show=10)}}{ show top words}
@@ -198,6 +199,7 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
 #'
 #' @importFrom tidytext tidy bind_tf_idf
 #' @import ggplot2
+#' @import ggrepel
 #' @import dplyr
 #' @export ExploreDocuments
 #' @exportClass ExploreDocuments
@@ -242,6 +244,40 @@ ExploreDocuments <- setRefClass(
 			}else{
 				return (0)
 			}
+		},
+
+		show_dict_prop = function(seed_list){
+			names(seed_list) <- paste0("EstTopic", 1:length(seed_list))
+			seeds <- lapply(seed_list, function(x){unlist(strsplit(x," "))})
+			ext_k <- length(seeds)
+
+			seeds_df <- data.frame(EstTopic=1, Word=1)
+			for(k in 1:ext_k){
+				words <- seeds[[k]]
+				numwords <- length(words)
+				topicname <- paste0("EstTopic", k)
+				for(w in 1:numwords){
+					seeds_df <- rbind(seeds_df, data.frame(EstTopic=topicname, Word=words[w]))
+				}
+			}
+			seeds_df <- seeds_df[2:nrow(seeds_df), ]
+
+			inner_join(data, seeds_df, by="Word") %>%
+				group_by(EstTopic) %>%
+				mutate(Ranking = 1:n()) -> temp
+
+			p <- ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=EstTopic)) +
+				geom_line() +
+				geom_point() +
+				geom_label_repel(aes(label = Word), size=2.3,
+												 box.padding = 0.20, label.padding = 0.12,
+												 arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
+												 show.legend = F) +
+				ylab("Proportion (%)") +
+				theme_bw()
+
+			return(p)
+
 		},
 
 		show_words_documents = function(word, type="count", n_show=100, xaxis=F){
@@ -337,17 +373,9 @@ ExploreDocuments <- setRefClass(
 
 		},
 
-		top_tfidf = function(n_show=20){
+		top_tfidf = function(seed_list, n_show=20){
 			"Show frequent words"
-				data %>%
-					mutate(Word = term) %>%
-					select(-term) %>%
-					group_by(Word) %>%
-					summarize(WordCount = sum(count)) %>%
-					ungroup() %>%
-					mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
-					arrange(desc(tf_idf)) %>%
-					mutate(Ranking = 1:n()) -> temp
+
 
 				if(length(n_show)>1){
 					temp %>%
