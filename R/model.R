@@ -269,7 +269,7 @@ ExploreDocuments <- setRefClass(
 			p <- ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=EstTopic)) +
 				geom_line() +
 				geom_point() +
-				geom_label_repel(aes(label = Word), size=2.3,
+				geom_label_repel(aes(label = Word), size=2.5,
 												 box.padding = 0.20, label.padding = 0.12,
 												 arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
 												 show.legend = F) +
@@ -395,9 +395,27 @@ ExploreDocuments <- setRefClass(
 				ggplot(aes(x=tf_idf, y=..density.., colour=EstTopic)) +
 					geom_density(stat = "density", position = "identity") +
 					xlab("TF-IDF") + ylab("Density") +
-					theme_bw() -> p
+					theme_bw() -> p1
 
-			return(p)
+			data_tfidf %>%
+				inner_join(., seeds_df, by=c("term"="Word")) %>%
+				group_by(EstTopic, term) %>%
+				summarize(Median = median(tf_idf)) %>%
+				ungroup() %>%
+				group_by(EstTopic) %>%
+				arrange(desc(Median)) %>%
+				mutate(Ranking = 1:n()) %>%
+				ggplot(., aes(x=Ranking, y=Median, colour=EstTopic)) +
+				geom_line() +
+				geom_point() +
+				geom_label_repel(aes(label = term), size=2.5,
+												 box.padding = 0.20, label.padding = 0.12,
+												 arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
+												 show.legend = F) +
+				ylab("Median TF-IDF") +
+				theme_bw() -> p2
+
+			return(list(density=p1, median=p2))
 
 		},
 
