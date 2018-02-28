@@ -250,6 +250,7 @@ ExploreDocuments <- setRefClass(
 			names(seed_list) <- paste0("EstTopic", 1:length(seed_list))
 			seeds <- lapply(seed_list, function(x){unlist(strsplit(x," "))})
 			ext_k <- length(seeds)
+			max_num_words <- max(unlist(lapply(seeds, function(x){length(x)})))
 
 			seeds_df <- data.frame(EstTopic=1, Word=1)
 			for(k in 1:ext_k){
@@ -273,6 +274,7 @@ ExploreDocuments <- setRefClass(
 												 box.padding = 0.20, label.padding = 0.12,
 												 arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
 												 show.legend = F) +
+			  scale_x_continuous(breaks=1:max_num_words) +
 				ylab("Proportion (%)") +
 				theme_bw()
 
@@ -378,6 +380,7 @@ ExploreDocuments <- setRefClass(
 			names(seed_list) <- paste0("EstTopic", 1:length(seed_list))
 			seeds <- lapply(seed_list, function(x){unlist(strsplit(x," "))})
 			ext_k <- length(seeds)
+			max_num_words <- max(unlist(lapply(seeds, function(x){length(x)})))
 
 			seeds_df <- data.frame(EstTopic=1, Word=1)
 			for(k in 1:ext_k){
@@ -412,6 +415,7 @@ ExploreDocuments <- setRefClass(
 												 box.padding = 0.20, label.padding = 0.12,
 												 arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
 												 show.legend = F) +
+				scale_x_continuous(breaks=1:max_num_words) +
 				ylab("Median TF-IDF") +
 				theme_bw() -> p2
 
