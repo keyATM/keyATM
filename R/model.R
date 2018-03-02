@@ -398,7 +398,9 @@ ExploreDocuments <- setRefClass(
 				ggplot(aes(x=tf_idf, y=..density.., colour=EstTopic)) +
 					geom_density(stat = "density", position = "identity") +
 					xlab("TF-IDF") + ylab("Density") +
-					theme_bw() -> p1
+					ggtitle("TF-IDF Desity of Words in Dictionary") +
+					theme_bw() +
+					theme(plot.title = element_text(hjust = 0.5)) -> p1
 
 			data_tfidf %>%
 				inner_join(., seeds_df, by=c("term"="Word")) %>%
@@ -417,7 +419,9 @@ ExploreDocuments <- setRefClass(
 												 show.legend = F) +
 				scale_x_continuous(breaks=1:max_num_words) +
 				ylab("Median TF-IDF") +
-				theme_bw() -> p2
+				ggtitle("Median TF-IDF of Words in Dictionary") +
+				theme_bw() +
+				theme(plot.title = element_text(hjust = 0.5)) -> p2
 
 			return(list(density=p1, median=p2))
 
