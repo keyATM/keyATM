@@ -270,7 +270,7 @@ ExploreDocuments <- setRefClass(
 			p <- ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=EstTopic)) +
 				geom_line() +
 				geom_point() +
-				geom_label_repel(aes(label = Word), size=2.5,
+				geom_label_repel(aes(label = Word), size=2.8,
 												 box.padding = 0.20, label.padding = 0.12,
 												 arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
 												 show.legend = F) +
@@ -413,7 +413,7 @@ ExploreDocuments <- setRefClass(
 				ggplot(., aes(x=Ranking, y=Median, colour=EstTopic)) +
 				geom_line() +
 				geom_point() +
-				geom_label_repel(aes(label = term), size=2.5,
+				geom_label_repel(aes(label = term), size=2.8,
 												 box.padding = 0.20, label.padding = 0.12,
 												 arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
 												 show.legend = F) +
