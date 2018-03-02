@@ -365,10 +365,15 @@ diagnosis_topic_recovery_heatmap <- function(post, n=25,
 
   num <- length(unique(res_$EstTopic))
   if(is.null(topicvec)){
-    topicvec <- 1:num
+		res_ %>%
+			group_by(EstTopic) %>%
+			top_n(1, Proportion) %>%
+			arrange(TrueTopic) %>%
+			select(EstTopic) -> topicvec 
+		topicvec <-	unique(as.integer(gsub("EstTopic", "", topicvec$EstTopic)))
   }else if(length(topicvec) != num){
-    message("Topicvec length does not match with the topic number")
-    topicvec <- 1:num
+		message("topicvec length does not match")
+		topicvec <- 1:num
   }
 
   truenum <- length(unique(res_$TrueTopic))
