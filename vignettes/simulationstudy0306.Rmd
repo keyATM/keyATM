@@ -511,7 +511,7 @@ diagnosis_topic_recovery_heatmap(post, 25)
 ```
 
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-get_lda_result("Sim1", iter=iter_num, k=11)
+get_lda_result("Sim1", iter=iter_num, k=6)
 ```
 
 # Use Simulation Data 2 (low median tf-idf)
@@ -541,7 +541,7 @@ diagnosis_topic_recovery_heatmap(post, 25)
 ```
 
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-get_lda_result("Sim1", iter=iter_num, k=11)
+get_lda_result("Sim1", iter=iter_num, k=6)
 ```
 
 # Revisit Bara Data
