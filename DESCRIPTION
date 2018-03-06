@@ -13,6 +13,7 @@ Imports: Rcpp,
   hashmap,
   quanteda,
   ggplot2,
+	ggrepel,
   dplyr,
   tidytext,
   methods

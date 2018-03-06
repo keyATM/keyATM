@@ -178,6 +178,7 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
 #' @section Fields:
 #'  \describe{
 #'    \item{\code{data}}{ data in tidytext format}
+#'    \item{\code{data_tfidf}}{ data in tidytext format}
 #'    \item{\code{uniquewords}}{ a vector of unique words}
 #'    \item{\code{num_uniquewords}}{ a number of unique words}
 #'    \item{\code{totalwords}}{ number of words in the entire documents}
@@ -188,14 +189,17 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
 #'  \describe{
 #'    \item{\code{initialize}}{ Constructor}
 #'    \item{\code{check_existence}}{ Check whether the word exists in the corpus}
-#'    \item{\code{show_words_documents(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
-#'    \item{\code{show_words(word, n_show=1:num_uniquewords)}}{ show a vector of words distribution.}
+#'    \item{\code{visualize_dict_proportion}}{ Dictionary proportion list}
+#'    \item{\code{visualize_words_documents(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+#'    \item{\code{visualize_words(word, n_show=1:num_uniquewords)}}{ show a vector of words distribution.}
 #'    \item{\code{top_words(n_show=10)}}{ show top words}
+#'    \item{\code{visualize_tfidf(n_show=10)}}{ show top tf_idf}
 #'    \item{\code{words_distribution(n_show)}}{ show a distribution of words}
 #'  }
 #'
-#' @importFrom tidytext tidy
+#' @importFrom tidytext tidy bind_tf_idf
 #' @import ggplot2
+#' @import ggrepel
 #' @import dplyr
 #' @export ExploreDocuments
 #' @exportClass ExploreDocuments
@@ -204,6 +208,7 @@ ExploreDocuments <- setRefClass(
 
 	fields = list(
 		data = "data.frame",
+		data_tfidf = "data.frame",
 		uniquewords = "character",
 		num_uniquewords = "numeric",
 		totalwords = "numeric"
@@ -211,14 +216,25 @@ ExploreDocuments <- setRefClass(
 
 	methods = list(
 		initialize = function(data_=tidy_){
-			data_ <- data_ %>%
+			data_tfidf <<- data_ %>%
 				group_by(document) %>%
 				mutate(countdoc = sum(count)) %>%
-				ungroup()
-			data <<- data_
-			uniquewords <<- unique(data$term)
+				ungroup() %>%
+				bind_tf_idf(term, document, count)
+
+			uniquewords <<- unique(data_$term)
 			num_uniquewords <<- length(uniquewords)
-			totalwords <<- sum(data$count)
+			totalwords <<- sum(data_$count)
+
+			data_ %>%
+				mutate(Word = term) %>%
+				select(-term) %>%
+				group_by(Word) %>%
+				summarize(WordCount = sum(count)) %>%
+				ungroup() %>%
+				mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
+				arrange(desc(WordCount)) %>%
+				mutate(Ranking = 1:n()) ->> data
 		},
 
 		check_existence = function(word){
@@ -230,19 +246,55 @@ ExploreDocuments <- setRefClass(
 			}
 		},
 
-		show_words_documents = function(word, type="count", n_show=100, xaxis=F){
+		visualize_dict_prop = function(seed_list){
+			names(seed_list) <- paste0("EstTopic", 1:length(seed_list))
+			seeds <- lapply(seed_list, function(x){unlist(strsplit(x," "))})
+			ext_k <- length(seeds)
+			max_num_words <- max(unlist(lapply(seeds, function(x){length(x)})))
+
+			seeds_df <- data.frame(EstTopic=1, Word=1)
+			for(k in 1:ext_k){
+				words <- seeds[[k]]
+				numwords <- length(words)
+				topicname <- paste0("EstTopic", k)
+				for(w in 1:numwords){
+					seeds_df <- rbind(seeds_df, data.frame(EstTopic=topicname, Word=words[w]))
+				}
+			}
+			seeds_df <- seeds_df[2:nrow(seeds_df), ]
+
+			inner_join(data, seeds_df, by="Word") %>%
+				group_by(EstTopic) %>%
+				mutate(Ranking = 1:n()) -> temp
+
+			p <- ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=EstTopic)) +
+				geom_line() +
+				geom_point() +
+				geom_label_repel(aes(label = Word), size=2.8,
+												 box.padding = 0.20, label.padding = 0.12,
+												 arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
+												 show.legend = F) +
+			  scale_x_continuous(breaks=1:max_num_words) +
+				ylab("Proportion (%)") +
+				theme_bw()
+
+			return(p)
+
+		},
+
+		visualize_words_documents = function(word, type="count", n_show=100, xaxis=F){
 			"Visualize a word distribution" 
 			# check the words existence						
 			c <- check_existence(word)
 			if(c){ return()}
 
 			# Visualize
-			data %>% filter(term==get("word")) %>%
+			data_tfidf %>% filter(term==get("word")) %>%
 				summarize(total = sum(count)) %>% as.numeric() -> sumcount
 			message(paste0("Count of '", word, "': ", as.character(sumcount), " out of ", totalwords))
 			message(paste0("Proportion of '", word, "': ", as.character(round(sumcount/totalwords, 4))))
 
-			data %>%
+			data_tfidf %>%
 				filter(term == get("word")) %>%
 				group_by(document) %>%
 				mutate(Proportion = count/countdoc*100) %>%
@@ -277,19 +329,13 @@ ExploreDocuments <- setRefClass(
 											 plot.title = element_text(hjust = 0.5))
 			}
 
+			return(p)
+
 		},
 
-		show_words = function(words, n_show=1:num_uniquewords){
+		visualize_words = function(words, n_show=1:num_uniquewords){
 			# Distribution across words
 				data %>%
-					mutate(Word = term) %>%
-					select(-term) %>%
-					group_by(Word) %>%
-					summarize(WordCount = sum(count)) %>%
-					ungroup() %>%
-					mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
-					arrange(desc(WordCount)) %>%
-					mutate(Ranking = 1:n()) %>%
 					mutate(Show = if_else(.$Word %in% get("words"), "1", "0")) %>%
 					slice(n_show) -> temp
 
@@ -309,39 +355,19 @@ ExploreDocuments <- setRefClass(
 								legend.position="none",
 								plot.title = element_text(hjust = 0.5))
 
-				# p <- ggplot(temp, aes(x=reorder(Word,-WordCount), y=`Proportion(%)`, fill=Show)) +
-				# 	geom_bar(stat="identity", width=1) +
-				# 	scale_fill_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) + 
-				# 	xlab("Words") + ylab("Proportion (%)") + ggtitle("Distribution of words") +
-				# 	theme(axis.text.x=element_blank(),
-				# 				axis.ticks.x=element_blank(),
-				# 				legend.position="none",
-				# 				plot.title = element_text(hjust = 0.5))
-
-
 			return(p)
 
 		},
 
 		top_words = function(n_show=20){
 			"Show frequent words"
-				data %>%
-					mutate(Word = term) %>%
-					select(-term) %>%
-					group_by(Word) %>%
-					summarize(WordCount = sum(count)) %>%
-					ungroup() %>%
-					mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
-					arrange(desc(WordCount)) %>%
-					mutate(Ranking = 1:n()) -> temp
-
 				if(length(n_show)>1){
-					temp %>%
+					data %>%
 						slice(n_show) %>%
 						arrange(-WordCount) %>%
 						print(n=nrow(.))
 				}else{
-					temp %>%
+					data %>%
 						top_n(n_show, WordCount) %>%
 						arrange(-WordCount) %>%
 						print(n=nrow(.))
@@ -349,24 +375,66 @@ ExploreDocuments <- setRefClass(
 
 		},
 
+		visualize_tfidf = function(seed_list){
+
+			names(seed_list) <- paste0("EstTopic", 1:length(seed_list))
+			seeds <- lapply(seed_list, function(x){unlist(strsplit(x," "))})
+			ext_k <- length(seeds)
+			max_num_words <- max(unlist(lapply(seeds, function(x){length(x)})))
+
+			seeds_df <- data.frame(EstTopic=1, Word=1)
+			for(k in 1:ext_k){
+				words <- seeds[[k]]
+				numwords <- length(words)
+				topicname <- paste0("EstTopic", k)
+				for(w in 1:numwords){
+					seeds_df <- rbind(seeds_df, data.frame(EstTopic=topicname, Word=words[w]))
+				}
+			}
+			seeds_df <- seeds_df[2:nrow(seeds_df), ]
+
+			data_tfidf %>%
+				inner_join(., seeds_df, by=c("term"="Word")) %>%
+				ggplot(aes(x=tf_idf, y=..density.., colour=EstTopic)) +
+					geom_density(stat = "density", position = "identity") +
+					xlab("TF-IDF") + ylab("Density") +
+					ggtitle("TF-IDF Desity of Words in Dictionary") +
+					theme_bw() +
+					theme(plot.title = element_text(hjust = 0.5)) -> p1
+
+			data_tfidf %>%
+				inner_join(., seeds_df, by=c("term"="Word")) %>%
+				group_by(EstTopic, term) %>%
+				summarize(Median = median(tf_idf)) %>%
+				ungroup() %>%
+				group_by(EstTopic) %>%
+				arrange(desc(Median)) %>%
+				mutate(Ranking = 1:n()) %>%
+				ggplot(., aes(x=Ranking, y=Median, colour=EstTopic)) +
+				geom_line() +
+				geom_point() +
+				geom_label_repel(aes(label = term), size=2.8,
+												 box.padding = 0.20, label.padding = 0.12,
+												 arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
+												 show.legend = F) +
+				scale_x_continuous(breaks=1:max_num_words) +
+				ylab("Median TF-IDF") +
+				ggtitle("Median TF-IDF of Words in Dictionary") +
+				theme_bw() +
+				theme(plot.title = element_text(hjust = 0.5)) -> p2
+
+			return(list(density=p1, median=p2))
+
+		},
+
 		words_distribution = function(n_show=num_uniquewords){
 			# Distribution across documents
-				data %>%
-					mutate(Word = term) %>%
-					select(-term) %>%
-					group_by(Word) %>%
-					summarize(WordCount = sum(count)) %>%
-					ungroup() %>%
-					mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
-					arrange(desc(WordCount)) %>%
-					mutate(Ranking = 1:n()) -> temp_all
-
 				if(length(n_show)>1){
-					temp_all %>%
+					data %>%
 						slice(n_show) %>%
 						arrange(-WordCount) -> temp
 				}else{
-					temp_all %>%
+					data %>%
 						top_n(n_show, WordCount) %>%
 						arrange(-WordCount) -> temp
 				}

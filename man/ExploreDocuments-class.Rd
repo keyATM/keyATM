@@ -11,15 +11,16 @@ Explore Documents Class
 \section{Methods}{
 
 \describe{
-\item{\code{show_words_documents(word, type = "count", n_show = 100, xaxis = F)}}{Visualize a word distribution}
-
 \item{\code{top_words(n_show = 20)}}{Show frequent words}
+
+\item{\code{visualize_words_documents(word, type = "count", n_show = 100, xaxis = F)}}{Visualize a word distribution}
 }}
 
 \section{Fields}{
 
  \describe{
    \item{\code{data}}{ data in tidytext format}
+   \item{\code{data_tfidf}}{ data in tidytext format}
    \item{\code{uniquewords}}{ a vector of unique words}
    \item{\code{num_uniquewords}}{ a number of unique words}
    \item{\code{totalwords}}{ number of words in the entire documents}
@@ -31,9 +32,11 @@ Explore Documents Class
  \describe{
    \item{\code{initialize}}{ Constructor}
    \item{\code{check_existence}}{ Check whether the word exists in the corpus}
-   \item{\code{show_words_documents(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
-   \item{\code{show_words(word, n_show=1:num_uniquewords)}}{ show a vector of words distribution.}
+   \item{\code{visualize_dict_proportion}}{ Dictionary proportion list}
+   \item{\code{visualize_words_documents(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
+   \item{\code{visualize_words(word, n_show=1:num_uniquewords)}}{ show a vector of words distribution.}
    \item{\code{top_words(n_show=10)}}{ show top words}
+   \item{\code{visualize_tfidf(n_show=10)}}{ show top tf_idf}
    \item{\code{words_distribution(n_show)}}{ show a distribution of words}
  }
 }

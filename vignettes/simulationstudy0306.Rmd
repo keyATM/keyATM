@@ -1,5 +1,5 @@
 ---
-title: "Topic Number Misspecification"
+title: "TF-IDF"
 author: "Shusei Eshima"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -25,7 +25,7 @@ library(tibble)
 library(ggplot2)
 library(dplyr)
 library(topicmodels)
-iter_num <- 200
+iter_num <- 500
 extra_k <- 2
 ```
 
@@ -435,6 +435,13 @@ get_lda_result <- function(data_folder_name, iter, k, topicvec=1:k, show_n=25){
         mutate(Proportion = counts / topicsum * 100,
                EstTopic = paste0("EstTopic", .topic)) -> res
 
+	res %>%
+		group_by(EstTopic) %>%
+		top_n(1, Proportion) %>%
+		arrange(TrueTopic) %>%
+		select(EstTopic) -> topicvec 
+	topicvec <-	unique(as.integer(gsub("EstTopic", "", topicvec$EstTopic)))
+
   num <- length(unique(res$EstTopic))
   truenum <- length(unique(res$TrueTopic))
   title <- paste0("LDA: Top ", as.character(show_n), " words")
@@ -471,27 +478,24 @@ explore_ <- explore(docs,
              remove_punct = TRUE,
              remove_symbols = TRUE,
              remove_separators = TRUE)
-explore_$words_distribution(1:30)
-explore_$top_words(10)
-explore_$visualize_words_documents("w65t5")
-explore_$visualize_words(c('w11t1','w64t1', 'w273t1'))
+explore_$data_tfidf %>%
+	group_by(term) %>%
+	summarize(TFIDFMedian = median(tf_idf)) %>%
+	arrange(desc(TFIDFMedian)) -> ranked_tfidf
 ```
 
-# Use Simulation Data 1 (more topic)
-Use high to middle proportion words:
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-explore_$visualize_words(c('w0t1','w67t1', 'w223t2', "w536t2", "w1656t3",
-                      "w541t2", "w6t3", "w2629t3", "w1668t3"))
-```
+# Use Simulation Data 1 (high median tf-idf)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# Select seed based on tf-idf
+seed_list <- list(c("w1947t1 w3172t1 w2616t1"),
+                 c("w1969t2 w3475t2 w2300t2"),
+                 c("w1517t3 w2158t3 w3474t3"))
+explore_$visualize_dict_prop(seed_list)
+explore_$visualize_tfidf(seed_list)
 
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w0t1 w67t1"),
-                 c("w223t2 w536t2 w541t2"),
-                 c("w6t3 w2629t3 w1668t3 w1656t3"))
-model <- create_model("Sim1", seed_list=seed_list, extra_k=8)
+model <- create_model("Sim1", seed_list=seed_list, extra_k=3)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
-new_order <- c(1,2,3,7,9,5,8,4,6,10,11)
 ```
 
 ## Analysis
@@ -503,22 +507,25 @@ diagnosis_model_fit(post, start=2)
 ### Heatmap
 EstTopic1, EstTopic2, and EstTopic3 has a clear TrueTopic.
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
+diagnosis_topic_recovery_heatmap(post, 25)
 ```
 
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-get_lda_result("Sim1", iter=iter_num, k=11, topicvec=c(6,8,10,2,5,9,3,1,4,7,11))
+get_lda_result("Sim1", iter=iter_num, k=6)
 ```
 
-# Use Simulation Data 2 (more and more topic)
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w0t1 w67t1"),
-                 c("w223t2 w536t2 w541t2"),
-                 c("w6t3 w2629t3 w1668t3 w1656t3"))
-model <- create_model("Sim1", seed_list=seed_list, extra_k=15)
+# Use Simulation Data 2 (low median tf-idf)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# Select seed based on tf-idf
+seed_list <- list(c("w64t1 w83t1 w0t1"),
+                 c("w223t2 w0t2 w541t2"),
+                 c("w127t3 w6t3 w26t3"))
+explore_$visualize_dict_prop(seed_list)
+explore_$visualize_tfidf(seed_list)
+
+model <- create_model("Sim1", seed_list=seed_list, extra_k=3)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
-new_order <- c(1,4,2,9,3,13,14,5,7,8,11,6,12,15,17,10,16,18)
 ```
 
 ## Analysis
@@ -530,19 +537,85 @@ diagnosis_model_fit(post, start=2)
 ### Heatmap
 EstTopic1, EstTopic2, and EstTopic3 has a clear TrueTopic.
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
+diagnosis_topic_recovery_heatmap(post, 25)
 ```
 
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-get_lda_result("Sim1", iter=iter_num, k=18, 
-               topicvec=c(3,9,12,14,16,4,5,18,8,15,13,1,2,6,10,11,7,17))
+get_lda_result("Sim1", iter=iter_num, k=6)
 ```
 
-# Use Simulation Data 3 (fewer I)
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w0t1 w67t1"),
-                 c("w223t2 w536t2 w541t2"),
-                 c("w6t3 w2629t3 w1668t3 w1656t3"))
+# Revisit Bara Data
+```{r, warning=FALSE, message=FALSE}
+doc_folder <- system.file(file.path("extdata", "bara_paras"), package = "topicdict")
+seed_file <- system.file(file.path("extdata", "bara_seeds.txt"), package = "topicdict")
+
+## turn this flat file of seeds into a (quanteda dictionary) list as it would be used
+seed_list <- Map(function(x){ unlist(strsplit(x, " ")) }, 
+                 Filter(function(x){ !grepl(x, pattern = "#") }, # remove comments
+                        readLines(seed_file)))
+explore_ <- explore(list.files(doc_folder, pattern="txt", full.names=T))
+```
+```{r, warning=FALSE, message=FALSE, fig.width=9, fig.height=6.5}
+explore_$visualize_dict_prop(seed_list)
+explore_$visualize_tfidf(seed_list)
+```
+
+# Low and Middle Proportion (from last week)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# Explore
+folder <- paste0(data_folder, "Sim1", "/W")
+docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
+explore_ <- explore(docs,
+             remove_numbers = FALSE, # For simulation, make it false
+             remove_punct = TRUE,
+             remove_symbols = TRUE,
+             remove_separators = TRUE)
+```
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+seed_list <- list(c("w764t1 w1077t1 w971t1 w249t1"),
+                 c("w609t2 w386t2 w1258t2 w943t2"),
+                 c("w373t3 w851t3 w984t3 w263t3"))
+explore_$visualize_dict_prop(seed_list)
+explore_$visualize_tfidf(seed_list)
+model <- create_model("Sim1", seed_list=seed_list, extra_k=4)
+res <- topicdict_train(model, iter = iter_num)
+post <- topicdict::posterior(res)
+```
+
+## Analysis
+### Modelfit
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+diagnosis_model_fit(post, start=2)
+```
+
+### Heatmap
+EstTopic1, EstTopic2, and EstTopic3 has a clear TrueTopic.
+```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
+diagnosis_topic_recovery_heatmap(post, 25)
+```
+
+### LDA Result
+```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
+get_lda_result("Sim1", iter=iter_num, k=7)
+```
+
+# Low and Middle Proportion (from last week, K+1)
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# Explore
+folder <- paste0(data_folder, "Sim1", "/W")
+docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
+explore_ <- explore(docs,
+             remove_numbers = FALSE, # For simulation, make it false
+             remove_punct = TRUE,
+             remove_symbols = TRUE,
+             remove_separators = TRUE)
+```
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+seed_list <- list(c("w764t1 w1077t1 w971t1 w249t1"),
+                 c("w609t2 w386t2 w1258t2 w943t2"),
+                 c("w373t3 w851t3 w984t3 w263t3"))
+explore_$visualize_dict_prop(seed_list)
+explore_$visualize_tfidf(seed_list)
 model <- create_model("Sim1", seed_list=seed_list, extra_k=1)
 res <- topicdict_train(model, iter = iter_num)
 post <- topicdict::posterior(res)
@@ -550,197 +623,18 @@ post <- topicdict::posterior(res)
 
 ## Analysis
 ### Modelfit
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-diagnosis_model_fit(post, start=2)
-```
-
-### Heatmap
-If the number of topics is fewer than the truth, there are contaminated topics. Topic 4 is a regular topic.
-```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
-```
-
-```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-get_lda_result("Sim1", iter=iter_num, k=4, topicvec=c(3,4,2,1))
-```
-
-# Use Simulation Data 4 (fewer II)
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w0t1 w67t1"),
-                 c("w223t2 w536t2 w541t2"),
-                 c("w6t3 w2629t3 w1668t3 w1656t3"))
-model <- create_model("Sim1", seed_list=seed_list, extra_k=2)
-res <- topicdict_train(model, iter = iter_num)
-post <- topicdict::posterior(res)
-```
-
-## Analysis
-### Modelfit
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-diagnosis_model_fit(post, start=2)
-```
-
-### Heatmap
-If the number of topics is fewer than the truth, there is a contaminated topic. Topic 4 and 5 are regular topic.
-```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
-```
-
-```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-get_lda_result("Sim1", iter=iter_num, k=5, topicvec=c(4,1,5,3,2))
-```
-
-# Middle Proportion
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-# Explore
-folder <- paste0(data_folder, "Sim1", "/W")
-docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
-explore_ <- explore(docs,
-             remove_numbers = FALSE, # For simulation, make it false
-             remove_punct = TRUE,
-             remove_symbols = TRUE,
-             remove_separators = TRUE)
-# explore_$top_words(250:300)
-explore_$visualize_words(c("w1394t1", "w27t1", "w291t1",
-                      "w828t2", "w1571t2", "w650t2", 
-                      "w24t3", "w1597t3", "w1564t3"))
-```
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w1394t1 w27t1 w291t1"),
-                 c("w828t2 w1571t2 w650t2"),
-                 c("w24t3 w1597t3 w1564t3"))
-model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
-res <- topicdict_train(model, iter = iter_num)
-post <- topicdict::posterior(res)
-new_order <- c(1,6,2,10,3,8,7,4,5,9)
-```
-
-## Analysis
-### Modelfit
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
 diagnosis_model_fit(post, start=2)
 ```
 
 ### Heatmap
 EstTopic1, EstTopic2, and EstTopic3 has a clear TrueTopic.
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
+diagnosis_topic_recovery_heatmap(post, 25)
 ```
 
+### LDA Result
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-get_lda_result("Sim1", iter=iter_num, k=10, topicvec=c(7,8,10,6,9,2,1,4,3,5))
+get_lda_result("Sim1", iter=iter_num, k=4)
 ```
 
-
-# Low Proportion
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-# Explore
-folder <- paste0(data_folder, "Sim1", "/W")
-docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
-explore_ <- explore(docs,
-             remove_numbers = FALSE, # For simulation, make it false
-             remove_punct = TRUE,
-             remove_symbols = TRUE,
-             remove_separators = TRUE)
-explore_$top_words(10)
-explore_$visualize_words(c("w1077t1", "w1077t1", "w971t1", 
-                      "w1986t2", "w386t2", "w1258t2",
-                      "w926t3", "w851t3", "w984t3" ))
-```
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w1077t1 w1077t1 w971t1"),
-                 c("w1986t2 w386t2 w1258t2"),
-                 c("w926t3 w851t3 w984t3"))
-model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
-res <- topicdict_train(model, iter = iter_num)
-post <- topicdict::posterior(res)
-new_order <- c(5,6,1,2,8,9,10,7,4,3)
-```
-
-## Analysis
-### Modelfit
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-diagnosis_model_fit(post, start=2)
-```
-
-### Heatmap
-Seed (EstTopic 1, 2 and 3) do not work.
-```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
-```
-
-
-# Low Proportion (More Seeds)
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-# Explore
-folder <- paste0(data_folder, "Sim1", "/W")
-docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
-explore_ <- explore(docs,
-             remove_numbers = FALSE, # For simulation, make it false
-             remove_punct = TRUE,
-             remove_symbols = TRUE,
-             remove_separators = TRUE)
-explore_$top_words(10)
-explore_$visualize_words(c("w1077t1", "w1077t1", "w971t1", "w3448t1", "w2757t1",
-                      "w1986t2", "w386t2", "w1258t2", "w1986t2", "w1552t2",
-                      "w926t3", "w851t3", "w984t3", "w2433t3", "w1038t3"))
-```
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w1077t1 w1077t1 w971t1 w3448t1 w2757t1"),
-                 c("w1986t2 w386t2 w1258t2 w1986t2 w1552t2"),
-                 c("w926t3 w851t3 w984t3 w2433t3 w1038t3"))
-model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
-res <- topicdict_train(model, iter = iter_num)
-post <- topicdict::posterior(res)
-new_order <- c(5,7,9,10,1,6,8,2,4,3)
-```
-
-## Analysis
-### Modelfit
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-diagnosis_model_fit(post, start=2)
-```
-
-### Heatmap
-Seed (EstTopic 1, 2 and 3) do not work.
-```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
-```
-
-
-# Low and Middle Proportion
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-# Explore
-folder <- paste0(data_folder, "Sim1", "/W")
-docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
-explore_ <- explore(docs,
-             remove_numbers = FALSE, # For simulation, make it false
-             remove_punct = TRUE,
-             remove_symbols = TRUE,
-             remove_separators = TRUE)
-explore_$top_words(10)
-explore_$visualize_words(c("w1077t1", "w1077t1", "w971t1", "w249t1",
-                      "w1986t2", "w386t2", "w1258t2", "w943t2",
-                      "w926t3", "w851t3", "w984t3", "w263t3" ))
-```
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-seed_list <- list(c("w1077t1 w1077t1 w971t1 w249t1"),
-                 c("w1986t2 w386t2 w1258t2 w943t2"),
-                 c("w926t3 w851t3 w984t3 w263t3"))
-model <- create_model("Sim1", seed_list=seed_list, extra_k=7)
-res <- topicdict_train(model, iter = iter_num)
-post <- topicdict::posterior(res)
-new_order <- c(1,4,2,3,6,5,9,10,7,8)
-```
-
-## Analysis
-### Modelfit
-```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=4}
-diagnosis_model_fit(post, start=2)
-```
-
-### Heatmap
-EstTopic1, EstTopic2, and EstTopic3 has a clear TrueTopic.
-```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6.5}
-diagnosis_topic_recovery_heatmap(post, 25, topicvec=new_order)
-```
