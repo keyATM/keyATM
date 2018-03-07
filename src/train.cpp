@@ -1,4 +1,6 @@
 #include <RcppEigen.h>
+#include <chrono>
+#include <iostream>
 
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
@@ -6,6 +8,12 @@
 
 using namespace Eigen;
 using namespace Rcpp;
+using namespace std;
+
+double time_z_rcat = 0.0;
+double time_z_logsumexp = 0.0;
+std::chrono::high_resolution_clock::time_point  time_start, time_end;
+std::chrono::high_resolution_clock::time_point  time_start_z, time_end_z;
 
 double logsumexp(double &x, double &y, bool flg){
   if (flg) return y; // init mode
@@ -127,10 +135,17 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
         log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
       z_prob_vec(k) = numerator - denominator;
     }
+		time_start_z = std::chrono::high_resolution_clock::now();
     double sum = logsumexp_Eigen(z_prob_vec); // normalize
+		time_end_z = std::chrono::high_resolution_clock::now();
+		time_z_logsumexp += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z-time_start_z).count();
+
     for (int k = 0; k < num_topics; k++)
       z_prob_vec(k) = exp(z_prob_vec(k) - sum);
+		time_start_z = std::chrono::high_resolution_clock::now();
     new_z = rcat(z_prob_vec); // take a sample
+		time_end_z = std::chrono::high_resolution_clock::now();
+		time_z_rcat += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z-time_start_z).count();
 
   } else {
     std::vector<int> make_zero_later;
@@ -148,7 +163,10 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
         log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
       z_prob_vec(k) = numerator - denominator;
     }
-    double sum = logsumexp_Eigen(z_prob_vec);
+		time_start_z = std::chrono::high_resolution_clock::now();
+    double sum = logsumexp_Eigen(z_prob_vec); // normalize
+		time_end_z = std::chrono::high_resolution_clock::now();
+		time_z_logsumexp += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z-time_start_z).count();
 
     for (int k = 0; k < num_topics; k++)
       z_prob_vec(k) = exp(z_prob_vec(k) - sum);
@@ -159,7 +177,10 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
 		}
 
     z_prob_vec = z_prob_vec / z_prob_vec.sum(); // and renormalize
+		time_start_z = std::chrono::high_resolution_clock::now();
     new_z = rcat(z_prob_vec); // take a sample
+		time_end_z = std::chrono::high_resolution_clock::now();
+		time_z_rcat += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z-time_start_z).count();
 
   }
 
@@ -349,6 +370,7 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
 //' @export
 // [[Rcpp::export]]
 List topicdict_train(List model, int iter = 0, int output_per = 10){
+	auto start = std::chrono::high_resolution_clock::now();
 
 	// Data
   List W = model["W"], Z = model["Z"], X = model["X"];
@@ -393,6 +415,7 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
   VectorXi n_x0_k = VectorXi::Zero(num_topics);
   VectorXi n_x1_k = VectorXi::Zero(num_topics);
 
+
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
     IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     for(int w_position = 0; w_position < doc_x.size(); w_position++){
@@ -409,56 +432,96 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
   }
   int total_words = (int)n_dk.sum();
 
+	double prepare_data = std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - start).count();
+	double time_z, time_x, time_alpha, time_loglik, time_getvector, rpushback, shuffle_time;
+			time_z = 0.0 ; time_x = 0.0; time_alpha=0.0; time_loglik=0.0; time_getvector=0.0; rpushback=0.0; shuffle_time=0.0;
+
+
   // Randomized update sequence
   for (int it = 0; it < iter; it++){
+		time_start = std::chrono::high_resolution_clock::now();
     std::vector<int> doc_indexes = shuffled_indexes(num_doc); // shuffle
+		time_end = std::chrono::high_resolution_clock::now();
+		shuffle_time += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end-time_start).count();
+
     for (int ii = 0; ii < num_doc; ii++){
+			time_start = std::chrono::high_resolution_clock::now();
       int doc_id = doc_indexes[ii];
       IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
+			time_end = std::chrono::high_resolution_clock::now();
+			time_getvector += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end-time_start).count();
 
+			time_start = std::chrono::high_resolution_clock::now();
       std::vector<int> token_indexes = shuffled_indexes(doc_x.size()); //shuffle
+			time_end = std::chrono::high_resolution_clock::now();
+			shuffle_time += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end-time_start).count();
+
       for (int jj = 0; jj < doc_x.size(); jj++){
+				time_start = std::chrono::high_resolution_clock::now();
         int w_position = token_indexes[jj];
         int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
+				time_getvector += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end-time_start).count();
 
+				time_start = std::chrono::high_resolution_clock::now();
         doc_z[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
                                      alpha, seed_num, x, z, w, doc_id,
                                      num_vocab, num_topics, k_seeded, gamma_1,
                                      gamma_2, beta, beta_s, phi_s);
+				time_end = std::chrono::high_resolution_clock::now();
+				time_z += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end-time_start).count();
 
 				z = doc_z[w_position]; // use updated z
 
+				time_start = std::chrono::high_resolution_clock::now();
         doc_x[w_position] = sample_x(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
                                     alpha, seed_num, x, z, w, doc_id,
                                     num_vocab, num_topics, k_seeded, gamma_1,
                                     gamma_2, beta, beta_s, phi_s);
+				time_end = std::chrono::high_resolution_clock::now();
+				time_x += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end-time_start).count();
+
       }
 
+			time_start = std::chrono::high_resolution_clock::now();
 			X[doc_id] = doc_x; // is doc_x not a pointer/ref to X[doc_id]?
 			Z[doc_id] = doc_z;
+			time_end = std::chrono::high_resolution_clock::now();
+			time_getvector += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end-time_start).count();
     }
+		time_start = std::chrono::high_resolution_clock::now();
     slice_sample_alpha(alpha, n_dk, num_topics, num_doc);
     model["alpha"] = alpha;
+		time_end = std::chrono::high_resolution_clock::now();
+		time_alpha += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end-time_start).count();
 
 		// Store Alpha
+		time_start = std::chrono::high_resolution_clock::now();
 		NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
 		List alpha_iter = model["alpha_iter"];
 		alpha_iter.push_back(alpha_rvec);
 		model["alpha_iter"] = alpha_iter;
+		time_end = std::chrono::high_resolution_clock::now();
+		rpushback += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end-time_start).count();
 
 		// Log-likelihood and Perplexity
 		int r_index = it + 1;
 		if(r_index % output_per == 0 || r_index == 1 || r_index == iter ){
+			time_start = std::chrono::high_resolution_clock::now();
 			double loglik = loglikelihood1(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk, alpha,
 																		 beta, beta_s, gamma_1, gamma_2,
 																		 num_topics, k_seeded, num_vocab, num_doc, phi_s);
 			double perplexity = exp(-loglik / (double)total_words);
+			time_end = std::chrono::high_resolution_clock::now();
+			time_loglik += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end-time_start).count();
 
+			time_start = std::chrono::high_resolution_clock::now();
 			NumericVector model_fit_vec;
 			model_fit_vec.push_back(r_index);
 			model_fit_vec.push_back(loglik);
 			model_fit_vec.push_back(perplexity);
 			model_fit.push_back(model_fit_vec);
+			time_end = std::chrono::high_resolution_clock::now();
+			rpushback += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end-time_start).count();
 
 			Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
 							 " (perplexity: " << perplexity << ")" << std::endl;
@@ -468,7 +531,21 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
     checkUserInterrupt();
   }
 
+	double end_time = std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - start).count();
+
 	model["model_fit"] = model_fit;
+	double devide = 1.0/100000;
+
+	cout << "Preparation inside C++: " << prepare_data * devide  << endl;
+	cout << "Sampling Z: " << time_z * devide << endl;
+	cout << "      Rcat: " << time_z_rcat * devide << endl;
+	cout << " logsumexp: " << time_z_logsumexp * devide << endl;
+	cout << "Sampling X: " << time_x * devide << endl;
+	cout << "Sampling alpha: " << time_alpha* devide << endl;
+	cout << "Calculation loglik: " << time_loglik* devide << endl;
+	cout << "Robj push_back: " << rpushback* devide << endl;
+	cout << "Shuffle: " << shuffle_time* devide << endl;
+	cout << "Total time: " << end_time* devide << endl;
 
   return model;
 }
