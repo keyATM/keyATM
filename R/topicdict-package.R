@@ -13,6 +13,18 @@
 #' @source Bara et al. 2007 Swiss Political Science Review
 "corpus_bara_para"
 
+#' Post-War UK Party Platforms
+#'
+#' A corpus of party platforms since 1945 in the United Kingdom.
+#'
+#' @format A quanteda corpus
+#' \describe{
+#'   \item{date}{ Election year}
+#'   \item{party}{ Party abbreviation}
+#' }
+#' @source Ken Benoit
+"corpus_uk_platforms"
+
 #' topicdict: Topic Modeling Informed by a Content Analysis Dictionary
 #'
 #'
