@@ -11,7 +11,7 @@ using namespace Rcpp;
 using namespace std;
 
 double time_z_rcat = 0.0;
-double time_z_logsumexp = 0.0;
+double time_z_prepare_vec = 0.0;
 std::chrono::high_resolution_clock::time_point  time_start, time_end;
 std::chrono::high_resolution_clock::time_point  time_start_z, time_end_z;
 
@@ -51,6 +51,20 @@ NumericVector alpha_reformat(VectorXd& alpha, int& num_topics){
 
 int rcat(Eigen::VectorXd &prob){ // was called 'multi1'
   double u = R::runif(0, 1);
+  double temp = 0.0;
+  int index = 0;
+  for (int ii = 0; ii < prob.size(); ii++){
+    temp += prob(ii);
+    if (u < temp){
+      index = ii;
+      break;
+    }
+  }
+  return index;
+}
+
+int rcat_without_normalize(Eigen::VectorXd &prob, double &total){ // was called 'multi1'
+  double u = R::runif(0, 1) * total;
   double temp = 0.0;
   int index = 0;
   for (int ii = 0; ii < prob.size(); ii++){
@@ -127,58 +141,46 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
   int new_z = -1; // debug
   double numerator, denominator;
   if (x == 0){
+		time_start_z = std::chrono::high_resolution_clock::now();
     for (int k = 0; k < num_topics; ++k){
-      numerator = log(beta + (double)n_x0_kv.coeffRef(k, w)) +
-        log((double)n_x0_k(k) + gamma_2) +
-        log((double)n_dk.coeffRef(doc_id, k) + alpha(k));
-      denominator = log((double)num_vocab * beta + (double)n_x0_kv.row(k).sum()) +
-        log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
-      z_prob_vec(k) = numerator - denominator;
+      numerator = (beta + (double)n_x0_kv.coeffRef(k, w)) *
+        ((double)n_x0_k(k) + gamma_2) *
+        ((double)n_dk.coeffRef(doc_id, k) + alpha(k));
+      denominator = ((double)num_vocab * beta + (double)n_x0_kv.row(k).sum()) *
+        ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+      z_prob_vec(k) = numerator / denominator;
     }
-		time_start_z = std::chrono::high_resolution_clock::now();
-    double sum = logsumexp_Eigen(z_prob_vec); // normalize
 		time_end_z = std::chrono::high_resolution_clock::now();
-		time_z_logsumexp += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z-time_start_z).count();
+		time_z_prepare_vec += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z-time_start_z).count();
 
-    for (int k = 0; k < num_topics; k++)
-      z_prob_vec(k) = exp(z_prob_vec(k) - sum);
+    double sum = z_prob_vec.sum(); // normalize
 		time_start_z = std::chrono::high_resolution_clock::now();
-    new_z = rcat(z_prob_vec); // take a sample
+    new_z = rcat_without_normalize(z_prob_vec, sum); // take a sample
 		time_end_z = std::chrono::high_resolution_clock::now();
 		time_z_rcat += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z-time_start_z).count();
 
   } else {
-    std::vector<int> make_zero_later;
+		time_start_z = std::chrono::high_resolution_clock::now();
     for (int k = 0; k < num_topics; ++k){
       if (phi_s[k].find(w) == phi_s[k].end()){
-        z_prob_vec(k) = 1.0;
-        make_zero_later.push_back(k);
-        continue;
+        z_prob_vec(k) = 0.0;
+				continue;
       } else{ // w not one of the seeds
-        numerator = log(beta_s + (double)n_x1_kv.coeffRef(k, w)) +
-          log( ((double)n_x1_k(k) + gamma_1) ) +
-          log( ((double)n_dk.coeffRef(doc_id, k) + alpha(k)) );
+        numerator = (beta_s + (double)n_x1_kv.coeffRef(k, w)) *
+          ( ((double)n_x1_k(k) + gamma_1) ) *
+          ( ((double)n_dk.coeffRef(doc_id, k) + alpha(k)) );
       }
-      denominator = log((double)seed_num[k] * beta_s + (double)n_x1_kv.row(k).sum() ) +
-        log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
-      z_prob_vec(k) = numerator - denominator;
+      denominator = ((double)seed_num[k] * beta_s + (double)n_x1_kv.row(k).sum() ) *
+        ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+      z_prob_vec(k) = numerator / denominator;
     }
-		time_start_z = std::chrono::high_resolution_clock::now();
-    double sum = logsumexp_Eigen(z_prob_vec); // normalize
 		time_end_z = std::chrono::high_resolution_clock::now();
-		time_z_logsumexp += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z-time_start_z).count();
+		time_z_prepare_vec += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z-time_start_z).count();
 
-    for (int k = 0; k < num_topics; k++)
-      z_prob_vec(k) = exp(z_prob_vec(k) - sum);
 
-    for (int k = 0; k < make_zero_later.size(); k++){ // zero out elements
-			int change_k = make_zero_later[k];
-      z_prob_vec(change_k) = 0.0; // make it 0 explicitly
-		}
-
-    z_prob_vec = z_prob_vec / z_prob_vec.sum(); // and renormalize
+		double sum = z_prob_vec.sum();
 		time_start_z = std::chrono::high_resolution_clock::now();
-    new_z = rcat(z_prob_vec); // take a sample
+    new_z = rcat_without_normalize(z_prob_vec, sum); // take a sample
 		time_end_z = std::chrono::high_resolution_clock::now();
 		time_z_rcat += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z-time_start_z).count();
 
@@ -198,6 +200,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
 
   return new_z;
 }
+
 
 // takes the sufficient statistics and parameters of the model and
 // returns a new value for x
@@ -221,42 +224,38 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
   n_dk.coeffRef(doc_id, z) -= 1; // not necessary to remove
 
   // newprob_x1()
-  double x1_logprob;
+  double x1_prob;
   int k = z;
   double numerator;
   double denominator;
   if ( phi_s[k].find(w) == phi_s[k].end() ){
-       x1_logprob = -1.0;
+       x1_prob = -1.0;
   } else {
-    numerator = log(beta_s + (double)n_x1_kv.coeffRef(k, w)) +
-      log( ((double)n_x1_k(k) + gamma_1) );
-    denominator = log((double)seed_num[k] * beta_s + (double)n_x1_kv.row(k).sum() ) +
-      log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
-    x1_logprob = numerator - denominator;
+    numerator = (beta_s + (double)n_x1_kv.coeffRef(k, w)) *
+      ( ((double)n_x1_k(k) + gamma_1) );
+    denominator = ((double)seed_num[k] * beta_s + (double)n_x1_kv.row(k).sum() ) *
+      ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+    x1_prob = numerator / denominator;
   }
 
   int new_x;
-  if(x1_logprob == -1.0){
+  if(x1_prob == -1.0){
     // if probability of x_di = 1 case is 0, it should be x=0 (regular topic)
     new_x = 0;
   } else {
     // newprob_x0()
     int k = z;
-    numerator = log(beta + (double)n_x0_kv.coeffRef(k, w)) +
-      log((double)n_x0_k(k) + gamma_2);
+    numerator = (beta + (double)n_x0_kv.coeffRef(k, w)) *
+      ((double)n_x0_k(k) + gamma_2);
 
-    denominator = log((double)num_vocab * beta + (double)n_x0_kv.row(k).sum() ) +
-      log((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
-    double x0_logprob = numerator - denominator;
+    denominator = ((double)num_vocab * beta + (double)n_x0_kv.row(k).sum() ) *
+      ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+    double x0_prob = numerator / denominator;
 
     // Normalize
-    double sum = 0.0;
-    double prob_array[] = {x0_logprob, x1_logprob};
-    for (int i = 0; i < 2; i++)
-      sum = logsumexp(sum, prob_array[i], (i == 0));
+    double sum = x0_prob + x1_prob;
 
-    double x0_prob = exp( x0_logprob - sum);
-    double x1_prob = exp( x1_logprob - sum);
+    x1_prob = x1_prob / sum;
     new_x = R::runif(0,1) <= x1_prob;  //new_x = Bern(x0_prob, x1_prob);
   }
   // add back data counts
@@ -271,6 +270,7 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
 
   return new_x;
 }
+
 
 // Wrapper around R's uniform random number generator for std shuffles
 inline int rand_wrapper(const int n) { return floor(unif_rand() * n); }
@@ -539,7 +539,7 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
 	cout << "Preparation inside C++: " << prepare_data * devide  << endl;
 	cout << "Sampling Z: " << time_z * devide << endl;
 	cout << "      Rcat: " << time_z_rcat * devide << endl;
-	cout << " logsumexp: " << time_z_logsumexp * devide << endl;
+	cout << "  prep_vec: " << time_z_prepare_vec * devide << endl;
 	cout << "Sampling X: " << time_x * devide << endl;
 	cout << "Sampling alpha: " << time_alpha* devide << endl;
 	cout << "Calculation loglik: " << time_loglik* devide << endl;
