@@ -109,7 +109,7 @@ double loglikelihood1(MatrixXi& n_x0_kv,
   for (int d = 0; d < num_doc; d++){
     loglik += lgamma( alpha.sum() ) - lgamma( n_dk.row(d).sum() + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
-      loglik += lgamma( n_dk.coeffRef(d,k) + alpha(k) ) - lgamma( alpha(k) );
+      loglik += lgamma( n_dk(d,k) + alpha(k) ) - lgamma( alpha(k) );
     }
   }
   return loglik;
@@ -137,7 +137,7 @@ int sample_z(MatrixXi& n_x0_kv,
 		Rcerr << "Error at sample_z, remove" << std::endl;
 	}
 
-  n_dk.coeffRef(doc_id, z) -= 1;
+  n_dk(doc_id, z) -= 1;
 
   VectorXd z_prob_vec = VectorXd::Zero(num_topics);
   int new_z = -1; // debug
@@ -147,7 +147,7 @@ int sample_z(MatrixXi& n_x0_kv,
     for (int k = 0; k < num_topics; ++k){
       numerator = (beta + (double)n_x0_kv(k, w)) *
         ((double)n_x0_k(k) + gamma_2) *
-        ((double)n_dk.coeffRef(doc_id, k) + alpha(k));
+        ((double)n_dk(doc_id, k) + alpha(k));
 
 			time_start_z1 = std::chrono::high_resolution_clock::now();
       denominator = ((double)num_vocab * beta + (double)n_x0_k(k)) *
@@ -175,7 +175,7 @@ int sample_z(MatrixXi& n_x0_kv,
       } else{ // w not one of the seeds
         numerator = (beta_s + (double)n_x1_kv(k, w)) *
           ( ((double)n_x1_k(k) + gamma_1) ) *
-          ( ((double)n_dk.coeffRef(doc_id, k) + alpha(k)) );
+          ( ((double)n_dk(doc_id, k) + alpha(k)) );
       }
 			time_start_z1 = std::chrono::high_resolution_clock::now();
       denominator = ((double)seed_num[k] * beta_s + (double)n_x1_k(k) ) *
@@ -207,7 +207,7 @@ int sample_z(MatrixXi& n_x0_kv,
   } else {
 		Rcerr << "Error at sample_z, add" << std::endl;
 	}
-  n_dk.coeffRef(doc_id, new_z) += 1;
+  n_dk(doc_id, new_z) += 1;
 
   return new_z;
 }
@@ -232,7 +232,7 @@ int sample_x(MatrixXi& n_x0_kv,
     n_x1_kv(z, w) -= 1;
     n_x1_k(z) -= 1;
   }
-  n_dk.coeffRef(doc_id, z) -= 1; // not necessary to remove
+  n_dk(doc_id, z) -= 1; // not necessary to remove
 
   // newprob_x1()
   double x1_prob;
@@ -277,7 +277,7 @@ int sample_x(MatrixXi& n_x0_kv,
     n_x1_kv(z, w) += 1;
     n_x1_k(z) += 1;
   }
-  n_dk.coeffRef(doc_id, z) += 1;
+  n_dk(doc_id, z) += 1;
 
   return new_x;
 }
@@ -438,7 +438,7 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
         n_x1_kv(z, w) += 1;
         n_x1_k(z) += 1;
       }
-      n_dk.coeffRef(doc_id, z) += 1.0;
+      n_dk(doc_id, z) += 1.0;
     }
   }
   int total_words = (int)n_dk.sum();
