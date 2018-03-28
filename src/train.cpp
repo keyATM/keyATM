@@ -315,6 +315,8 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
   double start, end, previous_p, new_p, newlikelihood, slice_;
   VectorXd keep_current_param = alpha;
   std::vector<int> topic_ids = shuffled_indexes(num_topics);
+	double store_loglik = alpha_loglik(alpha, n_dk, num_topics, num_doc);
+	double newalphallk = 0.0;
 
   for(int i = 0; i < num_topics; i++){
     int k = topic_ids[i];
@@ -322,17 +324,18 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
     end = 1.0;
     // end = shrinkp(max_v);
     previous_p = alpha(k) / (1.0 + alpha(k)); // shrinkp
-    slice_ = alpha_loglik(alpha, n_dk, num_topics, num_doc)
-              - 2.0 * log(1.0 - previous_p)
-              + log(unif_rand()); // <-- using R random uniform
+    slice_ = store_loglik - 2.0 * log(1.0 - previous_p) 
+						+ log(unif_rand()); // <-- using R random uniform
 
     for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
       new_p = slice_uniform(start, end); // <-- using R function above
       alpha(k) = new_p / (1.0 - new_p); // expandp
-      newlikelihood = alpha_loglik(alpha, n_dk, num_topics, num_doc)
-                      - 2.0 * log(1.0 - new_p);
+
+			newalphallk = alpha_loglik(alpha, n_dk, num_topics, num_doc);
+      newlikelihood = newalphallk - 2.0 * log(1.0 - new_p);
 
       if (slice_ < newlikelihood){
+				store_loglik = newalphallk;
         break;
       } else if (previous_p < new_p){
         end = new_p;
