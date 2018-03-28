@@ -92,7 +92,7 @@ POS values.
 For reference, here's what a regular count data scaling model would do with
 the Con and Pro categories
 ```{r}
-ggplot(ca_subset, aes(date, POS, color = party)) + 
+ggplot(ca_subset, aes(date, logitPOS, color = party)) + 
   geom_line() + 
   geom_point() + 
   geom_vline(xintercept = c(1992, 1997), alpha = 0.1, size = 5 ) + 
