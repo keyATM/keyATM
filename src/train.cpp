@@ -12,7 +12,7 @@ using namespace std;
 
 double time_z_rcat = 0.0;
 double time_z_prepare_vec = 0.0;
-double time_z_sumrow = 0.0;
+double time_z_denom = 0.0;
 std::chrono::high_resolution_clock::time_point  time_start, time_end;
 std::chrono::high_resolution_clock::time_point  time_start_z, time_end_z;
 std::chrono::high_resolution_clock::time_point  time_start_z1, time_end_z1;
@@ -79,8 +79,8 @@ int rcat_without_normalize(Eigen::VectorXd &prob, double &total){ // was called 
   return index;
 }
 
-double loglikelihood1(SparseMatrix<int, RowMajor>& n_x0_kv,
-                      SparseMatrix<int, RowMajor>& n_x1_kv,
+double loglikelihood1(MatrixXi& n_x0_kv,
+                      MatrixXi& n_x1_kv,
                       VectorXi& n_x0_k, VectorXi& n_x1_k,
                       MatrixXd& n_dk, VectorXd& alpha,
                       double beta, double beta_s,
@@ -90,12 +90,12 @@ double loglikelihood1(SparseMatrix<int, RowMajor>& n_x0_kv,
   double loglik = 0.0;
   for (int k = 0; k < num_topics; k++){
     for (int v = 0; v < num_vocab; v++){ // word
-      loglik += lgamma(beta + (double)n_x0_kv.coeffRef(k, v) ) - lgamma(beta);
-      loglik += lgamma(beta_s + (double)n_x1_kv.coeffRef(k, v) ) - lgamma(beta_s);
+      loglik += lgamma(beta + (double)n_x0_kv(k, v) ) - lgamma(beta);
+      loglik += lgamma(beta_s + (double)n_x1_kv(k, v) ) - lgamma(beta_s);
     }
     // word normalization
-    loglik += lgamma( beta * (double)num_vocab ) - lgamma(beta * (double)num_vocab + (double)n_x0_kv.row(k).sum() );
-    loglik += lgamma( beta_s * (double)num_vocab ) - lgamma(beta_s * (double)num_vocab + (double)n_x1_kv.row(k).sum() );
+    loglik += lgamma( beta * (double)num_vocab ) - lgamma(beta * (double)num_vocab + (double)n_x0_k(k) );
+    loglik += lgamma( beta_s * (double)num_vocab ) - lgamma(beta_s * (double)num_vocab + (double)n_x1_k(k) );
     // x
     loglik += lgamma( (double)n_x0_k(k) + gamma_2 ) - lgamma((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2)
       + lgamma( (double)n_x1_k(k) + gamma_1 ) ;
@@ -117,8 +117,8 @@ double loglikelihood1(SparseMatrix<int, RowMajor>& n_x0_kv,
 
 // takes the sufficient statistics and parameters of the model and
 // returns a new value for z
-int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
-             SparseMatrix<int, RowMajor>& n_x1_kv,
+int sample_z(MatrixXi& n_x0_kv,
+             MatrixXi& n_x1_kv,
              VectorXi& n_x0_k, VectorXi& n_x1_k,
              MatrixXd& n_dk, VectorXd& alpha,
              std::vector<int>& seed_num,
@@ -128,10 +128,10 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
              std::vector< std::unordered_map<int, double> > & phi_s){
   // remove data
   if (x == 0){
-    n_x0_kv.coeffRef(z, w) -= 1;
+    n_x0_kv(z, w) -= 1;
     n_x0_k(z) -= 1;
   } else if (x==1) {
-    n_x1_kv.coeffRef(z, w) -= 1;
+    n_x1_kv(z, w) -= 1;
     n_x1_k(z) -= 1;
   } else {
 		Rcerr << "Error at sample_z, remove" << std::endl;
@@ -145,7 +145,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
   if (x == 0){
 		time_start_z = std::chrono::high_resolution_clock::now();
     for (int k = 0; k < num_topics; ++k){
-      numerator = (beta + (double)n_x0_kv.coeffRef(k, w)) *
+      numerator = (beta + (double)n_x0_kv(k, w)) *
         ((double)n_x0_k(k) + gamma_2) *
         ((double)n_dk.coeffRef(doc_id, k) + alpha(k));
 
@@ -153,7 +153,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
       denominator = ((double)num_vocab * beta + (double)n_x0_k(k)) *
         ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
 			time_end_z1 = std::chrono::high_resolution_clock::now();
-			time_z_sumrow += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z1-time_start_z1).count();
+			time_z_denom += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z1-time_start_z1).count();
 
       z_prob_vec(k) = numerator / denominator;
     }
@@ -173,7 +173,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
         z_prob_vec(k) = 0.0;
 				continue;
       } else{ // w not one of the seeds
-        numerator = (beta_s + (double)n_x1_kv.coeffRef(k, w)) *
+        numerator = (beta_s + (double)n_x1_kv(k, w)) *
           ( ((double)n_x1_k(k) + gamma_1) ) *
           ( ((double)n_dk.coeffRef(doc_id, k) + alpha(k)) );
       }
@@ -181,7 +181,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
       denominator = ((double)seed_num[k] * beta_s + (double)n_x1_k(k) ) *
         ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
 			time_end_z1 = std::chrono::high_resolution_clock::now();
-			time_z_sumrow += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z1-time_start_z1).count();
+			time_z_denom += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z1-time_start_z1).count();
 
       z_prob_vec(k) = numerator / denominator;
     }
@@ -199,10 +199,10 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
 
   // add back data counts
   if (x == 0){
-    n_x0_kv.coeffRef(new_z, w) += 1;
+    n_x0_kv(new_z, w) += 1;
     n_x0_k(new_z) += 1;
   } else if (x==1) {
-    n_x1_kv.coeffRef(new_z, w) += 1;
+    n_x1_kv(new_z, w) += 1;
     n_x1_k(new_z) += 1;
   } else {
 		Rcerr << "Error at sample_z, add" << std::endl;
@@ -215,8 +215,8 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
 
 // takes the sufficient statistics and parameters of the model and
 // returns a new value for x
-int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
-             SparseMatrix<int, RowMajor>& n_x1_kv,
+int sample_x(MatrixXi& n_x0_kv,
+             MatrixXi& n_x1_kv,
              VectorXi& n_x0_k, VectorXi& n_x1_k,
              MatrixXd& n_dk, VectorXd& alpha,
              std::vector<int>& seed_num,
@@ -226,10 +226,10 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
              std::vector< std::unordered_map<int, double> > & phi_s){
   // remove data
   if (x == 0){
-    n_x0_kv.coeffRef(z, w) -= 1;
+    n_x0_kv(z, w) -= 1;
     n_x0_k(z) -= 1;
   } else {
-    n_x1_kv.coeffRef(z, w) -= 1;
+    n_x1_kv(z, w) -= 1;
     n_x1_k(z) -= 1;
   }
   n_dk.coeffRef(doc_id, z) -= 1; // not necessary to remove
@@ -242,7 +242,7 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
   if ( phi_s[k].find(w) == phi_s[k].end() ){
        x1_prob = -1.0;
   } else {
-    numerator = (beta_s + (double)n_x1_kv.coeffRef(k, w)) *
+    numerator = (beta_s + (double)n_x1_kv(k, w)) *
       ( ((double)n_x1_k(k) + gamma_1) );
     denominator = ((double)seed_num[k] * beta_s + (double)n_x1_k(k) ) *
       ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
@@ -256,7 +256,7 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
   } else {
     // newprob_x0()
     int k = z;
-    numerator = (beta + (double)n_x0_kv.coeffRef(k, w)) *
+    numerator = (beta + (double)n_x0_kv(k, w)) *
       ((double)n_x0_k(k) + gamma_2);
 
     denominator = ((double)num_vocab * beta + (double)n_x0_k(k) ) *
@@ -271,10 +271,10 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
   }
   // add back data counts
   if (new_x == 0){
-    n_x0_kv.coeffRef(z, w) += 1;
+    n_x0_kv(z, w) += 1;
     n_x0_k(z) += 1;
   } else {
-    n_x1_kv.coeffRef(z, w) += 1;
+    n_x1_kv(z, w) += 1;
     n_x1_k(z) += 1;
   }
   n_dk.coeffRef(doc_id, z) += 1;
@@ -419,8 +419,8 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
   int num_vocab = vocab.size(), num_doc = files.size();
 
   // storage for sufficient statistics and their margins
-  SparseMatrix<int, RowMajor> n_x0_kv = SparseMatrix<int, RowMajor> (num_topics, num_vocab);
-  SparseMatrix<int, RowMajor> n_x1_kv = SparseMatrix<int, RowMajor> (num_topics, num_vocab);
+  MatrixXi n_x0_kv = MatrixXi::Zero(num_topics, num_vocab);
+  MatrixXi n_x1_kv = MatrixXi::Zero(num_topics, num_vocab);
   MatrixXd n_dk = MatrixXd::Zero(num_doc, num_topics);
   MatrixXd theta_dk = MatrixXd::Zero(num_doc, num_topics);
   VectorXi n_x0_k = VectorXi::Zero(num_topics);
@@ -432,10 +432,10 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
     for(int w_position = 0; w_position < doc_x.size(); w_position++){
       int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
       if (x == 0){
-        n_x0_kv.coeffRef(z, w) += 1;
+        n_x0_kv(z, w) += 1;
         n_x0_k(z) += 1;
       } else {
-        n_x1_kv.coeffRef(z, w) += 1;
+        n_x1_kv(z, w) += 1;
         n_x1_k(z) += 1;
       }
       n_dk.coeffRef(doc_id, z) += 1.0;
@@ -551,7 +551,7 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
 	cout << "Sampling Z: " << time_z * devide << endl;
 	cout << "      Rcat: " << time_z_rcat * devide << endl;
 	cout << "  prep_vec: " << time_z_prepare_vec * devide << endl;
-	cout << "   row_sum: " << time_z_sumrow * devide << endl;
+	cout << "          denominator: " << time_z_denom * devide << endl;
 	cout << "Sampling X: " << time_x * devide << endl;
 	cout << "Sampling alpha: " << time_alpha* devide << endl;
 	cout << "Calculation loglik: " << time_loglik* devide << endl;
