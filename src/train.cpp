@@ -150,7 +150,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
         ((double)n_dk.coeffRef(doc_id, k) + alpha(k));
 
 			time_start_z1 = std::chrono::high_resolution_clock::now();
-      denominator = ((double)num_vocab * beta + (double)n_x0_kv.row(k).sum()) *
+      denominator = ((double)num_vocab * beta + (double)n_x0_k(k)) *
         ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
 			time_end_z1 = std::chrono::high_resolution_clock::now();
 			time_z_sumrow += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z1-time_start_z1).count();
@@ -178,7 +178,7 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
           ( ((double)n_dk.coeffRef(doc_id, k) + alpha(k)) );
       }
 			time_start_z1 = std::chrono::high_resolution_clock::now();
-      denominator = ((double)seed_num[k] * beta_s + (double)n_x1_kv.row(k).sum() ) *
+      denominator = ((double)seed_num[k] * beta_s + (double)n_x1_k(k) ) *
         ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
 			time_end_z1 = std::chrono::high_resolution_clock::now();
 			time_z_sumrow += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z1-time_start_z1).count();
@@ -244,7 +244,7 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
   } else {
     numerator = (beta_s + (double)n_x1_kv.coeffRef(k, w)) *
       ( ((double)n_x1_k(k) + gamma_1) );
-    denominator = ((double)seed_num[k] * beta_s + (double)n_x1_kv.row(k).sum() ) *
+    denominator = ((double)seed_num[k] * beta_s + (double)n_x1_k(k) ) *
       ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
     x1_prob = numerator / denominator;
   }
@@ -259,7 +259,7 @@ int sample_x(SparseMatrix<int, RowMajor>& n_x0_kv,
     numerator = (beta + (double)n_x0_kv.coeffRef(k, w)) *
       ((double)n_x0_k(k) + gamma_2);
 
-    denominator = ((double)num_vocab * beta + (double)n_x0_kv.row(k).sum() ) *
+    denominator = ((double)num_vocab * beta + (double)n_x0_k(k) ) *
       ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
     double x0_prob = numerator / denominator;
 
