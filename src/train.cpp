@@ -80,7 +80,7 @@ double loglikelihood1(MatrixXi& n_x0_kv,
                       double beta, double beta_s,
                       double gamma_1, double gamma_2,
                       int num_topics, int k_seeded, int num_vocab, int num_doc,
-                      std::vector< std::unordered_map<int, double> > & phi_s) {
+                      std::vector< std::unordered_set<int> > &keywords) {
   double loglik = 0.0;
   for (int k = 0; k < num_topics; k++){
     for (int v = 0; v < num_vocab; v++){ // word
@@ -119,7 +119,7 @@ int sample_z(MatrixXi& n_x0_kv,
              int x, int z, int w, int doc_id, int num_vocab,
              int num_topics, int k_seeded,
              double gamma_1, double gamma_2, double beta, double beta_s,
-             std::vector< std::unordered_map<int, double> > & phi_s){
+             std::vector< std::unordered_set<int> > &keywords){
   // remove data
   if (x == 0){
     n_x0_kv(z, w) -= 1;
@@ -153,7 +153,7 @@ int sample_z(MatrixXi& n_x0_kv,
 
   } else {
     for (int k = 0; k < num_topics; ++k){
-      if (phi_s[k].find(w) == phi_s[k].end()){
+      if (keywords[k].find(w) == keywords[k].end()){
         z_prob_vec(k) = 0.0;
 				continue;
       } else{ // w not one of the seeds
@@ -199,7 +199,7 @@ int sample_x(MatrixXi& n_x0_kv,
              int x, int z, int w, int doc_id, int num_vocab,
              int num_topics, int k_seeded,
              double gamma_1, double gamma_2, double beta, double beta_s,
-             std::vector< std::unordered_map<int, double> > & phi_s){
+             std::vector< std::unordered_set<int> > &keywords){
   // remove data
   if (x == 0){
     n_x0_kv(z, w) -= 1;
@@ -215,7 +215,7 @@ int sample_x(MatrixXi& n_x0_kv,
   int k = z;
   double numerator;
   double denominator;
-  if ( phi_s[k].find(w) == phi_s[k].end() ){
+  if ( keywords[k].find(w) == keywords[k].end() ){
        x1_prob = -1.0;
   } else {
     numerator = (beta_s + (double)n_x1_kv(k, w)) *
@@ -374,21 +374,22 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
   int num_topics = k_seeded + k_free;
 	VectorXd alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
 
-	// phi_s
-  std::vector< std::unordered_map<int, double> > phi_s(num_topics);
+	// Vector that stores seed words (words in dictionary)
+  std::vector< std::unordered_set<int> > keywords(num_topics);
   std::vector<int> seed_num(num_topics);
   for (int ii = 0; ii < k_seeded; ii++){
     IntegerVector wd_ids = seeds[ii];
     seed_num[ii] = wd_ids.size();
-    std::unordered_map<int, double> phi_sk;
+    std::unordered_set<int> keywords_set;
     for (int jj = 0; jj < wd_ids.size(); jj++)
-      phi_sk[wd_ids(jj)] = 1.0 / wd_ids.size();
-    phi_s[ii] = phi_sk;
+			keywords_set.insert(wd_ids(jj));
+
+    keywords[ii] = keywords_set;
   }
 	for(int i=k_seeded; i<num_topics; i++){
-		std::unordered_map<int, double> phi_sk{ {-1, -1.0} };
+		std::unordered_set<int> keywords_set{ -1 };
 		seed_num[i] = 0;
-		phi_s[i] = phi_sk;
+		keywords[i] = keywords_set;
 	}
 
   // document-related constants
@@ -439,14 +440,14 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
         doc_z[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
                                      alpha, seed_num, x, z, w, doc_id,
                                      num_vocab, num_topics, k_seeded, gamma_1,
-                                     gamma_2, beta, beta_s, phi_s);
+                                     gamma_2, beta, beta_s, keywords);
 
 				z = doc_z[w_position]; // use updated z
 
         doc_x[w_position] = sample_x(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
                                     alpha, seed_num, x, z, w, doc_id,
                                     num_vocab, num_topics, k_seeded, gamma_1,
-                                    gamma_2, beta, beta_s, phi_s);
+                                    gamma_2, beta, beta_s, keywords);
 
       }
 
@@ -467,7 +468,7 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
 		if(r_index % output_per == 0 || r_index == 1 || r_index == iter ){
 			double loglik = loglikelihood1(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk, alpha,
 																		 beta, beta_s, gamma_1, gamma_2,
-																		 num_topics, k_seeded, num_vocab, num_doc, phi_s);
+																		 num_topics, k_seeded, num_vocab, num_doc, keywords);
 			double perplexity = exp(-loglik / (double)total_words);
 
 			NumericVector model_fit_vec;
