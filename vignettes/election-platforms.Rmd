@@ -15,6 +15,9 @@ knitr::opts_chunk$set(
   comment = ""
 )
 library(ggplot2)
+library(topicdict)
+library(quanteda)
+library(ca)
 theme_set(theme_minimal())
 ```
 
@@ -53,11 +56,12 @@ We'll fit the full data set and then compare the measure from the dictionary
 to the measure from topicdict counts.
 
 ```{r}
-res <- data.frame(dfm(corpus_uk_platforms, 
-                      dictionary = new_dict,
-                      remove = stopwords(), remove_numbers = TRUE, 
-                      remove_punct = TRUE, remove_symbols = TRUE,
-                      remove_separators = TRUE, remove_hyphens = FALSE))
+dtm_orig <- dfm(corpus_uk_platforms, 
+                dictionary = new_dict,
+                remove = stopwords(), remove_numbers = TRUE, 
+                remove_punct = TRUE, remove_symbols = TRUE,
+                remove_separators = TRUE, remove_hyphens = FALSE)
+res <- data.frame(dtm_orig)
 ca_res <- data.frame(docvars(dtm_orig), 
                      POS = (res$Con - res$Pro) / (res$Con + res$Pro),
                      logitPOS = log(res$Con) - log(res$Pro))
@@ -170,7 +174,7 @@ So now we fit a topicdict to see if we can
 
 ```{r}
 set.seed(1234)
-post70s_corpus <- corpus_subset(corpus_uk_platforms, year > 1970)
+post70s_corpus <- corpus_subset(corpus_uk_platforms, date > 1970)
 mod <- topicdict_model(post70s_corpus, dict = new_dict, 
                 stopwords = stopwords(), remove_numbers = TRUE, 
                 remove_punct = TRUE, remove_symbols = TRUE,
@@ -178,12 +182,12 @@ mod <- topicdict_model(post70s_corpus, dict = new_dict,
 mod <- topicdict_train(mod, 60)
 ```
 
-Not much overlap in words
+Overlap in words?
 ```{r}
 post <- posterior(mod)
 top_terms(post, n = 50)
 ```
-Now compute the measure and fold it into the old data
+Now compute the measure again and fold it into the old data
 ```{r}
 th <- data.frame(post$theta)
 th$doc_id <- rownames(th) # for merging
