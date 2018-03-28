@@ -283,7 +283,7 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
   double fixed_part = 0.0;
 	double eta_1 = 0.5;
 	double eta_2 = 5;
-  VectorXd ndk_ak;
+  MatrixXd ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
 
 
   fixed_part += lgamma(alpha.sum()); // first term numerator
@@ -295,13 +295,12 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
   }
   for(int d = 0; d < num_doc; d++){
     loglik += fixed_part;
-    ndk_ak = n_dk.row(d) + alpha.transpose();
     // second term numerator
     for(int k = 0; k < num_topics; k++){
-      loglik += lgamma(ndk_ak(k));
+      loglik += lgamma(ndk_a(d,k));
     }
     // second term denominator
-    loglik -= lgamma(ndk_ak.sum());
+    loglik -= lgamma(ndk_a.row(d).sum());
 
   }
   return loglik;
