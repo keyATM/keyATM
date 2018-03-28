@@ -22,18 +22,20 @@
 #' # Use just the economics subtree of this dictionary
 #' dict <- dictionary(dictfile)[['Laver and Garry']][["State in Economy"]]
 #' data("corpus_uk_platforms")
-#' new_dict <- choose_seeds(dict, corpus_uk_platforms, min.freq = 5)
+#' new_dict <- preprocess_dictionary(dict, corpus_uk_platforms, min.freq = 5)
 preprocess_dictionary <- function(dict, corpus, min.freq = 5, ...){
   if (is.character(dict))
     dict <- dictionary(file = dict)
-  if (is.list(dict))
+  else if (is.list(dict))
     dict <- dictionary(x = dict)
+
   dcats <- setNames(lapply(names(dict),
                            function(n){ as.character(unlist(dict[[n]])) }),
                     names(dict))
   dtm_orig <- dfm(corpus, ...)
   # words that are frequent enough
-  target_vocab <- featnames(dtm_orig)[colSums(dtm_orig) >= min.freq]
+  tstats <- textstat_frequency(dtm_orig)
+  target_vocab <- tstats$feature[tstats$frequency >= min.freq]
   # process patterns, expanding globs and filtering for frequency
   expand_patterns <- function(x){
     starred <- grep("*", x, fixed = TRUE, value = TRUE)

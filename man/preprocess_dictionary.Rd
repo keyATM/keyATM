@@ -25,12 +25,12 @@ This function take a dictionary, collapses to the top layer of
 categories, adds all the corpus matches for any wildcarded pattern,
 and removes anything that does not occur more than \code{min.freq}
 times. The result is a dictionary suitable for use as seeds in
-\code{topicdict}.
+\code{topicdict_train}.
 }
 \examples{
 dictfile <- system.file("extdata/laver-garry-ajps.ykd", package="topicdict")
 # Use just the economics subtree of this dictionary
 dict <- dictionary(dictfile)[['Laver and Garry']][["State in Economy"]]
 data("corpus_uk_platforms")
-new_dict <- choose_seeds(dict, corpus_uk_platforms, min.freq = 5)
+new_dict <- preprocess_dictionary(dict, corpus_uk_platforms, min.freq = 5)
 }

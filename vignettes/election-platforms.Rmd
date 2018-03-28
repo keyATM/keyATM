@@ -1,0 +1,134 @@
+---
+title: "Election Platforms"
+author: "Will Lowe"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{election-platforms}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = ""
+)
+library(ggplot2)
+theme_set(theme_minimal())
+```
+
+```{r}
+dictfile <- system.file("extdata/laver-garry-ajps.ykd", package="topicdict")
+# We'll use just the economics sections of this dictionary
+dict <- dictionary(file = dictfile)[["Laver and Garry"]][["State in Economy"]]
+dict$Neut <- NULL # not interested in this category! Just Pro / Con
+# load the corpus
+data("corpus_uk_platforms")
+```
+
+Preprocess the dictionary to expand the wildcards and filter out low frequency
+terms
+```{r}
+new_dict <- preprocess_dictionary(dict, corpus_uk_platforms, min.freq = 5,
+                                  remove = stopwords(), remove_numbers = TRUE, 
+                                  remove_punct = TRUE, remove_symbols = TRUE,
+                                  remove_separators = TRUE, remove_hyphens = FALSE)
+cbind(old = lapply(dict, length),
+      new = lapply(new_dict, length))
+```
+
+Laver and Garry compute a left-right measure for platform i using a dictionary 
+with 'left' words $\{L\}$ and 'right' words $\{R\}$ as
+$$
+POS_i = \frac{R_i - L_i}{R_i + L_i}
+$$
+where 
+\begin{align*}
+R_i =& \sum^{N_i}_j I[w_j \in \{L\} \\
+L_i =& \sum^{N_i}_j I[w_j \in \{R\}.
+\end{align*}
+
+We'll fit the full data set and then compare the measure from the dictionary
+to the measure from topicdict counts.
+
+```{r}
+res <- data.frame(dfm(corpus_uk_platforms, 
+                      dictionary = new_dict,
+                      remove = stopwords(), remove_numbers = TRUE, 
+                      remove_punct = TRUE, remove_symbols = TRUE,
+                      remove_separators = TRUE, remove_hyphens = FALSE))
+ca_res <- data.frame(docvars(dtm_orig), 
+                     POS = (res$Con - res$Pro) / (res$Con + res$Pro))
+```
+One substantively sensible way to plot this 'gold standard' is as time series of 
+the main parties
+```{r}
+partyabbrev <- c("Con", "Lib", "Lab", "LD", "LibSDP")
+ca_subset <- subset(ca_res, party %in% partyabbrev)
+ggplot(ca_subset, aes(date, POS, color = party)) + 
+  geom_line() + 
+  geom_point() + 
+  geom_vline(xintercept = c(1992, 1997), alpha = 0.1, size = 5 ) + 
+  scale_color_manual(values = c("blue", "red", "orange", "orange", "orange")) +
+  coord_flip() 
+```
+The gray bars indicate 1992: the election whose platforms were used to write the 
+dictionary, and 1997: the election whose platforms POS values 
+were used to show off the method in Laver and Garry (2000).
+Substantively the interesting thing about 1997 is (supposed to be) that the 
+Liberal Democrat (LD) and Labour Party (Lab) positions on the economy switch.
+
+Notice that the results are consistent with overfitting to the 1992 platforms 
+and subsequent measurement error attenuation in the subsequent (and previous) 
+POS values.
+
+So now we fit a topicdict to see if we can 
+
+1. recover the same result
+2. fix the measurement error weirdness
+
+```{r}
+mod <- topicdict_model(corpus_uk_platforms, dict = new_dict, 
+                stopwords = stopwords(), remove_numbers = TRUE, 
+                remove_punct = TRUE, remove_symbols = TRUE,
+                remove_separators = TRUE, remove_hyphens = FALSE)
+mod <- topicdict_train(mod, 60)
+```
+
+Not much overlap in words
+```{r}
+post <- posterior(mod)
+top_terms(post, 50)
+```
+Now compute the measure and fold it into the old data
+```{r}
+th <- data.frame(post$theta)
+th$doc_id <- rownames(th) # for merging
+th$modPOS <- (th[,'Con'] - th[,'Pro']) / (th[,'Con'] + th[,'Pro'])
+together <- merge(ca_subset, th, by = "doc_id")
+```
+and plot
+```{r}
+ggplot(together, aes(date, modPOS, color = party)) + 
+  geom_line() + 
+  geom_point() + 
+  geom_vline(xintercept = c(1992, 1997), alpha = 0.1, size = 5 ) + 
+  scale_color_manual(values = c("blue", "red", "orange", "orange", "orange")) +
+  coord_flip() 
+```
+Interestingly we do not really get the seed words, but we *do* get two categories
+whose proportions combine in the right way.  We do not see the 
+position order reversal but we do see the Labour Party veering right in 1997.
+
+The next steps are
+
+1. A model with more spare categories to soak up non-economics topics
+2. A restricted version that ignores platforms older than roughly the 1980s,
+   which we'd expect to want for the usual reasons (pre / post Thatcher, 
+   basically)
+3. Adding minor parties into the mix
+
+
+1. is to allow more spare categories to soak up non-
+

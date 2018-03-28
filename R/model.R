@@ -91,17 +91,22 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
                remove_hyphens = remove_hyphens,
                remove_url = remove_url)
 
-  ## preprocess each text
-  ## for debugging
-	# Use files <- list.files(doc_folder, pattern="txt", full.names=T) when you pass
-  df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
-                                                                collapse = "\n") })),
-                   stringsAsFactors = FALSE)
-  df$doc_id <- paste0("text", 1:nrow(df))
-  args$x <- corpus(df)
-  ## debugging until here
+  if (is.corpus(files))
+    args$x <- files
+  else {
+    ## preprocess each text
+    ## for debugging
+	  # Use files <- list.files(doc_folder, pattern="txt", full.names=T) when you pass
+    df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
+                                                              collapse = "\n") })),
+                     stringsAsFactors = FALSE)
+    df$doc_id <- paste0("text", 1:nrow(df))
+    args$x <- corpus(df)
+    ## debugging until here
+  }
 
   # args$x <- corpus(readtext(file_pattern, encoding = encoding))
+
   doc_names <- docvars(args$x, "doc_id") # docnames
   toks <- do.call(tokens, args = args)
   if (lowercase)
@@ -283,8 +288,8 @@ ExploreDocuments <- setRefClass(
 		},
 
 		visualize_words_documents = function(word, type="count", n_show=100, xaxis=F){
-			"Visualize a word distribution" 
-			# check the words existence						
+			"Visualize a word distribution"
+			# check the words existence
 			c <- check_existence(word)
 			if(c){ return()}
 
@@ -339,15 +344,15 @@ ExploreDocuments <- setRefClass(
 					mutate(Show = if_else(.$Word %in% get("words"), "1", "0")) %>%
 					slice(n_show) -> temp
 
-				temp %>% 
+				temp %>%
 					mutate(Width=if_else(Show==1, length(get("n_show"))/10, 1)) -> temp
 				temp$right <- cumsum(temp$Width) + 30*c(0:(nrow(temp)-1))
 				temp$left <- temp$right - temp$Width
 
-				p <- ggplot(temp, aes(ymin = 0)) + 
+				p <- ggplot(temp, aes(ymin = 0)) +
 					geom_rect(aes(xmin = left, xmax = right, ymax = `Proportion(%)`, colour = Show, fill = Show)) +
-					scale_fill_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) + 
-					scale_colour_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) + 
+					scale_fill_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) +
+					scale_colour_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) +
 					xlab("Words") + ylab("Proportion (%)") + ggtitle("Distribution of words") +
 					theme_bw() +
 					theme(axis.text.x=element_blank(),
@@ -452,12 +457,12 @@ ExploreDocuments <- setRefClass(
 					p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1),,
 												 plot.title = element_text(hjust = 0.5))
 				}else{
-					p <- p + 
+					p <- p +
 						theme(axis.text.x=element_blank(),
 									axis.ticks.x=element_blank(),
 									plot.title = element_text(hjust = 0.5))
 				}
-			
+
 
 			return(p)
 
