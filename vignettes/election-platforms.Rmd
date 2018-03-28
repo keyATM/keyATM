@@ -59,7 +59,8 @@ res <- data.frame(dfm(corpus_uk_platforms,
                       remove_punct = TRUE, remove_symbols = TRUE,
                       remove_separators = TRUE, remove_hyphens = FALSE))
 ca_res <- data.frame(docvars(dtm_orig), 
-                     POS = (res$Con - res$Pro) / (res$Con + res$Pro))
+                     POS = (res$Con - res$Pro) / (res$Con + res$Pro),
+                     logitPOS = log(res$Con) - log(res$Pro))
 ```
 One substantively sensible way to plot this 'gold standard' is as time series of 
 the main parties
@@ -73,6 +74,7 @@ ggplot(ca_subset, aes(date, POS, color = party)) +
   scale_color_manual(values = c("blue", "red", "orange", "orange", "orange")) +
   coord_flip() 
 ```
+
 The gray bars indicate 1992: the election whose platforms were used to write the 
 dictionary, and 1997: the election whose platforms POS values 
 were used to show off the method in Laver and Garry (2000).
@@ -83,12 +85,45 @@ Notice that the results are consistent with overfitting to the 1992 platforms
 and subsequent measurement error attenuation in the subsequent (and previous) 
 POS values.
 
+For reference, here's what a regular count data scaling model would do with
+the Con and Pro categories
+```{r}
+ggplot(ca_subset, aes(date, POS, color = party)) + 
+  geom_line() + 
+  geom_point() + 
+  geom_vline(xintercept = c(1992, 1997), alpha = 0.1, size = 5 ) + 
+  scale_color_manual(values = c("blue", "red", "orange", "orange", "orange")) +
+  coord_flip() 
+```
+and an even nicer version from straight word count scaling using only
+the items in `new_dict`:
+```{r}
+dd <- dfm(corpus_uk_platforms, 
+          remove = stopwords(), remove_numbers = TRUE, 
+          remove_punct = TRUE, remove_symbols = TRUE,
+          remove_separators = TRUE, remove_hyphens = FALSE)
+dd <- dfm_select(dd, unlist(new_dict))  
+dd <- dfm_trim(dd, min_count = 5, min_docfreq = 5)
+mod <- ca::ca(as.matrix(dd))
+ca_res$scaling1 <- mod$rowcoord[,1]
+ca_res$scaling2 <- mod$rowcoord[,2]
+ca_subset <- subset(ca_res, party %in% partyabbrev)
+
+ggplot(ca_subset, aes(date, scaling1, color = party)) + 
+  geom_line() + 
+  geom_point() + 
+  geom_vline(xintercept = c(1992, 1997), alpha = 0.1, size = 5 ) + 
+  scale_color_manual(values = c("blue", "red", "orange", "orange", "orange")) +
+  coord_flip() 
+```
+
 So now we fit a topicdict to see if we can 
 
 1. recover the same result
 2. fix the measurement error weirdness
 
 ```{r}
+set.seed(1234)
 mod <- topicdict_model(corpus_uk_platforms, dict = new_dict, 
                 stopwords = stopwords(), remove_numbers = TRUE, 
                 remove_punct = TRUE, remove_symbols = TRUE,
@@ -99,7 +134,7 @@ mod <- topicdict_train(mod, 60)
 Not much overlap in words
 ```{r}
 post <- posterior(mod)
-top_terms(post, 50)
+top_terms(post, n = 50)
 ```
 Now compute the measure and fold it into the old data
 ```{r}
@@ -127,8 +162,40 @@ The next steps are
 2. A restricted version that ignores platforms older than roughly the 1980s,
    which we'd expect to want for the usual reasons (pre / post Thatcher, 
    basically)
-3. Adding minor parties into the mix
 
+So now we fit a topicdict to see if we can 
 
-1. is to allow more spare categories to soak up non-
+1. recover the same result
+2. fix the measurement error weirdness
 
+```{r}
+set.seed(1234)
+post70s_corpus <- corpus_subset(corpus_uk_platforms, year > 1970)
+mod <- topicdict_model(post70s_corpus, dict = new_dict, 
+                stopwords = stopwords(), remove_numbers = TRUE, 
+                remove_punct = TRUE, remove_symbols = TRUE,
+                remove_separators = TRUE, remove_hyphens = FALSE)
+mod <- topicdict_train(mod, 60)
+```
+
+Not much overlap in words
+```{r}
+post <- posterior(mod)
+top_terms(post, n = 50)
+```
+Now compute the measure and fold it into the old data
+```{r}
+th <- data.frame(post$theta)
+th$doc_id <- rownames(th) # for merging
+th$modPOS <- (th[,'Con'] - th[,'Pro']) / (th[,'Con'] + th[,'Pro'])
+together <- merge(ca_subset, th, by = "doc_id")
+```
+and plot
+```{r}
+ggplot(together, aes(date, modPOS, color = party)) + 
+  geom_line() + 
+  geom_point() + 
+  geom_vline(xintercept = c(1992, 1997), alpha = 0.1, size = 5 ) + 
+  scale_color_manual(values = c("blue", "red", "orange", "orange", "orange")) +
+  coord_flip() 
+```

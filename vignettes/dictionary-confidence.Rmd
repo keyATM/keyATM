@@ -47,6 +47,8 @@ set.seed(12345)
 stops <- setdiff(c(stopwords("english"), letters), 
                   c("he", "his", "him", "himself", "she", "hers", "her", "herself", "our", "their"))
 files <- list.files(doc_folder, "*.txt", full.names = TRUE)
+
+set.seed(1234)
 model <- topicdict_model(files, dict, stopwords = stops)
 ```
 And run three models: with weak, medium, and heavy confidence in the seed words
