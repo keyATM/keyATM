@@ -12,8 +12,10 @@ using namespace std;
 
 double time_z_rcat = 0.0;
 double time_z_prepare_vec = 0.0;
+double time_z_sumrow = 0.0;
 std::chrono::high_resolution_clock::time_point  time_start, time_end;
 std::chrono::high_resolution_clock::time_point  time_start_z, time_end_z;
+std::chrono::high_resolution_clock::time_point  time_start_z1, time_end_z1;
 
 double logsumexp(double &x, double &y, bool flg){
   if (flg) return y; // init mode
@@ -146,8 +148,13 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
       numerator = (beta + (double)n_x0_kv.coeffRef(k, w)) *
         ((double)n_x0_k(k) + gamma_2) *
         ((double)n_dk.coeffRef(doc_id, k) + alpha(k));
+
+			time_start_z1 = std::chrono::high_resolution_clock::now();
       denominator = ((double)num_vocab * beta + (double)n_x0_kv.row(k).sum()) *
         ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+			time_end_z1 = std::chrono::high_resolution_clock::now();
+			time_z_sumrow += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z1-time_start_z1).count();
+
       z_prob_vec(k) = numerator / denominator;
     }
 		time_end_z = std::chrono::high_resolution_clock::now();
@@ -170,8 +177,12 @@ int sample_z(SparseMatrix<int, RowMajor>& n_x0_kv,
           ( ((double)n_x1_k(k) + gamma_1) ) *
           ( ((double)n_dk.coeffRef(doc_id, k) + alpha(k)) );
       }
+			time_start_z1 = std::chrono::high_resolution_clock::now();
       denominator = ((double)seed_num[k] * beta_s + (double)n_x1_kv.row(k).sum() ) *
         ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+			time_end_z1 = std::chrono::high_resolution_clock::now();
+			time_z_sumrow += std::chrono::duration_cast<std::chrono::nanoseconds>(time_end_z1-time_start_z1).count();
+
       z_prob_vec(k) = numerator / denominator;
     }
 		time_end_z = std::chrono::high_resolution_clock::now();
@@ -540,6 +551,7 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
 	cout << "Sampling Z: " << time_z * devide << endl;
 	cout << "      Rcat: " << time_z_rcat * devide << endl;
 	cout << "  prep_vec: " << time_z_prepare_vec * devide << endl;
+	cout << "   row_sum: " << time_z_sumrow * devide << endl;
 	cout << "Sampling X: " << time_x * devide << endl;
 	cout << "Sampling alpha: " << time_alpha* devide << endl;
 	cout << "Calculation loglik: " << time_loglik* devide << endl;
