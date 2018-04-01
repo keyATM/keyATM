@@ -6,8 +6,8 @@ test_that("topicdict_model function", {
   dict_list <- list(mac = c("macavity", "mystery", "cat"),
                     victims = c("milk", "admiralty", "trellis", "drawings"))
   folder <- system.file("extdata/macavity", package = "topicdict")
-  # docs <- list.files(folder, pattern = "macavity", full.names = TRUE)
-  ll <- topicdict_model(file.path(folder, "macavity*"),
+  docs <- list.files(folder, pattern = "macavity", full.names = TRUE)
+  ll <- topicdict_model(docs,
                         dict = quanteda::dictionary(dict_list),
                         remove_numbers = TRUE,
                         remove_punct = TRUE,

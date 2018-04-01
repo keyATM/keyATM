@@ -42,7 +42,15 @@ topicdict_model(files, dict, extra_k = 1, encoding = "UTF-8",
 \item{stopwords}{if not NULL, a character vector of words to remove,
 e.g. \code{quanteda::stopwords("english")}}
 
-\item{alpha}{Starting value for all the model's topic proportion hyperparameters (default: 50 / number of topics)}
+\item{alpha}{Starting value for all the model's topic proportion hyperparameters. Default: 50 / number of topics)}
+
+\item{beta}{Hyperparameter for estimated word probabilities. Default: 0.01}
+
+\item{beta_s}{Hyperparameter for seeded word probabilities. Default: 0.1}
+
+\item{gamma_1}{First Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0}
+
+\item{gamma_2}{Second Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0}
 }
 \value{
 A list containing \describe{

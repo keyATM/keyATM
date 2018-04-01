@@ -16,12 +16,14 @@
 #'
 #' @return A dictionary with entries filtered by frequency
 #' @export
+#' @importFrom stats setNames
 #'
 #' @examples
 #' dictfile <- system.file("extdata/laver-garry-ajps.ykd", package="topicdict")
 #' # Use just the economics subtree of this dictionary
-#' dict <- dictionary(dictfile)[['Laver and Garry']][["State in Economy"]]
-#' data("corpus_uk_platforms")
+#' lavergarry <- quanteda::dictionary(file = dictfile)
+#' dict <- lavergarry[['Laver and Garry']][["State in Economy"]]
+#' data("corpus_uk_platforms", package = "quanteda")
 #' new_dict <- preprocess_dictionary(dict, corpus_uk_platforms, min.freq = 5)
 preprocess_dictionary <- function(dict, corpus, min.freq = 5, ...){
   if (is.character(dict))
@@ -34,7 +36,7 @@ preprocess_dictionary <- function(dict, corpus, min.freq = 5, ...){
                     names(dict))
   dtm_orig <- dfm(corpus, ...)
   # words that are frequent enough
-  tstats <- textstat_frequency(dtm_orig)
+  tstats <- quanteda::textstat_frequency(dtm_orig)
   target_vocab <- tstats$feature[tstats$frequency >= min.freq]
   # process patterns, expanding globs and filtering for frequency
   expand_patterns <- function(x){

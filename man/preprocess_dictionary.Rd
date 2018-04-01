@@ -30,7 +30,8 @@ times. The result is a dictionary suitable for use as seeds in
 \examples{
 dictfile <- system.file("extdata/laver-garry-ajps.ykd", package="topicdict")
 # Use just the economics subtree of this dictionary
-dict <- dictionary(dictfile)[['Laver and Garry']][["State in Economy"]]
-data("corpus_uk_platforms")
+lavergarry <- quanteda::dictionary(file = dictfile)
+dict <- lavergarry[['Laver and Garry']][["State in Economy"]]
+data("corpus_uk_platforms", package = "quanteda")
 new_dict <- preprocess_dictionary(dict, corpus_uk_platforms, min.freq = 5)
 }

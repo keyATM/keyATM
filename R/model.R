@@ -41,7 +41,11 @@
 #' @param stem_language if not NULL, the language to use for stemming
 #' @param stopwords if not NULL, a character vector of words to remove,
 #'                  e.g. \code{quanteda::stopwords("english")}
-#' @param alpha Starting value for all the model's topic proportion hyperparameters (default: 50 / number of topics)
+#' @param alpha Starting value for all the model's topic proportion hyperparameters. Default: 50 / number of topics)
+#' @param beta Hyperparameter for estimated word probabilities. Default: 0.01
+#' @param beta_s Hyperparameter for seeded word probabilities. Default: 0.1
+#' @param gamma_1 First Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0
+#' @param gamma_2 Second Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0
 #'
 #' @return A list containing \describe{
 #'         \item{W}{a list of vectors of word indexes}
@@ -61,7 +65,7 @@
 #'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
 #'         \item{call}{details of the function call}
 #'         }.
-#' @importFrom quanteda corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
+#' @importFrom quanteda corpus is.corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
 #' @importFrom hashmap hashmap
 #' @export
 topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
@@ -91,7 +95,7 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
                remove_hyphens = remove_hyphens,
                remove_url = remove_url)
 
-  if (is.corpus(files))
+  if ("corpus" %in% class(files))
     args$x <- files
   else {
     ## preprocess each text
