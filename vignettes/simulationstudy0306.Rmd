@@ -43,7 +43,7 @@ seed_list <- Map(function(x){ unlist(strsplit(x, " ")) },
 
 # Original topic names from Bara dictionary
 names(seed_list) <- c("advocacy", "legal", "medical", "moral", "procedural", "social")
-dict <- dictionary(seed_list)
+dict <- quanteda::dictionary(seed_list)
 dict
 ```
 
@@ -52,11 +52,11 @@ stopwords or stemming, and run the model.
 ```{r, warning=FALSE, message=FALSE}
 set.seed(225)
 
-stops <- setdiff(c(stopwords("english"), letters), 
+stops <- setdiff(c(quanteda::stopwords("english"), letters), 
                   c("he", "his", "him", "himself", "she", "hers", "her", "herself"))
 model <- topicdict_model(list.files(doc_folder, pattern="txt", full.names=T), extra_k=extra_k,
                          dict, stopwords = stops)
-res <- topicdict_train(model, iter = 500)
+res <- topicdict_train(model, iter = 100)
 original_vocabulary <- model$vocab
 ```
 
