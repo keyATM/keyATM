@@ -29,7 +29,7 @@ posterior <- function(model){
   V <- length(model$vocab)
   N = length(model$W)
   doc_lens <- sapply(model$W, length)
-	
+
 	if(model$extra_k > 0){
 		tnames <- c(names(model$seeds), paste0("T_", 1:model$extra_k))
 	}else{
@@ -69,12 +69,12 @@ posterior <- function(model){
 	colnames(modelfit) <- NULL
 	if(nrow(modelfit) > 0){
 		modelfit <- data.frame(t(modelfit))
-		colnames(modelfit) <-	c("Iteration", "Log Likelihood", "Perplexity") 
+		colnames(modelfit) <-	c("Iteration", "Log Likelihood", "Perplexity")
 	}
 
 	# p
 	collapse <- function(obj){
-	temp <- unlist(obj) 
+	temp <- unlist(obj)
 	names(temp) <- NULL
 	return(temp)
 	}
@@ -164,15 +164,15 @@ set_doc_names <- function(x, doc_names){
 #' are labeled with the name of that category.
 #'
 #' @param x The posterior from a fitted model (see \code{posterior})
-#' @param measure How to sort the terms: 'probability' (default) or 'lift'
 #' @param n How many terms to show. Default: NULL, which shows all
-#' @param show_seed Mark seeded vocabulary. See below for details.
+#' @param measure How to sort the terms: 'probability' (default) or 'lift'
+#' @param show_seed Mark seeded vocabulary. See below for details (Default: TRUE)
 #'
 #' @return An n x k table of the top n words in each topic
 #' @export
 #'
-top_terms <- function(x, measure = c("probability", "lift"), n = 10,
-                      show_seed = FALSE){
+top_terms <- function(x, n = 10, measure = c("probability", "lift"),
+                      show_seed = TRUE){
   check_arg_type(x, "topicdict_posterior")
   if (is.null(n))
     n <- nrow(x$theta)
@@ -205,13 +205,13 @@ top_terms <- function(x, measure = c("probability", "lift"), n = 10,
 #' Show the top topics for each document
 #'
 #' @param x The posterior from a fitted model (see \code{posterior})
-#' @param measure How to sort the topics: 'probability' (default) or 'lift'
 #' @param n How many topics to show. Default: 2
+#' @param measure How to sort the topics: 'probability' (default) or 'lift'
 #'
 #' @return An n x k table of the top n topics in each document
 #' @export
 #'
-top_topics <- function(x, measure = c("probability", "lift"), n = 2){
+top_topics <- function(x, n = 2, measure = c("probability", "lift")){
   check_arg_type(x, "topicdict_posterior")
   if (is.null(n))
     n <- nrow(x$theta)
@@ -233,12 +233,12 @@ top_topics <- function(x, measure = c("probability", "lift"), n = 2){
 #' Show the top documents for each topic
 #'
 #' @param x The posterior from a fitted model (see \code{posterior})
-#' @param measure How to sort the terms: 'probability' (default) or 'lift'
 #' @param n How many documents to show. Default: 10
+#' @param measure How to sort the terms: 'probability' (default) or 'lift'
 #'
 #' @return An n x k table of the top n documents for each topic
 #' @export
-top_docs <- function(x, measure = c("probability", "lift"), n = 10){
+top_docs <- function(x, n = 10, measure = c("probability", "lift")){
   check_arg_type(x, "topicdict_posterior")
   if (is.null(n))
     n <- nrow(x$theta)
@@ -262,17 +262,18 @@ top_docs <- function(x, measure = c("probability", "lift"), n = 10){
 #' Show a diagnosis plot of alpha
 #'
 #' @param x The posterior from a fitted model (see \code{posterior})
-#' @param start Slice iteration 
-#' @param show_topic a vector to specify topic indexes to show 
-#' @param true_vec a vector to visualize true values of alpha 
+#' @param start Slice iteration
+#' @param show_topic a vector to specify topic indexes to show
+#' @param true_vec a vector to visualize true values of alpha
 #' @param scale a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters
 #'
-#' @return ggplot2 object 
+#' @return ggplot2 object
 #' @importFrom stats as.formula
 #' @import ggplot2
 #' @export
-diagnosis_alpha <- function(x, start=NULL, show_topic=NULL, true_vec=NULL, scale=""){
-	num_topic <-	x$seed_K + x$extra_k 
+diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
+                            scale = ""){
+	num_topic <-	x$seed_K + x$extra_k
 	res_alpha <- x$alpha
 
 	if(!is.null(show_topic)){
@@ -286,17 +287,19 @@ diagnosis_alpha <- function(x, start=NULL, show_topic=NULL, true_vec=NULL, scale
 	}
 
 
-	parameters <- tidyr::gather(res_alpha, key="parameter", value="value", -"iter")
+	parameters <- tidyr::gather(res_alpha, key = "parameter", value = "value",
+	                            -"iter")
 
-	p <- ggplot(data=parameters, aes_string(x='iter', y='value',
-																					group='parameter', color='parameter')) +
+	p <- ggplot(data=parameters, aes_string(x = 'iter', y = 'value',
+																					group = 'parameter', color = 'parameter')) +
      geom_line() +
-     geom_point(size=0.3) 
+     geom_point(size = 0.3)
 
-	if(scale==""){
-		p <- p + facet_wrap(as.formula(paste("~", "parameter")), ncol=2)
-	}else if(scale == "free"){
-	  p <- p + facet_wrap(as.formula(paste("~", "parameter")), ncol=2, scales = "free") 
+	if(scale == ""){
+		p <- p + facet_wrap(as.formula(paste("~", "parameter")), ncol = 2)
+	} else if(scale == "free"){
+	  p <- p + facet_wrap(as.formula(paste("~", "parameter")), ncol = 2,
+	                      scales = "free")
 	}
 
 	if(!is.null(true_vec)){
@@ -304,7 +307,7 @@ diagnosis_alpha <- function(x, start=NULL, show_topic=NULL, true_vec=NULL, scale
 			 parameter = paste0("EstTopic", 1:length(true_vec)),
 			 value = true_vec
 			 )
-		if(!is.null(show_topic)){
+		if (!is.null(show_topic)){
 			true <- true[show_topic,]
 		}
 
@@ -321,9 +324,9 @@ diagnosis_alpha <- function(x, start=NULL, show_topic=NULL, true_vec=NULL, scale
 #' Show a diagnosis plot of log-likelihood and perplexity
 #'
 #' @param x The posterior from a fitted model (see \code{posterior})
-#' @param start Slice iteration 
+#' @param start Slice iteration
 #'
-#' @return ggplot2 object 
+#' @return ggplot2 object
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @export
@@ -331,7 +334,7 @@ diagnosis_model_fit <- function(x, start=NULL){
 	modelfit <- x$modelfit
 
 	if(!is.null(start)){
-		modelfit <- modelfit[ modelfit$Iteration >= start, ] 
+		modelfit <- modelfit[ modelfit$Iteration >= start, ]
 	}
 
 	modelfit <- tidyr::gather(modelfit, key="Measures", value="value", -"Iteration")
@@ -349,13 +352,13 @@ diagnosis_model_fit <- function(x, start=NULL){
 }
 
 
-#' Show a diagnosis plot of p 
+#' Show a diagnosis plot of p
 #'
 #' @param x The posterior from a fitted model (see \code{posterior})
-#' @param topicvec A topic vector to reorder 
+#' @param topicvec A topic vector to reorder
 #'
-#' @return ggplot2 object 
-#' @import ggplot2 
+#' @return ggplot2 object
+#' @import ggplot2
 #' @import dplyr
 #' @export
 diagnosis_p <- function(x, topicvec=c()){
