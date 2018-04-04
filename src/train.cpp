@@ -278,11 +278,14 @@ double slice_uniform(double lower, double upper){
 // This used to differentiate between input_alpha and alpha
 // for reasons I could not understand.  TODO: check this is still correct?
 double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
-                    int num_topics, int num_doc){
+                    int num_topics, int k_seeded, int num_doc){
   double loglik = 0.0;
   double fixed_part = 0.0;
 	double eta_1 = 0.5;
 	double eta_2 = 5;
+	double eta_1_regular = 4;
+	double eta_2_regular = 2;
+
   MatrixXd ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
 
 
@@ -290,7 +293,11 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
   for(int k = 0; k < num_topics; k++){
     fixed_part -= lgamma(alpha(k)); // first term denominator
     // Add prior
-    loglik += gammapdfln(alpha(k), eta_1, eta_2);
+		if(k < k_seeded){
+			loglik += gammapdfln(alpha(k), eta_1, eta_2);
+		}else{
+			loglik += gammapdfln(alpha(k), eta_1_regular, eta_2_regular);
+		}
 
   }
   for(int d = 0; d < num_doc; d++){
@@ -308,14 +315,14 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
 
 // updates alpha in place, currently just hands back alpha (by reference)
 VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
-                             int num_topics, int num_doc,
+                             int num_topics, int k_seeded, int num_doc,
                              double min_v = 1e-9, double max_v = 100.0,
                              int max_shrink_time = 1000){
 
   double start, end, previous_p, new_p, newlikelihood, slice_;
   VectorXd keep_current_param = alpha;
   std::vector<int> topic_ids = shuffled_indexes(num_topics);
-	double store_loglik = alpha_loglik(alpha, n_dk, num_topics, num_doc);
+	double store_loglik = alpha_loglik(alpha, n_dk, num_topics, k_seeded, num_doc);
 	double newalphallk = 0.0;
 
   for(int i = 0; i < num_topics; i++){
@@ -331,7 +338,7 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
       new_p = slice_uniform(start, end); // <-- using R function above
       alpha(k) = new_p / (1.0 - new_p); // expandp
 
-			newalphallk = alpha_loglik(alpha, n_dk, num_topics, num_doc);
+			newalphallk = alpha_loglik(alpha, n_dk, num_topics, k_seeded, num_doc);
       newlikelihood = newalphallk - 2.0 * log(1.0 - new_p);
 
       if (slice_ < newlikelihood){
@@ -456,7 +463,7 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
 			X[doc_id] = doc_x; // is doc_x not a pointer/ref to X[doc_id]?
 			Z[doc_id] = doc_z;
     }
-    slice_sample_alpha(alpha, n_dk, num_topics, num_doc);
+    slice_sample_alpha(alpha, n_dk, num_topics, k_seeded, num_doc);
     model["alpha"] = alpha;
 
 		// Store Alpha
