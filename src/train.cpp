@@ -281,10 +281,10 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
                     int num_topics, int k_seeded, int num_doc){
   double loglik = 0.0;
   double fixed_part = 0.0;
-	double eta_1 = 0.5;
-	double eta_2 = 5;
-	double eta_1_regular = 4;
-	double eta_2_regular = 2;
+	double eta_1 = 1;
+	double eta_2 = 1;
+	double eta_1_regular = 2;
+	double eta_2_regular = 1;
 
   MatrixXd ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
 
