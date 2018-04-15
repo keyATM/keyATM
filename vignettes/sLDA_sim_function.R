@@ -341,6 +341,46 @@ semiauto_dictionary <- function(eobj, num_seeds,
   return(seed_list)
 }
 
+## eobj: output of explore object
+## topic_num: the number of topics to be assigned keywords
+## keyword_num: the number of keywords to be assigned to each topic
+## top: choose top frequent words as keywords or not
+auto_dictionary <- function(eobj, topic_num = 3, 
+                            keyword_num = 3, 
+                            prop, top = TRUE){
+  seed_list <- list()
+  ## if the length of key_word_num does not match topic_num
+  ## forced to choose the first element of keyword_num and prop
+  if(length(keyword_num) != topic_num){keyword_num <- rep(keyword_num[1], topic_num)}
+  ## if you want to choose keywords from top words
+  if (top == TRUE){
+    for (i in 1:topic_num){
+      ## set topic indicator as topic_id (i.g. "t1$")
+      topic_id <- paste0("t", i, "$")
+      ## set topic indicator as topic_id (i.g. "t1$")
+      rows <- head(grep(topic_id, eobj$data$Word), keyword_num[i])
+      keywords <- gsub("t\\d*$", "", eobj$data$Word[rows])
+      seed_list[[i]] <- paste(keywords, collapse = " ")
+    }
+  } else {
+    for (i in 1:topic_num){
+      if(length(prop) != topic_num){prop <- rep(prop[1], topic_num)}
+      cut_rows <- which.min(abs(eobj$data$`Proportion(%)` - prop[i])) - 1 # rows ignored
+      if (cut_rows != 0) {
+          eobj_dw_cutted <- eobj$data$Word[-c(1:cut_rows)]
+        } else {
+          eobj_dw_cutted <- eobj$data$Word
+        }      
+      topic_id <- paste0("t", i, "$")
+      rows <- head(grep(topic_id, eobj_dw_cutted), keyword_num[i])
+      keywords <- gsub("t\\d*$", "", eobj_dw_cutted[rows])
+      seed_list[[i]] <- paste(keywords, collapse = " ")
+    }
+  }
+  return(seed_list)
+}
+
+
 ## function to create a plot which shows the accuracy of LDA result
 ## data_path should be a file that contains the txt files ("/W")
 get_lda_result <- function(data_path, iter, k, topicvec=1:k, show_n=25){
