@@ -2,7 +2,7 @@
 title: "Election Platforms"
 author: "Will Lowe"
 date: "`r Sys.Date()`"
-output: rmarkdown::pdf_vignette
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{election-platforms}
   %\VignetteEngine{knitr::rmarkdown}
@@ -70,7 +70,7 @@ ca_res <- data.frame(docvars(dtm_orig),
 ```
 One substantively sensible way to plot this 'gold standard' is as time series of 
 the main parties
-```{r}
+```{r, fig.width=15, fig.height=10}
 partyabbrev <- c("Con", "Lib", "Lab", "LD", "LibSDP")
 ca_subset <- subset(ca_res, party %in% partyabbrev)
 ggplot(ca_subset, aes(date, POS, color = party)) + 
@@ -95,7 +95,7 @@ There is rather variable overlap of the words in the dictionary with
 words in the party platforms.  Curiously these seem to be very 1979 
 election sorts of words (when Thatcher came to power and moved political
 rhetoric in a much more neoliberal direction).
-```{r}
+```{r, fig.width=15, fig.height=10}
 dtm_over <- dfm(corpus_uk_platforms, 
                 remove = stopwords(), remove_numbers = TRUE, 
                 remove_punct = TRUE, remove_symbols = TRUE,
@@ -116,27 +116,9 @@ ggplot(prop_res_subset, aes(date, overlap, color = pc)) +
   facet_grid(party ~ .)
 ```
 
-Binary features give rather similar results:
-```{r}
-dtm_over <- dfm_select(dtm_over, pattern = unlist(new_dict), selection = "keep", valuetype = "fixed")
-bina <- dfm_tfidf(dtm_over, scheme_tf = "boolean", scheme_df = "unary")
-dtm_bina <- dfm_lookup(bina, new_dict)
-res <- data.frame(dtm_bina)
-bina_res <- data.frame(docvars(dtm_bina), 
-                       POS = (res$Con - res$Pro) / (res$Con + res$Pro),
-                       logitPOS = log(res$Con) - log(res$Pro))
-bina_subset <- subset(bina_res, party %in% partyabbrev)
-ggplot(bina_subset, aes(date, logitPOS, color = party)) + 
-  geom_line() + 
-  geom_point() + 
-  geom_vline(xintercept = c(1992, 1997), alpha = 0.1, size = 5 ) + 
-  scale_color_manual(values = c("blue", "red", "orange", "orange", "orange")) +
-  coord_flip() 
-```
-
 For reference, here's what a regular count data scaling model would do with
 the Con and Pro categories
-```{r}
+```{r, fig.width=15, fig.height=10}
 ggplot(ca_subset, aes(date, logitPOS, color = party)) + 
   geom_line() + 
   geom_point() + 
@@ -147,7 +129,7 @@ ggplot(ca_subset, aes(date, logitPOS, color = party)) +
 
 and an even nicer version from straight word count scaling using only
 the items in `new_dict`:
-```{r}
+```{r, fig.width=15, fig.height=10}
 dd <- dfm(corpus_uk_platforms, 
           remove = stopwords(), remove_numbers = TRUE, 
           remove_punct = TRUE, remove_symbols = TRUE,
@@ -197,7 +179,7 @@ together <- left_join(docvars(dtm_orig), th, by = "doc_id") %>%
   filter(party %in% partyabbrev)
 ```
 and plot
-```{r}
+```{r, fig.width=15, fig.height=10}
 ggplot(together, aes(date, tdPOS, color = party)) + 
   geom_line() + 
   geom_point() + 
@@ -246,7 +228,7 @@ together <- left_join(docvars(post70s_corpus), th, by = "doc_id") %>%
   filter(party %in% partyabbrev)
 ```
 and plot
-```{r}
+```{r, fig.width=15, fig.height=10}
 ggplot(together, aes(date, modPOS, color = party)) + 
   geom_line() + 
   geom_point() + 
@@ -298,7 +280,7 @@ together$ci.upper <- together$logitPOS + 2 * together$se
 # together$prop <- together$Con + together$Pro > 0.6
 ```
 and plot
-```{r}
+```{r, fig.width=15, fig.height=10}
 ggplot(together, aes(date, logitPOS, color = party)) + 
   geom_line() + 
   geom_point() + #aes(size = prop)) + 
@@ -346,7 +328,7 @@ together$ci.upper <- together$logitPOS + 2 * together$se
 # together$prop <- together$Con + together$Pro > 0.6
 ```
 and plot
-```{r}
+```{r, fig.width=15, fig.height=10}
 ggplot(together, aes(date, logitPOS, color = party)) + 
   geom_line() + 
   geom_point() + #aes(size = prop)) + 
@@ -360,7 +342,7 @@ ggplot(together, aes(date, logitPOS, color = party)) +
 ```
 
 What's going on with the other dimensions?  Time for a correspondence analysis:
-```{r}
+```{r, fig.width=15, fig.height=15}
 vv <- together %>% 
   mutate_at(vars(Pro:T_10), function(x){ x * .$n }) %>% 
   select(Pro:T_10) %>% 
