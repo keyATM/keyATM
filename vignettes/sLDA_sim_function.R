@@ -736,3 +736,83 @@ cal_KL <- function(px, qx){
   kl <- (px + 1e-10) %*% log(px + 1e-10) - (px + 1e-10) %*% log(qx + 1e-10)
   return(kl)
 }
+
+posterior_simulation <- function(model){
+  check_arg_type(model, "topicdict")
+  allK <- model$extra_k + length(model$dict)
+  V <- length(model$vocab)
+  N = length(model$W)
+  doc_lens <- sapply(model$W, length)
+
+  if(model$extra_k > 0){
+    tnames <- c(names(model$seeds), paste0("T_", 1:model$extra_k))
+  }else{
+    tnames <- c(names(model$seeds))
+  }
+
+  posterior_z <- function(zvec){
+    tt <- table(factor(zvec, levels = 1:allK - 1))
+    (tt + model$alpha) / (sum(tt) + sum(model$alpha)) # posterior mean
+  }
+  theta <- do.call(rbind, lapply(model$Z, posterior_z))
+  rownames(theta) <- basename(model$files)
+  colnames(theta) <- tnames # label seeded topics
+
+  tZW <- Reduce(`+`,
+                 mapply(function(z, w){ table(factor(z, levels = 1:allK - 1),
+                                              factor(w, levels = 1:V - 1)) },
+                        model$Z, model$W, SIMPLIFY = FALSE))
+  word_counts <- colSums(tZW)
+
+  colnames(tZW) <- model$vocab
+  topic_counts <- rowSums(tZW)
+  tZW <- tZW / topic_counts
+  rownames(tZW) <- tnames
+
+  # alpha
+  res_alpha <- data.frame(model$alpha_iter)
+  colnames(res_alpha) <- NULL
+  res_alpha <- data.frame(t(res_alpha))
+  if(nrow(res_alpha) > 0){
+    colnames(res_alpha) <- paste0("EstTopic", 1:ncol(res_alpha))
+    res_alpha$iter <- 1:nrow(res_alpha)
+  }
+
+  # model fit
+  modelfit <- data.frame(model$model_fit)
+  colnames(modelfit) <- NULL
+  if(nrow(modelfit) > 0){
+    modelfit <- data.frame(t(modelfit))
+    colnames(modelfit) <- c("Iteration", "Log Likelihood", "Perplexity")
+  }
+
+  # p
+  collapse <- function(obj){
+  temp <- unlist(obj)
+  names(temp) <- NULL
+  return(temp)
+  }
+
+  data <- data.frame(Z=collapse(model$Z), X=collapse(model$X))
+  data %>%
+    mutate_(Topic='Z+1') %>%
+    select(-starts_with("Z")) %>%
+    group_by_('Topic') %>%
+    summarize_(count = 'n()', sumx='sum(X)') %>%
+    ungroup() %>%
+    mutate_(Proportion='round(sumx/count*100, 3)') -> p_estimated
+
+  ## TODO fix this naming nonsense
+  dict <- model$dict
+  names(dict) <- names(model$seeds)
+
+  ll <- list(seed_K = length(model$dict), extra_K = model$extra_k,
+             V = V, N = N, Z=model$Z
+             theta = theta, beta = as.matrix(as.data.frame.matrix(tZW)),
+             topic_counts = topic_counts, word_counts = word_counts,
+             doc_lens = doc_lens, vocab = model$vocab,
+             dict = dict,
+             alpha=res_alpha, modelfit=modelfit, p=p_estimated)
+  class(ll) <- c("topicdict_posterior", class(ll))
+  ll
+}
