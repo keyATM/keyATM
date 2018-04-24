@@ -4,7 +4,8 @@
 \alias{topicdict_train}
 \title{Run the Gibbs sampler}
 \usage{
-topicdict_train(model, iter = 0L, output_per = 10L)
+topicdict_train(model, iter = 0L, output_per = 10L, eta_1 = 1,
+  eta_2 = 1, eta_1_regular = 2, eta_2_regular = 1)
 }
 \arguments{
 \item{model}{A model, from \code{init} or a previous invocation of \code{train}}

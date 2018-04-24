@@ -347,7 +347,7 @@ semiauto_dictionary <- function(eobj, num_seeds,
 ## top: choose top frequent words as keywords or not
 auto_dictionary <- function(eobj, topic_num = 3, 
                             keyword_num = 3, 
-                            prop, top = TRUE){
+                            prop = 3, top = TRUE){
   seed_list <- list()
   ## if the length of key_word_num does not match topic_num
   ## forced to choose the first element of keyword_num and prop
@@ -547,6 +547,7 @@ read_true_word <- function(folder, encoding = "UTF-8"){
 ## n: top n terms you use to calculate
 ## num_true_topic: the number of true topics (maximum number followed by "t")
 match_truth_Z <- function(post, res, true_word, n = 10, num_true_topic = 6){
+  if ("plyr" %in% (.packages())){detach(package:plyr)}
   # check_arg_type(post, "topicdict_posterior")
   topterms <- top_terms(post, n)
   topterms <- data.frame(topterms)
@@ -577,6 +578,7 @@ match_truth_Z <- function(post, res, true_word, n = 10, num_true_topic = 6){
   tt <- top[-c(2,3)]
 
   ## Calculate the proportion of each true topic for each term
+  if ("plyr" %in% (.packages())){detach(package:plyr)}
   tt %>% 
     tidyr::gather(key=True, value = term_freq, -EstTopic) %>% 
     group_by(EstTopic, True) %>%
@@ -632,4 +634,185 @@ count_Z <- function(res, true_word, term, lookup_id, num_true_topic = 6){
     out[i] <- sum( unlist( mapply(find_match, res$Z, true_word, term_new, lookup_id) ) )
   }
   return(out)
+}
+
+## return plot
+## post: posterior object
+## res: a list which contains true words for all the docuemnts (term with topic id), topicdict object
+## true_word: a list which contains teh true word vectors, output of the read_true_word
+## n: top n terms you use to calculate
+## num_true_topic: the number of true topics (maximum number followed by "t")
+match_truth_Z_part <- function(post, res, true_word, n = 10, num_true_topic = 6){
+  
+  if ("plyr" %in% (.packages())){detach(package:plyr)}
+  # check_arg_type(post, "topicdict_posterior")
+  topterms <- top_terms(post, n)
+  topterms <- data.frame(topterms)
+  colnames(topterms) <- paste0("EstTopic", 1:ncol(topterms))
+
+  ## output is a dataframe
+  ## first column: "EstTopic*", which is an estimated topic number each
+  ## second column: terms 
+  topterms <- tidyr::gather(topterms, key = EstTopic, value = term)
+
+  ## take away the checkmark which indicates keywords
+  topterms$term <- gsub(" \\[✓\\]", "", topterms$term)
+
+  ## "W" and "w" is mixed so use "W"
+  topterms$term <- sub("w", "W", topterms$term)
+
+  ## new column which contains the estimated topic number
+  topterms$EstTopicNum <- gsub("EstTopic", "", topterms$EstTopic)
+
+  ## mid is a matrix. Each row is a term and each column shows counts of the true topic for the term (given the term XXX, what is the true topic of XXXs?)
+  ## the number of estimated topic \times (n \times estimated topic)
+  mid <- apply(topterms, 1, function(x, res, true_word, num_true_topic){count_Z(res, true_word, x[2], x[3], num_true_topic)}, res, true_word, num_true_topic)
+
+  ## bind with dataframe which contains the information of EstTopic* and terms
+  top <- cbind(topterms, t(mid))
+  colnames(top)[4:(4 + num_true_topic - 1)] <- paste0("True", 1:num_true_topic)
+
+  tt <- top[-c(2,3)]
+
+  ## Calculate the proportion of each true topic for each term
+  if ("plyr" %in% (.packages())){detach(package:plyr)}
+  tt %>% 
+    tidyr::gather(key=True, value = term_freq, -EstTopic) %>% 
+    group_by(EstTopic, True) %>%
+    mutate(freq = sum(term_freq)) %>%
+    ungroup(EstTopic, True) %>%
+    select(-c(term_freq)) %>%
+    distinct(EstTopic, True, .keep_all = TRUE) %>%
+    group_by(EstTopic) %>% 
+    mutate(Proportion = freq/sum(freq)) -> tt_new ## tt_new: a tibble
+
+  return(tt_new)
+}
+
+
+
+
+## Calculate KL-divergence
+## compare KL divergence between LDA results and seeded lda results
+## extract "true" beta
+## true_word: raw word, with topic indicator, output of the read_true_word
+## return list which contains 
+## [[1]]: term-topic matrix for slda results
+## [[2]]: term-topic matrix for lda results
+## [[3]]: term-topic matrix for truth
+term_topic_mat <- function(true_word, post, lda_res, true_K){
+  ## slda
+  slda.mm <- post$beta
+  slda.mm <- slda.mm[, order(colnames(slda.mm))]
+  colnames(slda.mm) <- gsub("w", "W", colnames(slda.mm))
+
+  ## extract term-topic distirbution from lda results
+  lda.mm <- as.matrix(topicmodels::posterior(lda_res)$terms)
+  ## sort colmanes: note that since lda and slda use the same document, 
+  ## order function should result in the same result
+  lda.mm <- lda.mm[, order(colnames(lda.mm))]
+
+  ## extract unique words
+  unique_term <- colnames(slda.mm)
+
+  ## create matrix to contain the "true" topic assignment
+  mat <- matrix(0, nrow =  true_K, ncol = length(unique_term))
+  colnames(mat) <- unique_term
+  ## read topic assignment and put into matrix mat
+  true_count <- table( unlist(true_word) )
+  terms <- unlist(attr(true_count, "dimnames"))
+  for (i in 1:length(true_count)){
+    topic_id <- as.numeric(  gsub("W\\d+t","", terms[i]) )
+    term <- gsub("t\\d+","", terms[i])
+    mat[topic_id, term] <- true_count[i]
+  }
+  mat <- t(apply(mat, 1, function(x){x/sum(x)}))
+  ret <- list(slda.mm, lda.mm, mat)
+  return(ret)
+}
+
+## px and qx should be vectors
+cal_KL <- function(px, qx){
+  kl <- (px + 1e-10) %*% log(px + 1e-10) - (px + 1e-10) %*% log(qx + 1e-10)
+  return(kl)
+}
+
+posterior_simulation <- function(model){
+  check_arg_type(model, "topicdict")
+  allK <- model$extra_k + length(model$dict)
+  V <- length(model$vocab)
+  N = length(model$W)
+  doc_lens <- sapply(model$W, length)
+
+  if(model$extra_k > 0){
+    tnames <- c(names(model$seeds), paste0("T_", 1:model$extra_k))
+  }else{
+    tnames <- c(names(model$seeds))
+  }
+
+  posterior_z <- function(zvec){
+    tt <- table(factor(zvec, levels = 1:allK - 1))
+    (tt + model$alpha) / (sum(tt) + sum(model$alpha)) # posterior mean
+  }
+  theta <- do.call(rbind, lapply(model$Z, posterior_z))
+  rownames(theta) <- basename(model$files)
+  colnames(theta) <- tnames # label seeded topics
+
+  tZW <- Reduce(`+`,
+                 mapply(function(z, w){ table(factor(z, levels = 1:allK - 1),
+                                              factor(w, levels = 1:V - 1)) },
+                        model$Z, model$W, SIMPLIFY = FALSE))
+  word_counts <- colSums(tZW)
+
+  colnames(tZW) <- model$vocab
+  topic_counts <- rowSums(tZW)
+  tZW <- tZW / topic_counts
+  rownames(tZW) <- tnames
+
+  # alpha
+  res_alpha <- data.frame(model$alpha_iter)
+  colnames(res_alpha) <- NULL
+  res_alpha <- data.frame(t(res_alpha))
+  if(nrow(res_alpha) > 0){
+    colnames(res_alpha) <- paste0("EstTopic", 1:ncol(res_alpha))
+    res_alpha$iter <- 1:nrow(res_alpha)
+  }
+
+  # model fit
+  modelfit <- data.frame(model$model_fit)
+  colnames(modelfit) <- NULL
+  if(nrow(modelfit) > 0){
+    modelfit <- data.frame(t(modelfit))
+    colnames(modelfit) <- c("Iteration", "Log Likelihood", "Perplexity")
+  }
+
+  # p
+  collapse <- function(obj){
+  temp <- unlist(obj)
+  names(temp) <- NULL
+  return(temp)
+  }
+
+  data <- data.frame(Z=collapse(model$Z), X=collapse(model$X))
+  data %>%
+    mutate_(Topic='Z+1') %>%
+    select(-starts_with("Z")) %>%
+    group_by_('Topic') %>%
+    summarize_(count = 'n()', sumx='sum(X)') %>%
+    ungroup() %>%
+    mutate_(Proportion='round(sumx/count*100, 3)') -> p_estimated
+
+  ## TODO fix this naming nonsense
+  dict <- model$dict
+  names(dict) <- names(model$seeds)
+
+  ll <- list(seed_K = length(model$dict), extra_K = model$extra_k,
+             V = V, N = N, Z=model$Z
+             theta = theta, beta = as.matrix(as.data.frame.matrix(tZW)),
+             topic_counts = topic_counts, word_counts = word_counts,
+             doc_lens = doc_lens, vocab = model$vocab,
+             dict = dict,
+             alpha=res_alpha, modelfit=modelfit, p=p_estimated)
+  class(ll) <- c("topicdict_posterior", class(ll))
+  ll
 }
