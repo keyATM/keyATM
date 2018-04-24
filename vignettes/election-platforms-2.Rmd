@@ -173,15 +173,18 @@ infer the rest?  Here, random samples of 10 in each category and the same
 model specification (K + 5).
 
 ```{r}
-sample_size <- 10
-sample_dict <- dictionary(list(Pro=new_dict$Pro[extremes_left[sample(length(extremes_left), sample_size)]], Con = new_dict$Con[extremes_right[sample(length(extremes_right),   sample_size)]]))
 
 # fit model 
 set.seed(1234)
+sample_size <- 20
 
 recovered <- data.frame(left = rep(NA, 20), right = rep(NA, 20))
 for (i in 1:20){
-sample_mod5 <- topicdict_model(post70s_corpus, dict = sample_dict,
+ 
+  # subsample of dictionary
+  sample_dict <- dictionary(list(Pro=new_dict$Pro[extremes_left[sample(length(extremes_left), sample_size)]], Con = new_dict$Con[extremes_right[sample(length(extremes_right),   sample_size)]]))
+  
+  sample_mod5 <- topicdict_model(post70s_corpus, dict = sample_dict,
                 stopwords = stopwords(), remove_numbers = TRUE,
                 remove_punct = TRUE, remove_symbols = TRUE,
                 remove_separators = TRUE, remove_hyphens = FALSE, 
@@ -212,7 +215,15 @@ vals_right[is.infinite(vals_right) & vals_right < 0] <- -6 # -Inf
 
 recovered$right[i] <- mean(vals_right > 0)
 }
+colMeans(recovered)
+
 ```
 
 
+```{r}
+par(mfrow = c(1,2))
+barplot(sort(colSums(dfm(post70s_corpus, select = new_dict$Pro))), ylim = c(0, 1500))
+barplot(sort(colSums(dfm(post70s_corpus, select = new_dict$Con))), ylim = c(0, 1500))
+par(mfrow = c(1,1))
+```
 
