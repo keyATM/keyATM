@@ -1,0 +1,251 @@
+---
+title: "Progress Report"
+author: "Shusei Eshima"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GenSimDataLDA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r warning=FALSE, message=FALSE, echo = FALSE}
+# package_folder <- "/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict"
+# setwd(package_folder)
+# devtools::document() ; devtools::install() ; library(topicdict)
+savepath <- "/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict/vignettes/"
+library(knitr)
+knitr::opts_chunk$set(comment = "")
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+library(topicdict)
+library(purrr)
+library(quanteda)
+library(tibble)
+library(ggplot2)
+library(dplyr)
+library(topicmodels)
+```
+
+# Prepare Functions
+
+Create model function:
+```{r, warning=FALSE, message=FALSE}
+create_model <- function(docs, seed_list, extra_k){
+	set.seed(225)
+	names(seed_list) <- 1:length(seed_list)
+	dict <- quanteda::dictionary(seed_list)
+  model <- topicdict_model(docs,
+               dict = dict, extra_k = extra_k,
+               remove_numbers = TRUE, 
+               remove_punct = TRUE,
+               remove_symbols = TRUE,
+               remove_separators = TRUE)
+
+  return(model)
+}
+```
+
+```{r, warning=FALSE, message=FALSE}
+tidy_seededlda_out <- function(model, res){
+	# Create a nested data frame which contains W and Z
+	res$W %>%
+		names() -> doc_names
+
+	res$W %>%
+		map(length) %>%
+		flatten_int() -> doc_len
+
+	doc_names <- rep(doc_names, doc_len)
+
+	res$W %>%
+		flatten_int() -> words_id
+
+	res$Z %>%
+		flatten_int() -> topics
+
+	words <- sapply(words_id, function(x){ model$vocab[x+1] }) # (W elements are 0 based ids)
+
+	seededlda_tidy <- tibble(
+											doc = doc_names,
+											words=words,
+											words_id=words_id,
+											topics=topics
+										) %>% 
+			group_by(doc) %>%
+			tidyr::nest(words, topics, words_id, .key=data)
+		
+	return(seededlda_tidy)
+}
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+count_appearance_word <- function(otidy, word){
+	otidy %>% tidyr::unnest() %>% 
+		select(topics) %>% unique() %>% 
+		arrange(topics) %>% as.matrix() %>%
+		as.vector() -> topics_unique
+
+	otidy %>% 
+		tidyr::unnest() %>%
+		filter(words==get("word")) %>%
+		group_by(topics) %>%
+		summarize(count=n()) %>%
+		ggplot(., aes(x=factor(topics))) +
+			geom_bar(aes(y = (..count..)/sum(..count..))) +
+			scale_x_discrete(limits = as.character(topics_unique)) + # new label
+			scale_y_continuous(labels=scales::percent) +
+			xlab("Topic") + ylab("Percentage") + ggtitle(paste0("Topic distribution: ", get("word"))) +
+			theme_bw(base_size=15) +
+			theme(plot.title = element_text(hjust = 0.5))
+}
+```
+
+```{r, warning=FALSE, message=FALSE}
+list_to_tibble <- function(lobj){
+	# Flatten list and get a tibble
+	obj_len <- lobj %>% map(length) %>% flatten_int()
+	obj_names <- lobj %>% names()
+	element <- lobj %>% flatten_chr()
+
+	tibble(SeedTopic = rep(paste0("TrueTopic ", 1:length(obj_names) - 1), obj_len),
+				 words=element
+				 ) -> res
+	return(res)
+}
+
+count_appearence_list <- function(otidy, lobj){
+	all_words <- lobj %>% flatten_chr()
+
+	otidy %>% 
+		tidyr::unnest() %>%
+		filter(words %in% get("all_words")) %>%
+		group_by(words, topics) %>%
+		summarize(count=n()) %>%
+		# left_join(., list_to_tibble(get("lobj")), by="words") %>% # if you use seed_list as lobj
+		ungroup() %>%
+		group_by(words) %>%
+		mutate(wsum = sum(count)) %>%
+		mutate(wprop = count/sum(count)*100) %>%
+		ungroup() -> organized
+
+	organized %>%
+		ggplot(., aes(x=wprop)) +
+		geom_histogram() +
+		xlab("Proportion (%)") + ylab("Count") + ggtitle("Words Split in Topics") +
+		theme_bw(base_size=15) +
+		theme(plot.title = element_text(hjust = 0.5)) -> g1
+
+	organized %>% 
+		group_by(words) %>%
+		mutate(max=max(wprop)) %>%
+		arrange(desc(max), topics) %>%
+		select(words) %>% as.matrix() %>% as.vector() -> word_order
+
+	organized %>% 
+		ggplot(., aes(x=words, y=count)) +
+		geom_bar(stat = "identity", position = "fill", aes(fill=factor(topics))) +
+		scale_y_continuous(labels = scales::percent) +
+		scale_fill_hue(name = "EstTopics") +
+		scale_x_discrete(limits = word_order) +
+		ylab("Proportion (%)") + xlab("Words") + ggtitle("Words Split in Topics") +
+		theme_bw(base_size=15) +
+		theme(plot.title = element_text(hjust = 0.5),
+					axis.text.x = element_text(angle = 45, hjust = 1)) -> g2
+}
+```
+
+
+
+# Bara Data
+## Read Data
+```{r, warning=FALSE, message=FALSE}
+doc_folder <- system.file(file.path("extdata", "bara_paras"), package = "topicdict")
+seed_file <- system.file(file.path("extdata", "bara_seeds.txt"), package = "topicdict")
+docs <- list.files(doc_folder, pattern="txt", full.names=T)
+
+## turn this flat file of seeds into a (quanteda dictionary) list as it would be used
+seed_list <- Map(function(x){ unlist(strsplit(x, " ")) }, 
+                 Filter(function(x){ !grepl(x, pattern = "#") }, # remove comments
+                        readLines(seed_file)))
+
+# Original topic names from Bara dictionary
+names(seed_list) <- c("advocacy", "legal", "medical", "moral", "procedural", "social")
+dict <- dictionary(seed_list)
+```
+
+```{r, warning=FALSE, message=FALSE}
+model <- create_model(docs, dict, extra_k=1)
+res <- topicdict_train(model, iter = iter_num)
+post <- topicdict::posterior(res)
+```
+
+
+# Catalinac Data
+## Read Data
+```{r, warning=FALSE, message=FALSE}
+iter_num <- 12
+folder <- paste0("/Users/Shusei/Dropbox/Study/My_Research/TreeStructuredTopicModel/Papers/replication/Catalinac/data/docs") # Data from original data Document-Term Matrix
+docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
+explore_ <- explore(docs,
+             remove_numbers = TRUE,
+             remove_punct = TRUE,
+             remove_symbols = TRUE,
+             remove_separators = TRUE)
+```
+
+
+
+
+
+## Seeds List
+```{r, warning=FALSE, message=FALSE}
+# Top fifteen words appeared in the original output
+topic52 <- c("農業 産業 工業 整備 図る 漁業 秋田 開発 進める 県 商 山形 地域 発展 技術")
+topic62 <- c("福井 静岡 復興 連立 神戸 岐阜 経済 与党 県 被災 空港 産業 政権 災害 ひと")
+topic63 <- c("政治 主義 自由 社会 民主 大阪 平和 実現 日本 人間 目指す 豊か 福祉 守る ひと")
+topic20 <- c("税 政治 消費 廃止 自民党 国民 自由 日本 守る コメ 企業 輸入 実現 献金 阻止")
+topic58 <- c("企業 教育 中小 充実 図る 福祉 進める 改善 安定 家庭 振興 対策 恩給 作り 年金")
+
+seed_list <- list(topic52, topic62, topic63, topic20, topic58)
+```
+
+# Explore Data
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# Use a part of seed words
+use_part_of_seed <- function(x, use=1:5){
+	words <- strsplit(x, " ")[[1]][use] # use part of seed
+	res <- paste(words, collapse=" ") # back to seed_list format
+	return(res)
+}
+
+
+# Top words
+explore_$top_words(n=10)
+	# politics, japan, society, reform, people, party, realize, tax, education, defend
+
+# Proportion
+p <- explore_$visualize_dict_prop(seed_list)
+ggsave(paste0(savepath, "Xseeds_all.pdf"), p, family="Japan1GothicBBB")
+
+p <- explore_$visualize_dict_prop(lapply(seed_list, use_part_of_seed, use=1:8))
+ggsave(paste0(savepath, "Xseeds_1-8.pdf"), p, family="Japan1GothicBBB")
+```
+
+# Fit Seeded LDA
+## K+1 rule with different number of keywords 
+```{r, warning=FALSE, message=FALSE}
+model <- create_model(docs, seed_list, extra_k=1)
+res <- topicdict_train(model, iter = iter_num)
+post <- topicdict::posterior(res)
+```
+
+# eta = 10
+```{r, warning=FALSE, message=FALSE}
+use_eta = 10
+```
+
+
