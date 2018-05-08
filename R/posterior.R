@@ -48,7 +48,15 @@ posterior <- function(model){
                  mapply(function(z, w){ table(factor(z, levels = 1:allK - 1),
                                               factor(w, levels = 1:V - 1)) },
                         model$Z, model$W, SIMPLIFY = FALSE))
+
+  # tmp <- list()
+  # for (i in 1:num_docs){
+  #   tmp[[i]] <- table(factor(post$Z[[i]], levels = 1:allK - 1), factor(post$W[[i]], levels = 1:V - 1))
+  # }
+  # tZW <- Reduce(`+`, tmp)
+
   word_counts <- colSums(tZW)
+
 
   colnames(tZW) <- model$vocab
   topic_counts <- rowSums(tZW)
