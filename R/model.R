@@ -111,7 +111,7 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
 
   # args$x <- corpus(readtext(file_pattern, encoding = encoding))
   # for new version quanteda, you need this
-  args$x$documents$doc_id <- paste0("text", 1:nrow(df))
+  args$x$documents$doc_id <- paste0("text", 1:ndoc(args$x))
   doc_names <- docvars(args$x, "doc_id") # docnames
   toks <- do.call(tokens, args = args)
   if (lowercase)
