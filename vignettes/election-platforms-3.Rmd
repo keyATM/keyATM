@@ -38,7 +38,7 @@ terms
 ```{r}
 post70s_corpus <- corpus_subset(corpus_uk_platforms, date > 1970)
 partyabbrev <- c("Con", "Lib", "Lab", "LD", "LibSDP")
-res_main_parties <- subset(res, ) # for plotting
+#res_main_parties <- subset(res, main) # for plotting
 docvars(post70s_corpus, "main") <- docvars(post70s_corpus, "party") %in% partyabbrev
 new_dict <- preprocess_dictionary(dict, post70s_corpus,
                                   min.freq = 5,
@@ -221,9 +221,16 @@ addmargins(round(ptab, 2))
 
 ```
 
+Dictionary right that scaling model thinks are left
 ```{r}
-
+names(diff_right[diff_right >= 0 & right < 0])
 ```
+
+Dictionary left that scaling model thinks are right
+```{r}
+names(diff_left[diff_left < 0 & left > 0])
+```
+
 
 Turns out the positions are pretty close from manual dictionary and 
 scores from the logit scoring the topicdict output
@@ -257,109 +264,4 @@ ggplot(dd, aes(x = pos_manual, y = pos_topicdict, color = main)) +
 
 
 
-## Allegedly Left Vocab in the Full Model
-
-```{r}
-dotchart(vals_left[extremes_left],
-         labels = names(vals_left)[extremes_left],
-         color = cols[extremes_left],
-         pch = 19, main = "Decisively topical vocabulary (Left)")
-```
-
-```{r}
-dotchart(vals_left[inbetweens_left],
-         labels = names(vals_left)[inbetweens_left],
-         color = cols[inbetweens_left],
-         pch = 19, main = "Borderline vocabulary (Left)")
-```
-
-## Allegedly Right Vocab in the Full Model
-
-```{r}
-on_topic <- (post$beta["Con", new_dict$Con])
-off_topic <- (colSums(post$beta[-which(rownames(post$beta) == "Con"), new_dict$Con]))
-vals_right <- sort(log(on_topic)- log(off_topic))
-vals_right[is.infinite(vals_right) & vals_right > 0] <- 6 # Inf
-vals_right[is.infinite(vals_right) & vals_right < 0] <- -6 # -Inf
-cols <- ifelse(vals_right >= 6, "darkgreen",
-               ifelse(vals_right > 0, "green",
-                      ifelse(vals_right > -6, "red", "darkred")))
-
-extremes_right <- which(abs(vals_right) == 6)
-inbetweens_right <- which(abs(vals_right) != 6)
-```
-
-
-```{r}
-dotchart(vals_right[extremes_right],
-         labels = names(vals_right)[extremes_right],
-         color = cols[extremes_right],
-         pch = 19, main = "Decisively topical vocabulary (Right)")
-```
-
-```{r}
-dotchart(vals_right[inbetweens_right],
-         labels = names(vals_right)[inbetweens_right],
-         color = cols[inbetweens_right],
-         pch = 19, main = "Borderline vocabulary (Right)")
-```
-
-But if we give the model just a few of the strongly Left and Right words will it
-infer the rest?  Here, random samples of 10 in each category and the same
-model specification (K + 5).
-
-```{r}
-
-# fit model
-set.seed(1234)
-sample_size <- 20
-
-recovered <- data.frame(left = rep(NA, 20), right = rep(NA, 20))
-for (i in 1:20){
-
-  # subsample of dictionary
-  sample_dict <- dictionary(list(Pro=new_dict$Pro[extremes_left[sample(length(extremes_left), sample_size)]], Con = new_dict$Con[extremes_right[sample(length(extremes_right),   sample_size)]]))
-
-  sample_mod5 <- topicdict_model(post70s_corpus, dict = sample_dict,
-                stopwords = stopwords(), remove_numbers = TRUE,
-                remove_punct = TRUE, remove_symbols = TRUE,
-                remove_separators = TRUE, remove_hyphens = FALSE,
-                extra_k = 5)
-sample_mod5 <- topicdict_train(sample_mod5, 340)
-sample_post <- posterior(sample_mod5)
-
-# Left
-other_vocab_left <- setdiff(new_dict$Pro, sample_dict$Pro)
-on_topic <- sample_post$beta["Pro", other_vocab_left]
-off_topic <- colSums(sample_post$beta[rownames(sample_post$beta) != "Pro",
-                               other_vocab_left])
-vals_left <- sort(log(on_topic)- log(off_topic))
-vals_left[is.infinite(vals_left) & vals_left > 0] <- 6 # Inf
-vals_left[is.infinite(vals_left) & vals_left < 0] <- -6 # -Inf
-
-recovered$left[i] <- mean(vals_left > 0)
-
-# Right
-other_vocab_right <- setdiff(new_dict$Con, sample_dict$Con)
-on_topic <- sample_post$beta["Con", other_vocab_right]
-off_topic <- colSums(sample_post$beta[rownames(sample_post$beta) != "Con",
-                               other_vocab_right])
-
-vals_left <- sort(log(on_topic)- log(off_topic))
-vals_right[is.infinite(vals_right) & vals_right > 0] <- 6 # Inf
-vals_right[is.infinite(vals_right) & vals_right < 0] <- -6 # -Inf
-
-recovered$right[i] <- mean(vals_right > 0)
-}
-colMeans(recovered)
-
-```
-
-
-```{r}
-par(mfrow = c(1,2))
-barplot(sort(colSums(dfm(post70s_corpus, select = new_dict$Pro))), ylim = c(0, 1500))
-barplot(sort(colSums(dfm(post70s_corpus, select = new_dict$Con))), ylim = c(0, 1500))
-par(mfrow = c(1,1))
-```
 
