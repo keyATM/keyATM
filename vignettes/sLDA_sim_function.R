@@ -13,8 +13,8 @@
 #######################################
 
 create_model <- function(folder, extra_k, 
-                                     seed_file_name="", seed_list = NULL,
-                                     cull_seed=NULL){
+             seed_file_name="", seed_list = NULL,
+             cull_seed=NULL){
 
   # cull_seed: Which row (=topic) and column (=number of seed) to use
 
@@ -546,7 +546,7 @@ read_true_word <- function(folder, encoding = "UTF-8"){
 ## true_word: a list which contains teh true word vectors, output of the read_true_word
 ## n: top n terms you use to calculate
 ## num_true_topic: the number of true topics (maximum number followed by "t")
-match_truth_Z <- function(post, res, true_word, n = 10, num_true_topic = 6){
+match_truth_Z <- function(post, true_word, n = 10, num_true_topic = 6){
   if ("plyr" %in% (.packages())){detach(package:plyr)}
   # check_arg_type(post, "topicdict_posterior")
   topterms <- top_terms(post, n)
@@ -569,7 +569,7 @@ match_truth_Z <- function(post, res, true_word, n = 10, num_true_topic = 6){
 
   ## mid is a matrix. Each row is a term and each column shows counts of the true topic for the term (given the term XXX, what is the true topic of XXXs?)
   ## the number of estimated topic \times (n \times estimated topic)
-  mid <- apply(topterms, 1, function(x, res, true_word, num_true_topic){count_Z(res, true_word, x[2], x[3], num_true_topic)}, res, true_word, num_true_topic)
+  mid <- apply(topterms, 1, function(x, res, true_word, num_true_topic){count_Z(res, true_word, x[2], x[3], num_true_topic)}, post, true_word, num_true_topic)
 
   ## bind with dataframe which contains the information of EstTopic* and terms
   top <- cbind(topterms, t(mid))
@@ -636,13 +636,13 @@ count_Z <- function(res, true_word, term, lookup_id, num_true_topic = 6){
   return(out)
 }
 
-## return plot
+## return a tibble which contains the proportion of correct match among top n words
 ## post: posterior object
 ## res: a list which contains true words for all the docuemnts (term with topic id), topicdict object
 ## true_word: a list which contains teh true word vectors, output of the read_true_word
 ## n: top n terms you use to calculate
 ## num_true_topic: the number of true topics (maximum number followed by "t")
-match_truth_Z_part <- function(post, res, true_word, n = 10, num_true_topic = 6){
+match_truth_Z_part <- function(post, true_word, n = 10, num_true_topic = 6){
   
   if ("plyr" %in% (.packages())){detach(package:plyr)}
   # check_arg_type(post, "topicdict_posterior")
@@ -666,7 +666,7 @@ match_truth_Z_part <- function(post, res, true_word, n = 10, num_true_topic = 6)
 
   ## mid is a matrix. Each row is a term and each column shows counts of the true topic for the term (given the term XXX, what is the true topic of XXXs?)
   ## the number of estimated topic \times (n \times estimated topic)
-  mid <- apply(topterms, 1, function(x, res, true_word, num_true_topic){count_Z(res, true_word, x[2], x[3], num_true_topic)}, res, true_word, num_true_topic)
+  mid <- apply(topterms, 1, function(x, res, true_word, num_true_topic){count_Z(res, true_word, x[2], x[3], num_true_topic)}, post, true_word, num_true_topic)
 
   ## bind with dataframe which contains the information of EstTopic* and terms
   top <- cbind(topterms, t(mid))
@@ -689,6 +689,13 @@ match_truth_Z_part <- function(post, res, true_word, n = 10, num_true_topic = 6)
   return(tt_new)
 }
 
+Reduce_matched_Z <- function(matched_obj){
+  matched_obj %>% 
+    mutate(NumEst = gsub("EstTopic", "", EstTopic), NumTrue = gsub("True", "", True)) %>% 
+    filter(NumEst == NumTrue) %>% 
+    select(-NumEst, -NumTrue) -> tt_new
+  return(tt_new)
+}
 
 
 
@@ -731,6 +738,7 @@ term_topic_mat <- function(true_word, post, lda_res, true_K){
   return(ret)
 }
 
+
 ## px and qx should be vectors
 cal_KL <- function(px, qx){
   kl <- (px + 1e-10) %*% log(px + 1e-10) - (px + 1e-10) %*% log(qx + 1e-10)
@@ -738,7 +746,7 @@ cal_KL <- function(px, qx){
 }
 
 posterior_simulation <- function(model){
-  check_arg_type(model, "topicdict")
+  # check_arg_type(model, "topicdict")
   allK <- model$extra_k + length(model$dict)
   V <- length(model$vocab)
   N = length(model$W)
@@ -807,7 +815,7 @@ posterior_simulation <- function(model){
   names(dict) <- names(model$seeds)
 
   ll <- list(seed_K = length(model$dict), extra_K = model$extra_k,
-             V = V, N = N, Z=model$Z
+             V = V, N = N, Z=model$Z,
              theta = theta, beta = as.matrix(as.data.frame.matrix(tZW)),
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = doc_lens, vocab = model$vocab,
