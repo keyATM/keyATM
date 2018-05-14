@@ -64,3 +64,5 @@ for (i in 1:25){
   plot_with_k(i)
 }
 
+# TODO: KL from t to t-1. Convergence plot
+
