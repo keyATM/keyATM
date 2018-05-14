@@ -52,6 +52,7 @@ posterior <- function(model){
   num_docs <- length(model$Z)
   tmp <- list()
   ## with sparse matrix
+  ## the attirubites given to data frame starts with 1
   for (i in 1:num_docs){
     tmp[[i]] <- Matrix( table(factor(model$Z[[i]], levels = 1:allK - 1), factor(model$W[[i]], levels = 1:V - 1)), sparse = TRUE )
   }
