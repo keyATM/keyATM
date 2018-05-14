@@ -16,7 +16,8 @@ Imports: Rcpp,
 	ggrepel,
   dplyr,
   tidytext,
-  methods
+  methods,
+  Matrix
 SystemRequirements: C++11     
 Suggests: knitr,
   rmarkdown,
