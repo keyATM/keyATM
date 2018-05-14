@@ -1,0 +1,333 @@
+---
+title: "Progress Report"
+author: "Shusei Eshima"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GenSimDataLDA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r warning=FALSE, message=FALSE, echo = FALSE}
+# package_folder <- "/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict"
+# setwd(package_folder)
+# devtools::document() ; devtools::install() ; library(topicdict)
+savepath <- "/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict/vignettes/"
+iter_num <- 1000
+library(knitr)
+knitr::opts_chunk$set(comment = "")
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+library(topicdict)
+library(purrr)
+library(quanteda)
+library(tibble)
+library(ggplot2)
+library(dplyr)
+library(topicmodels)
+```
+
+# Prepare Functions
+
+Create model function:
+```{r, warning=FALSE, message=FALSE}
+create_model <- function(docs, seed_list, extra_k){
+	set.seed(225)
+	names(seed_list) <- 1:length(seed_list)
+	dict <- quanteda::dictionary(seed_list)
+  model <- topicdict_model(docs,
+               dict = dict, extra_k = extra_k,
+               remove_numbers = TRUE, 
+               remove_punct = TRUE,
+               remove_symbols = TRUE,
+               remove_separators = TRUE)
+
+  return(model)
+}
+```
+
+```{r, warning=FALSE, message=FALSE}
+tidy_seededlda_out <- function(model, res, n=25){
+	# Create a nested data frame which contains W and Z
+	post <- topicdict::posterior(res)
+	topwords <- top_terms(post, n=n)
+	topwords <- data.frame(topwords)
+	colnames(topwords) <- paste0("EstTopic", 1:ncol(topwords))
+	topwords %>%
+		tidyr::gather(., key=EstTopic, value=Word) %>%
+		mutate(Word = gsub("\\s.*$", "", Word)) -> otidy
+
+	return(otidy)
+}
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(tm)
+
+get_lda_result <- function(doc_folder, seed_list, iter_num, k, topicvec=1:k, show_n=25){
+
+  # Prepare Data
+  corpus <- Corpus(DirSource(doc_folder))
+  strsplit_space_tokenizer <- function(x)
+      unlist(strsplit(as.character(x), "[[:space:]]+"))
+
+  dtm <- DocumentTermMatrix(corpus,
+                           control = list(tokenize=strsplit_space_tokenizer, 
+                           stopwords = F, tolower = F, 
+                           stemming = F, wordLengths = c(1, Inf)))
+
+  lda <- LDA(dtm, k = k, control = list(seed = 225, iter=iter_num), method="Gibbs")
+
+
+	all_words <- seed_list %>% flatten_chr()
+
+	tidytext::tidy(lda) %>%
+		group_by(topic) %>%
+		top_n(show_n, beta) %>%
+		rename(topics = topic, Word = term) %>%
+		select(-beta) %>%
+		right_join(., list_to_tibble(get("seed_list")), by="Word") %>%
+		mutate(count = ifelse(is.na(topics), 0, 1)) %>%
+		group_by(Word, SeedTopic) %>%
+		summarize(count = sum(count)) -> organized
+
+
+	organized %>%
+		ggplot(., aes(x=factor(count))) +
+		geom_histogram(stat="count") +
+		xlab("Number of Topics") + ylab("Count") + ggtitle("Words Split across Topics") +
+		theme_bw(base_size=15) +
+		theme(plot.title = element_text(hjust = 0.5)) -> g1
+
+	organized %>%
+		ggplot(., aes(x=factor(count))) +
+		geom_histogram(stat="count") +
+		facet_wrap(~ SeedTopic, ncol=3) +
+		xlab("Number of Topics") + ylab("Count") + ggtitle("Words Split across Topics") +
+		theme_bw(base_size=15) +
+		theme(plot.title = element_text(hjust = 0.5)) -> g2
+
+	return(list(g1, g2))
+}
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+list_to_tibble <- function(lobj){
+	# Flatten list and get a tibble
+	obj_len <- lobj %>% map(length) %>% flatten_int()
+	element <- lobj %>% flatten_chr()
+
+	tibble(SeedTopic = rep(paste0("True", 1:length(obj_len) - 1), obj_len),
+				 Word=element
+				 ) -> res
+	return(res)
+}
+
+count_appearence_list <- function(otidy, lobj){
+	all_words <- lobj %>% flatten_chr()
+
+	otidy %>% 
+		right_join(., list_to_tibble(get("lobj")), by="Word") %>%
+		mutate(count = ifelse(is.na(EstTopic), 0, 1)) %>%
+		group_by(Word, SeedTopic) %>%
+		summarize(count = sum(count)) -> organized
+
+
+	organized %>%
+		ggplot(., aes(x=factor(count))) +
+		geom_histogram(stat="count") +
+		xlab("Number of Topics") + ylab("Count") + ggtitle("Words Split across Topics") +
+		theme_bw(base_size=15) +
+		theme(plot.title = element_text(hjust = 0.5)) -> g1
+
+	organized %>%
+		ggplot(., aes(x=factor(count))) +
+		geom_histogram(stat="count") +
+		facet_wrap(~ SeedTopic, ncol=3) +
+		xlab("Number of Topics") + ylab("Count") + ggtitle("Words Split across Topics") +
+		theme_bw(base_size=15) +
+		theme(plot.title = element_text(hjust = 0.5)) -> g2
+
+	return(list(g1, g2))
+}
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+# Use a part of seed words
+use_part_of_seed <- function(x, use=1:5){
+	res <- x[use] # use part of seed
+	return(res)
+}
+```
+
+# Bara Data
+## Read Data
+```{r, warning=FALSE, message=FALSE}
+doc_folder <- system.file(file.path("extdata", "bara_paras"), package = "topicdict")
+seed_file <- system.file(file.path("extdata", "bara_seeds.txt"), package = "topicdict")
+docs <- list.files(doc_folder, pattern="txt", full.names=T)
+
+## turn this flat file of seeds into a (quanteda dictionary) list as it would be used
+seed_list <- Map(function(x){ unlist(strsplit(x, " ")) }, 
+                 Filter(function(x){ !grepl(x, pattern = "#") }, # remove comments
+                        readLines(seed_file)))
+
+# Original topic names from Bara dictionary
+names(seed_list) <- c("advocacy", "legal", "medical", "moral", "procedural", "social")
+dict <- dictionary(seed_list)
+```
+
+## Explore data
+```{r, warning=FALSE, message=FALSE, fig.width=8.5, fig.height=6.5}
+explore_ <- explore(docs,
+             remove_numbers = TRUE,
+             remove_punct = TRUE,
+             remove_symbols = TRUE,
+             remove_separators = TRUE)
+explore_$visualize_dict_prop(seed_list)
+```
+
+
+## k = 6 (Original)
+### Seeded LDA
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# SeededLDA five keywords
+model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:5), extra_k=0)
+res <- topicdict_train(model, iter = iter_num)
+count_appearence_list(tidy_seededlda_out(model, res), seed_list)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# SeededLDA eight keywords
+model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:8), extra_k=0)
+res <- topicdict_train(model, iter = iter_num)
+count_appearence_list(tidy_seededlda_out(model, res), seed_list)
+```
+
+### Standard LDA
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+get_lda_result(doc_folder, seed_list, iter_num, k=6)
+```
+
+## k = 12
+### Seeded LDA
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# SeededLDA five keywords
+model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:5), extra_k=6)
+res <- topicdict_train(model, iter = iter_num)
+count_appearence_list(tidy_seededlda_out(model, res), seed_list)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# SeededLDA eight keywords
+model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:8), extra_k=6)
+res <- topicdict_train(model, iter = iter_num)
+count_appearence_list(tidy_seededlda_out(model, res), seed_list)
+```
+
+### Standard LDA
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+get_lda_result(doc_folder, seed_list, iter_num, k=12)
+```
+
+# Catalinac Data
+## Read Data
+```{r, warning=FALSE, message=FALSE}
+doc_folder <- paste0("/Users/Shusei/Dropbox/Study/My_Research/TreeStructuredTopicModel/Papers/replication/Catalinac/data/docs") # Data from original data Document-Term Matrix
+docs <- list.files(doc_folder, pattern = "*.txt", full.names = TRUE)
+explore_ <- explore(docs,
+             remove_numbers = TRUE,
+             remove_punct = TRUE,
+             remove_symbols = TRUE,
+             remove_separators = TRUE)
+```
+
+## Seeds List
+```{r, warning=FALSE, message=FALSE}
+# Top fifteen words appeared in the original output
+# topic52 <- c("農業 産業 工業 整備 図る 漁業 秋田 開発 進める 県 商 山形 地域 発展 技術")
+# topic62 <- c("福井 静岡 復興 連立 神戸 岐阜 経済 与党 県 被災 空港 産業 政権 災害 ひと")
+# topic63 <- c("政治 主義 自由 社会 民主 大阪 平和 実現 日本 人間 目指す 豊か 福祉 守る ひと")
+# topic20 <- c("税 政治 消費 廃止 自民党 国民 自由 日本 守る コメ 企業 輸入 実現 献金 阻止")
+# topic58 <- c("企業 教育 中小 充実 図る 福祉 進める 改善 安定 家庭 振興 対策 恩給 作り 年金")
+
+# Remove overlapping words for better comparison
+topic52 <- c("農業 産業 工業 整備 漁業 秋田 開発 進める 県 商 山形 地域 発展 技術")
+topic62 <- c("福井 静岡 復興 連立 神戸 岐阜 経済 与党 被災 空港 政権 災害 ひと")
+topic63 <- c("政治 主義 自由 社会 民主 大阪 平和 実現 人間 目指す 豊か 守る")
+topic20 <- c("税 消費 廃止 自民党 国民 自由 日本 守る コメ 輸入 実現 献金 阻止")
+topic58 <- c("企業 教育 中小 充実 図る 福祉 改善 安定 家庭 振興 対策 恩給 作り 年金")
+
+seed_list <- list(topic52, topic62, topic63, topic20, topic58)
+seed_list <- lapply(seed_list, function(x){strsplit(x, " ")[[1]]})
+```
+
+
+## k = 6 (K+1)
+### Seeded LDA
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# SeededLDA all keywords
+model <- create_model(docs, seed_list, extra_k=1)
+res <- topicdict_train(model, iter = iter_num)
+count_appearence_list(tidy_seededlda_out(model, res), seed_list)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# SeededLDA eight keywords
+model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:8), extra_k=1)
+res <- topicdict_train(model, iter = iter_num)
+count_appearence_list(tidy_seededlda_out(model, res), seed_list)
+```
+
+### Standard LDA
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+get_lda_result(doc_folder, seed_list, iter_num, k=6)
+```
+
+
+## k = 15 (K+10)
+### Seeded LDA
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# SeededLDA all keywords
+model <- create_model(docs, seed_list, extra_k=10)
+res <- topicdict_train(model, iter = iter_num)
+count_appearence_list(tidy_seededlda_out(model, res), seed_list)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# SeededLDA eight keywords
+model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:8), extra_k=10)
+res <- topicdict_train(model, iter = iter_num)
+count_appearence_list(tidy_seededlda_out(model, res), seed_list)
+```
+
+### Standard LDA
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+get_lda_result(doc_folder, seed_list, iter_num, k=15)
+```
+
+## k = 30 (K+25)
+### Seeded LDA
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# SeededLDA all keywords
+model <- create_model(docs, seed_list, extra_k=25)
+res <- topicdict_train(model, iter = iter_num)
+count_appearence_list(tidy_seededlda_out(model, res), seed_list)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# SeededLDA eight keywords
+model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:8), extra_k=25)
+res <- topicdict_train(model, iter = iter_num)
+count_appearence_list(tidy_seededlda_out(model, res), seed_list)
+```
+
+### Standard LDA
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+get_lda_result(doc_folder, seed_list, iter_num, k=30)
+```
