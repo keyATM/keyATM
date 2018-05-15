@@ -541,7 +541,7 @@ explore <- function(files, encoding = "UTF-8",
   if (!is.null(stem_language))
     toks <- tokens_wordstem(toks, language = stem_language)
 
-	dfm_ <- dfm(toks)
+	dfm_ <- dfm(toks, tolower=lowercase)
 	tidy_ <- tidy(dfm_)
 
 	res <- ExploreDocuments$new(tidy_)
