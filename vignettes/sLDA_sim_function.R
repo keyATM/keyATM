@@ -707,17 +707,17 @@ Reduce_matched_Z <- function(matched_obj){
 ## [[1]]: term-topic matrix for slda results
 ## [[2]]: term-topic matrix for lda results
 ## [[3]]: term-topic matrix for truth
-term_topic_mat <- function(true_word, post, lda_res, true_K){
+topic_term_mat <- function(true_word, post, true_K){
   ## slda
   slda.mm <- post$beta
   slda.mm <- slda.mm[, order(colnames(slda.mm))]
   colnames(slda.mm) <- gsub("w", "W", colnames(slda.mm))
 
   ## extract term-topic distirbution from lda results
-  lda.mm <- as.matrix(topicmodels::posterior(lda_res)$terms)
+  # lda.mm <- as.matrix(topicmodels::posterior(lda_res)$terms)
   ## sort colmanes: note that since lda and slda use the same document, 
   ## order function should result in the same result
-  lda.mm <- lda.mm[, order(colnames(lda.mm))]
+  # lda.mm <- lda.mm[, order(colnames(lda.mm))]
 
   ## extract unique words
   unique_term <- colnames(slda.mm)
@@ -734,16 +734,18 @@ term_topic_mat <- function(true_word, post, lda_res, true_K){
     mat[topic_id, term] <- true_count[i]
   }
   mat <- t(apply(mat, 1, function(x){x/sum(x)}))
-  ret <- list(slda.mm, lda.mm, mat)
+  # ret <- list(slda.mm, lda.mm, mat)
+  ret <- list(slda.mm, mat)
   return(ret)
 }
 
 
-## px and qx should be vectors
+## px and qx should be vectors with the same dimension
 cal_KL <- function(px, qx){
   kl <- (px + 1e-10) %*% log(px + 1e-10) - (px + 1e-10) %*% log(qx + 1e-10)
   return(kl)
 }
+
 
 posterior_simulation <- function(model){
   # check_arg_type(model, "topicdict")
@@ -766,10 +768,16 @@ posterior_simulation <- function(model){
   rownames(theta) <- basename(model$files)
   colnames(theta) <- tnames # label seeded topics
 
-  tZW <- Reduce(`+`,
-                 mapply(function(z, w){ table(factor(z, levels = 1:allK - 1),
-                                              factor(w, levels = 1:V - 1)) },
-                        model$Z, model$W, SIMPLIFY = FALSE))
+  # tZW <- Reduce(`+`,
+  #                mapply(function(z, w){ table(factor(z, levels = 1:allK - 1),
+  #                                             factor(w, levels = 1:V - 1)) },
+  #                       model$Z, model$W, SIMPLIFY = FALSE))
+  tmp <- list()
+  for (i in 1:num_docs){
+    tmp[[i]] <- table(factor(post$Z[[i]], levels = 1:allK - 1), factor(post$W[[i]], levels = 1:V - 1))
+  }
+  tZW <- Reduce(`+`, tmp)
+
   word_counts <- colSums(tZW)
 
   colnames(tZW) <- model$vocab
@@ -822,5 +830,293 @@ posterior_simulation <- function(model){
              dict = dict,
              alpha=res_alpha, modelfit=modelfit, p=p_estimated)
   class(ll) <- c("topicdict_posterior", class(ll))
+  ll
+}
+
+
+## type 1 for sparse matrix, which take a longer time
+## type 2 for pararell, which does not work if the data is too large
+## type 3 for both sparse matrix and pararell
+posterior_simulation2 <- function(model, type = 0, core = 2){
+  # check_arg_type(model, "topicdict")
+  allK <- model$extra_k + length(model$dict)
+  V <- length(model$vocab)
+  N = length(model$W)
+  doc_lens <- sapply(model$W, length)
+  print("done 1")
+
+  if(model$extra_k > 0){
+    tnames <- c(names(model$seeds), paste0("T_", 1:model$extra_k))
+  }else{
+    tnames <- c(names(model$seeds))
+  }
+  print("done 2")
+
+  posterior_z <- function(zvec){
+    tt <- table(factor(zvec, levels = 1:allK - 1))
+    (tt + model$alpha) / (sum(tt) + sum(model$alpha)) # posterior mean
+  }
+  theta <- do.call(rbind, lapply(model$Z, posterior_z))
+  rownames(theta) <- basename(model$files)
+  colnames(theta) <- tnames # label seeded topics
+  print("done 3")
+
+  # tZW <- Reduce(`+`,
+  #                mapply(function(z, w){ table(factor(z, levels = 1:allK - 1),
+  #                                             factor(w, levels = 1:V - 1)) },
+  #                       model$Z, model$W, SIMPLIFY = FALSE))
+  # word_counts <- colSums(tZW)
+  # print("done 4")
+
+  # colnames(tZW) <- model$vocab
+  # tZW <- tZW / rowSums(tZW)
+  # rownames(tZW) <- tnames
+  # print("done 5")
+  num_docs <- length(model$Z)
+  num_docs <- length(model$Z)
+
+  tmp <- list()
+  ## with sparse matrix
+  if (type == 1){
+      for (i in 1:num_docs){
+        tmp[[i]] <- Matrix( table(factor(model$Z[[i]], levels = 1:allK - 1), factor(model$W[[i]], levels = 1:V - 1)), sparse = TRUE )
+        ## begin for debug
+        # if (i%%100 == 0){
+        #   cat("document", i, "\n")
+        # }
+        ## end for debug
+      }
+  ## with pararell
+  } else if (type == 2){
+      tmp <- pforeach (i = 1:num_docs, .cores = cores)({
+        if ("plyr" %in% (.packages())){detach(package:plyr)}
+        list( table(factor(model$Z[[i]], levels = 1:allK - 1), factor(model$W[[i]], levels = 1:V - 1)) )
+      })
+  ## with pararell and sparse matrix
+  } else if (type == 3) {
+      tmp <- pforeach (i = 1:num_docs, .cores = cores)({
+        # begin for debug
+        if (i%%100 == 0){
+          cat("document", i, "\n")
+        }
+        # end for debug
+        if ("plyr" %in% (.packages())){detach(package:plyr)}
+        list( Matrix( table(factor(model$Z[[i]], levels = 1:allK - 1), factor(model$W[[i]], levels = 1:V - 1)), sparse = TRUE ) )
+
+      })
+
+  } else {
+      for (i in 1:num_docs){
+        tmp[[i]] <- table(factor(model$Z[[i]], levels = 1:allK - 1), factor(model$W[[i]], levels = 1:V - 1))
+        ## begin for debug
+        # if (i%%100 == 0){
+        #   cat("document", i, "\n")
+        # }
+        ## end for debug
+      }
+  }
+
+  tZW <- Reduce(`+`, tmp)
+
+  word_counts <- colSums(tZW)
+  # print("done 2")
+
+  colnames(tZW) <- model$vocab
+  # print("done 3")
+  tZW <- tZW / rowSums(tZW)
+
+  # alpha
+  res_alpha <- data.frame(model$alpha_iter)
+  colnames(res_alpha) <- NULL
+  res_alpha <- data.frame(t(res_alpha))
+  if(nrow(res_alpha) > 0){
+    colnames(res_alpha) <- paste0("EstTopic", 1:ncol(res_alpha))
+    res_alpha$iter <- 1:nrow(res_alpha)
+  }
+  print("done 6")
+
+  # model fit
+  modelfit <- data.frame(model$model_fit)
+  colnames(modelfit) <- NULL
+  if(nrow(modelfit) > 0){
+    modelfit <- data.frame(t(modelfit))
+    colnames(modelfit) <- c("Iteration", "Log Likelihood", "Perplexity")
+  }
+  print("done 7")
+
+  # p
+  collapse <- function(obj){
+  temp <- unlist(obj)
+  names(temp) <- NULL
+  return(temp)
+  }
+
+  data <- data.frame(Z=collapse(model$Z), X=collapse(model$X))
+  data %>%
+    mutate_(Topic='Z+1') %>%
+    select(-starts_with("Z")) %>%
+    group_by_('Topic') %>%
+    summarize_(count = 'n()', sumx='sum(X)') %>%
+    ungroup() %>%
+    mutate_(Proportion='round(sumx/count*100, 3)') -> p_estimated
+  print("done 8")
+
+  ## TODO fix this naming nonsense
+  dict <- model$dict
+  names(dict) <- names(model$seeds)
+
+  ll <- list(seed_K = length(model$dict), extra_k = model$extra_k,
+             V = V, N = N, Z=model$Z, W=model$W,
+             theta = theta, beta = as.matrix(as.data.frame.matrix(tZW)),
+             topic_counts = rowSums(tZW), word_counts = word_counts,
+             doc_lens = doc_lens, vocab = model$vocab,
+             dict = dict,
+             alpha=res_alpha, modelfit=modelfit, p=p_estimated)
+  class(ll) <- c("topicdict_posterior", class(ll))
+  ll
+}
+
+
+## type 1 for sparse matrix, which take a longer time
+## type 2 for pararell, which does not work if the data is too large
+## type 3 for both sparse matrix and pararell
+cal_ZW_large <- function(post, type = 0, cores = 2){
+  allK <- post$extra_k + length(post$dict)
+  V <- length(post$vocab)
+  if(post$extra_k > 0){
+      tnames <- c(unlist(strsplit(toString(1:post$seed_K), split = ", ")), paste0("T_", 1:post$extra_k))
+  }else{
+      tnames <- c(unlist(strsplit(toString(1:post$seed_K)), split = ", "))
+  }
+  # print("done 1")
+
+
+  # tZW <- Reduce(`+`,
+  #                mapply(function(z, w){ table(factor(z, levels = 1:allK - 1),
+  #                                             factor(w, levels = 1:V - 1)) },
+  #                       post$Z, post$W, SIMPLIFY = FALSE))
+  num_docs <- length(post$Z)
+
+  tmp <- list()
+  ## with sparse matrix
+  if (type == 1){
+      for (i in 1:num_docs){
+        tmp[[i]] <- Matrix( table(factor(post$Z[[i]], levels = 1:allK - 1), factor(post$W[[i]], levels = 1:V - 1)), sparse = TRUE )
+        ## begin for debug
+        # if (i%%100 == 0){
+        #   cat("document", i, "\n")
+        # }
+        ## end for debug
+      }
+  ## with pararell
+  } else if (type == 2){
+      tmp <- pforeach (i = 1:num_docs, .cores = cores)({
+        if ("plyr" %in% (.packages())){detach(package:plyr)}
+        list( table(factor(post$Z[[i]], levels = 1:allK - 1), factor(post$W[[i]], levels = 1:V - 1)) )
+      })
+  ## with pararell and sparse matrix
+  } else if (type == 3) {
+      tmp <- pforeach (i = 1:num_docs, .cores = cores)({
+        # begin for debug
+        if (i%%100 == 0){
+          cat("document", i, "\n")
+        }
+        # end for debug
+        if ("plyr" %in% (.packages())){detach(package:plyr)}
+        list( Matrix( table(factor(post$Z[[i]], levels = 1:allK - 1), factor(post$W[[i]], levels = 1:V - 1)), sparse = TRUE ) )
+      })
+
+  } else {
+      for (i in 1:num_docs){
+        tmp[[i]] <- table(factor(post$Z[[i]], levels = 1:allK - 1), factor(post$W[[i]], levels = 1:V - 1))
+        ## begin for debug
+        # if (i%%100 == 0){
+        #   cat("document", i, "\n")
+        # }
+        ## end for debug
+      }
+  }
+
+  tZW <- Reduce(`+`, tmp)
+
+  word_counts <- colSums(tZW)
+  # print("done 2")
+
+  colnames(tZW) <- post$vocab
+  # print("done 3")
+  tZW <- tZW / rowSums(tZW)
+  # rownames(tZW) <- tnames
+  # print("done 4")
+
+
+  ll <- list.append(post, beta = as.matrix(as.data.frame.matrix(tZW)),
+             topic_counts = rowSums(tZW), word_counts = word_counts)
+  # print("done 5")
+  class(ll) <- c("topicdict_posterior", class(ll))
+
+  ## return function
+  ll
+}
+
+## put topicdict post
+## return topicdict post with zw
+cal_ZW <- function(post, pararell = FALSE, cores = 2){
+  allK <- post$extra_k + length(post$dict)
+  V <- length(post$vocab)
+  if(post$extra_k > 0){
+      tnames <- c(unlist(strsplit(toString(1:post$seed_K), split = ", ")), paste0("T_", 1:post$extra_k))
+  }else{
+      tnames <- c(unlist(strsplit(toString(1:post$seed_K)), split = ", "))
+  }
+  # print("done 1")
+
+
+  # tZW <- Reduce(`+`,
+  #                mapply(function(z, w){ table(factor(z, levels = 1:allK - 1),
+  #                                             factor(w, levels = 1:V - 1)) },
+  #                       post$Z, post$W, SIMPLIFY = FALSE))
+  num_docs <- length(post$Z)
+
+  tmp <- list()
+  if (pararell == TRUE){
+      tmp <- pforeach (i = 1:num_docs, .cores = cores)({
+        if ("plyr" %in% (.packages())){detach(package:plyr)}
+        list( table(factor(post$Z[[i]], levels = 1:allK - 1), factor(post$W[[i]], levels = 1:V - 1)) )
+        ## begin for debug
+        if (i%%100 == 0){
+          cat("document", i, "\n")
+        }
+        ## end for debug
+      })
+    
+  } else {
+      for (i in 1:num_docs){
+        tmp[[i]] <- table(factor(post$Z[[i]], levels = 1:allK - 1), factor(post$W[[i]], levels = 1:V - 1))
+        ## begin for debug
+        # if (i%%100 == 0){
+        #   cat("document", i, "\n")
+        # }
+        ## end for debug
+      }
+  }
+
+  tZW <- Reduce(`+`, tmp)
+
+  word_counts <- colSums(tZW)
+  # print("done 2")
+
+  colnames(tZW) <- post$vocab
+  # print("done 3")
+  tZW <- tZW / rowSums(tZW)
+  # rownames(tZW) <- tnames
+  # print("done 4")
+
+
+  ll <- list.append(post, beta = as.matrix(as.data.frame.matrix(tZW)),
+             topic_counts = rowSums(tZW), word_counts = word_counts)
+  # print("done 5")
+  class(ll) <- c("topicdict_posterior", class(ll))
+
+  ## return function
   ll
 }

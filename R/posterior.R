@@ -44,19 +44,21 @@ posterior <- function(model){
   rownames(theta) <- basename(model$files)
   colnames(theta) <- tnames # label seeded topics
 
-  tZW <- Reduce(`+`,
-                 mapply(function(z, w){ table(factor(z, levels = 1:allK - 1),
-                                              factor(w, levels = 1:V - 1)) },
-                        model$Z, model$W, SIMPLIFY = FALSE))
+  # tZW <- Reduce(`+`,
+  #                mapply(function(z, w){ table(factor(z, levels = 1:allK - 1),
+  #                                             factor(w, levels = 1:V - 1)) },
+  #                       model$Z, model$W, SIMPLIFY = FALSE))
 
-  # tmp <- list()
-  # for (i in 1:num_docs){
-  #   tmp[[i]] <- table(factor(post$Z[[i]], levels = 1:allK - 1), factor(post$W[[i]], levels = 1:V - 1))
-  # }
-  # tZW <- Reduce(`+`, tmp)
-
+  num_docs <- length(model$Z)
+  tmp <- list()
+  ## with sparse matrix
+  ## the attirubites given to data frame starts with 1
+  for (i in 1:num_docs){
+    tmp[[i]] <- Matrix( table(factor(model$Z[[i]], levels = 1:allK - 1), factor(model$W[[i]], levels = 1:V - 1)), sparse = TRUE )
+  }
+  tZW <- Reduce(`+`, tmp)
+  
   word_counts <- colSums(tZW)
-
 
   colnames(tZW) <- model$vocab
   topic_counts <- rowSums(tZW)
