@@ -461,7 +461,7 @@ get_lda_result2 <- function(data_path, iter, k){
                            stopwords = F, tolower = F, 
                            stemming = F, wordLengths = c(1, Inf)))
 
-  lda <- LDA(dtm, k = k, control = list(seed = 225, iter=iter, estimate.alpha = TRUE), method="Gibbs")
+  lda <- LDA(dtm, k = k, control = list(seed = 225, iter=iter), method="Gibbs")
   return (lda)
 }
 
