@@ -142,7 +142,7 @@ Gen_wzx <- function(doc_id, doc_len, phiR, phiS, p_vec, theta){
   w <- sapply(1:doc_len, Gen_w_seeds, phiR=phiR, phiS=phiS, z=z, x=x)
   # add functions to take away the topic id on words
   # print(w)
-  w_raw <- sub("t\\d", "", w)
+  w_raw <- sub("t\\d.?", "", w)
   # print(w_raw)
   return(list(doc_id=rep(doc_id, doc_len), w=w,z=z,x=x, w_raw = w_raw))
 }
@@ -397,7 +397,7 @@ get_lda_result <- function(data_path, iter, k, topicvec=1:k, show_n=25){
                            stopwords = F, tolower = F, 
                            stemming = F, wordLengths = c(1, Inf)))
 
-  lda <- LDA(dtm, k = k, control = list(seed = 225, iter=iter), method="Gibbs")
+  lda <- LDA(dtm, k = k, control = list(separateed = 225, iter=iter), method="Gibbs")
 
   assign <-tidytext::augment(lda, dtm)
   assign %>% 
@@ -740,6 +740,35 @@ topic_term_mat <- function(true_word, post, true_K){
 }
 
 
+topic_term_mat_slda <- function(post){
+  ## slda
+  slda.mm <- post$beta
+  slda.mm <- slda.mm[, order(colnames(slda.mm))]
+  colnames(slda.mm) <- gsub("w", "W", colnames(slda.mm))
+  return(slda.mm)
+}
+
+topic_term_mat_true <- function(true_word, unique_term, true_K){
+  ## extract unique words
+  # unique_term <- colnames(slda.mm)
+
+  ## create matrix to contain the "true" topic assignment
+  mat <- matrix(0, nrow =  true_K, ncol = length(unique_term))
+  colnames(mat) <- unique_term
+  ## read topic assignment and put into matrix mat
+  true_count <- table( unlist(true_word) )
+  terms <- unlist(attr(true_count, "dimnames"))
+  for (i in 1:length(true_count)){
+    topic_id <- as.numeric(  gsub("W\\d+t","", terms[i]) )
+    term <- gsub("t\\d+","", terms[i])
+    mat[topic_id, term] <- true_count[i]
+  }
+  mat <- t(apply(mat, 1, function(x){x/sum(x)}))
+  # ret <- list(slda.mm, lda.mm, mat)
+  # ret <- list(slda.mm, mat)
+  return(mat)  
+}
+
 ## px and qx should be vectors with the same dimension
 cal_KL <- function(px, qx){
   kl <- (px + 1e-10) %*% log(px + 1e-10) - (px + 1e-10) %*% log(qx + 1e-10)
@@ -872,7 +901,6 @@ posterior_simulation2 <- function(model, type = 0, core = 2){
   # tZW <- tZW / rowSums(tZW)
   # rownames(tZW) <- tnames
   # print("done 5")
-  num_docs <- length(model$Z)
   num_docs <- length(model$Z)
 
   tmp <- list()
