@@ -397,7 +397,7 @@ get_lda_result <- function(data_path, iter, k, topicvec=1:k, show_n=25){
                            stopwords = F, tolower = F, 
                            stemming = F, wordLengths = c(1, Inf)))
 
-  lda <- LDA(dtm, k = k, control = list(separateed = 225, iter=iter), method="Gibbs")
+  lda <- LDA(dtm, k = k, control = list(seed = 225, iter=iter), method="Gibbs")
 
   assign <-tidytext::augment(lda, dtm)
   assign %>% 
@@ -461,7 +461,7 @@ get_lda_result2 <- function(data_path, iter, k){
                            stopwords = F, tolower = F, 
                            stemming = F, wordLengths = c(1, Inf)))
 
-  lda <- LDA(dtm, k = k, control = list(seed = 225, iter=iter), method="Gibbs")
+  lda <- LDA(dtm, k = k, control = list(seed = 225, iter=iter, estimate.alpha = TRUE), method="Gibbs")
   return (lda)
 }
 
