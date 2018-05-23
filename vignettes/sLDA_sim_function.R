@@ -447,7 +447,8 @@ get_lda_result <- function(data_path, iter, k, topicvec=1:k, show_n=25){
 
 ## function to return the result of LDA
 ## data_path should be a file that contains the txt files ("/W")
-get_lda_result2 <- function(data_path, iter, k){
+## delta: Dirichlet parameter of the prior of the topic-word distribution
+get_lda_result2 <- function(data_path, iter, k, delta = 0.1){
   # folder <- paste0(data_folder, data_folder_name, "/W")
   folder <- data_path
 
@@ -461,7 +462,7 @@ get_lda_result2 <- function(data_path, iter, k){
                            stopwords = F, tolower = F, 
                            stemming = F, wordLengths = c(1, Inf)))
 
-  lda <- LDA(dtm, k = k, control = list(seed = 225, iter=iter), method="Gibbs")
+  lda <- LDA(dtm, k = k, control = list(seed = 225, iter = iter, delta = delta), method="Gibbs")
   return (lda)
 }
 
