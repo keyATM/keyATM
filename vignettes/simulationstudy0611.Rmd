@@ -25,6 +25,9 @@ library(tibble)
 library(ggplot2)
 library(dplyr)
 library(topicmodels)
+library(hashmap)
+library(tm)
+library(purrr)
 iter_num <- 50
 extra_k <- 2
 ```
@@ -168,7 +171,7 @@ lda_initialization <-  function(files, dict, extra_k = 1, encoding = "UTF-8",
 
 
 ```{r, warning=FALSE, message=FALSE}
-create_model <- function(folder, extra_k, 
+create_model_from_lda <- function(folder, extra_k, 
                                      seed_file_name="", seed_list = NULL,
                                      cull_seed=NULL, initializer="normal"){
 

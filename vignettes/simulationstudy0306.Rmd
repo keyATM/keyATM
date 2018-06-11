@@ -25,7 +25,10 @@ library(tibble)
 library(ggplot2)
 library(dplyr)
 library(topicmodels)
-iter_num <- 500
+library(hashmap)
+library(tm)
+library(purrr)
+iter_num <- 50
 extra_k <- 2
 ```
 
