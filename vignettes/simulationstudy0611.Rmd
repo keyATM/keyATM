@@ -28,6 +28,7 @@ library(topicmodels)
 library(hashmap)
 library(tm)
 library(purrr)
+library(clue)
 iter_num <- 50
 extra_k <- 2
 ```
@@ -281,6 +282,8 @@ lda_initialization2 <-  function(files, dict, extra_k = 1, encoding = "UTF-8",
     zz
   }
   
+  Z <- lapply(W, make_z_key) # only for a keyworded word
+
   weight_z <- table(lda_z)/length(lda_z)
   phi <- exp(lda@beta)
   colnames(phi) <- lda@terms
@@ -302,14 +305,30 @@ lda_initialization2 <-  function(files, dict, extra_k = 1, encoding = "UTF-8",
   ## mm is the match based on the hungarian algorithm
   mm <- solve_LSAP(match_mat, maximum = TRUE)
   
+  lda_z_split2 <- lapply(lda_z_split, function(x){ ifelse(x > 0, 0, 1)  })
   
-  Z <- lapply(W, make_z_key) # only for a keyworded word
+  ## input keywords topics
+  for (i in 1:length(mm)){
+    for (d in 1:length(lda_z_split)){
+      lda_z_split2[[d]][lda_z_split[[d]] == mm[i]] <- i
+    }
+  }
+  
+  ## topic that does not used for keyword topics
+  non_key_topics <- c(1:(proper_len+extra_k))[-mm]
+  
+  ## assign LDA output topics that does not used for keyword topics
+  for (i in non_key_topics){
+    for (d in 1:length(lda_z_split)){
+      lda_z_split2[[d]][lda_z_split[[d]] == i] <- i + length(dict)
+    }
+  }
 
 	make_z <- function(key, lda_z){
 		key[is.na(key)] <- lda_z[is.na(key)]
 		return(key)
 	}
-	Z <- mapply(make_z, Z, lda_z_split)
+	Z <- mapply(make_z, Z, lda_z_split2)
 
   # dictionary category names -> vector of word_id.
   # (Later processes ignore names)
@@ -363,7 +382,7 @@ create_model_from_lda <- function(folder, extra_k,
 								 remove_symbols = TRUE,
 								 remove_separators = TRUE)
 	}else{
-		model <- lda_initialization(docs,
+		model <- lda_initialization2(docs,
 								 dict = dict, extra_k = extra_k,
 								 remove_numbers = FALSE, # For simulation, make it false
 								 remove_punct = TRUE,
