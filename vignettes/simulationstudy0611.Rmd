@@ -201,7 +201,7 @@ lda_initialization2 <-  function(files, dict, extra_k = 1, encoding = "UTF-8",
                            stopwords = F, tolower = T, 
                            stemming = F, wordLengths = c(1, Inf)))
 
-  lda <- LDA(dtm, k = proper_len+extra_k, control = list(seed = 225, iter=iter_num), method="Gibbs")
+  lda <- LDA(dtm, k = proper_len, control = list(seed = 225, iter=iter_num), method="Gibbs")
 	lda_z <- lda@z # Get lda topic assignments
 
   args <- list(remove_numbers = remove_numbers,
