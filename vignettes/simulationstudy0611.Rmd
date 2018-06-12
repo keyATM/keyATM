@@ -277,13 +277,6 @@ lda_initialization2 <-  function(files, dict, extra_k = 1, encoding = "UTF-8",
 	lda_z_split <- split(lda_z, rep(1:length(doc_names), doc_len)) # lda z assignment by documents
 	names(lda_z_split) <- doc_names
 
-  make_z_key <- function(x){
-		zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
-    zz
-  }
-  
-  Z <- lapply(W, make_z_key) # only for a keyworded word
-
   weight_z <- table(lda_z)/length(lda_z)
   phi <- exp(lda@beta)
   colnames(phi) <- lda@terms
@@ -337,11 +330,7 @@ lda_initialization2 <-  function(files, dict, extra_k = 1, encoding = "UTF-8",
     }
   }
 
-	make_z <- function(key, lda_z){
-		key[is.na(key)] <- lda_z[is.na(key)]
-		return(key)
-	}
-	Z <- mapply(make_z, Z, lda_z_split2)
+  Z <- lda_z_split2
 
   # dictionary category names -> vector of word_id.
   # (Later processes ignore names)
