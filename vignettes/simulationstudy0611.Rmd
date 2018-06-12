@@ -303,6 +303,8 @@ lda_initialization2 <-  function(files, dict, extra_k = 1, encoding = "UTF-8",
     # match_vec[i] <- id
   }
   ## mm is the match based on the hungarian algorithm
+  ## each id of the vector mm denotes key word topics (i)
+  ## each item of the vector mm denotes estimated LDA topics (mm[i])
   mm <- solve_LSAP(match_mat, maximum = TRUE)
   
   lda_z_split2 <- lapply(lda_z_split, function(x){ ifelse(x > 0, 0, 1)  })
@@ -310,17 +312,28 @@ lda_initialization2 <-  function(files, dict, extra_k = 1, encoding = "UTF-8",
   ## input keywords topics
   for (i in 1:length(mm)){
     for (d in 1:length(lda_z_split)){
-      lda_z_split2[[d]][lda_z_split[[d]] == mm[i]] <- i
+      lda_z_split2[[d]][lda_z_split[[d]] == mm[i]] <- i-1
     }
   }
   
   ## topic that does not used for keyword topics
   non_key_topics <- c(1:(proper_len+extra_k))[-mm]
+  # non_key_topics_slda <- c(  )
   
   ## assign LDA output topics that does not used for keyword topics
-  for (i in non_key_topics){
+  # for (i in non_key_topics){
+  #   for (d in 1:length(lda_z_split)){
+  #     lda_z_split2[[d]][lda_z_split[[d]] == non_key_topics_lda ] <- 
+  #   }
+  # }
+  # 
+  K <- length(dict)
+  unused_topics <- (K):(K+extra_k-1)
+  for(i in 1:length(non_key_topics)){
+    original <- non_key_topics[i]
+    changed <- unused_topics[i]
     for (d in 1:length(lda_z_split)){
-      lda_z_split2[[d]][lda_z_split[[d]] == i] <- i + length(dict)
+      lda_z_split2[[d]][lda_z_split[[d]] == original ] <- changed 
     }
   }
 
