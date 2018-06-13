@@ -12,7 +12,7 @@ topicdict_model(files, dict, extra_k = 1, encoding = "UTF-8",
   beta_s = 0.1, gamma_1 = 1, gamma_2 = 1)
 }
 \arguments{
-\item{files}{names of each file to read}
+\item{files}{names of each file to read (or a quanteda corpus object)}
 
 \item{dict}{a quanteda dictionary or named list of character vectors}
 

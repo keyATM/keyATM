@@ -25,7 +25,7 @@
 #' alpha. If it is a vector of the correct length those values are used
 #' as the starting alphas.
 #'
-#' @param files names of each file to read
+#' @param files names of each file to read (or a quanteda corpus object)
 #' @param dict a quanteda dictionary or named list of character vectors
 #' @param extra_k number of unseeded topics in addition to the topics seeded by
 #'                \code{dict}

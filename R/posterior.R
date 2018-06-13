@@ -54,14 +54,16 @@ posterior <- function(model){
   ## with sparse matrix
   ## the attirubites given to data frame starts with 1
   for (i in 1:num_docs){
-    tmp[[i]] <- Matrix( table(factor(model$Z[[i]], levels = 1:allK - 1), factor(model$W[[i]], levels = 1:V - 1)), sparse = TRUE )
+    tmp[[i]] <- Matrix::Matrix(table(factor(model$Z[[i]], levels = 1:allK - 1),
+                                     factor(model$W[[i]], levels = 1:V - 1)),
+                               sparse = TRUE)
   }
   tZW <- Reduce(`+`, tmp)
-  
-  word_counts <- colSums(tZW)
+
+  word_counts <- Matrix::colSums(tZW)
 
   colnames(tZW) <- model$vocab
-  topic_counts <- rowSums(tZW)
+  topic_counts <- Matrix::rowSums(tZW)
   tZW <- tZW / topic_counts
   rownames(tZW) <- tnames
 
