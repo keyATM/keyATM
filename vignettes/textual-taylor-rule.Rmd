@@ -238,8 +238,33 @@ ft_coding$est <- reffs$name[toupper(ft_coding$Name),]
 cor(ft_coding$order, ft_coding$est) # Meh again
 ```
 
+## Next up
+
 For different numbers of topic, run LDA and sLDA and measure 
 stability of ranking / overlap.
+
+```{r}
+library(topicmodels)
+
+dtm <- dfm(corp, remove_numbers = TRUE, 
+           remove_punct = TRUE, 
+           remove_separators = TRUE,
+           remove_symbols = TRUE,
+           stopwords = stopwords(),
+           stem_language = "english")
+lda_mod5 <- LDA(as.DocumentTermMatrix(dtm), k = 5, method = "gibbs") 
+lda_mod10 <- LDA(as.DocumentTermMatrix(dtm), k = 10, method = "gibbs") 
+lda_mod15 <- LDA(as.DocumentTermMatrix(dtm), k = 15, method = "gibbs") 
+lda_mod20 <- LDA(as.DocumentTermMatrix(dtm), k = 20, method = "gibbs") 
+lda_mod25 <- LDA(as.DocumentTermMatrix(dtm), k = 25, method = "gibbs") 
+lda_mod30 <- LDA(as.DocumentTermMatrix(dtm), k = 30, method = "gibbs") 
+lda_mod35 <- LDA(as.DocumentTermMatrix(dtm), k = 35, method = "gibbs") 
+lda_mod40 <- LDA(as.DocumentTermMatrix(dtm), k = 40, method = "gibbs") 
+lda_mod45 <- LDA(as.DocumentTermMatrix(dtm), k = 45, method = "gibbs") 
+
+```
+
+
 
 
 
