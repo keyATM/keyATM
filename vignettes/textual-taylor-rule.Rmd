@@ -18,6 +18,7 @@ library(dplyr)
 library(lubridate)
 library(quanteda)
 library(lme4)
+library(topicdict)
 ```
 
 ## Replicating a Textual Taylor Rule
@@ -215,7 +216,9 @@ mod <- topicdict_model(corp, dict = dict, extra_k = 13,
                        remove_punct = TRUE, 
                        remove_separators = TRUE,
                        remove_symbols = TRUE,
-                       stopwords = stopwords())
+                       stopwords = stopwords(),
+                       stem_language = "english"
+                      )
 mod <- topicdict_train(mod, iter = 300)
 
 post <- posterior(mod)
@@ -235,6 +238,8 @@ ft_coding$est <- reffs$name[toupper(ft_coding$Name),]
 cor(ft_coding$order, ft_coding$est) # Meh again
 ```
 
+For different numbers of topic, run LDA and sLDA and measure 
+stability of ranking / overlap.
 
 
 
