@@ -78,7 +78,7 @@ Gen_alpha <- function(alpha, K){
 	return (rep(alpha, K))
 }
 
-Gen_theta <- function(doc_len, alpha_vec){
+Gen_theta <- function(doc_len, Alpha){
 	theta <- t(apply(Alpha, 1, rdirichlet, n=1))
 	return(theta)
 }
@@ -566,9 +566,9 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000,
 }
 
 create_sim_data(saveDir="/Users/Shusei/Desktop/temp/SimulationData/SeededCov",
-														D=5, K=10, TotalV=80, 
-														dim = 3, # dimension of the covariates
-														p=rep(0.3, 10),
-														beta_r=0.1, beta_s=0.1,  lambda=300, 
-														num_covariates=3, Lambda_sigma=1,
-														seeds_len=5, prop_seeds=NULL, rand_seed=123)
+														D=20, K=8, TotalV=500, 
+														dim=3, # dimension of the covariates
+														p=rep(0.3, 8),
+														beta_r=0.1, beta_s=0.1,  lambda=250, 
+														num_covariates=3, Lambda_sigma=0.5,
+														seeds_len=5, rand_seed=123)
