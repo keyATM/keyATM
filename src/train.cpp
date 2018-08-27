@@ -11,6 +11,8 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
+# define PI_V   3.14159265358979323846  /* pi */
+
 
 double logsumexp(double &x, double &y, bool flg){
   if (flg) return y; // init mode
@@ -278,7 +280,7 @@ double slice_uniform(double lower, double upper){
 
 // This used to differentiate between input_alpha and alpha
 // for reasons I could not understand.  TODO: check this is still correct?
-double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
+double alpha_loglik(VectorXd& alpha, MatrixXd& n_dk,
                     int num_topics, int k_seeded, int num_doc,
                     double eta_1, double eta_2, double eta_1_regular, double eta_2_regular){
   double loglik = 0.0;
@@ -355,6 +357,7 @@ void slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
       } else {
 				Rcerr << "Something goes wrong in slice_sample_alpha()" << std::endl;
         alpha(k) = keep_current_param(k);
+				break;
       }
     }
   }
@@ -505,6 +508,128 @@ List topicdict_train(List model, int iter = 0, int output_per = 10,
 }
 
 
+// Sample lambda
+double likelihood_lambda(MatrixXd &Lambda, MatrixXd &C, MatrixXd &n_dk,
+		double &mu, double &sigma,
+		int &num_doc, int &num_topics, int& num_cov
+		)
+{
+	double loglik = 0.0;
+	MatrixXd Alpha = (C * Lambda.transpose()).array().exp();
+	VectorXd alpha = VectorXd::Zero(num_topics);
+
+	for(int d=0; d<num_doc; d++){
+		alpha = Alpha.row(d).transpose(); // Doc alpha, column vector
+
+		loglik += lgamma(alpha.sum()); 
+				// the first term numerator in the first square bracket
+		loglik -= lgamma( ( n_dk.row(d).transpose() + alpha ).sum() ); 
+				// the second term denoinator in the first square bracket
+
+		for(int k=0; k<num_topics; k++){
+			loglik -= lgamma(alpha(k));
+				// the first term denominator in the first square bracket
+			loglik += lgamma( n_dk(d, k) + alpha(k) );
+				// the second term numerator in the firist square bracket
+		}
+	}
+
+	// Prior
+	double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
+	for(int k=0; k<num_topics; k++){
+		for(int t=0; t<num_cov; t++){
+			loglik += prior_fixedterm;
+			loglik -= ( std::pow( Lambda(k,t) - mu , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
+		}
+	}
+
+	std::cout << loglik << std::endl;
+
+
+	return loglik;
+
+}
+
+void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
+									 MatrixXd& n_dk,
+                   int& num_topics, int& num_cov,
+									 int& k_seeded, int& num_doc,
+                   double mu=0.0, double sigma=0.5,
+                   double min_v = 1e-9, double max_v = 1000.0,
+                   int max_shrink_time = 10)
+{
+	// Slice sampling for Lambda
+
+	double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
+  std::vector<int> topic_ids = shuffled_indexes(num_topics);
+	std::vector<int> cov_ids = shuffled_indexes(num_cov);
+
+	double store_loglik = likelihood_lambda(Lambda, C, n_dk,
+			mu, sigma, num_doc, num_topics, num_cov);
+	double newlambdallk = 0.0;
+
+	for(int kk=0; kk<num_topics; kk++){
+		int k = topic_ids[kk];
+
+		for(int tt=0; tt<num_cov; tt++){
+			int t = cov_ids[tt];
+
+			start = min_v / (1.0 + min_v); // shrinkp
+			end = max_v / (1.0 + max_v);
+
+			previous_p = Lambda(k,t) / (1.0 + Lambda(k,t)); // shrinkp
+			slice_ = store_loglik - 2.0 * log(1.0 - previous_p) 
+							+ log(unif_rand()); // <-- using R random uniform
+
+			current_lambda = Lambda(k,t);
+
+			for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
+				new_p = slice_uniform(start, end); // <-- using R function above
+				Lambda(k,t) = new_p / (1.0 - new_p); // expandp	
+
+				newlambdallk = likelihood_lambda(Lambda, C, n_dk,
+						mu, sigma, num_doc, num_topics, num_cov);
+
+				newlikelihood = newlambdallk - 2.0 * log(1.0 - new_p);
+
+				if (slice_ < newlikelihood){
+					std::cout << shrink_time << " / " << current_lambda << " / " << Lambda(k,t) << std::endl;
+					store_loglik = newlambdallk;
+					break;
+				} else if (previous_p < new_p){
+					end = new_p;
+				} else if (new_p < previous_p){
+					start = new_p;
+				} else {
+					Rcerr << "Something goes wrong in sample_lambda_slice()" << std::endl;
+					std::cout << current_lambda << "/" << Lambda(k,t) << std::endl;
+					Lambda(k,t) = current_lambda;
+					break;
+				}
+
+			} // for loop for shrink time
+
+		} // for loop for num_cov
+	} // for loop for num_topics
+
+}
+
+void sample_lambda(MatrixXd& Lambda, MatrixXd& C,
+									 MatrixXd& n_dk,
+                   int& num_topics, int& num_cov,
+									 int& k_seeded, int& num_doc,
+                   double mu=0.0, double sigma=0.5,
+                   double min_v = 1e-9, double max_v = 100.0,
+                   int max_shrink_time = 1000)
+{
+
+	sample_lambda_slice(Lambda, C, n_dk, num_topics, num_cov,
+				k_seeded, num_doc);
+
+	
+}
+
+
 //' Run the Collapsed Gibbs sampler for the covariate model
 //'
 //' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
@@ -534,6 +659,7 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
   // Alpha
   int num_topics = k_seeded + k_free;
 	MatrixXd Alpha = MatrixXd::Zero(num_doc, num_topics);
+	VectorXd alpha = VectorXd::Zero(num_topics); // use in iteration
 
 	// Covariate
 	NumericMatrix C_r = model["C"];
@@ -610,7 +736,7 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
       std::vector<int> token_indexes = shuffled_indexes(doc_x.size()); //shuffle
 
 			// Prepare Alpha for the doc
-			VectorXd alpha = Alpha.row(ii).transpose(); // take out alpha
+			alpha = Alpha.row(ii).transpose(); // take out alpha
 		
 			// Iterate each word in the document
       for (int jj = 0; jj < doc_x.size(); jj++){
@@ -635,7 +761,9 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 			Z[doc_id] = doc_z;
 
     }
-  //   slice_sample_alpha(alpha, n_dk, num_topics, k_seeded, num_doc, eta_1, eta_2, eta_1_regular, eta_2_regular);
+    sample_lambda(Lambda, C, n_dk, num_topics, num_cov,
+				k_seeded, num_doc);
+
   //   model["alpha"] = alpha;
 		//
 		// // Store Lambda
@@ -660,12 +788,13 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 		//
 		// 	Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
 		// 					 " (perplexity: " << perplexity << ")" << std::endl;
-		
+		//
 		// }
 		
     checkUserInterrupt();
   }
 
+	std::cout << Lambda << std::endl;
 
 	// model["model_fit"] = model_fit;
 

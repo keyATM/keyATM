@@ -58,7 +58,7 @@
 #'         \item{dict}{a tokenized version of the dictionary}
 #'         \item{seeds}{a list of words for the seed words in dict, named by dictionary category}
 #'         \item{extra_k}{how many extra non-seeded topics are required}
-#'         \item{alpha}{a vector of topic proportion hyperparameters}
+#'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
 #'         \item{model_fit}{a list to store perplexity and log-likelihood}
 #'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
@@ -86,11 +86,15 @@ topicdict_model <- function(files, dict,
   cl <- match.call()
 
   proper_len <- length(dict) + extra_k
-  if (length(alpha) == 1){
-    message("All ", proper_len, " values for alpha starting as ", alpha)
-    alpha = rep(alpha, proper_len)
-  } else if (length(alpha) != proper_len)
-    stop("Starting alpha must be a scalar or a vector of length ", proper_len)
+
+	if(is.null(covariates)){
+		# If it doesn't use covariates, make alpha inside
+		if (length(alpha) == 1){
+			message("All ", proper_len, " values for alpha starting as ", alpha)
+			alpha = rep(alpha, proper_len)
+		} else if (length(alpha) != proper_len)
+			stop("Starting alpha must be a scalar or a vector of length ", proper_len)
+	}
 
   args <- list(remove_numbers = remove_numbers,
                remove_punct = remove_punct,
