@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{topicdict_train}
 \alias{topicdict_train}
-\title{Run the Gibbs sampler}
+\title{Run the Collapsed Gibbs sampler for the standard model}
 \usage{
 topicdict_train(model, iter = 0L, output_per = 10L, eta_1 = 1,
   eta_2 = 1, eta_1_regular = 2, eta_2_regular = 1)
@@ -15,5 +15,5 @@ topicdict_train(model, iter = 0L, output_per = 10L, eta_1 = 1,
 \item{output_per}{Show log-likelihood and perplexity per this number during the iteration}
 }
 \description{
-Run the Gibbs sampler
+Run the Collapsed Gibbs sampler for the standard model
 }

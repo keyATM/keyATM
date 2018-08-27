@@ -4,7 +4,8 @@
 \alias{top_terms}
 \title{Show the top terms for each topic}
 \usage{
-top_terms(x, n = 10, measure = c("probability", "lift"), show_seed = TRUE)
+top_terms(x, n = 10, measure = c("probability", "lift"),
+  show_seed = TRUE)
 }
 \arguments{
 \item{x}{The posterior from a fitted model (see \code{posterior})}

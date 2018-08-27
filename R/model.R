@@ -27,6 +27,7 @@
 #'
 #' @param files names of each file to read (or a quanteda corpus object)
 #' @param dict a quanteda dictionary or named list of character vectors
+#' @param covariates a data.frame or a tibble that is a covariate matrix. Columns are covariates.
 #' @param extra_k number of unseeded topics in addition to the topics seeded by
 #'                \code{dict}
 #' @param encoding File encoding (Default: whatever \code{quanteda} guesses)
@@ -49,7 +50,8 @@
 #'
 #' @return A list containing \describe{
 #'         \item{W}{a list of vectors of word indexes}
-#'         \item{Z}{a list of vectors of topic indicators isomorphic to W},
+#'         \item{Z}{a list of vectors of topic indicators isomorphic to W}
+#'         \item{C}{a covariate matrix is there is an input}
 #'         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
 #'         \item{vocab}{a vector of vocabulary items}
 #'         \item{files}{a vector of document filenames}
@@ -63,12 +65,15 @@
 #'         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
 #'         \item{beta}{prior parameter for the non-seeded word generation probabilities}
 #'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
+#'         \item{use_cov}{boolean, whether or not use the covariate}
 #'         \item{call}{details of the function call}
 #'         }.
 #' @importFrom quanteda corpus is.corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
 #' @importFrom hashmap hashmap
 #' @export
-topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
+topicdict_model <- function(files, dict, 
+														covariates=NULL,
+														extra_k = 1, encoding = "UTF-8",
                             lowercase = TRUE,
                             remove_numbers = TRUE, remove_punct = TRUE,
                             remove_symbols = TRUE, remove_separators = TRUE,
@@ -169,11 +174,25 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
   seeds <- lapply(dtoks, function(x){ wd_map$find(x) })
   names(seeds) <- names(dict)
 
+	# Covariate
+	if(is.null(covariates)){
+		C <- matrix()
+		use_cov <- FALSE 
+	}else{
+		C <- as.matrix(covariates)	
+		use_cov <- TRUE 
+		if(sum(is.na(C)) != 0){
+			stop("Covariate data should not contain missing values.")	
+		}
+	}
+
+
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names,
              files = doc_names, dict = dtoks, seeds = seeds, extra_k = extra_k,
              alpha = alpha, gamma_1 = gamma_1, gamma_2 = gamma_2,
-             beta = beta, beta_s = beta_s, call = cl,
+             beta = beta, beta_s = beta_s,
 						 alpha_iter = list(), model_fit = list(),
+						 C=C, use_cov=use_cov,
 						 call = cl)
   class(ll) <- c("topicdict", class(ll))
   ll

@@ -4,9 +4,10 @@
 \alias{topicdict_model}
 \title{Initialize a topicdict model}
 \usage{
-topicdict_model(files, dict, extra_k = 1, encoding = "UTF-8",
-  lowercase = TRUE, remove_numbers = TRUE, remove_punct = TRUE,
-  remove_symbols = TRUE, remove_separators = TRUE, remove_twitter = FALSE,
+topicdict_model(files, dict, covariates = NULL, extra_k = 1,
+  encoding = "UTF-8", lowercase = TRUE, remove_numbers = TRUE,
+  remove_punct = TRUE, remove_symbols = TRUE,
+  remove_separators = TRUE, remove_twitter = FALSE,
   remove_hyphens = FALSE, remove_url = TRUE, stem_language = NULL,
   stopwords = NULL, alpha = 50/(length(dict) + extra_k), beta = 0.01,
   beta_s = 0.1, gamma_1 = 1, gamma_2 = 1)
@@ -15,6 +16,8 @@ topicdict_model(files, dict, extra_k = 1, encoding = "UTF-8",
 \item{files}{names of each file to read (or a quanteda corpus object)}
 
 \item{dict}{a quanteda dictionary or named list of character vectors}
+
+\item{covariates}{a data.frame or a tibble that is a covariate matrix. Columns are covariates.}
 
 \item{extra_k}{number of unseeded topics in addition to the topics seeded by
 \code{dict}}
@@ -55,7 +58,8 @@ e.g. \code{quanteda::stopwords("english")}}
 \value{
 A list containing \describe{
         \item{W}{a list of vectors of word indexes}
-        \item{Z}{a list of vectors of topic indicators isomorphic to W},
+        \item{Z}{a list of vectors of topic indicators isomorphic to W}
+        \item{C}{a covariate matrix is there is an input}
         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
         \item{vocab}{a vector of vocabulary items}
         \item{files}{a vector of document filenames}
@@ -69,6 +73,7 @@ A list containing \describe{
         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
         \item{beta}{prior parameter for the non-seeded word generation probabilities}
         \item{beta_s}{prior parameter for the seeded word generation probabilities}
+        \item{use_cov}{boolean, whether or not use the covariate}
         \item{call}{details of the function call}
         }.
 }

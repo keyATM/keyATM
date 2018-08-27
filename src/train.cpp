@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 #include <RcppEigen.h>
 #include <chrono>
 #include <iostream>
@@ -360,7 +361,7 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
   return alpha;
 }
 
-//' Run the Gibbs sampler
+//' Run the Collapsed Gibbs sampler for the standard model
 //'
 //' @param model A model, from \code{init} or a previous invocation of \code{train}
 //' @param iter Required number of iterations
@@ -500,6 +501,174 @@ List topicdict_train(List model, int iter = 0, int output_per = 10,
 
 
 	model["model_fit"] = model_fit;
+
+  return model;
+}
+
+
+//' Run the Collapsed Gibbs sampler for the covariate model
+//'
+//' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+//' @param iter Required number of iterations
+//' @param output_per Show log-likelihood and perplexity per this number during the iteration
+//'
+//' @export
+// [[Rcpp::export]]
+List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
+  double eta_1 = 1, double eta_2 = 1, double eta_1_regular = 2, double eta_2_regular = 1){
+	auto start = std::chrono::high_resolution_clock::now();
+
+	// Data
+  List W = model["W"], Z = model["Z"], X = model["X"];
+  StringVector files = model["files"], vocab = model["vocab"];
+  NumericVector nv_alpha = model["alpha"];
+  double gamma_1 = model["gamma_1"], gamma_2 = model["gamma_2"];
+  double beta = model["beta"], beta_s = model["beta_s"];
+  int k_free = model["extra_k"];
+  List seeds = model["seeds"];
+  int k_seeded = seeds.size();
+	List model_fit = model["model_fit"];
+
+  // document-related constants
+  int num_vocab = vocab.size(), num_doc = files.size();
+
+  // Alpha
+  int num_topics = k_seeded + k_free;
+	MatrixXd Alpha = MatrixXd::Zero(num_doc, num_topics);
+
+	// Covariate
+	NumericMatrix C_r = model["C"];
+	MatrixXd C = Rcpp::as<Eigen::MatrixXd>(C_r);
+
+	// Lambda
+	int num_cov = C.rows();
+	MatrixXd Lambda = MatrixXd::Zero(num_topics, num_cov);
+	for(int k=0; k<num_topics; k++){
+		// Initialize with R random
+		for(int i=0; i<num_cov; i++){
+			Lambda.coeffRef(k, i) = R::rnorm(0.0, 1.0);
+		}
+	}
+
+	// Vector that stores seed words (words in dictionary)
+  std::vector< std::unordered_set<int> > keywords(num_topics);
+  std::vector<int> seed_num(num_topics);
+  for (int ii = 0; ii < k_seeded; ii++){
+    IntegerVector wd_ids = seeds[ii];
+    seed_num[ii] = wd_ids.size();
+    std::unordered_set<int> keywords_set;
+    for (int jj = 0; jj < wd_ids.size(); jj++)
+			keywords_set.insert(wd_ids(jj));
+
+    keywords[ii] = keywords_set;
+  }
+	for(int i=k_seeded; i<num_topics; i++){
+		std::unordered_set<int> keywords_set{ -1 };
+		seed_num[i] = 0;
+		keywords[i] = keywords_set;
+	}
+
+
+  // storage for sufficient statistics and their margins
+  MatrixXi n_x0_kv = MatrixXi::Zero(num_topics, num_vocab);
+  MatrixXi n_x1_kv = MatrixXi::Zero(num_topics, num_vocab);
+  MatrixXd n_dk = MatrixXd::Zero(num_doc, num_topics);
+  MatrixXd theta_dk = MatrixXd::Zero(num_doc, num_topics);
+  VectorXi n_x0_k = VectorXi::Zero(num_topics);
+  VectorXi n_x1_k = VectorXi::Zero(num_topics);
+
+
+  for(int doc_id = 0; doc_id < num_doc; doc_id++){
+    IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
+    for(int w_position = 0; w_position < doc_x.size(); w_position++){
+      int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
+      if (x == 0){
+        n_x0_kv(z, w) += 1;
+        n_x0_k(z) += 1;
+      } else {
+        n_x1_kv(z, w) += 1;
+        n_x1_k(z) += 1;
+      }
+      n_dk(doc_id, z) += 1.0;
+    }
+  }
+  int total_words = (int)n_dk.sum();
+
+	double prepare_data = std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - start).count();
+
+
+  // Randomized update sequence
+  for (int it = 0; it < iter; it++){
+    std::vector<int> doc_indexes = shuffled_indexes(num_doc); // shuffle
+
+		// Create Alpha for this iteration
+		Alpha = (C * Lambda.transpose()).array().exp();
+		
+    for (int ii = 0; ii < num_doc; ii++){
+      int doc_id = doc_indexes[ii];
+      IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
+
+      std::vector<int> token_indexes = shuffled_indexes(doc_x.size()); //shuffle
+
+			// Prepare Alpha for the doc
+			VectorXd alpha = Alpha.row(ii).transpose(); // take out alpha
+		
+			// Iterate each word in the document
+      for (int jj = 0; jj < doc_x.size(); jj++){
+        int w_position = token_indexes[jj];
+        int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
+		
+        doc_z[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
+                                     alpha, seed_num, x, z, w, doc_id,
+                                     num_vocab, num_topics, k_seeded, gamma_1,
+                                     gamma_2, beta, beta_s, keywords);
+		
+				z = doc_z[w_position]; // use updated z
+		
+        doc_x[w_position] = sample_x(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
+                                    alpha, seed_num, x, z, w, doc_id,
+                                    num_vocab, num_topics, k_seeded, gamma_1,
+                                    gamma_2, beta, beta_s, keywords);
+		
+      }
+		
+			X[doc_id] = doc_x; // is doc_x not a pointer/ref to X[doc_id]?
+			Z[doc_id] = doc_z;
+
+    }
+  //   slice_sample_alpha(alpha, n_dk, num_topics, k_seeded, num_doc, eta_1, eta_2, eta_1_regular, eta_2_regular);
+  //   model["alpha"] = alpha;
+		//
+		// // Store Lambda
+		// NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
+		// List alpha_iter = model["alpha_iter"];
+		// alpha_iter.push_back(alpha_rvec);
+		// model["alpha_iter"] = alpha_iter;
+		//
+		// // Log-likelihood and Perplexity
+		// int r_index = it + 1;
+		// if(r_index % output_per == 0 || r_index == 1 || r_index == iter ){
+		// 	double loglik = loglikelihood1(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk, alpha,
+		// 																 beta, beta_s, gamma_1, gamma_2,
+		// 																 num_topics, k_seeded, num_vocab, num_doc, keywords);
+		// 	double perplexity = exp(-loglik / (double)total_words);
+		//
+		// 	NumericVector model_fit_vec;
+		// 	model_fit_vec.push_back(r_index);
+		// 	model_fit_vec.push_back(loglik);
+		// 	model_fit_vec.push_back(perplexity);
+		// 	model_fit.push_back(model_fit_vec);
+		//
+		// 	Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
+		// 					 " (perplexity: " << perplexity << ")" << std::endl;
+		
+		// }
+		
+    checkUserInterrupt();
+  }
+
+
+	// model["model_fit"] = model_fit;
 
   return model;
 }
