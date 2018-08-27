@@ -316,7 +316,7 @@ double alpha_loglik(VectorXd &alpha, MatrixXd& n_dk,
 }
 
 // updates alpha in place, currently just hands back alpha (by reference)
-VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
+void slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
                              int num_topics, int k_seeded, int num_doc,
                              double eta_1, double eta_2, double eta_1_regular,
                              double eta_2_regular,
@@ -358,7 +358,6 @@ VectorXd& slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
       }
     }
   }
-  return alpha;
 }
 
 //' Run the Collapsed Gibbs sampler for the standard model
