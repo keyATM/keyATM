@@ -211,13 +211,14 @@ Save_wzx <- function(data, i, saveDir){
 }
 
 ## save topic and word assignments
-Save_info <- function(topic_voc, doc_voc, doc_topic, phi, p, C,
+Save_info <- function(topic_voc, doc_voc, doc_topic, phi, p, C, Lambda,
 											saveDir){
 	## save topic-word assignment
 	write.csv(topic_voc, paste0(saveDir,"topic_word.csv"), na="0", row.names=FALSE)
 	write.csv(doc_voc, paste0(saveDir,"doc_voc.csv"), na="0", row.names=FALSE)
 	write.csv(doc_topic, paste0(saveDir,"doc_topic.csv"), na="0", row.names=FALSE)
 	write.csv(C, paste0(saveDir,"doc_covariates.csv"), row.names=FALSE)
+	write.csv(Lambda, paste0(saveDir,"doc_Lambda.csv"), row.names=FALSE)
 	Save_phiS(phi, saveDir)
 	write(p, paste0(saveDir,"p.txt"))
 
@@ -536,7 +537,7 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000,
 	
 	## save topic-word assignment etc
 	Save_info(TopicVoc, DocVoc, DocTopic, phiS, p,
-						C,
+						C, Lambda,
 						saveDir)
 
 	## Save parameters
@@ -565,10 +566,10 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000,
 
 }
 
-# create_sim_data(saveDir="/Users/Shusei/Desktop/temp/SimulationData/SeededCov",
-# 														D=200, K=8, TotalV=500, 
-# 														dim=3, # dimension of the covariates
-# 														p=rep(0.3, 8),
-# 														beta_r=0.1, beta_s=0.1,  lambda=250, 
-# 														num_covariates=3, Lambda_sigma=0.5,
-# 														seeds_len=5, rand_seed=123)
+create_sim_data(saveDir="/Users/Shusei/Desktop/temp/SimulationData/SeededCov",
+														D=250, K=5, TotalV=350, 
+														dim=3, # dimension of the covariates
+														p=rep(0.5, 5),
+														beta_r=0.1, beta_s=0.1,  lambda=350, 
+														num_covariates=3, Lambda_sigma=0.5,
+														seeds_len=5, rand_seed=123)

@@ -195,7 +195,8 @@ topicdict_model <- function(files, dict,
              files = doc_names, dict = dtoks, seeds = seeds, extra_k = extra_k,
              alpha = alpha, gamma_1 = gamma_1, gamma_2 = gamma_2,
              beta = beta, beta_s = beta_s,
-						 alpha_iter = list(), model_fit = list(),
+						 alpha_iter = list(), Lambda_iter = list(),
+						 model_fit = list(),
 						 C=C, use_cov=use_cov,
 						 call = cl)
   class(ll) <- c("topicdict", class(ll))

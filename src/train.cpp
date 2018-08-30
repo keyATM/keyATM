@@ -543,7 +543,8 @@ double likelihood_lambda(MatrixXd &Lambda, MatrixXd &C, MatrixXd &n_dk,
 		}
 	}
 
-	std::cout << loglik << std::endl;
+	// std::cout << Lambda.row(0) << std::endl; // debug
+	std::cout << alpha << std::endl; // debug
 
 
 	return loglik;
@@ -554,8 +555,8 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 									 MatrixXd& n_dk,
                    int& num_topics, int& num_cov,
 									 int& k_seeded, int& num_doc,
-                   double mu=0.0, double sigma=0.5,
-                   double min_v = 1e-9, double max_v = 1000.0,
+                   double mu=0.0, double sigma=1.0,
+                   // double min_v = -1000, double max_v = 1000.0, // we shouldn't set a boun
                    int max_shrink_time = 10)
 {
 	// Slice sampling for Lambda
@@ -563,6 +564,7 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 	double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
   std::vector<int> topic_ids = shuffled_indexes(num_topics);
 	std::vector<int> cov_ids = shuffled_indexes(num_cov);
+	static double A = 5.0;
 
 	double store_loglik = likelihood_lambda(Lambda, C, n_dk,
 			mu, sigma, num_doc, num_topics, num_cov);
@@ -574,26 +576,26 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 		for(int tt=0; tt<num_cov; tt++){
 			int t = cov_ids[tt];
 
-			start = min_v / (1.0 + min_v); // shrinkp
-			end = max_v / (1.0 + max_v);
+			start = 0.0; // shrink
+			end = 1.0; // shrink
 
-			previous_p = Lambda(k,t) / (1.0 + Lambda(k,t)); // shrinkp
-			slice_ = store_loglik - 2.0 * log(1.0 - previous_p) 
+			previous_p = 1.0 / (1.0 + std::exp(- Lambda(k,t) / A )); // shrink
+			slice_ = store_loglik - std::log(A * previous_p * (1.0 - previous_p)) 
 							+ log(unif_rand()); // <-- using R random uniform
 
 			current_lambda = Lambda(k,t);
 
 			for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
 				new_p = slice_uniform(start, end); // <-- using R function above
-				Lambda(k,t) = new_p / (1.0 - new_p); // expandp	
+				Lambda(k,t) = - A * std::log (1.0 / new_p - 1.0); // expand
 
 				newlambdallk = likelihood_lambda(Lambda, C, n_dk,
 						mu, sigma, num_doc, num_topics, num_cov);
 
-				newlikelihood = newlambdallk - 2.0 * log(1.0 - new_p);
+				newlikelihood = newlambdallk - std::log(A * new_p * (1.0 - new_p));
 
 				if (slice_ < newlikelihood){
-					std::cout << shrink_time << " / " << current_lambda << " / " << Lambda(k,t) << std::endl;
+					// std::cout << shrink_time << " / " << current_lambda << " / " << Lambda(k,t) << std::endl;
 					store_loglik = newlambdallk;
 					break;
 				} else if (previous_p < new_p){
@@ -602,7 +604,7 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 					start = new_p;
 				} else {
 					Rcerr << "Something goes wrong in sample_lambda_slice()" << std::endl;
-					std::cout << current_lambda << "/" << Lambda(k,t) << std::endl;
+					// std::cout << current_lambda << "/" << Lambda(k,t) << std::endl;
 					Lambda(k,t) = current_lambda;
 					break;
 				}
@@ -666,12 +668,12 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 	MatrixXd C = Rcpp::as<Eigen::MatrixXd>(C_r);
 
 	// Lambda
-	int num_cov = C.rows();
+	int num_cov = C.cols();
 	MatrixXd Lambda = MatrixXd::Zero(num_topics, num_cov);
 	for(int k=0; k<num_topics; k++){
 		// Initialize with R random
 		for(int i=0; i<num_cov; i++){
-			Lambda.coeffRef(k, i) = R::rnorm(0.0, 1.0);
+			Lambda.coeffRef(k, i) = R::rnorm(0.0, 0.1);
 		}
 	}
 
@@ -764,14 +766,19 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
     sample_lambda(Lambda, C, n_dk, num_topics, num_cov,
 				k_seeded, num_doc);
 
+		// double mu = 0.0 ; double sigma = 1.0;
+		// double llk = likelihood_lambda(Lambda, C, n_dk,
+		// 				mu, sigma, num_doc, num_topics, num_cov);
+		// std::cout << llk << std::endl;
+
   //   model["alpha"] = alpha;
-		//
-		// // Store Lambda
-		// NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
-		// List alpha_iter = model["alpha_iter"];
-		// alpha_iter.push_back(alpha_rvec);
-		// model["alpha_iter"] = alpha_iter;
-		//
+		
+		// Store Lambda
+		Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
+		List Lambda_iter = model["Lambda_iter"];
+		Lambda_iter.push_back(Lambda_R);
+		model["Lambda_iter"] = Lambda_iter;
+
 		// // Log-likelihood and Perplexity
 		// int r_index = it + 1;
 		// if(r_index % output_per == 0 || r_index == 1 || r_index == iter ){
@@ -795,6 +802,7 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
   }
 
 	std::cout << Lambda << std::endl;
+
 
 	// model["model_fit"] = model_fit;
 
