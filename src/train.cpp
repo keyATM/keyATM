@@ -336,7 +336,7 @@ void slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
     start = min_v / (1.0 + min_v); // shrinkp
     end = 1.0;
     // end = shrinkp(max_v);
-    previous_p = alpha(k) / (1.0 + alpha(k)); // shrinkp
+		previous_p = alpha(k) / (1.0 + alpha(k)); // shrinkp
     slice_ = store_loglik - 2.0 * log(1.0 - previous_p) 
 						+ log(unif_rand()); // <-- using R random uniform
 
@@ -508,7 +508,7 @@ List topicdict_train(List model, int iter = 0, int output_per = 10,
 }
 
 
-// Sample lambda
+// Sample Lambda
 double likelihood_lambda(MatrixXd &Lambda, MatrixXd &C, MatrixXd &n_dk,
 		double &mu, double &sigma,
 		int &num_doc, int &num_topics, int& num_cov
@@ -517,6 +517,7 @@ double likelihood_lambda(MatrixXd &Lambda, MatrixXd &C, MatrixXd &n_dk,
 	double loglik = 0.0;
 	MatrixXd Alpha = (C * Lambda.transpose()).array().exp();
 	VectorXd alpha = VectorXd::Zero(num_topics);
+
 
 	for(int d=0; d<num_doc; d++){
 		alpha = Alpha.row(d).transpose(); // Doc alpha, column vector
@@ -544,7 +545,7 @@ double likelihood_lambda(MatrixXd &Lambda, MatrixXd &C, MatrixXd &n_dk,
 	}
 
 	// std::cout << Lambda.row(0) << std::endl; // debug
-	std::cout << alpha << std::endl; // debug
+	// std::cout << alpha << std::endl; // debug
 
 
 	return loglik;
@@ -556,7 +557,6 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
                    int& num_topics, int& num_cov,
 									 int& k_seeded, int& num_doc,
                    double mu=0.0, double sigma=1.0,
-                   // double min_v = -1000, double max_v = 1000.0, // we shouldn't set a boun
                    int max_shrink_time = 10)
 {
 	// Slice sampling for Lambda
@@ -595,7 +595,6 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 				newlikelihood = newlambdallk - std::log(A * new_p * (1.0 - new_p));
 
 				if (slice_ < newlikelihood){
-					// std::cout << shrink_time << " / " << current_lambda << " / " << Lambda(k,t) << std::endl;
 					store_loglik = newlambdallk;
 					break;
 				} else if (previous_p < new_p){
@@ -604,7 +603,6 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 					start = new_p;
 				} else {
 					Rcerr << "Something goes wrong in sample_lambda_slice()" << std::endl;
-					// std::cout << current_lambda << "/" << Lambda(k,t) << std::endl;
 					Lambda(k,t) = current_lambda;
 					break;
 				}
