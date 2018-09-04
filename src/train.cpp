@@ -2,6 +2,7 @@
 #include <RcppEigen.h>
 #include <chrono>
 #include <iostream>
+#include <algorithm>
 
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
@@ -419,7 +420,6 @@ List topicdict_train(List model, int iter = 0, int output_per = 10,
   VectorXi n_x0_k = VectorXi::Zero(num_topics);
   VectorXi n_x1_k = VectorXi::Zero(num_topics);
 
-
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
     IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     for(int w_position = 0; w_position < doc_x.size(); w_position++){
@@ -552,15 +552,15 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 									 MatrixXd& n_dk,
                    int& num_topics, int& num_cov,
 									 int& k_seeded, int& num_doc,
-                   double mu=0.0, double sigma=1.0,
-                   int max_shrink_time = 10)
+                   double mu=0.0, double sigma=10.0,
+                   int max_shrink_time = 1000)
 {
 	// Slice sampling for Lambda
 
 	double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
   std::vector<int> topic_ids = shuffled_indexes(num_topics);
 	std::vector<int> cov_ids = shuffled_indexes(num_cov);
-	static double A = 1.0; // This choice is important
+	static double A = 1.5; // This choice is important
 
 	double store_loglik = likelihood_lambda(Lambda, C, n_dk,
 			mu, sigma, num_doc, num_topics, num_cov);
@@ -611,18 +611,85 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 
 }
 
+
+void proposal_lambda(MatrixXd& Lambda,
+		int& k, int& num_cov, double& mh_sigma){
+
+	for(int i=0; i<num_cov; i++){
+		Lambda.coeffRef(k, i) += R::rnorm(0.0, mh_sigma);
+	}
+
+}
+
+
+void sample_lambda_mh(MatrixXd& Lambda, MatrixXd& C,
+									 MatrixXd& n_dk,
+                   int& num_topics, int& num_cov,
+									 int& k_seeded, int& num_doc,
+									 std::vector<int>& mh_info,
+									 double mu=0.0, double sigma=1.0,
+									 double mh_sigma=0.07)
+{
+	
+	std::vector<int> topic_ids = shuffled_indexes(num_topics);
+	VectorXd Lambda_current;
+	double llk_current;
+	double llk_proposal;
+	double diffllk;
+	double r, u;
+
+	for(int k : topic_ids){
+		mh_info[1] += 1; // how many times we run mh
+
+		Lambda_current = Lambda.row(k).transpose();
+		
+		// Current llk
+		llk_current = likelihood_lambda(Lambda, C, n_dk, mu, sigma,
+				num_doc, num_topics, num_cov);
+		
+		// Proposal
+		proposal_lambda(Lambda, k, num_cov, mh_sigma);
+		llk_proposal = likelihood_lambda(Lambda, C, n_dk, mu, sigma,
+				num_doc, num_topics, num_cov);
+		
+		diffllk = llk_proposal - llk_current;
+		r = std::min(0.0, diffllk);
+		u = log(unif_rand());
+		
+		if (u < r){
+			mh_info[0] += 1; // number of times accepted	
+		}else{
+			// Put back original values
+			for(int i=0; i<num_cov; i++){
+				Lambda.coeffRef(k, i) = Lambda_current(i);
+			}
+		}
+	
+	}
+
+}
+
+
 void sample_lambda(MatrixXd& Lambda, MatrixXd& C,
 									 MatrixXd& n_dk,
                    int& num_topics, int& num_cov,
 									 int& k_seeded, int& num_doc,
+									 std::vector<int>& mh_info,
                    double mu=0.0, double sigma=0.5,
                    double min_v = 1e-9, double max_v = 100.0,
                    int max_shrink_time = 1000)
 {
 
-	sample_lambda_slice(Lambda, C, n_dk, num_topics, num_cov,
-				k_seeded, num_doc);
+	double u = unif_rand(); // select sampling methods randomly
 
+	if(u < 0.5){
+		sample_lambda_mh(Lambda, C, n_dk,
+                   num_topics, num_cov,
+									 k_seeded, num_doc, mh_info);
+	}else{
+		sample_lambda_slice(Lambda, C, n_dk, num_topics, num_cov,
+					k_seeded, num_doc);
+	}
 	
 }
 
@@ -681,7 +748,7 @@ double loglikelihood_cov(MatrixXi& n_x0_kv,
 // [[Rcpp::export]]
 List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
   double eta_1 = 1, double eta_2 = 1, double eta_1_regular = 2, double eta_2_regular = 1){
-	auto start = std::chrono::high_resolution_clock::now();
+	auto start = std::chrono::high_resolution_clock::now(); // track time
 
 	// Data
   List W = model["W"], Z = model["Z"], X = model["X"];
@@ -744,6 +811,9 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
   VectorXi n_x1_k = VectorXi::Zero(num_topics);
 
 
+	// Sampling Information
+	std::vector<int> mh_info{0,0};
+
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
     IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     for(int w_position = 0; w_position < doc_x.size(); w_position++){
@@ -760,7 +830,7 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
   }
   int total_words = (int)n_dk.sum();
 
-	double prepare_data = std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - start).count();
+	double prepare_data = std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - start).count();  // track time
 
 
   // Randomized update sequence
@@ -803,7 +873,7 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 
     }
 		sample_lambda(Lambda, C, n_dk, num_topics, num_cov,
-				k_seeded, num_doc);
+				k_seeded, num_doc, mh_info);
 
 		
 		// Store Lambda
@@ -837,6 +907,12 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 
 
 	model["model_fit"] = model_fit;
+
+	// Add Sampling Info
+	Rcpp::IntegerVector sampling_info = Rcpp::wrap(mh_info);
+	List sampling_info_list = model["sampling_info"];
+	sampling_info_list.push_back(sampling_info);
+	model["sampling_info"] = sampling_info_list;
 
   return model;
 }

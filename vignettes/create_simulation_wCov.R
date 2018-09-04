@@ -572,9 +572,9 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000,
 }
 
 create_sim_data(saveDir="/Users/Shusei/Desktop/temp/SimulationData/SeededCov",
-														D=700, K=3, TotalV=250, 
+														D=1000, K=4, TotalV=500, 
 														dim=2, 
-														p=rep(0.5, 3),
+														p=rep(0.5, 4),
 														beta_r=0.1, beta_s=0.1,  lambda=350, 
-														num_covariates=3, Lambda_sigma=0.5,
+														num_covariates=3, Lambda_sigma=1.0,
 														seeds_len=5, rand_seed=123)
