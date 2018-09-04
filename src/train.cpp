@@ -544,6 +544,7 @@ double likelihood_lambda(MatrixXd &Lambda, MatrixXd &C, MatrixXd &n_dk,
 		}
 	}
 
+
 	// std::cout << Lambda.row(0) << std::endl; // debug
 	// std::cout << alpha << std::endl; // debug
 
@@ -564,7 +565,7 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 	double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
   std::vector<int> topic_ids = shuffled_indexes(num_topics);
 	std::vector<int> cov_ids = shuffled_indexes(num_cov);
-	static double A = 5.0;
+	static double A = 1.0; // This choice is important
 
 	double store_loglik = likelihood_lambda(Lambda, C, n_dk,
 			mu, sigma, num_doc, num_topics, num_cov);
@@ -578,6 +579,7 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 
 			start = 0.0; // shrink
 			end = 1.0; // shrink
+
 
 			previous_p = 1.0 / (1.0 + std::exp(- Lambda(k,t) / A )); // shrink
 			slice_ = store_loglik - std::log(A * previous_p * (1.0 - previous_p)) 
@@ -736,7 +738,7 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
       std::vector<int> token_indexes = shuffled_indexes(doc_x.size()); //shuffle
 
 			// Prepare Alpha for the doc
-			alpha = Alpha.row(ii).transpose(); // take out alpha
+			alpha = Alpha.row(doc_id).transpose(); // take out alpha
 		
 			// Iterate each word in the document
       for (int jj = 0; jj < doc_x.size(); jj++){
@@ -761,7 +763,7 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 			Z[doc_id] = doc_z;
 
     }
-    sample_lambda(Lambda, C, n_dk, num_topics, num_cov,
+		sample_lambda(Lambda, C, n_dk, num_topics, num_cov,
 				k_seeded, num_doc);
 
 		// double mu = 0.0 ; double sigma = 1.0;

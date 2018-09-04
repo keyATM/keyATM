@@ -80,6 +80,10 @@ Gen_alpha <- function(alpha, K){
 
 Gen_theta <- function(doc_len, Alpha){
 	theta <- t(apply(Alpha, 1, rdirichlet, n=1))
+
+	# Slightly modify
+	theta <- theta + 0.00001
+	theta <- theta / rowSums(theta)
 	return(theta)
 }
 
@@ -379,7 +383,7 @@ Obs_p_all <- function(w,z,x,seeds_len,topic_num){
 
 
 create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000, 
-														dim = 3, # dimension of the covariates
+														dim = 3, 
 														beta_r=0.1, beta_s=0.1, p=NULL, 
 														gamma1=NULL, gamma2=NULL, lambda=300, 
 														num_covariates=3, Lambda_sigma=1,
@@ -445,7 +449,8 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000,
 	# seeds_len <- 5 # number of seeds words per each topic
 
 	# Prepare Covariates and alpha
-	C <- MASS::mvrnorm(n=D, mu=rep(0, num_covariates), Sigma=diag(num_covariates))
+	C <- MASS::mvrnorm(n=D, mu=rep(0, num_covariates), Sigma=diag(1, num_covariates))
+	C[, 1] <- 1  # intercept
 	Lambda <- MASS::mvrnorm(n=K, mu=rep(0, num_covariates), Sigma=diag(Lambda_sigma, num_covariates))
 	Alpha <- exp(C %*% t(Lambda))
 	
@@ -568,7 +573,7 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000,
 
 create_sim_data(saveDir="/Users/Shusei/Desktop/temp/SimulationData/SeededCov",
 														D=700, K=3, TotalV=250, 
-														dim=2, # dimension of the covariates
+														dim=2, 
 														p=rep(0.5, 3),
 														beta_r=0.1, beta_s=0.1,  lambda=350, 
 														num_covariates=3, Lambda_sigma=0.5,
