@@ -544,11 +544,6 @@ double likelihood_lambda(MatrixXd &Lambda, MatrixXd &C, MatrixXd &n_dk,
 		}
 	}
 
-
-	// std::cout << Lambda.row(0) << std::endl; // debug
-	// std::cout << alpha << std::endl; // debug
-
-
 	return loglik;
 
 }
@@ -766,12 +761,6 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 		sample_lambda(Lambda, C, n_dk, num_topics, num_cov,
 				k_seeded, num_doc);
 
-		// double mu = 0.0 ; double sigma = 1.0;
-		// double llk = likelihood_lambda(Lambda, C, n_dk,
-		// 				mu, sigma, num_doc, num_topics, num_cov);
-		// std::cout << llk << std::endl;
-
-  //   model["alpha"] = alpha;
 		
 		// Store Lambda
 		Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
@@ -800,8 +789,6 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 		
     checkUserInterrupt();
   }
-
-	std::cout << Lambda << std::endl;
 
 
 	// model["model_fit"] = model_fit;
