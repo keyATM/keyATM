@@ -42,6 +42,7 @@ Gen_seedwords <- function(K, seeds_len, V){
 	for(k in 1:K){
 		# seed_words[k, ] <- paste0(as.character(k), "T", as.character(sample(1:V, seeds_len)))
 		seed_words[k, ] <- paste0("W", as.character(sample(1:V, seeds_len)), "t", as.character(k))
+		# seed_words[k, ] <- paste0("W", as.character(sample(1:V, seeds_len)), "", as.character(k))
 	}
 	return(seed_words)	
 }
@@ -82,7 +83,7 @@ Gen_theta <- function(doc_len, Alpha){
 	theta <- t(apply(Alpha, 1, rdirichlet, n=1))
 
 	# Slightly modify
-	theta <- theta + 0.00001
+	theta <- theta + 0.0000001
 	theta <- theta / rowSums(theta)
 	return(theta)
 }
@@ -114,6 +115,7 @@ Gen_w_seeds <- function(index, phiR, phiS, z, x, seed_words){
 		# Regular words
 		word <- Gen_w(phiR, topic)
 		word <- paste0("W", as.character(word), "t", as.character(topic)) # no overlap of words between topics
+		# word <- paste0("W", as.character(word), "", as.character(topic)) # allows overlap of words between topics
 	} else {
 		# Seed words
 		seed_index <- rcat(1, phiS[topic, ])
@@ -383,7 +385,7 @@ Obs_p_all <- function(w,z,x,seeds_len,topic_num){
 
 
 create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000, 
-														dim = 3, 
+														# dim = 3, 
 														beta_r=0.1, beta_s=0.1, p=NULL, 
 														gamma1=NULL, gamma2=NULL, lambda=300, 
 														num_covariates=3, Lambda_sigma=1,
@@ -449,9 +451,10 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000,
 	# seeds_len <- 5 # number of seeds words per each topic
 
 	# Prepare Covariates and alpha
-	C <- MASS::mvrnorm(n=D, mu=rep(0, num_covariates), Sigma=diag(1, num_covariates))
-	C[, 1] <- 1  # intercept
+	C <- MASS::mvrnorm(n=D, mu=rep(0, num_covariates), Sigma=diag(0.5, num_covariates))
+	# C[, 1] <- 1  # intercept
 	Lambda <- MASS::mvrnorm(n=K, mu=rep(0, num_covariates), Sigma=diag(Lambda_sigma, num_covariates))
+	# Lambda[, 1] <- 1  # fix intercept // just a try
 	Alpha <- exp(C %*% t(Lambda))
 	
 	## random
@@ -541,8 +544,10 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000,
 	## save topic-word assignment, word assignment, and topic assignment
 	
 	## save topic-word assignment etc
+	CName <- paste0("C_", 1:D)
+	C_wName <- cbind(CName, data.frame(C))
 	Save_info(TopicVoc, DocVoc, DocTopic, phiS, p,
-						C, Lambda,
+						C_wName, Lambda,
 						saveDir)
 
 	## Save parameters
@@ -567,14 +572,16 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000,
 		seed_list[[r]] <- seed_words[r, ]
 	}
 
+	lapply(seed_list, function(x){print(paste(x, collapse=" "))})
+
 	return(seed_list)
 
 }
 
 create_sim_data(saveDir="/Users/Shusei/Desktop/temp/SimulationData/SeededCov",
-														D=1000, K=4, TotalV=500, 
-														dim=2, 
-														p=rep(0.5, 4),
-														beta_r=0.1, beta_s=0.1,  lambda=350, 
-														num_covariates=3, Lambda_sigma=1.0,
+														D=800, K=4, TotalV=1000, 
+														# dim=2, 
+														p=rep(0.3, 4),
+														beta_r=0.01, beta_s=0.01,  lambda=350, 
+														num_covariates=3, Lambda_sigma=0.8,
 														seeds_len=5, rand_seed=123)

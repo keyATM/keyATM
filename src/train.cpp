@@ -416,7 +416,6 @@ List topicdict_train(List model, int iter = 0, int output_per = 10,
   MatrixXi n_x0_kv = MatrixXi::Zero(num_topics, num_vocab);
   MatrixXi n_x1_kv = MatrixXi::Zero(num_topics, num_vocab);
   MatrixXd n_dk = MatrixXd::Zero(num_doc, num_topics);
-  MatrixXd theta_dk = MatrixXd::Zero(num_doc, num_topics);
   VectorXi n_x0_k = VectorXi::Zero(num_topics);
   VectorXi n_x1_k = VectorXi::Zero(num_topics);
 
@@ -518,13 +517,13 @@ double likelihood_lambda(MatrixXd &Lambda, MatrixXd &C, MatrixXd &n_dk,
 	MatrixXd Alpha = (C * Lambda.transpose()).array().exp();
 	VectorXd alpha = VectorXd::Zero(num_topics);
 
-
 	for(int d=0; d<num_doc; d++){
 		alpha = Alpha.row(d).transpose(); // Doc alpha, column vector
+		// alpha = ((C.row(d) * Lambda)).array().exp(); // Doc alpha, column vector
 
 		loglik += lgamma(alpha.sum()); 
 				// the first term numerator in the first square bracket
-		loglik -= lgamma( ( n_dk.row(d).transpose() + alpha ).sum() ); 
+		loglik -= lgamma( n_dk.row(d).sum() + alpha.sum() ); 
 				// the second term denoinator in the first square bracket
 
 		for(int k=0; k<num_topics; k++){
@@ -540,7 +539,7 @@ double likelihood_lambda(MatrixXd &Lambda, MatrixXd &C, MatrixXd &n_dk,
 	for(int k=0; k<num_topics; k++){
 		for(int t=0; t<num_cov; t++){
 			loglik += prior_fixedterm;
-			loglik -= ( std::pow( Lambda(k,t) - mu , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
+			loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
 		}
 	}
 
@@ -548,11 +547,21 @@ double likelihood_lambda(MatrixXd &Lambda, MatrixXd &C, MatrixXd &n_dk,
 
 }
 
+double expand(double& p, double& A){
+	double res = -(1.0/A) * log((1.0/p) - 1.0);
+	return res;
+}
+
+double shrink(double& x, double& A){
+	double res = 1.0 / (1.0 + exp(-A*x));
+	return res;
+}
+
 void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 									 MatrixXd& n_dk,
                    int& num_topics, int& num_cov,
 									 int& k_seeded, int& num_doc,
-                   double mu=0.0, double sigma=10.0,
+                   double& mu, double& sigma,
                    int max_shrink_time = 1000)
 {
 	// Slice sampling for Lambda
@@ -560,7 +569,7 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 	double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
   std::vector<int> topic_ids = shuffled_indexes(num_topics);
 	std::vector<int> cov_ids = shuffled_indexes(num_cov);
-	static double A = 1.5; // This choice is important
+	static double A = 1.5;
 
 	double store_loglik = likelihood_lambda(Lambda, C, n_dk,
 			mu, sigma, num_doc, num_topics, num_cov);
@@ -575,16 +584,15 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 			start = 0.0; // shrink
 			end = 1.0; // shrink
 
-
-			previous_p = 1.0 / (1.0 + std::exp(- Lambda(k,t) / A )); // shrink
+			current_lambda = Lambda(k,t);
+			previous_p = shrink(current_lambda, A);
 			slice_ = store_loglik - std::log(A * previous_p * (1.0 - previous_p)) 
 							+ log(unif_rand()); // <-- using R random uniform
 
-			current_lambda = Lambda(k,t);
 
 			for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
 				new_p = slice_uniform(start, end); // <-- using R function above
-				Lambda(k,t) = - A * std::log (1.0 / new_p - 1.0); // expand
+				Lambda(k,t) = expand(new_p, A); // expand
 
 				newlambdallk = likelihood_lambda(Lambda, C, n_dk,
 						mu, sigma, num_doc, num_topics, num_cov);
@@ -627,7 +635,7 @@ void sample_lambda_mh(MatrixXd& Lambda, MatrixXd& C,
                    int& num_topics, int& num_cov,
 									 int& k_seeded, int& num_doc,
 									 std::vector<int>& mh_info,
-									 double mu=0.0, double sigma=1.0,
+									 double& mu, double& sigma,
 									 double mh_sigma=0.07)
 {
 	
@@ -675,7 +683,7 @@ void sample_lambda(MatrixXd& Lambda, MatrixXd& C,
                    int& num_topics, int& num_cov,
 									 int& k_seeded, int& num_doc,
 									 std::vector<int>& mh_info,
-                   double mu=0.0, double sigma=0.5,
+                   double mu=0.0, double sigma=100,  // for prior
                    double min_v = 1e-9, double max_v = 100.0,
                    int max_shrink_time = 1000)
 {
@@ -685,10 +693,10 @@ void sample_lambda(MatrixXd& Lambda, MatrixXd& C,
 	if(u < 0.5){
 		sample_lambda_mh(Lambda, C, n_dk,
                    num_topics, num_cov,
-									 k_seeded, num_doc, mh_info);
+									 k_seeded, num_doc, mh_info, mu, sigma);
 	}else{
 		sample_lambda_slice(Lambda, C, n_dk, num_topics, num_cov,
-					k_seeded, num_doc);
+					k_seeded, num_doc, mu, sigma);
 	}
 	
 }
@@ -768,6 +776,8 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
   int num_topics = k_seeded + k_free;
 	MatrixXd Alpha = MatrixXd::Zero(num_doc, num_topics);
 	VectorXd alpha = VectorXd::Zero(num_topics); // use in iteration
+	// double alpha_initial_value = 50.0 / num_topics;
+	// VectorXd alpha_initial = VectorXd::Constant(num_topics, alpha_initial_value);
 
 	// Covariate
 	NumericMatrix C_r = model["C"];
@@ -779,7 +789,11 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 	for(int k=0; k<num_topics; k++){
 		// Initialize with R random
 		for(int i=0; i<num_cov; i++){
-			Lambda.coeffRef(k, i) = R::rnorm(0.0, 0.1);
+			// if(i == 0){
+				// Lambda.coeffRef(k, i) = 1.0;
+				// continue;
+			// }
+			Lambda.coeffRef(k, i) = R::rnorm(0.0, 1.5);
 		}
 	}
 
@@ -806,7 +820,6 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
   MatrixXi n_x0_kv = MatrixXi::Zero(num_topics, num_vocab);
   MatrixXi n_x1_kv = MatrixXi::Zero(num_topics, num_vocab);
   MatrixXd n_dk = MatrixXd::Zero(num_doc, num_topics);
-  MatrixXd theta_dk = MatrixXd::Zero(num_doc, num_topics);
   VectorXi n_x0_k = VectorXi::Zero(num_topics);
   VectorXi n_x1_k = VectorXi::Zero(num_topics);
 
@@ -838,39 +851,40 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
     std::vector<int> doc_indexes = shuffled_indexes(num_doc); // shuffle
 
 		// Create Alpha for this iteration
+		// if(it > it05)
 		Alpha = (C * Lambda.transpose()).array().exp();
 		
     for (int ii = 0; ii < num_doc; ii++){
       int doc_id = doc_indexes[ii];
       IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
-
+			
       std::vector<int> token_indexes = shuffled_indexes(doc_x.size()); //shuffle
-
+			
 			// Prepare Alpha for the doc
 			alpha = Alpha.row(doc_id).transpose(); // take out alpha
-		
+			
 			// Iterate each word in the document
       for (int jj = 0; jj < doc_x.size(); jj++){
         int w_position = token_indexes[jj];
         int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
-		
+			
         doc_z[w_position] = sample_z(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
                                      alpha, seed_num, x, z, w, doc_id,
                                      num_vocab, num_topics, k_seeded, gamma_1,
                                      gamma_2, beta, beta_s, keywords);
-		
+			
 				z = doc_z[w_position]; // use updated z
-		
+			
         doc_x[w_position] = sample_x(n_x0_kv, n_x1_kv, n_x0_k, n_x1_k, n_dk,
                                     alpha, seed_num, x, z, w, doc_id,
                                     num_vocab, num_topics, k_seeded, gamma_1,
                                     gamma_2, beta, beta_s, keywords);
-		
+			
       }
-		
+			
 			X[doc_id] = doc_x; // is doc_x not a pointer/ref to X[doc_id]?
 			Z[doc_id] = doc_z;
-
+			
     }
 		sample_lambda(Lambda, C, n_dk, num_topics, num_cov,
 				k_seeded, num_doc, mh_info);
