@@ -569,7 +569,7 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 	double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
   std::vector<int> topic_ids = shuffled_indexes(num_topics);
 	std::vector<int> cov_ids = shuffled_indexes(num_cov);
-	static double A = 1.5;
+	static double A = 0.5; // 0.5-1.5
 
 	double store_loglik = likelihood_lambda(Lambda, C, n_dk,
 			mu, sigma, num_doc, num_topics, num_cov);
