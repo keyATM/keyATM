@@ -72,7 +72,7 @@ seed_list <- list(
 									c("W17t3 W226t3 W55t3 W74t3 W163t3"),
 									c("W142t4 W242t4 W27t4 W135t4 W226t4")
 									)
-seed_list <- lapply(seed_list, function(x){strsplit(x, " ")[[1]]}) # need it if you input keywords as a single string
+seed_list <- lapply(seed_list, function(x){strsplit(x, " ")[[1]]}) # need it if you input keywords as  single string
 covariates <- read_csv("/Users/Shusei/Desktop/temp/SimulationData/SeededCov/doc_covariates.csv")
 covariates %>% arrange(CName) %>% select(-CName) -> covariates
 true_Lambda <- read_csv("/Users/Shusei/Desktop/temp/SimulationData/SeededCov/doc_Lambda.csv")
@@ -81,12 +81,12 @@ set.seed(125) ; model <- create_model(docs, seed_list, extra_k=0, covariates)
 
 # model <- assign_trueZ(model, Z_folder)
 # model <- assign_trueX(model, X_folder)
-res <- topicdict_train_cov(model, iter=1500)
+res <- topicdict_train_cov(model, iter=500)
 res$sampling_info
 
 # exp(as.matrix(covariates) %*% t(as.matrix(true_Lambda))) # Alpha
 
-res_Lambda <- res$Lambda[1200:1500]
+res_Lambda <- res$Lambda[200:500]
 hist(unlist(map(res_Lambda, `[`, 1, 1))) ; mean(unlist(map(res_Lambda, `[`, 1, 1)))
 hist(unlist(map(res_Lambda, `[`, 1, 2))) ; mean(unlist(map(res_Lambda, `[`, 1, 2)))
 hist(unlist(map(res_Lambda, `[`, 1, 3))) ; mean(unlist(map(res_Lambda, `[`, 1, 3)))
@@ -104,7 +104,7 @@ visualize_sample <- function(true_Lambda, res_Lambda, dim1, dim2){
 	sampled <- tibble(lambda = unlist(map(res_Lambda, `[`, dim1, dim2)))
 
 	p <- ggplot() +
-		geom_histogram(data=sampled, aes(x=lambda)) +
+		geom_histogram(data=sampled, aes(x=lambda), bins=20) +
 		geom_vline(xintercept = truth, colour="red") +
 		ggtitle(paste0("Estimated Lambda: ", "Dim: [", dim1, ",", dim2, "]")) +
 		theme_bw() + theme(plot.title = element_text(hjust = 0.5))
@@ -116,13 +116,13 @@ for(i in 1:3){
 		print(visualize_sample(true_Lambda, res_Lambda, i, m))
 		Sys.sleep(1.0)
 	}
-
 }
 
 
-A <- 1/2.5
+A <- 0.5
 x <- seq(-10, 10, 0.2)
-y <- 1.0 / (1.0 + exp( -x / A))
+x <- seq(-5, 5, 0.5)
+y <- 1.0 / (1.0 + exp( -x * A))
 plot(x, y)
 
 

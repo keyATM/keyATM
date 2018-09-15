@@ -126,12 +126,14 @@ Gen_w_seeds <- function(index, phiR, phiS, z, x){
     # Regular words
     word <- Gen_w(phiR, topic)
     # word <- original_vocabulary[as.numeric(word)] # original_vocabulary is extracted from the trained model outside
-    word <- paste0("W", as.character(word), "t", as.character(topic))
+    # word <- paste0("W", as.character(word), "t", as.character(topic))
+    word <- paste0("W", as.character(word)) # allow word overlap
   } else {
     # Seed words
     word <- Gen_w(phiS, topic)
     # word <- original_vocabulary[as.numeric(word)]
-    word <- paste0("W", as.character(word), "t", as.character(topic))
+    # word <- paste0("W", as.character(word), "t", as.character(topic))
+    word <- paste0("W", as.character(word))
   }
   return(word)
 }
