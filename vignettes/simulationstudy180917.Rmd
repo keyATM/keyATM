@@ -29,8 +29,6 @@ library(hashmap)
 library(tm)
 library(purrr)
 library(clue)
-iter_num <- 50
-extra_k <- 2
 ```
 
 ## Create Data
@@ -147,6 +145,8 @@ get_seededlda_result <- function(data_folder_name, iter,
   docs <- list.files(doc_folder, pattern = "*.txt", full.names = TRUE)
   model <- create_model(docs, seed_list, extraK=extraK)
   res <- topicdict_train(model, iter=iter)
+	post <- topicdict::posterior(res)
+	print(diagnosis_model_fit(post, start=2))
 
   res <- tibble(estimatedZ=res$Z) %>% unnest() %>%
     mutate(estimatedZ = estimatedZ+1)
@@ -193,6 +193,8 @@ get_seededldaCov_result <- function(data_folder_name, iter,
   model <- create_model_cov(docs, seed_list, extraK=extraK,
                             covariate_path=covariate_path)
   res <- topicdict_train_cov(model, iter=iter)
+	post <- topicdict::posterior(res)
+	print(diagnosis_model_fit(post, start=2))
 
   resZ <- tibble(estimatedZ=res$Z) %>% unnest() %>%
     mutate(estimatedZ = estimatedZ+1)
