@@ -1,3 +1,5 @@
+library(tidyverse)
+
 # Generate Simulation Data
 rbern <- function(n, prob){
   return(rbinom(n, 1, prob))
@@ -39,7 +41,8 @@ Gen_seedwords <- function(K, seeds_len, V){
 	seed_words <- matrix(NA, K, seeds_len)
 	for(k in 1:K){
 		# seed_words[k, ] <- paste0(as.character(k), "T", as.character(sample(1:V, seeds_len)))
-		seed_words[k, ] <- paste0("W", as.character(sample(1:V, seeds_len)), "t", as.character(k))
+		# seed_words[k, ] <- paste0("W", as.character(sample(1:V, seeds_len)), "t", as.character(k))
+		seed_words[k, ] <- paste0("W", as.character(sample(1:V, seeds_len)))
 	}
 	return(seed_words)	
 }
@@ -76,8 +79,12 @@ Gen_alpha <- function(alpha, K){
 	return (rep(alpha, K))
 }
 
-Gen_theta <- function(doc_len, alpha_vec){
-	theta <- rdirichlet(doc_len, alpha_vec)
+Gen_theta <- function(doc_len, Alpha){
+	theta <- t(apply(Alpha, 1, rdirichlet, n=1))
+
+	# Slightly modify
+	theta <- theta + 0.0000001
+	theta <- theta / rowSums(theta)
 	return(theta)
 }
 
@@ -107,7 +114,8 @@ Gen_w_seeds <- function(index, phiR, phiS, z, x, seed_words){
 	if (indicator == 0){
 		# Regular words
 		word <- Gen_w(phiR, topic)
-		word <- paste0("W", as.character(word), "t", as.character(topic)) # no overlap of words between topics
+		# word <- paste0("W", as.character(word), "t", as.character(topic)) # no overlap of words between topics
+		word <- paste0("W", as.character(word)) # allows overlap of words between topics
 	} else {
 		# Seed words
 		seed_index <- rcat(1, phiS[topic, ])
@@ -209,11 +217,14 @@ Save_wzx <- function(data, i, saveDir){
 }
 
 ## save topic and word assignments
-Save_info <- function(topic_voc, doc_voc, doc_topic, phi, p, saveDir){
+Save_info <- function(topic_voc, doc_voc, doc_topic, phi, p, C, Lambda,
+											saveDir){
 	## save topic-word assignment
 	write.csv(topic_voc, paste0(saveDir,"topic_word.csv"), na="0", row.names=FALSE)
 	write.csv(doc_voc, paste0(saveDir,"doc_voc.csv"), na="0", row.names=FALSE)
 	write.csv(doc_topic, paste0(saveDir,"doc_topic.csv"), na="0", row.names=FALSE)
+	write.csv(C, paste0(saveDir,"doc_covariates.csv"), row.names=FALSE)
+	write.csv(Lambda, paste0(saveDir,"doc_Lambda.csv"), row.names=FALSE)
 	Save_phiS(phi, saveDir)
 	write(p, paste0(saveDir,"p.txt"))
 
@@ -244,16 +255,20 @@ Save_phiS <- function(phiS, saveDir){
 }
 
 ## Save paraemters
-Save_param <- function(D, V, K, alpha, beta_r, beta_s, gamma1, gamma2, lambda, seeds_len, saveDir){
+Save_param <- function(D, V, K, alpha, beta_r, beta_s, gamma1, gamma2, lambda, seeds_len,
+											 TotalV, num_covariates, Lambda_sigma,
+											 saveDir){
 	txt <- paste( paste("D", D, sep = ":"),
 		paste("K", K, sep = ":"),
 		paste("V (used)", V, sep = ":"),
-		paste("alpha", alpha, sep = ":"),
 		paste("beta_r", beta_r, sep = ":"),
 		paste("beta_s", beta_s, sep = ":"),
 		paste("gamam1", gamma1, sep = ":"),
 		paste("gamma2", gamma2, sep = ":"),
 		paste("lambda", lambda, sep = ":"),
+		paste("TotalV", TotalV, sep = ":"),
+		paste("num_covariates", num_covariates, sep = ":"),
+		paste("Lambda_sigma", lambda, sep = ":"),
 		paste("seeds_len", seeds_len, sep = ":"), sep = "\n")
 	write(txt, paste0(saveDir,"parameters.txt"))
 }
@@ -360,7 +375,7 @@ Obs_p_all <- function(w,z,x,seeds_len,topic_num){
 		}
 		sum_enum_vec <- sum(enum_vec)
 		z_tmp <- whichVec_list(res$Z, i)
-		z_tmp <- Reduce("+", map(z_tmp, length))
+		z_tmp <- Reduce("+", purrr::map(z_tmp, length))
 
 		p[i + 1] <- sum_enum_vec/z_tmp
 		print(p[i + 1])
@@ -369,7 +384,12 @@ Obs_p_all <- function(w,z,x,seeds_len,topic_num){
 }
 
 
-create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000, alpha=0.1, beta_r=0.1, beta_s=0.1, p=NULL, gamma1=NULL, gamma2=NULL, lambda=300, seeds_len=5, prop_seeds=NULL, rand_seed=123){
+create_sim_data_cov <- function(saveDir, D=200, K=10, TotalV=1500, 
+														# dim = 3, 
+														beta_r=0.1, beta_s=0.1, p=NULL, 
+														gamma1=NULL, gamma2=NULL, lambda=300, 
+														num_covariates=3, Lambda_sigma=1,
+														seeds_len=5, prop_seeds=NULL, rand_seed=123){
 
 	# Check values
 	if(is.null(p) && is.null(gamma1) && is.null(gamma2))
@@ -386,11 +406,6 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000, alpha=0.1, beta_r
 			stop("p: p should be given as a vector. Length of p does not match with the number of topic. You need to specify each topic.")
 		}
 
-	if(is.vector(alpha) && length(alpha) > 1){ # specify the each topic's proportion, length should be equal to the number of topics
-		if(length(alpha) != K){
-			stop("alpha: alpha should be given as a vector. Length of alpha does not match with the number of topic. You need to specify each topic.")
-		}
-	}
 
 		flag <- 0
 		for(i in length(p):1){
@@ -425,7 +440,7 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000, alpha=0.1, beta_r
 	# D <- 200 # the number of document
 	# K <- 10 # the number of topic
 	# TotalV <- 8000
-	V <- as.integer(TotalV/K) # the number of unique vocabulary for each topic
+	V <- TotalV #as.integer(TotalV/K) # the number of unique vocabulary for each topic
 	# # V_each <- V/10 # the number of unique vocabulary, divided by 10
 	# alpha <- 0.1 # parameter of dirichlet of theta
 	# beta_r <- 0.1 # parameter of dirichlet of phi_regular
@@ -434,6 +449,13 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000, alpha=0.1, beta_r
 	# gamma2 <- 20 # shape parameter v beta
 	# lambda <- 300 # paraemter of poisson
 	# seeds_len <- 5 # number of seeds words per each topic
+
+	# Prepare Covariates and alpha
+	C <- MASS::mvrnorm(n=D, mu=rep(0, num_covariates), Sigma=diag(0.5, num_covariates))
+	# C[, 1] <- 1  # intercept
+	Lambda <- MASS::mvrnorm(n=K, mu=rep(0, num_covariates), Sigma=diag(Lambda_sigma, num_covariates))
+	# Lambda[, 1] <- 1  # fix intercept // just a try
+	Alpha <- exp(C %*% t(Lambda))
 	
 	## random
 	set.seed(rand_seed)
@@ -474,12 +496,7 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000, alpha=0.1, beta_r
 	nd <- Gen_ND(D, lambda)
 	
 	## 1. generate \theta for each document
-	if( is.vector(alpha) && length(alpha) > 1 ){
-		alpha_vec <- alpha
-	} else {
-		alpha_vec <- Gen_alpha(alpha, K)
-	}
-	theta <- Gen_theta(D, alpha_vec)
+	theta <- Gen_theta(D, Alpha)
 	
 	## 2. generate topic and word for each word in each document
 	doc_list <- vector("list", D)
@@ -503,7 +520,7 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000, alpha=0.1, beta_r
 	}
 	
 	# Get Number of Unique Vocabulary
-	unique_V <- length(unique(unlist(map(doc_list, "w"))))
+	unique_V <- length(unique(unlist(purrr::map(doc_list, "w"))))
 	
 	## topic word assignment across documents
 	doc_list %>% map_df(`[`, c("w", "z")) %>%
@@ -527,9 +544,16 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000, alpha=0.1, beta_r
 	## save topic-word assignment, word assignment, and topic assignment
 	
 	## save topic-word assignment etc
-	Save_info(TopicVoc, DocVoc, DocTopic, phiS, p, saveDir)
+	CName <- paste0("C_", 1:D)
+	C_wName <- cbind(CName, data.frame(C))
+	Save_info(TopicVoc, DocVoc, DocTopic, phiS, p,
+						C_wName, Lambda,
+						saveDir)
+
 	## Save parameters
-	Save_param(D, unique_V, K, alpha, beta_r, beta_s, gamma1, gamma2, lambda, seeds_len, saveDir)
+	Save_param(D, unique_V, K, alpha, beta_r, beta_s, gamma1, gamma2, lambda, seeds_len,
+						 TotalV, num_covariates, Lambda_sigma,
+						 saveDir)
 	
 	## save word frequency per topic
 	Save_Index_Freq(doc_list, 20, saveDir)
@@ -548,7 +572,16 @@ create_sim_data <- function(saveDir, D=200, K=10, TotalV=8000, alpha=0.1, beta_r
 		seed_list[[r]] <- seed_words[r, ]
 	}
 
+	# lapply(seed_list, function(x){print(paste(x, collapse=" "))})
+
 	return(seed_list)
 
 }
 
+# create_sim_data_cov(saveDir="/Users/Shusei/Desktop/temp/SimulationData/SeededCov",
+# 														D=800, K=4, TotalV=1000, 
+# 														# dim=2, 
+# 														p=rep(0.3, 4),
+# 														beta_r=0.01, beta_s=0.01,  lambda=350, 
+# 														num_covariates=3, Lambda_sigma=0.8,
+# 														seeds_len=5, rand_seed=123)

@@ -27,6 +27,8 @@
 #'
 #' @param files names of each file to read (or a quanteda corpus object)
 #' @param dict a quanteda dictionary or named list of character vectors
+#' @param covariates_data a data.frame or a tibble that is a covariate matrix. Columns are covariates.
+#' @param covariates_formula formula for the covariates, for example, \code{~.} uses all variables
 #' @param extra_k number of unseeded topics in addition to the topics seeded by
 #'                \code{dict}
 #' @param encoding File encoding (Default: whatever \code{quanteda} guesses)
@@ -49,26 +51,32 @@
 #'
 #' @return A list containing \describe{
 #'         \item{W}{a list of vectors of word indexes}
-#'         \item{Z}{a list of vectors of topic indicators isomorphic to W},
+#'         \item{Z}{a list of vectors of topic indicators isomorphic to W}
+#'         \item{C}{a covariate matrix is there is an input}
 #'         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
 #'         \item{vocab}{a vector of vocabulary items}
 #'         \item{files}{a vector of document filenames}
 #'         \item{dict}{a tokenized version of the dictionary}
 #'         \item{seeds}{a list of words for the seed words in dict, named by dictionary category}
 #'         \item{extra_k}{how many extra non-seeded topics are required}
-#'         \item{alpha}{a vector of topic proportion hyperparameters}
+#'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
+#'         \item{Lambda_iter}{a list to store coefficients of the covariates}
+#'         \item{sampling_info}{information related to sampling}
 #'         \item{model_fit}{a list to store perplexity and log-likelihood}
 #'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
 #'         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
 #'         \item{beta}{prior parameter for the non-seeded word generation probabilities}
 #'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
+#'         \item{use_cov}{boolean, whether or not use the covariate}
 #'         \item{call}{details of the function call}
 #'         }.
 #' @importFrom quanteda corpus is.corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
 #' @importFrom hashmap hashmap
 #' @export
-topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
+topicdict_model <- function(files, dict, 
+														covariates_data=NULL, covariates_formula=NULL,
+														extra_k = 1, encoding = "UTF-8",
                             lowercase = TRUE,
                             remove_numbers = TRUE, remove_punct = TRUE,
                             remove_symbols = TRUE, remove_separators = TRUE,
@@ -81,11 +89,15 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
   cl <- match.call()
 
   proper_len <- length(dict) + extra_k
-  if (length(alpha) == 1){
-    message("All ", proper_len, " values for alpha starting as ", alpha)
-    alpha = rep(alpha, proper_len)
-  } else if (length(alpha) != proper_len)
-    stop("Starting alpha must be a scalar or a vector of length ", proper_len)
+
+	if(is.null(covariates_data) || is.null(covariates_formula)){
+		# If it doesn't use covariates, make alpha inside
+		if (length(alpha) == 1){
+			message("All ", proper_len, " values for alpha starting as ", alpha)
+			alpha = rep(alpha, proper_len)
+		} else if (length(alpha) != proper_len)
+			stop("Starting alpha must be a scalar or a vector of length ", proper_len)
+	}
 
   args <- list(remove_numbers = remove_numbers,
                remove_punct = remove_punct,
@@ -169,14 +181,31 @@ topicdict_model <- function(files, dict, extra_k = 1, encoding = "UTF-8",
   seeds <- lapply(dtoks, function(x){ wd_map$find(x) })
   names(seeds) <- names(dict)
 
+	# Covariate
+	if(is.null(covariates_data) || is.null(covariates_formula)){
+		C <- matrix()
+		use_cov <- FALSE 
+	}else{
+		C <- model.matrix(covariates_formula, covariates_data)	
+		use_cov <- TRUE 
+		if(sum(is.na(C)) != 0){
+			stop("Covariate data should not contain missing values.")	
+		}
+	}
+
+
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names,
              files = doc_names, dict = dtoks, seeds = seeds, extra_k = extra_k,
              alpha = alpha, gamma_1 = gamma_1, gamma_2 = gamma_2,
-             beta = beta, beta_s = beta_s, call = cl,
-						 alpha_iter = list(), model_fit = list(),
+             beta = beta, beta_s = beta_s,
+						 alpha_iter = list(), Lambda_iter = list(),
+						 model_fit = list(), sampling_info = list(),
+						 C=C, use_cov=use_cov,
 						 call = cl)
+
   class(ll) <- c("topicdict", class(ll))
-  ll
+
+  return(ll)
 }
 
 #' A Reference Class to explore documents

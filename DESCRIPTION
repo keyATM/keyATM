@@ -1,7 +1,9 @@
 Package: topicdict
 Title: Topic Modeling Informed by a Content Analysis Dictionary
 Version: 0.1.0
-Authors@R: person("Will", "Lowe", email = "wlowe@princeton.edu", role = c("aut", "cre"))
+Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", role = c("aut")),
+		person("Will", "Lowe", email = "wlowe@princeton.edu", role = c("aut", "cre")),
+		person("Tomoya", "Sasaki", email = "tomo1990sasaki@gmail.com", role = c("aut")))
 Description: Fits a topic model using seeds from a content analysis dictionary.
 Depends: R (>= 3.4.2)
 License: file LICENSE
@@ -26,4 +28,4 @@ Suggests: knitr,
   readtext,
   tidyr
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
