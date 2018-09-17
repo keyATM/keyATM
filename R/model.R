@@ -71,10 +71,11 @@
 #'         \item{use_cov}{boolean, whether or not use the covariate}
 #'         \item{call}{details of the function call}
 #'         }.
-#' @importFrom quanteda corpus is.corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
+#' @importFrom quanteda corpus is.corpus ndoc docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
 #' @importFrom hashmap hashmap
+#' @importFrom stats model.matrix
 #' @export
-topicdict_model <- function(files, dict, 
+topicdict_model <- function(files, dict,
 														covariates_data=NULL, covariates_formula=NULL,
 														extra_k = 1, encoding = "UTF-8",
                             lowercase = TRUE,
@@ -184,12 +185,12 @@ topicdict_model <- function(files, dict,
 	# Covariate
 	if(is.null(covariates_data) || is.null(covariates_formula)){
 		C <- matrix()
-		use_cov <- FALSE 
+		use_cov <- FALSE
 	}else{
-		C <- model.matrix(covariates_formula, covariates_data)	
-		use_cov <- TRUE 
+		C <- model.matrix(covariates_formula, covariates_data)
+		use_cov <- TRUE
 		if(sum(is.na(C)) != 0){
-			stop("Covariate data should not contain missing values.")	
+			stop("Covariate data should not contain missing values.")
 		}
 	}
 
