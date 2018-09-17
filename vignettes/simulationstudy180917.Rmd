@@ -1,0 +1,374 @@
+---
+title: "Progress Report"
+author: "Shusei Eshima"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GenSimDataLDA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r warning=FALSE, message=FALSE, echo = FALSE}
+# package_folder <- "/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict"
+# setwd(package_folder)
+# devtools::document() ; devtools::install() ; library(topicdict)
+library(knitr)
+knitr::opts_chunk$set(comment = "")
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+library(topicdict)
+library(quanteda)
+library(tibble)
+library(ggplot2)
+library(dplyr)
+library(topicmodels)
+library(hashmap)
+library(tm)
+library(purrr)
+library(clue)
+```
+
+## Create Data
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=5}
+D_ <- 800
+trueK <- 7
+lambda_ <- 300
+seeds_len <- 5
+num_covariates_ <- 3
+iter_ <- 1200
+
+extraK_ <- 2  # in estimation
+
+data_folder <- tempfile()
+source("/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict/vignettes/create_simulation_wCov.R")
+  # Run above right before the simulation function. Non-covariates version share the function names
+seed_list_cov <- create_sim_data_cov(saveDir=paste0(data_folder, "Cov1"), 
+                             D=D_, K=trueK, TotalV=3000,
+                             beta_r=0.1, beta_s=0.1, 
+                             p=rep(0.2, trueK), 
+                             num_covariates=num_covariates_, Lambda_sigma=1.0,
+                             lambda=lambda_, seeds_len=seeds_len)
+
+
+source("/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict/vignettes/create_simulation.R")
+seed_list_seeded <- create_sim_data(saveDir=paste0(data_folder, "Seed1"), 
+                             D=D_, K=trueK, TotalV=3000,
+                             beta_r=0.1, beta_s=0.1, 
+                             p=rep(0.2, trueK), 
+                             lambda=lambda_, seeds_len=seeds_len)
+
+get_trueZ <- function(Z_folder){
+
+  files <- list.files(Z_folder, pattern = "*.txt", full.names = TRUE)
+  texts <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = "UTF-8"),
+                                                              collapse = "\n") })),
+                     stringsAsFactors = FALSE)
+
+
+  trueZ <- list()
+  for(d in 1:length(files)){
+    trueZ[[d]] <- as.integer(strsplit(texts[d,], "\\s")[[1]])
+  }
+
+  return(tibble(trueZ) %>% unnest(trueZ))
+
+}
+
+Z_folder <- paste0(data_folder, "Cov1", "/Z")
+trueCovZ <- get_trueZ(Z_folder)
+
+Z_folder <- paste0(data_folder, "Seed1", "/Z")
+trueSeedZ <- get_trueZ(Z_folder)
+
+
+select_seed_num <- function(seed_list, num){
+  return(map(seed_list, `[`, 1:num))
+}
+
+# Reduce seed
+seed_list_cov <- seed_list_cov[1:(trueK-1)]
+seed_list_seeded <- seed_list_seeded[1:(trueK-1)]
+
+
+```
+
+## LDA Run
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=5}
+get_lda_result <- function(data_folder_name, iter, k){
+  folder <- paste0(data_folder, data_folder_name, "/W")
+
+  # Prepare Data
+  corpus <- Corpus(DirSource(folder))
+  strsplit_space_tokenizer <- function(x)
+      unlist(strsplit(as.character(x), "[[:space:]]+"))
+
+  dtm <- DocumentTermMatrix(corpus,
+                           control = list(tokenize=strsplit_space_tokenizer, 
+                           stopwords = F, tolower = F, 
+                           stemming = F, wordLengths = c(1, Inf)))
+
+  lda <- LDA(dtm, k = k, control = list(seed = 225, iter=iter), method="Gibbs")
+
+
+  return(tibble(estimatedZ=lda@z) %>% unnest(estimatedZ))
+}
+```
+
+
+## SeededLDA Run
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=5}
+create_model <- function(docs, seed_list, extraK){
+  set.seed(225)
+  names(seed_list) <- 1:length(seed_list)
+  dict <- quanteda::dictionary(seed_list)
+  model <- topicdict_model(docs,
+               dict = dict, 
+               extra_k = extraK,
+               remove_numbers = FALSE, 
+               remove_punct = TRUE,
+               remove_symbols = TRUE,
+               remove_separators = TRUE)
+
+  return(model)
+}
+
+get_seededlda_result <- function(data_folder_name, iter,
+                                 seed_list, extraK,
+                                 seed_use_number=NULL)
+{
+
+  set.seed(125)
+  doc_folder <- paste0(data_folder, data_folder_name, "/W")
+  docs <- list.files(doc_folder, pattern = "*.txt", full.names = TRUE)
+  model <- create_model(docs, seed_list, extraK=extraK)
+  res <- topicdict_train(model, iter=iter)
+	post <- topicdict::posterior(res)
+	print(diagnosis_model_fit(post, start=2))
+
+  res <- tibble(estimatedZ=res$Z) %>% unnest() %>%
+    mutate(estimatedZ = estimatedZ+1)
+  return(res)
+
+}
+```
+
+## SeededLDA-Cov Run
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=5}
+create_model_cov <- function(docs, seed_list, extraK, covariate_path){
+  set.seed(225)
+  names(seed_list) <- 1:length(seed_list)
+  dict <- quanteda::dictionary(seed_list)
+
+covariates <- read_csv(covariate_path)
+covariates %>% arrange(CName) %>% select(-CName) -> covariates
+
+  model <- topicdict_model(docs,
+               dict = dict, 
+               covariates_data = covariates,
+               covariates_formula = ~.+0, # no intercept
+               extra_k = extraK,
+               remove_numbers = FALSE, 
+               remove_punct = TRUE,
+               remove_symbols = TRUE,
+               remove_separators = TRUE)
+
+  return(model)
+}
+
+get_seededldaCov_result <- function(data_folder_name, iter,
+                                 seed_list, extraK,
+                                 seed_use_number=NULL)
+{
+
+  set.seed(125)
+  doc_folder <- paste0(data_folder, data_folder_name, "/W")
+  docs <- list.files(doc_folder, pattern = "*.txt", full.names = TRUE)
+
+  covariate_path <- paste0(data_folder, data_folder_name, "/doc_covariates.csv")
+  lambda_path <- paste0(data_folder, data_folder_name, "/doc_Lambda.csv")
+
+  model <- create_model_cov(docs, seed_list, extraK=extraK,
+                            covariate_path=covariate_path)
+  res <- topicdict_train_cov(model, iter=iter)
+	post <- topicdict::posterior(res)
+	print(diagnosis_model_fit(post, start=2))
+
+  resZ <- tibble(estimatedZ=res$Z) %>% unnest() %>%
+    mutate(estimatedZ = estimatedZ+1)
+
+  lambda_figs <- visualize_lambda(lambda_path, res) 
+
+  return(list(z=resZ, lambda=lambda_figs))
+
+}
+```
+
+## Visualization function
+```{r, warning=FALSE, message=FALSE, fig.width=6, fig.height=5}
+# Takes estimated Z and true Z
+heatmap_single <- function(estimatedZ, trueZ, model=""){
+  # Get estimatedZ and trueZ in a tibble format and 
+  # make a heatmap
+
+  res <- bind_cols(estimatedZ, trueZ) %>%
+      rename(Estimated_raw=estimatedZ, True_raw=trueZ) %>%
+      # mutate(True=paste0("True", as.character(True_raw)),
+             # Estimated=paste0("Est", as.character(Estimated_raw))) %>%
+      mutate(True=True_raw,
+             Estimated=as.character(Estimated_raw)) %>%
+      group_by(True, Estimated) %>%
+      summarize(Count = n()) %>%
+      ungroup() %>%
+      group_by(True) %>%
+      mutate(topicsum = sum(Count)) %>%
+      arrange(Estimated) %>%
+      mutate(Proportion = Count / topicsum * 100) %>%
+      ungroup()
+
+  num <- length(unique(res$Estimated))
+  truenum <- length(unique(res$True))
+
+  # Get ranking
+    # Highest estimated topic that has a certain true topic
+    # Note that the ranking duplicates if it performs poorly
+  res %>%
+    group_by(True) %>%
+    arrange(True, desc(Proportion)) %>%
+    top_n(1) -> ranking
+
+  # Check if there is missing
+  check_num <- length(setdiff(as.character(1:num), unique(ranking$Estimated)))
+
+  if(check_num != 0){
+    # If there is a missing topic (especially when the result is poor)
+    # prioritize showing all topics
+    est_order <-   unique(ranking$Estimated)
+    est_order <- c(est_order, setdiff(as.character(1:num), est_order))
+  }else{
+    est_order <- ranking$Estimated
+  }
+  true_order <- as.character(1:truenum)
+
+
+  # Visualize
+  g <- ggplot(res, aes(Estimated, True)) +
+        geom_tile(aes(fill=Proportion)) + 
+        scale_fill_gradient(limits=c(0, 100), low="#ffffff", high="#0015ff") +
+        coord_flip() +
+        scale_x_discrete(limits = est_order) +
+        scale_y_discrete(limits = true_order) +
+        xlab("Estimated Topic") + ylab("True Topic") + theme_bw(base_size=13) +
+        ggtitle(paste0(model, "")) +
+        labs(fill="Proportion (%)") +
+        theme(plot.title = element_text(hjust = 0.5))
+
+  return(g)
+}
+
+visualize_lambda_draw <- function(true_Lambda, res_Lambda, dim1, dim2){
+  truth <- as.numeric(true_Lambda[dim1, dim2])
+  sampled <- tibble(lambda = unlist(map(res_Lambda, `[`, dim1, dim2)))
+
+  p <- ggplot() +
+    geom_histogram(data=sampled, aes(x=lambda), bins=20) +
+    geom_vline(xintercept = truth, colour="red") +
+    ggtitle(paste0("Estimated Lambda: ", "Dim: [", dim1, ",", dim2, "]")) +
+    theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+  return(p)
+}
+
+visualize_lambda <- function(lambda_path, res){
+  len <- length(res$Lambda)
+  res_Lambda <- res$Lambda[as.integer(len*0.7):len]
+  true_Lambda <- read_csv(lambda_path)
+
+  dim1 <- dim(true_Lambda)[1]
+  dim2 <- dim(true_Lambda)[2]
+
+  lambda_figs <- list()
+  count <- 1
+  for(i in 1:dim1){
+    for(m in 1:dim2){
+      g <- visualize_lambda_draw(true_Lambda, res_Lambda, i, m)
+      lambda_figs[[count]] <- g
+      count <- count + 1
+    }
+  }
+
+  return(lambda_figs)
+
+}
+```
+
+## Run Model
+### LDA
+SeededLDA data:
+```{r, warning=FALSE, message=FALSE, fig.width=5.5, fig.height=4.5}
+lda_estimatedSeedZ <- get_lda_result(data_folder_name="Seed1", iter=iter_, 
+                                     k=trueK+extraK_)
+heatmap_single(estimatedZ=lda_estimatedSeedZ, trueZ=trueSeedZ, "LDA Model - SeededLDA Data")
+```
+
+SeededLDACov data:
+```{r, warning=FALSE, message=FALSE, fig.width=5.5, fig.height=4.5}
+lda_estimatedCovZ <- get_lda_result(data_folder_name="Cov1", iter=iter_,
+                                    k=trueK+extraK_)
+heatmap_single(estimatedZ=lda_estimatedCovZ, trueZ=trueCovZ, "LDA Model - Cov Data")
+```
+
+
+### SeededLDA
+SeededLDA data:
+```{r, warning=FALSE, message=FALSE, fig.width=5.5, fig.height=4.5, fig.align='center'}
+slda_estimatedSeedZ <- get_seededlda_result(data_folder_name="Seed1", 
+                                            seed_list_seeded, extraK=extraK_,
+                                            iter=iter_)
+heatmap_single(estimatedZ=slda_estimatedSeedZ, trueZ=trueSeedZ, "SeededLDA Model - SeededLDA Data")
+```
+
+SeededLDACov data:
+```{r, warning=FALSE, message=FALSE, fig.width=5.5, fig.height=4.5, fig.align='center'}
+slda_estimatedCovZ <- get_seededlda_result(data_folder_name="Cov1", seed_list_cov,
+                                           extraK=extraK_, iter=iter_)
+heatmap_single(estimatedZ=slda_estimatedCovZ, trueZ=trueCovZ, "SeededLDA Model - Cov Data")
+```
+
+### SeededLDA-Cov
+SeededLDACov data:
+```{r, warning=FALSE, message=FALSE, fig.width=5.5, fig.height=4.5, fig.align='center'}
+slda_cov <- get_seededldaCov_result(data_folder_name="Cov1", seed_list_cov,
+                                    extraK=extraK_, iter=iter_)
+heatmap_single(estimatedZ=slda_cov$z, trueZ=trueCovZ, "SeededLDA_Cov Model - Cov Data")
+slda_cov$lambda
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
