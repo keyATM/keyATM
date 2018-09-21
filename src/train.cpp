@@ -3,6 +3,7 @@
 #include <chrono>
 #include <iostream>
 #include <algorithm>
+#include "lda_cov.h"
 
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
@@ -789,10 +790,6 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 	for(int k=0; k<num_topics; k++){
 		// Initialize with R random
 		for(int i=0; i<num_cov; i++){
-			// if(i == 0){
-				// Lambda.coeffRef(k, i) = 1.0;
-				// continue;
-			// }
 			Lambda.coeffRef(k, i) = R::rnorm(0.0, 1.5);
 		}
 	}
@@ -851,7 +848,6 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
     std::vector<int> doc_indexes = shuffled_indexes(num_doc); // shuffle
 
 		// Create Alpha for this iteration
-		// if(it > it05)
 		Alpha = (C * Lambda.transpose()).array().exp();
 		
     for (int ii = 0; ii < num_doc; ii++){
@@ -929,5 +925,23 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 	model["sampling_info"] = sampling_info_list;
 
   return model;
+}
+
+
+
+//' Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)
+//'
+//' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+//' @param iter Required number of iterations
+//' @param output_per Show log-likelihood and perplexity per this number during the iteration
+//'
+//' @export
+// [[Rcpp::export]]
+List lda_cov(List model, int K, int iter=0, int output_iter=10)
+{
+
+	LDACOV ldacov(model, K, iter, output_iter);
+
+	return model;
 }
 

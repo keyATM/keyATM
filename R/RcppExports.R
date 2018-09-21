@@ -23,3 +23,14 @@ topicdict_train_cov <- function(model, iter = 0L, output_per = 10L, eta_1 = 1, e
     .Call('_topicdict_topicdict_train_cov', PACKAGE = 'topicdict', model, iter, output_per, eta_1, eta_2, eta_1_regular, eta_2_regular)
 }
 
+#' Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)
+#'
+#' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+#' @param iter Required number of iterations
+#' @param output_per Show log-likelihood and perplexity per this number during the iteration
+#'
+#' @export
+lda_cov <- function(model, K, iter = 0L, output_iter = 10L) {
+    .Call('_topicdict_lda_cov', PACKAGE = 'topicdict', model, K, iter, output_iter)
+}
+

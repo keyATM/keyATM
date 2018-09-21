@@ -126,3 +126,23 @@ y <- 1.0 / (1.0 + exp( -x * A))
 plot(x, y)
 
 
+
+## LDA-COV model
+doc_folder <- "/Users/Shusei/Desktop/temp/SimulationData/SeededCov/W/"
+Z_folder <- "/Users/Shusei/Desktop/temp/SimulationData/SeededCov/Z/"
+docs <- list.files(doc_folder, pattern = "*.txt", full.names = TRUE)
+covariates <- read_csv("/Users/Shusei/Desktop/temp/SimulationData/SeededCov/doc_covariates.csv")
+covariates %>% arrange(CName) %>% select(-CName) -> covariates
+true_Lambda <- read_csv("/Users/Shusei/Desktop/temp/SimulationData/SeededCov/doc_Lambda.csv")
+seed_list <- list(
+									c("W54t1 W229t1 W202t1 W212t1 W201t1"),
+									c("W105t2 W244t2 W124t2 W248t2 W85t2"),
+									c("W17t3 W226t3 W55t3 W74t3 W163t3"),
+									c("W142t4 W242t4 W27t4 W135t4 W226t4")
+									)
+seed_list <- lapply(seed_list, function(x){strsplit(x, " ")[[1]]}) 
+# covariates <- covariates[, 2:ncol(covariates)]
+set.seed(125) ; model <- create_model(docs, seed_list, extra_k=0, covariates)
+
+
+res <- lda_cov(model, K=10, 10, 10)
