@@ -28,7 +28,6 @@ class LDACOV
 	  Eigen::VectorXi n_k;
 		Eigen::MatrixXd Lambda;
 		Eigen::MatrixXd Alpha;
-		// Eigen::VectorXd alpha;
 		
 		// Constructor
 		LDACOV(Rcpp::List model, const int K,
@@ -37,7 +36,8 @@ class LDACOV
 		// Main functions
 		void initialize();
 		void iteration();
-		int sample_z(Eigen::VectorXd &alpha);
+		int sample_z(Eigen::VectorXd &alpha, int &z,
+				  	     int &w, int &doc_id);
 
 		// Sub functions
 		std::vector<int> shuffled_indexes(int m);
