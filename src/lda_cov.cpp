@@ -208,6 +208,8 @@ void LDACOV::lambda_sample()
 		} // for loop for num_cov
 	} // for loop for num_topics
 
+	model["model_fit"] = model_fit;
+
 }
 
 void LDACOV::loglik_store(int& r_index)
@@ -274,7 +276,7 @@ int LDACOV::sample_z(Eigen::VectorXd &alpha, int &z,
 	int new_z = -1;
 	double numerator, denominator;
 
-	for(int k=1; k<num_topics; k++){
+	for(int k=0; k<num_topics; k++){
 		numerator = (beta + (double)n_kv(k, w)) *
 			((double)n_k(k) + gamma_2) *
 			((double)n_dk(doc_id, k) + alpha(k));
