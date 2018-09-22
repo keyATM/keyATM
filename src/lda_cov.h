@@ -43,10 +43,13 @@ class LDACOV
 		void lambda_store();
 		void loglik_store(int& r_index);
 		double loglik_calc();
+		double loglik_lambda();
 
 		// Sub functions
 		std::vector<int> shuffled_indexes(int m);
 		int rcat_without_normalize(Eigen::VectorXd &prob, double &total);
+		double expand(double& p, double& A);
+		double shrink(double& x, double& A);
 };
 
 #endif
