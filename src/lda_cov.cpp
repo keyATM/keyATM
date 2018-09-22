@@ -8,9 +8,10 @@ namespace sampler{
 	inline int rand_wrapper(const int n) { return floor(unif_rand() * n); }
 }
 
-LDACOV::LDACOV(List model, const int K, const int iter_, const int output_iter_)
+LDACOV::LDACOV(List model_, const int K, const int iter_, const int output_iter_)
 {
 	// Get Info from R
+	model = model_;
 	W = model["W"];
 	Z = model["Z"];
 	num_topics = K;
@@ -68,7 +69,7 @@ void LDACOV::initialize()
 void LDACOV::iteration()
 {
 	// Iteration
-	Eigen::VectorXd alpha_ = VectorXd::Zero(num_topics);
+	VectorXd alpha_ = VectorXd::Zero(num_topics);
 	
 	for(int it=0; it<iter; it++){
 		std::vector<int> doc_indexes = shuffled_indexes(num_doc);
@@ -95,16 +96,99 @@ void LDACOV::iteration()
       }
 			
 			Z[doc_id_] = doc_z;
-			
     }
+		lambda_sample();
+		lambda_store();
 	
+		int r_index = it + 1;
+		if(r_index % output_iter == 0 || r_index == 1 || r_index == iter ){
+			loglik_store(r_index);
+		}
+
+
+		checkUserInterrupt();
 	}
+}
+
+void LDACOV::lambda_sample()
+{
+
+
+}
+
+void LDACOV::loglik_store(int& r_index)
+{
+	double loglik = loglik_calc();
+	double perplexity = exp(-loglik / (double)total_words);
+
+	NumericVector model_fit_vec;
+	model_fit_vec.push_back(r_index);
+	model_fit_vec.push_back(loglik);
+	model_fit_vec.push_back(perplexity);
+	model_fit.push_back(model_fit_vec);
+
+	Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
+					 " (perplexity: " << perplexity << ")" << std::endl;
+}
+
+double LDACOV::loglik_calc()
+{
+	double loglik = 0.0;
+
+	return loglik;
+}
+
+void LDACOV::lambda_store()
+{
+	Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
+	List Lambda_iter = model["Lambda_iter"];
+	Lambda_iter.push_back(Lambda_R);
+	model["Lambda_iter"] = Lambda_iter;
 }
 
 int LDACOV::sample_z(Eigen::VectorXd &alpha, int &z,
 				  	     int &w, int &doc_id)
 {
-	return 1;
+	// Remove data
+	n_kv(z, w) -= 1;
+	n_k(z) -= 1;
+	n_dk(doc_id, z) -= 1;
+
+	VectorXd z_prob_vec = VectorXd::Zero(num_topics);
+	int new_z = -1;
+	double numerator, denominator;
+
+	for(int k=1; k<num_topics; k++){
+		numerator = (beta + (double)n_kv(k, w)) *
+			((double)n_k(k) + gamma_2) *
+			((double)n_dk(doc_id, k) + alpha(k));
+
+		denominator = ((double)num_vocab * beta + (double)n_k(k)) *
+			((double)n_k(k) + gamma_1 + (double)n_k(k) + gamma_2);
+
+		z_prob_vec(k) = numerator / denominator;	
+	}
+
+	double sum = z_prob_vec.sum();
+	new_z = rcat_without_normalize(z_prob_vec, sum); // take a sample
+
+	return new_z;
+}
+
+int LDACOV::rcat_without_normalize(Eigen::VectorXd &prob,
+		double &total)
+{ // was called 'multi1'
+  double u = R::runif(0, 1) * total;
+  double temp = 0.0;
+  int index = 0;
+  for (int ii = 0; ii < prob.size(); ii++){
+    temp += prob(ii);
+    if (u < temp){
+      index = ii;
+      break;
+    }
+  }
+  return index;
 }
 
 vector<int> LDACOV::shuffled_indexes(int m) {
@@ -113,4 +197,3 @@ vector<int> LDACOV::shuffled_indexes(int m) {
   random_shuffle(v.begin(), v.end(), sampler::rand_wrapper);
   return v;
 }
-
