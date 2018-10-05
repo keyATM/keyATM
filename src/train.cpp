@@ -684,7 +684,7 @@ void sample_lambda(MatrixXd& Lambda, MatrixXd& C,
                    int& num_topics, int& num_cov,
 									 int& k_seeded, int& num_doc,
 									 std::vector<int>& mh_info,
-                   double mu=0.0, double sigma=50,  // for prior
+                   double mu=0.0, double sigma=50.0,  // for prior
                    double min_v = 1e-9, double max_v = 100.0,
                    int max_shrink_time = 1000)
 {
