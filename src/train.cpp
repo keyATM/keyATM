@@ -783,9 +783,25 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 	// Covariate
 	NumericMatrix C_r = model["C"];
 	MatrixXd C = Rcpp::as<Eigen::MatrixXd>(C_r);
+	int num_cov = C.cols();
+
+	// Covariate for Experiment (Just for simulation, comment out later)
+	MatrixXd C_treated = MatrixXd::Zero(num_doc, num_cov);
+	MatrixXd C_control = MatrixXd::Zero(num_doc, num_cov);
+	for(int d=0; d<num_doc; d++){
+		for(int c=0; c<num_cov; c++){
+			C_treated(d, c) = C(d,c);
+			C_control(d, c) = C(d,c);
+
+			if(c==0){
+				C_treated(d, c) = 1.0;
+				C_control(d, c) = 0.0;
+			}
+		}	
+	}
+	std::vector<double> diff_mean_store;
 
 	// Lambda
-	int num_cov = C.cols();
 	MatrixXd Lambda = MatrixXd::Zero(num_topics, num_cov);
 	for(int k=0; k<num_topics; k++){
 		// Initialize with R random
@@ -892,6 +908,21 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 		Lambda_iter.push_back(Lambda_R);
 		model["Lambda_iter"] = Lambda_iter;
 
+		// Treatment Effect (Just for simulation, comment out later)
+			// Store Treatment Effect
+		Alpha = (C_treated * Lambda.transpose()).array().exp();
+		VectorXd E_treated = VectorXd::Zero(num_doc);
+		E_treated = Alpha.col(0).array() / Alpha.rowwise().sum().array();
+
+		Alpha = (C_control * Lambda.transpose()).array().exp();
+		VectorXd E_control = VectorXd::Zero(num_doc);
+		E_control = Alpha.col(0).array() / Alpha.rowwise().sum().array();
+
+		VectorXd Diff = E_treated.array() - E_control.array();
+		double diff_mean = Diff.mean();
+		diff_mean_store.push_back(diff_mean);
+
+
 		// Log-likelihood and Perplexity
 		int r_index = it + 1;
 		if(r_index % output_per == 0 || r_index == 1 || r_index == iter ){
@@ -919,9 +950,15 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 	model["model_fit"] = model_fit;
 
 	// Add Sampling Info
-	Rcpp::IntegerVector sampling_info = Rcpp::wrap(mh_info);
+	// Rcpp::IntegerVector sampling_info = Rcpp::wrap(mh_info);
+	// List sampling_info_list = model["sampling_info"];
+	// sampling_info_list.push_back(sampling_info);
+	// model["sampling_info"] = sampling_info_list;
+
+	// Add Diff mean (comment out later)
+	Rcpp::NumericVector diffmean = Rcpp::wrap(diff_mean_store);
 	List sampling_info_list = model["sampling_info"];
-	sampling_info_list.push_back(sampling_info);
+	sampling_info_list.push_back(diffmean);
 	model["sampling_info"] = sampling_info_list;
 
   return model;
