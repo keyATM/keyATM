@@ -570,7 +570,7 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 	double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
   std::vector<int> topic_ids = shuffled_indexes(num_topics);
 	std::vector<int> cov_ids = shuffled_indexes(num_cov);
-	static double A = 0.8; // important, 0.5-1.5
+	static double A = 1.2; // important, 0.5-1.5, if the inference goes wrong, change it
 
 	double store_loglik = likelihood_lambda(Lambda, C, n_dk,
 			mu, sigma, num_doc, num_topics, num_cov);
@@ -759,6 +759,9 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
   double eta_1 = 1, double eta_2 = 1, double eta_1_regular = 2, double eta_2_regular = 1){
 	auto start = std::chrono::high_resolution_clock::now(); // track time
 
+	// Simulation Setting
+	int simulation_treatment = 0;
+
 	// Data
   List W = model["W"], Z = model["Z"], X = model["X"];
   StringVector files = model["files"], vocab = model["vocab"];
@@ -786,20 +789,27 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 	int num_cov = C.cols();
 
 	// Covariate for Experiment (Just for simulation, comment out later)
-	MatrixXd C_treated = MatrixXd::Zero(num_doc, num_cov);
-	MatrixXd C_control = MatrixXd::Zero(num_doc, num_cov);
-	for(int d=0; d<num_doc; d++){
-		for(int c=0; c<num_cov; c++){
-			C_treated(d, c) = C(d,c);
-			C_control(d, c) = C(d,c);
+	if(simulation_treatment){
+		MatrixXd C_treated = MatrixXd::Zero(num_doc, num_cov);
+		MatrixXd C_control = MatrixXd::Zero(num_doc, num_cov);
+		for(int d=0; d<num_doc; d++){
+			for(int c=0; c<num_cov; c++){
+				C_treated(d, c) = C(d,c);
+				C_control(d, c) = C(d,c);
 
-			if(c==0){
-				C_treated(d, c) = 1.0;
-				C_control(d, c) = 0.0;
-			}
-		}	
+				if(c==0){
+					C_treated(d, c) = 1.0;
+					C_control(d, c) = 0.0;
+				}
+			}	
+		}
 	}
-	std::vector<double> diff_mean_store;
+
+
+	// For causal experiment simulation
+	MatrixXd diff_mean_store = MatrixXd::Zero(iter, num_topics);
+	MatrixXd Alpha_treated = MatrixXd::Zero(num_doc, num_topics);
+	MatrixXd Alpha_control = MatrixXd::Zero(num_doc, num_topics);
 
 	// Lambda
 	MatrixXd Lambda = MatrixXd::Zero(num_topics, num_cov);
@@ -908,19 +918,23 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 		Lambda_iter.push_back(Lambda_R);
 		model["Lambda_iter"] = Lambda_iter;
 
-		// Treatment Effect (Just for simulation, comment out later)
-			// Store Treatment Effect
-		Alpha = (C_treated * Lambda.transpose()).array().exp();
-		VectorXd E_treated = VectorXd::Zero(num_doc);
-		E_treated = Alpha.col(0).array() / Alpha.rowwise().sum().array();
+		if(simulation_treatment){
+			// Treatment Effect (Just for simulation, comment out later)
+				// Store Treatment Effect
+			Alpha_treated = (C_treated * Lambda.transpose()).array().exp();
+			VectorXd E_treated = VectorXd::Zero(num_doc);
 
-		Alpha = (C_control * Lambda.transpose()).array().exp();
-		VectorXd E_control = VectorXd::Zero(num_doc);
-		E_control = Alpha.col(0).array() / Alpha.rowwise().sum().array();
+			Alpha_control = (C_control * Lambda.transpose()).array().exp();
+			VectorXd E_control = VectorXd::Zero(num_doc);
 
-		VectorXd Diff = E_treated.array() - E_control.array();
-		double diff_mean = Diff.mean();
-		diff_mean_store.push_back(diff_mean);
+			for(int k=0; k<num_topics; k++){
+				E_treated = Alpha_treated.col(k).array() / Alpha_treated.rowwise().sum().array();	
+				E_control = Alpha_control.col(k).array() / Alpha_control.rowwise().sum().array();
+				VectorXd Diff = E_treated.array() - E_control.array();
+				double diff_mean = Diff.mean();
+				diff_mean_store.coeffRef(it, k) = diff_mean;
+			}
+		}
 
 
 		// Log-likelihood and Perplexity
@@ -955,11 +969,13 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 	// sampling_info_list.push_back(sampling_info);
 	// model["sampling_info"] = sampling_info_list;
 
-	// Add Diff mean (comment out later)
-	Rcpp::NumericVector diffmean = Rcpp::wrap(diff_mean_store);
-	List sampling_info_list = model["sampling_info"];
-	sampling_info_list.push_back(diffmean);
-	model["sampling_info"] = sampling_info_list;
+	if(simulation_treatment)
+		// Add Diff mean (comment out later)
+		Rcpp::NumericMatrix diffmean = Rcpp::wrap(diff_mean_store);
+		List sampling_info_list = model["sampling_info"];
+		sampling_info_list.push_back(diffmean);
+		model["sampling_info"] = sampling_info_list;
+	}
 
   return model;
 }
