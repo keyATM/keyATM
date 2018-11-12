@@ -54,11 +54,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// idealpoint
+List idealpoint(List model, int K, int iter, int output_iter);
+RcppExport SEXP _topicdict_idealpoint(SEXP modelSEXP, SEXP KSEXP, SEXP iterSEXP, SEXP output_iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< int >::type output_iter(output_iterSEXP);
+    rcpp_result_gen = Rcpp::wrap(idealpoint(model, K, iter, output_iter));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_topicdict_topicdict_train", (DL_FUNC) &_topicdict_topicdict_train, 7},
     {"_topicdict_topicdict_train_cov", (DL_FUNC) &_topicdict_topicdict_train_cov, 7},
     {"_topicdict_lda_cov", (DL_FUNC) &_topicdict_lda_cov, 4},
+    {"_topicdict_idealpoint", (DL_FUNC) &_topicdict_idealpoint, 4},
     {NULL, NULL, 0}
 };
 

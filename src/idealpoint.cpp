@@ -1,4 +1,4 @@
-#include "lda_cov.h"
+#include "idealpoint.h"
 
 using namespace Eigen;
 using namespace Rcpp;
@@ -6,7 +6,7 @@ using namespace std;
 
 # define PI_V   3.14159265358979323846  /* pi */
 
-// namespace sampler{
+// namespace sampler2{
 // 	inline int rand_wrapper(const int n) { return floor(unif_rand() * n); }
 //
 // 	double slice_uniform(double& lower, double& upper){
@@ -14,7 +14,7 @@ using namespace std;
 // 	}
 // }
 
-LDACOV::LDACOV(List model_, const int K, const int iter_, const int output_iter_)
+IDEALPOINT::IDEALPOINT(List model_, const int K, const int iter_, const int output_iter_)
 {
 	// Get Info from R
 	model = model_;
@@ -41,7 +41,7 @@ LDACOV::LDACOV(List model_, const int K, const int iter_, const int output_iter_
 	
 }
 
-void LDACOV::initialize()
+void IDEALPOINT::initialize()
 {
 	// Initialize Lambda
 	Lambda = MatrixXd::Zero(num_topics, num_cov);
@@ -72,7 +72,7 @@ void LDACOV::initialize()
 }
 
 
-void LDACOV::iteration()
+void IDEALPOINT::iteration()
 {
 	// Iteration
 	VectorXd alpha_ = VectorXd::Zero(num_topics);
@@ -116,7 +116,7 @@ void LDACOV::iteration()
 	}
 }
 
-double LDACOV::loglik_lambda()
+double IDEALPOINT::loglik_lambda()
 {
 	double loglik = 0.0;
 	double mu = 0.0;
@@ -153,7 +153,7 @@ double LDACOV::loglik_lambda()
 	return loglik;
 }
 
-void LDACOV::lambda_sample()
+void IDEALPOINT::lambda_sample()
 {
 
 	// Slice sampling for Lambda
@@ -212,7 +212,7 @@ void LDACOV::lambda_sample()
 
 }
 
-void LDACOV::loglik_store(int& r_index)
+void IDEALPOINT::loglik_store(int& r_index)
 {
 	double loglik = loglik_calc();
 	double perplexity = exp(-loglik / (double)total_words);
@@ -227,7 +227,7 @@ void LDACOV::loglik_store(int& r_index)
 					 " (perplexity: " << perplexity << ")" << std::endl;
 }
 
-double LDACOV::loglik_calc()
+double IDEALPOINT::loglik_calc()
 {
 	double loglik = 0.0;
 
@@ -256,7 +256,7 @@ double LDACOV::loglik_calc()
 	return loglik;
 }
 
-void LDACOV::lambda_store()
+void IDEALPOINT::lambda_store()
 {
 	Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
 	List Lambda_iter = model["Lambda_iter"];
@@ -264,7 +264,7 @@ void LDACOV::lambda_store()
 	model["Lambda_iter"] = Lambda_iter;
 }
 
-int LDACOV::sample_z(Eigen::VectorXd &alpha, int &z,
+int IDEALPOINT::sample_z(Eigen::VectorXd &alpha, int &z,
 				  	     int &w, int &doc_id)
 {
 	// Remove data
@@ -298,7 +298,7 @@ int LDACOV::sample_z(Eigen::VectorXd &alpha, int &z,
 	return new_z;
 }
 
-int LDACOV::rcat_without_normalize(Eigen::VectorXd &prob,
+int IDEALPOINT::rcat_without_normalize(Eigen::VectorXd &prob,
 		double &total)
 { // was called 'multi1'
   double u = R::runif(0, 1) * total;
@@ -314,7 +314,7 @@ int LDACOV::rcat_without_normalize(Eigen::VectorXd &prob,
   return index;
 }
 
-vector<int> LDACOV::shuffled_indexes(int m) {
+vector<int> IDEALPOINT::shuffled_indexes(int m) {
   vector<int> v(m);
   iota(v.begin(), v.end(), 0);
   random_shuffle(v.begin(), v.end(), sampler::rand_wrapper);
@@ -322,12 +322,12 @@ vector<int> LDACOV::shuffled_indexes(int m) {
 }
 
 
-double LDACOV::expand(double& p, double& A){
+double IDEALPOINT::expand(double& p, double& A){
 	double res = -(1.0/A) * log((1.0/p) - 1.0);
 	return res;
 }
 
-double LDACOV::shrink(double& x, double& A){
+double IDEALPOINT::shrink(double& x, double& A){
 	double res = 1.0 / (1.0 + exp(-A*x));
 	return res;
 }

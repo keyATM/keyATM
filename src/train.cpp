@@ -4,6 +4,8 @@
 #include <iostream>
 #include <algorithm>
 #include "lda_cov.h"
+#include "idealpoint.h"
+#include "sampler.h"
 
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
@@ -265,20 +267,20 @@ int sample_x(MatrixXi& n_x0_kv,
 
 
 // Wrapper around R's uniform random number generator for std shuffles
-inline int rand_wrapper(const int n) { return floor(unif_rand() * n); }
+// inline int rand_wrapper(const int n) { return floor(unif_rand() * n); }
 
 // Turns K into random permutation of 0 to K-1 using R's RNG
 std::vector<int> shuffled_indexes(int m) {
   std::vector<int> v(m);
   std::iota(v.begin(), v.end(), 0);
-  std::random_shuffle(v.begin(), v.end(), rand_wrapper);
+  std::random_shuffle(v.begin(), v.end(), sampler::rand_wrapper);
   return v;
 }
 
 // a version of randgen::uniform(lower, upper) that uses R's RNG
-double slice_uniform(double lower, double upper){
-  return lower + (upper - lower) * unif_rand();
-}
+// double slice_uniform(double lower, double upper){
+//   return lower + (upper - lower) * unif_rand();
+// }
 
 // This used to differentiate between input_alpha and alpha
 // for reasons I could not understand.  TODO: check this is still correct?
@@ -343,7 +345,7 @@ void slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
 						+ log(unif_rand()); // <-- using R random uniform
 
     for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
-      new_p = slice_uniform(start, end); // <-- using R function above
+      new_p = sampler::slice_uniform(start, end); // <-- using R function above
       alpha(k) = new_p / (1.0 - new_p); // expandp
 
 			newalphallk = alpha_loglik(alpha, n_dk, num_topics, k_seeded, num_doc, eta_1, eta_2, eta_1_regular, eta_2_regular);
@@ -592,7 +594,7 @@ void sample_lambda_slice(MatrixXd& Lambda, MatrixXd& C,
 
 
 			for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
-				new_p = slice_uniform(start, end); // <-- using R function above
+				new_p = sampler::slice_uniform(start, end); // <-- using R function above
 				Lambda(k,t) = expand(new_p, A); // expand
 
 				newlambdallk = likelihood_lambda(Lambda, C, n_dk,
@@ -637,7 +639,7 @@ void sample_lambda_mh(MatrixXd& Lambda, MatrixXd& C,
 									 int& k_seeded, int& num_doc,
 									 std::vector<int>& mh_info,
 									 double& mu, double& sigma,
-									 double mh_sigma=0.07)
+									 double mh_sigma=0.05)
 {
 	
 	std::vector<int> topic_ids = shuffled_indexes(num_topics);
@@ -678,6 +680,58 @@ void sample_lambda_mh(MatrixXd& Lambda, MatrixXd& C,
 
 }
 
+void sample_lambda_mh_single(MatrixXd& Lambda, MatrixXd& C,
+									 MatrixXd& n_dk,
+                   int& num_topics, int& num_cov,
+									 int& k_seeded, int& num_doc,
+									 std::vector<int>& mh_info,
+									 double& mu, double& sigma,
+									 double mh_sigma=0.05)
+{
+	
+	std::vector<int> topic_ids = shuffled_indexes(num_topics);
+	std::vector<int> cov_ids = shuffled_indexes(num_cov);
+	double Lambda_current;
+	double llk_current;
+	double llk_proposal;
+	double diffllk;
+	double r, u;
+
+	for(int k : topic_ids){
+		
+		for(int t : cov_ids){
+		
+			mh_info[1] += 1; // how many times we run mh
+
+			Lambda_current = Lambda(k,t);
+			
+			// Current llk
+			llk_current = likelihood_lambda(Lambda, C, n_dk, mu, sigma,
+					num_doc, num_topics, num_cov);
+			
+			// Proposal
+			Lambda(k, t) += R::rnorm(0.0, mh_sigma);
+			llk_proposal = likelihood_lambda(Lambda, C, n_dk, mu, sigma,
+					num_doc, num_topics, num_cov);
+			
+			diffllk = llk_proposal - llk_current;
+			r = std::min(0.0, diffllk);
+			u = log(unif_rand());
+			
+			if (u < r){
+				mh_info[0] += 1; // number of times accepted	
+			}else{
+				// Put back original values
+				Lambda(k, t) = Lambda_current;
+				
+			}
+
+		}
+
+	}
+
+}
+
 
 void sample_lambda(MatrixXd& Lambda, MatrixXd& C,
 									 MatrixXd& n_dk,
@@ -691,14 +745,17 @@ void sample_lambda(MatrixXd& Lambda, MatrixXd& C,
 
 	double u = unif_rand(); // select sampling methods randomly
 
-	if(u < 0.5){
-		sample_lambda_mh(Lambda, C, n_dk,
+	if(u < 0.4){
+		sample_lambda_mh_single(Lambda, C, n_dk,
                    num_topics, num_cov,
 									 k_seeded, num_doc, mh_info, mu, sigma);
 	}else{
 		sample_lambda_slice(Lambda, C, n_dk, num_topics, num_cov,
 					k_seeded, num_doc, mu, sigma);
 	}
+
+	// sample_lambda_slice(Lambda, C, n_dk, num_topics, num_cov,
+				// k_seeded, num_doc, mu, sigma);
 	
 }
 
@@ -789,9 +846,11 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 	int num_cov = C.cols();
 
 	// Covariate for Experiment (Just for simulation, comment out later)
+	MatrixXd C_treated;
+	MatrixXd C_control;
 	if(simulation_treatment){
-		MatrixXd C_treated = MatrixXd::Zero(num_doc, num_cov);
-		MatrixXd C_control = MatrixXd::Zero(num_doc, num_cov);
+		C_treated = MatrixXd::Zero(num_doc, num_cov);
+		C_control = MatrixXd::Zero(num_doc, num_cov);
 		for(int d=0; d<num_doc; d++){
 			for(int c=0; c<num_cov; c++){
 				C_treated(d, c) = C(d,c);
@@ -816,7 +875,7 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 	for(int k=0; k<num_topics; k++){
 		// Initialize with R random
 		for(int i=0; i<num_cov; i++){
-			Lambda.coeffRef(k, i) = R::rnorm(0.0, 1.5);
+			Lambda.coeffRef(k, i) = R::rnorm(0.0, 0.3);
 		}
 	}
 
@@ -964,14 +1023,15 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10,
 	model["model_fit"] = model_fit;
 
 	// Add Sampling Info
-	// Rcpp::IntegerVector sampling_info = Rcpp::wrap(mh_info);
-	// List sampling_info_list = model["sampling_info"];
-	// sampling_info_list.push_back(sampling_info);
-	// model["sampling_info"] = sampling_info_list;
+	Rcpp::IntegerVector sampling_info = Rcpp::wrap(mh_info);
+	List sampling_info_list = model["sampling_info"];
+	sampling_info_list.push_back(sampling_info);
+	model["sampling_info"] = sampling_info_list;
 
-	if(simulation_treatment)
+	Rcpp::NumericMatrix diffmean;
+	if(simulation_treatment){
 		// Add Diff mean (comment out later)
-		Rcpp::NumericMatrix diffmean = Rcpp::wrap(diff_mean_store);
+		diffmean = Rcpp::wrap(diff_mean_store);
 		List sampling_info_list = model["sampling_info"];
 		sampling_info_list.push_back(diffmean);
 		model["sampling_info"] = sampling_info_list;
@@ -994,6 +1054,23 @@ List lda_cov(List model, int K, int iter=0, int output_iter=10)
 {
 
 	LDACOV ldacov(model, K, iter, output_iter);
+
+	return model;
+}
+
+
+//' Run the Collapsed Gibbs sampler for Ideal Point Estimation Model
+//'
+//' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+//' @param iter Required number of iterations
+//' @param output_per Show log-likelihood and perplexity per this number during the iteration
+//'
+//' @export
+// [[Rcpp::export]]
+List idealpoint(List model, int K, int iter=0, int output_iter=10)
+{
+
+	IDEALPOINT idealpoint(model, K, iter, output_iter);
 
 	return model;
 }

@@ -1,11 +1,11 @@
-#ifndef __LDA_COV__INCLUDED__
-#define __LDA_COV__INCLUDED__
+#ifndef __IDEALPOINT__INCLUDED__
+#define __IDEALPOINT__INCLUDED__
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
 #include "sampler.h"
 
-class LDACOV
+class IDEALPOINT
 {
 	public:
 		// Variables From R
@@ -32,7 +32,7 @@ class LDACOV
 		Eigen::MatrixXd Alpha;
 		
 		// Constructor
-		LDACOV(Rcpp::List model_, const int K,
+		IDEALPOINT(Rcpp::List model_, const int K,
 				const int iter_, const int output_iter_);
 
 		// Main functions
