@@ -3,6 +3,7 @@
 #include <chrono>
 #include <iostream>
 #include <algorithm>
+#include <unordered_set>
 #include "lda_cov.h"
 #include "idealpoint.h"
 #include "sampler.h"
@@ -649,7 +650,8 @@ void sample_lambda_mh(MatrixXd& Lambda, MatrixXd& C,
 	double diffllk;
 	double r, u;
 
-	for(int k : topic_ids){
+	for(int kk=0; kk<num_topics; kk++){
+		int k = topic_ids[kk];
 		mh_info[1] += 1; // how many times we run mh
 
 		Lambda_current = Lambda.row(k).transpose();
@@ -697,9 +699,11 @@ void sample_lambda_mh_single(MatrixXd& Lambda, MatrixXd& C,
 	double diffllk;
 	double r, u;
 
-	for(int k : topic_ids){
+	for(int kk=0; kk<num_topics; kk++){
+		int k = topic_ids[kk];
 		
-		for(int t : cov_ids){
+		for(int tt=0; tt<num_cov; tt++){
+			int t = cov_ids[tt];
 		
 			mh_info[1] += 1; // how many times we run mh
 

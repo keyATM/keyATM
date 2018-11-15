@@ -3,6 +3,7 @@
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
+#include <unordered_set>
 #include "sampler.h"
 
 class IDEALPOINT

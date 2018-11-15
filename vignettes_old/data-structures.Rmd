@@ -1,0 +1,144 @@
+---
+title: "Data Structures"
+author: "Will Lowe"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data Structures}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Document Pre-processing
+
+The main function for reading in documents is `topicdict_model`.  
+This pre-processes using 
+options from the `quanteda` package.  See `help("tokens", package = "quanteda")`
+for its options.  By default `topicdict_model` uses `quanteda` to 
+guess the file encoding
+(if you happen to know the encoding is say UTF-8, then override with 
+`encoding = "utf8"`).  The defaults are to lowercase, remove numbers, spaces,
+symbols, twitter detritus, and URLs, and not to stem, separate hyphenated words 
+or remove stopwords.  To remove stopwords, hand in a character vector, e.g.
+`stopwords = quanteda::stopwords("english")`.  To stem, provide a language for
+the stemmer, e.g. `stem_language = "english"`.
+
+## Seed words
+
+Seed words are added using a list (or `quanteda::dictionary` which is a list) 
+of character vectors.  Each list element
+contains the seed words for that topic, and the topic may, but need
+not, be named.  
+
+Note that whatever you do by way of preprocessing to the 
+texts is also done to the seed words.
+
+## Unseeded topics
+
+In addition to the `length(dict)` seeded topics the function adds
+`extra_k` additional unconstrained topics.  
+
+## Model
+
+The `topicdict_model` and `topicdict_train` functions both return a model.  
+This is a list with named elements
+
+* `W` a list of vectors of word indexes
+* `Z` a list of vectors of topic indicators isomorphic to `W`
+* `X` a list of vectors of seed indicators (0/1) isomorphic to `W`
+* `vocab` a vector of vocabulary items
+* `files` a vector of document filenames
+* `dict` a tokenized version of the dictionary
+* `seeds` a list of indicators for the seed words in `dict`, organized by topic
+* `extra_k` how many unseeded topics will be estimated
+* `alpha` a vector of topic hyperparameters
+
+## Indexing 
+
+All word and topic indicators are zero-based for ease of later processing in 
+C++.  For words, `mod$vocab[mod$W + 1]` therefore recovers the 
+(tokenized) words of the i-th document from model `mod`.
+
+## Training
+
+the Gibbs sampler is `topicdict_train`.  This function takes a model returned 
+by `topicdict_train` or `topicdict_model` and runs `iter` more Gibbs sampling
+iterations on it.  This changes the model's `X` and `Z` (in place) but does not
+affect the remaing model elements.
+
+
+## Model Postprocessing
+
+After the model is complete there is a set of R post-processing functions
+based around the `posterior` function.  This constructs some of the working
+matrices in `topicdict_train` but does not depend on that function after it is
+complete.  
+
+I'm aware that the posterior alpha estimates for each document are not quite
+right because they do not have any prior (`alphaK`) information in them.  
+This should be fixed when the more important parts (the Gibbs sampler) are 
+confirmed to be running correctly.  The same is true of the `beta` parameters.
+
+In general we should probably hand in `gamma1`, `gamma2` etc. rather than 
+having them hard coded into `topicdict_train`, but again, that can wait a bit.
+
+## Posterior samples
+
+The following is proposal, not a description:
+```
+topicdict_sample <- function(model, filename = "samples.csv", n = 100) 
+```
+generates 100 posterior samples from `model` and drops it into filename in a 
+form that `coda` can deal with.  It either returns the filename when complete
+or perhaps a coda object.
+
+Practically, this runs the Gibbs sampler without updating alpha and 
+pushes the N x K matrix of Z assignments into a file as it goes.
+
+The sampled quantities are, at least to start with, the vectors of proportions of topics
+in each document.  If there are N documents and K topics then the output is 
+an 100 x NK matrix.  This is [ahem] quite big.  In flattened form headers 
+are in the style: 
+```
+docname1_01, ..., docname1_K, docname2_01, ..., docname2_K
+```
+We'll need some help functions to do the aggregation, along the lines of 
+```
+topicdict_proportions <- function(model = NULL, filename = "samples.csv", 
+                                  docnames = NULL, n = 0){
+  if (!null(model))
+    filename <- topicdict_sample(model, filename, n)
+  samples <- read_csv(filename)
+  nms <- names(samples)
+
+  doclens <- sapply(model$W, length)
+  file_ind <- 1:length(model$files)
+  cols <- nms
+  if (!is.null(docnames)){ # if docs specified overwrite
+    file_ind <- which(model$files %in% docnames)
+    cols <- sapply(docnames, function(x){ grep(x, nms, value = TRUE) })
+  }
+  numtopics <- length(model$alpha)
+  divisor <- rep(doclens[file_ind], each = numtopics)
+  flat <- apply(samples[, cols], 2, mean) / divisor
+  matrix(flat, ncol = numtopics, byrow = TRUE)
+}
+```
+which generates an N by K matrix of topic assignments in which each entry
+is an average of 100 posterior samples.  
+
+A similar function could easily
+be written for the word generation probabilities, but that will be even
+more massive.
+
+Convergence checks are a bit less clear.
+```
+topicdict_converged <- function(filename = "samples.csv"){
+  ## however we choose to check it
+}
+```
+
+Open questions:
+
+- How to check convergence of quantities that sum to a constant?
+

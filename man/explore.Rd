@@ -4,14 +4,16 @@
 \alias{explore}
 \title{Explore Documents}
 \usage{
-explore(files, encoding = "UTF-8", lowercase = TRUE,
-  remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE,
-  remove_separators = TRUE, remove_twitter = FALSE,
-  remove_hyphens = FALSE, remove_url = TRUE, stem_language = NULL,
-  stopwords = NULL)
+explore(files = NULL, text_df = NULL, encoding = "UTF-8",
+  lowercase = TRUE, remove_numbers = TRUE, remove_punct = TRUE,
+  remove_symbols = TRUE, remove_separators = TRUE,
+  remove_twitter = FALSE, remove_hyphens = FALSE, remove_url = TRUE,
+  stem_language = NULL, stopwords = NULL)
 }
 \arguments{
 \item{files}{names of each file to read}
+
+\item{text_df}{directly passes a text in a data.frame}
 
 \item{encoding}{File encoding (Default: whatever \code{quanteda} guesses)}
 

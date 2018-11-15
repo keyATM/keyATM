@@ -1,0 +1,86 @@
+---
+title: "Working From the Bara et al. Example"
+author: "Will Lowe"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{bara-et-al}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r warning=FALSE, message=FALSE, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(comment = "")
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+library(topicdict)
+library(quanteda)
+```
+
+We'll use the Bara data, and seeds extracted from the dictionary.  
+These are all in package `extdata`:
+```{r}
+doc_folder <- system.file(file.path("extdata", "bara_paras"), package = "topicdict")
+seed_file <- system.file(file.path("extdata", "bara_seeds.txt"), package = "topicdict")
+
+## turn this flat file of seeds into a (quanteda dictionary) list as it would be used
+seed_list <- Map(function(x){ unlist(strsplit(x, " ")) }, 
+                 Filter(function(x){ !grepl(x, pattern = "#") }, # remove comments
+                        readLines(seed_file)))
+
+# Original topic names from Bara dictionary
+names(seed_list) <- c("advocacy", "legal", "medical", "moral", "procedural", "social")
+dict <- dictionary(seed_list)
+dict
+```
+
+Initialize a model with the default tokenization options, without removing
+stopwords or stemming
+```{r}
+set.seed(12345)
+
+stops <- setdiff(c(stopwords("english"), letters), 
+                  c("he", "his", "him", "himself", "she", "hers", "her", "herself"))
+model <- topicdict_model(dir(doc_folder, full.names = T), dict, stopwords = stops)
+```
+And run a model.  Takes about 50 iterations to converge.
+```{r}
+model <- topicdict_train(model, iter = 60)
+```
+
+Now let's bundle up the posterior and use the new functions on it
+```{r}
+post <- topicdict::posterior(model)
+top_terms(post, show_seed = TRUE) 
+```
+
+But let's look at these in terms of lift (higher probability relative to a corpus frequency baseline)
+```{r}
+top_terms(post, "lift", show_seed = TRUE)
+```
+
+We can name topics using their first few words.
+```{r}
+# suggest some names for topics
+tnames <- suggest_topic_names(post, "lift", n = 4)
+tnames
+```
+Note that these would overrides the seed labels, so let's not do that.
+```{r}
+# post <- set_topic_names(post, tnames)
+```
+In the future we should probably have these functions make names only for *non*-seeded topics.
+
+Here are the top 2 topics in each document
+```
+head(top_topics(post))
+```
+and conversely, the the document that has the most of each topic
+```{r}
+top_docs(post)
+```
+

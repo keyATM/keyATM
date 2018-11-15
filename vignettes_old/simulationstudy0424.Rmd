@@ -1,0 +1,335 @@
+---
+title: "Progress Report"
+author: "Shusei Eshima"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GenSimDataLDA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r warning=FALSE, message=FALSE, echo = FALSE}
+# package_folder <- "/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict"
+# setwd(package_folder)
+# devtools::document() ; devtools::install() ; library(topicdict)
+savepath <- "/Users/Shusei/Dropbox/Study/Project/ImaiText/topicdict/vignettes/"
+library(knitr)
+knitr::opts_chunk$set(comment = "")
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+library(topicdict)
+library(quanteda)
+library(tibble)
+library(ggplot2)
+library(dplyr)
+library(topicmodels)
+```
+
+# Read Data
+```{r, warning=FALSE, message=FALSE}
+iter_num <- 700
+folder <- paste0("/Users/Shusei/Dropbox/Study/My_Research/TreeStructuredTopicModel/Papers/replication/Catalinac/data/docs") # Data from original data Document-Term Matrix
+docs <- list.files(folder, pattern = "*.txt", full.names = TRUE)
+explore_ <- explore(docs,
+             remove_numbers = TRUE,
+             remove_punct = TRUE,
+             remove_symbols = TRUE,
+             remove_separators = TRUE)
+```
+
+Create model function
+```{r, warning=FALSE, message=FALSE}
+create_model <- function(docs, seed_list, extra_k){
+	set.seed(225)
+	names(seed_list) <- 1:length(seed_list)
+	dict <- quanteda::dictionary(seed_list)
+  model <- topicdict_model(docs,
+               dict = dict, extra_k = extra_k,
+               remove_numbers = TRUE, 
+               remove_punct = TRUE,
+               remove_symbols = TRUE,
+               remove_separators = TRUE)
+
+  return(model)
+}
+```
+
+## Seeds List
+```{r, warning=FALSE, message=FALSE}
+# Top fifteen words appeared in the original output
+topic52 <- c("農業 産業 工業 整備 図る 漁業 秋田 開発 進める 県 商 山形 地域 発展 技術")
+topic62 <- c("福井 静岡 復興 連立 神戸 岐阜 経済 与党 県 被災 空港 産業 政権 災害 ひと")
+topic63 <- c("政治 主義 自由 社会 民主 大阪 平和 実現 日本 人間 目指す 豊か 福祉 守る ひと")
+topic20 <- c("税 政治 消費 廃止 自民党 国民 自由 日本 守る コメ 企業 輸入 実現 献金 阻止")
+topic58 <- c("企業 教育 中小 充実 図る 福祉 進める 改善 安定 家庭 振興 対策 恩給 作り 年金")
+
+seed_list <- list(topic52, topic62, topic63, topic20, topic58)
+seed_list <- lapply(seed_list, function(x){strsplit(x, " ")[[1]]})
+```
+
+# Explore Data
+```{r, warning=FALSE, message=FALSE, fig.width=9.5, fig.height=6.5}
+# Use a part of seed words
+use_part_of_seed <- function(x, use=1:5){
+	words <- strsplit(x, " ")[[1]][use] # use part of seed
+	res <- paste(words, collapse=" ") # back to seed_list format
+	return(res)
+}
+
+
+# Top words
+explore_$top_words(n=10)
+	# politics, japan, society, reform, people, party, realize, tax, education, defend
+
+# Proportion
+p <- explore_$visualize_dict_prop(seed_list)
+ggsave(paste0(savepath, "Xseeds_all.pdf"), p, family="Japan1GothicBBB")
+
+p <- explore_$visualize_dict_prop(lapply(seed_list, use_part_of_seed, use=1:8))
+ggsave(paste0(savepath, "Xseeds_1-8.pdf"), p, family="Japan1GothicBBB")
+```
+
+# Fit Seeded LDA
+## K+1 rule with different number of keywords 
+```{r, warning=FALSE, message=FALSE}
+model <- create_model(docs, seed_list, extra_k=1)
+res <- topicdict_train(model, iter = iter_num)
+post <- topicdict::posterior(res)
+```
+
+# eta = 10
+```{r, warning=FALSE, message=FALSE}
+use_eta = 10
+```
+
+## All seeds
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+model <- create_model(docs, seed_list, extra_k=1)
+res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+post <- topicdict::posterior(res)
+top_terms(post)
+diagnosis_alpha(post, start=10)
+tail(post$alpha,1)
+diagnosis_model_fit(post, start=2)
+```
+
+## Eight seeds
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:8), extra_k=1)
+res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+post <- topicdict::posterior(res)
+top_terms(post)
+diagnosis_alpha(post, start=10)
+tail(post$alpha,1)
+diagnosis_model_fit(post, start=2)
+```
+
+## Five seeds
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:5), extra_k=1)
+res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+post <- topicdict::posterior(res)
+top_terms(post)
+diagnosis_alpha(post, start=10)
+tail(post$alpha,1)
+diagnosis_model_fit(post, start=2)
+```
+
+
+# eta = 20
+```{r, warning=FALSE, message=FALSE}
+use_eta = 20
+```
+
+## All seeds
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+model <- create_model(docs, seed_list, extra_k=1)
+res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+post <- topicdict::posterior(res)
+top_terms(post)
+diagnosis_alpha(post, start=10)
+tail(post$alpha,1)
+diagnosis_model_fit(post, start=2)
+```
+
+## Eight seeds
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:8), extra_k=1)
+res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+post <- topicdict::posterior(res)
+top_terms(post)
+diagnosis_alpha(post, start=10)
+tail(post$alpha,1)
+diagnosis_model_fit(post, start=2)
+```
+
+## Five seeds
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:5), extra_k=1)
+res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+post <- topicdict::posterior(res)
+top_terms(post)
+diagnosis_alpha(post, start=10)
+tail(post$alpha,1)
+diagnosis_model_fit(post, start=2)
+```
+
+
+# # eta = 30
+# ```{r, warning=FALSE, message=FALSE}
+# use_eta = 30
+# ```
+#
+# ## All seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, seed_list, extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+#
+# ## Eight seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:8), extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+#
+# ## Five seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:5), extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+
+
+# # eta = 50
+# ```{r, warning=FALSE, message=FALSE}
+# use_eta = 50
+# ```
+#
+# ## All seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, seed_list, extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+#
+# ## Eight seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:8), extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+#
+# ## Five seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:5), extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+
+
+# # eta = 70
+# ```{r, warning=FALSE, message=FALSE}
+# use_eta = 70
+# ```
+#
+# ## All seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, seed_list, extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+#
+# ## Eight seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:8), extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+#
+# ## Five seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:5), extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+#
+
+# # eta = 100
+# ```{r, warning=FALSE, message=FALSE}
+# use_eta = 100
+# ```
+#
+# ## All seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, seed_list, extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+#
+# ## Eight seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:8), extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+#
+# ## Five seeds
+# ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=5}
+# model <- create_model(docs, lapply(seed_list, use_part_of_seed, use=1:5), extra_k=1)
+# res <- topicdict_train(model, iter = iter_num, eta_1_regular=use_eta)
+# post <- topicdict::posterior(res)
+# top_terms(post)
+# diagnosis_alpha(post, start=10)
+# tail(post$alpha,1)
+# diagnosis_model_fit(post, start=2)
+# ```
+

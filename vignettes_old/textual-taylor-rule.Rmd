@@ -1,0 +1,270 @@
+---
+title: "A Textual Taylor Rule (Replication)"
+author: "Will Lowe"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A Textual Taylor Rule}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(dplyr)
+library(lubridate)
+library(quanteda)
+library(lme4)
+library(topicdict)
+```
+
+## Replicating a Textual Taylor Rule
+
+The Federal Open Market 
+Committee discusses the state of the US economy and determines
+an interest rate policy on the basis of a mandate to balance
+inflation and maximize economic output. This trade-off across policy outcomes 
+defines a classical ideal point, refered to as a Taylor Rule after the economist
+who suggested a specific value for it.  Baerg and Lowe 'A Textual Taylor Rule' 
+assumes that the committee's position reflects some aggregation of 
+the positions of its members (mostly regional bank presidents).
+and attempts to infer these positions from transcripts of the FOMC meetings,
+released on a temporal lag.  
+
+The paper argues that emphasis on (the dangers
+of) inflation versus emphasis on economic output are a signal of individual
+member positions. It the fits a large n-gram topic model to speaker contributions 
+and selects the topics related to inflation and to output, aggregating as 
+necessary, and uses the logit of these topic counts as positions.
+
+From a substantive perspective it would be better to be able to ask directly
+for inflation and output topics rather than searching through topic model 
+terms and construct the score.  Here we redo the analysis using a subset of top
+terms used in the paper to seed a topicdict model and compare the results.
+
+A summary of the top few terms are in `ttrule/topical-ngrams-output.txt`. In the 
+paper, topic 8 was identified as about inflation and topics 7, 17, and 21 about
+employment and economic output.
+
+As a taster the top terms and phrases from 8 were 
+```
+Topic 8 unigrams
+inflation 0.018360557320459263
+percent 0.012131975886134527
+year 0.010697817911966048
+time 0.008429847162118217
+don 0.007208311445747972
+chairman 0.006432865564366177
+growth 0.006432865564366177
+housing 0.006291117392500688
+economy 0.005928408835080171
+ve 0.005899225387931394
+policy 0.005882549132417807
+greenbook 0.005782491599336285
+core 0.005628236235835605
+meeting 0.005582376533173242
+mr 0.005549024022146068
+point 0.005461473680699736
+market 0.0053280636365910395
+recent 0.005065412612252045
+term 0.004890311929359382
+real 0.004790254396277859
+
+Topic 8 unigrams 239862/3843 bigrams 109462/32336 phrases 89204/35094
+basis_points 0.006053540199991032
+core_inflation 0.005806914488139545
+monetary_policy 0.005448186179991928
+inflation_expectations 0.005033406573696247
+energy_prices 0.0037218061970315233
+financial_markets 0.0035648625622169408
+percentage_point 0.003183713734810098
+united_states 0.0029034572440697726
+funds_rate 0.0027689341285144164
+fed_funds_rate 0.0027689341285144164
+price_stability 0.0027128828303663514
+governor_kohn 0.002567149455181382
+unemployment_rate 0.0025447289359221558
+intermeeting_period 0.0024550468588852518
+president_poole 0.0024214160799964127
+fourth_quarter 0.002365364781848348
+housing_market 0.0022981032240706693
+president_lacker 0.0022196314066633784
+downside_risks 0.0022196314066633784
+federal_funds_rate 0.0022084211470337653
+```
+for reference, here is topic 7 (a fairly clear output topic).
+```
+Topic 7 unigrams
+market 0.04646531695984069
+ups 0.02621971457019582
+contact 0.0258878194490541
+mart 0.023232658479920346
+wal 0.02190507799535347
+company 0.020245602389644873
+contacts 0.018254231662794558
+minutes 0.01659475605708596
+business 0.014271490209093926
+lot 0.013275804845668768
+large 0.01261201460338533
+volume 0.01261201460338533
+capacity 0.011948224361101892
+trucking 0.011616329239960173
+companies 0.011284434118818453
+fedex 0.010952538997676734
+sales 0.010288748755393295
+shipping 0.009956853634251576
+poole 0.009624958513109858
+construction 0.009293063391968137
+
+Topic 7 unigrams 3013/575 bigrams 330/319 phrases 327/317
+financial_market_upset 0.01529051987767584
+market_believes 0.009174311926605505
+construction_area 0.0061162079510703364
+projections_exercise 0.0061162079510703364
+market_respond 0.0061162079510703364
+annual_data 0.0061162079510703364
+fairly_decisive 0.0030581039755351682
+politically_palatable 0.0030581039755351682
+financial_market_shock 0.0030581039755351682
+growth_patterns 0.0030581039755351682
+note_yesterday 0.0030581039755351682
+tamer_oer_readings 0.0030581039755351682
+wage_price 0.0030581039755351682
+staff_anticipates 0.0030581039755351682
+writing_checks 0.0030581039755351682
+medical_expenses 0.0030581039755351682
+single_payer 0.0030581039755351682
+care_area_taking 0.0030581039755351682
+japanese_experience 0.0030581039755351682
+separate_views_made 0.0030581039755351682
+```
+
+Read in the data: speaker contributions aggregated to the level of the meeting.
+```{r}
+dd <- read.csv("ttrule/speaker_meeting_unique.csv", 
+               stringsAsFactors = FALSE, sep = ";", row.names = 1)
+# extract some meeting dates
+dd$date <- ymd(gsub("[a-zA-Z.]", "", dd$file_id))
+dd$text <- dd$Speech
+dd$Speech <- NULL
+spkrs <- strsplit(gsub("[.]", "", dd$Speaker), " ")
+dd$name <- unlist(lapply(spkrs, function(x) x[length(x)])) # last element
+corp <- corpus(dd, docid_field = "file_id", text_field = "text") 
+```
+
+Now for a dictionary
+```{r}
+infl <- unlist(strsplit("inflation inflationary core basis expectations ",
+                        "funds price point prices pressures", " "))
+out <- unlist(strsplit(c("market wal company business trucking trucks companies",
+                       "sales shipping construction wage staff medical layoff",
+                       "residential nonfarm productivity compensation",
+                       "slack", "unemployment", "employment", "labor"), " "))
+dict <- dictionary(list(inflation = infl, output = out))
+```
+
+Run the model on default settings and 23 extra topics (the original paper used
+25)
+```{r}
+mod <- topicdict_model(corp, dict = dict, extra_k = 23, 
+                       remove_numbers = TRUE, 
+                       remove_punct = TRUE, 
+                       remove_separators = TRUE,
+                       remove_symbols = TRUE,
+                       stopwords = stopwords())
+mod <- topicdict_train(mod, iter = 300)
+
+post <- posterior(mod)
+top_terms(post, 20)
+```
+
+Reinflate the counts of the topics we care about, fit the model from the
+paper, and examine the ideal points
+```{r}
+dv <- data.frame(output = round(post$doc_lens * post$theta[, "output"]),
+                 inflation = round(post$doc_lens * post$theta[, "inflation"]))
+dset <- data.frame(dv, dd[,c("date", "name")])
+
+re_mod <- glmer(cbind(inflation, output) ~ (1 | date) + (1 | name), 
+                data = dset, family = binomial)
+reffs <- ranef(re_mod, whichel = "name", condVar = TRUE)
+lattice::dotplot(reffs)
+```
+
+Is this right?  Hard to say, but here are the Financial Times' judgements
+```{r}
+ft_coding <- data.frame(Name = c("Kohn", "Yellen", "Bernanke", "Pianalto",
+                                "Fisher", "Lacker", "Plosser", "Hoenig"),
+                        coding = c("Super Dove", "Dove", "Center", "Center", 
+                                "Hawk", "Super Hawk", "Super Hawk", "Super Hawk"),
+             stringsAsFactors = FALSE)
+ft_coding$order <- as.numeric(factor(ft_coding$coding, 
+                              levels = c("Super Dove", "Dove", "Center",
+                                         "Hawk", "Super Hawk")))
+ft_coding$est <- reffs$name[toupper(ft_coding$Name),]
+
+cor(ft_coding$order, ft_coding$est) # Meh
+```
+
+Fine, we'll try a smaller model, just in case
+```{r}
+mod <- topicdict_model(corp, dict = dict, extra_k = 13, 
+                       remove_numbers = TRUE, 
+                       remove_punct = TRUE, 
+                       remove_separators = TRUE,
+                       remove_symbols = TRUE,
+                       stopwords = stopwords(),
+                       stem_language = "english"
+                      )
+mod <- topicdict_train(mod, iter = 300)
+
+post <- posterior(mod)
+top_terms(post, 20)
+
+dv <- data.frame(output = round(post$doc_lens * post$theta[, "output"]),
+                 inflation = round(post$doc_lens * post$theta[, "inflation"]))
+dset <- data.frame(dv, dd[,c("date", "name")])
+
+re_mod <- glmer(cbind(inflation, output) ~ (1 | date) + (1 | name), 
+                data = dset, family = binomial)
+reffs <- ranef(re_mod, whichel = "name", condVar = TRUE)
+lattice::dotplot(reffs)
+
+ft_coding$est <- reffs$name[toupper(ft_coding$Name),]
+
+cor(ft_coding$order, ft_coding$est) # Meh again
+```
+
+## Next up
+
+For different numbers of topic, run LDA and sLDA and measure 
+stability of ranking / overlap.
+
+```{r}
+library(topicmodels)
+
+dtm <- dfm(corp, remove_numbers = TRUE, 
+           remove_punct = TRUE, 
+           remove_separators = TRUE,
+           remove_symbols = TRUE,
+           stopwords = stopwords(),
+           stem_language = "english")
+lda_mod5 <- LDA(as.DocumentTermMatrix(dtm), k = 5, method = "gibbs") 
+lda_mod10 <- LDA(as.DocumentTermMatrix(dtm), k = 10, method = "gibbs") 
+lda_mod15 <- LDA(as.DocumentTermMatrix(dtm), k = 15, method = "gibbs") 
+lda_mod20 <- LDA(as.DocumentTermMatrix(dtm), k = 20, method = "gibbs") 
+lda_mod25 <- LDA(as.DocumentTermMatrix(dtm), k = 25, method = "gibbs") 
+lda_mod30 <- LDA(as.DocumentTermMatrix(dtm), k = 30, method = "gibbs") 
+lda_mod35 <- LDA(as.DocumentTermMatrix(dtm), k = 35, method = "gibbs") 
+lda_mod40 <- LDA(as.DocumentTermMatrix(dtm), k = 40, method = "gibbs") 
+lda_mod45 <- LDA(as.DocumentTermMatrix(dtm), k = 45, method = "gibbs") 
+
+```
+
+
+
+
+

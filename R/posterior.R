@@ -285,8 +285,23 @@ top_docs <- function(x, n = 10, measure = c("probability", "lift")){
 #' @export
 diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
                             scale = ""){
-	num_topic <-	x$seed_K + x$extra_k
-	res_alpha <- x$alpha
+
+
+	if("topicdict" %in% class(x)){
+		num_topic <-	length(x$dict) + x$extra_k
+
+		res_alpha <- data.frame(x$alpha_iter)
+		colnames(res_alpha) <- NULL
+		res_alpha <- data.frame(t(res_alpha))
+		if(nrow(res_alpha) > 0){
+			colnames(res_alpha) <- paste0("EstTopic", 1:ncol(res_alpha))
+			res_alpha$iter <- 1:nrow(res_alpha)
+		}
+		
+	}else if("topicdict_posterior" %in% class(x)){
+		num_topic <-	x$seed_K + x$extra_k
+		res_alpha <- x$alpha	
+	}
 
 	if(!is.null(show_topic)){
 		# show topic is a vector of column index e.g., c(1,3,5)
@@ -343,7 +358,17 @@ diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
 #' @importFrom stats as.formula
 #' @export
 diagnosis_model_fit <- function(x, start=NULL){
-	modelfit <- x$modelfit
+
+	if("topicdict_posterior" %in% class(x)){
+		modelfit <- x$modelfit
+	}else if("topicdict" %in% class(x)){
+		modelfit <- data.frame(x$model_fit)
+		colnames(modelfit) <- NULL
+		if(nrow(modelfit) > 0){
+			modelfit <- data.frame(t(modelfit))
+			colnames(modelfit) <-	c("Iteration", "Log Likelihood", "Perplexity")
+		}	
+	}
 
 	if(!is.null(start)){
 		modelfit <- modelfit[ modelfit$Iteration >= start, ]

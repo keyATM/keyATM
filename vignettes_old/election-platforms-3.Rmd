@@ -1,0 +1,267 @@
+---
+title: "Election Platforms 2: Scaling"
+author: "Will Lowe"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{election-platforms}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = ""
+)
+
+library(topicdict)
+library(quanteda)
+library(ca)
+library(dplyr)
+library(ggplot2)
+theme_set(theme_minimal())
+
+```
+
+```{r}
+dictfile <- system.file("extdata/laver-garry-ajps.ykd", package="topicdict")
+# We'll use just the economics sections of this dictionary
+dict <- dictionary(file = dictfile)[["Laver and Garry"]][["State in Economy"]]
+dict$Neut <- NULL # not interested in this category! Just Pro / Con
+# load the corpus
+data("corpus_uk_platforms")
+```
+
+Preprocess the dictionary to expand the wildcards and filter out low frequency
+terms
+```{r}
+post70s_corpus <- corpus_subset(corpus_uk_platforms, date > 1970)
+partyabbrev <- c("Con", "Lib", "Lab", "LD", "LibSDP")
+#res_main_parties <- subset(res, main) # for plotting
+docvars(post70s_corpus, "main") <- docvars(post70s_corpus, "party") %in% partyabbrev
+new_dict <- preprocess_dictionary(dict, post70s_corpus,
+                                  min.freq = 5,
+                                  remove = stopwords(), 
+                                  remove_numbers = TRUE,
+                                  remove_punct = TRUE, 
+                                  remove_symbols = TRUE,
+                                  remove_separators = TRUE, 
+                                  remove_hyphens = FALSE)
+cbind(old = lapply(dict, length),
+      new = lapply(new_dict, length))
+```
+
+
+```{r}
+# CA dictionary analysis
+dtm_orig <- dfm(post70s_corpus,
+                dictionary = new_dict,
+                remove = stopwords(), 
+                remove_numbers = TRUE,
+                remove_punct = TRUE, 
+                remove_symbols = TRUE,
+                remove_separators = TRUE, 
+                remove_hyphens = FALSE)
+res <- data.frame(dtm_orig)
+
+# CA with all vocabulary
+dd <- dfm(post70s_corpus,
+          remove = stopwords(), remove_numbers = TRUE,
+          remove_punct = TRUE, remove_symbols = TRUE,
+          remove_separators = TRUE, remove_hyphens = FALSE)
+dd <- dfm_select(dd, unlist(new_dict))
+dd <- dfm_trim(dd, min_termfreq = 5, min_docfreq = 5)
+mod <- ca(as.matrix(dd))          # fit a scaling model
+
+# CA with just the dictionary's vocabulary
+dd_res <- dfm(post70s_corpus, select = unlist(new_dict))
+dd_res <- dfm_select(dd_res, unlist(new_dict))
+dd_res <- dfm_trim(dd_res, min_termfreq = 1, min_docfreq = 1)
+mod_res <- ca(as.matrix(dd_res))          # fit a scaling model
+
+all_res <- data.frame(docvars(dtm_orig),
+                      POS = (res$Con - res$Pro) / (res$Con + res$Pro),
+                      logitPOS = log(res$Con) - log(res$Pro),
+                      ca_dim1 = -mod$rowcoord[,1],
+                      ca_dim2 =  mod$rowcoord[,2],
+                      ca_dim1_res = mod_res$rowcoord[,1],
+                      ca_dim2_res = mod_res$rowcoord[,2])
+
+meta <- docvars(post70s_corpus) # use this when needed
+all_res <- data.frame(meta, all_res)
+```
+One substantively sensible way to plot this 'gold standard' is as time series of
+the main parties
+```{r, fig.width=15, fig.height=10}
+all_res %>% 
+  filter(main) %>%
+  ggplot(aes(date, ca_dim1_res, color = party)) +
+  geom_line() +
+  geom_point() +
+  geom_vline(xintercept = c(1992, 1997), alpha = 0.1, size = 5 ) +
+  scale_color_manual(values = c("blue", "red", "orange", "orange", "orange")) +
+  coord_flip()
+```
+
+```{r}
+left <- -mod$colcoord[intersect(rownames(mod$colcoord), new_dict$Pro), 1]
+right <- -mod$colcoord[intersect(rownames(mod$colcoord), new_dict$Con), 1]
+
+df <- dfm(post70s_corpus,
+          remove = stopwords(), remove_numbers = TRUE,
+          remove_punct = TRUE, remove_symbols = TRUE,
+          remove_separators = TRUE, remove_hyphens = FALSE)
+freqs <- colSums(df)
+freq_left <- freqs[names(left)]
+freq_right <- freqs[names(right)]
+
+w_left <-  freq_left / sum(freq_left)
+w_right <-  freq_right / sum(freq_right)
+
+mean_left <- weighted.mean(left, w_left)  
+mean_right <- weighted.mean(right, w_right)
+
+sd_left <- sqrt(weighted.mean((left - mean_left)^2, w_left))
+sd_right <- sqrt(weighted.mean((right - mean_right)^2, w_right))
+
+se_left <- sd_left * sum(w_left^2)
+se_right <- sd_right * sum(w_right^2)
+
+cat("CA scores for dictionary words:\n",
+    "Mean Left: ", round(mean_left, 3), 
+    "SE: ", round(se_left, 3), "(corpus freq weighted)\n",
+    "Mean Right: ", round(mean_right, 3), 
+    "SE: ", round(se_right, 3), "(corpus freq weighted)\n")
+
+#data.frame(side = c(rep("left", length(left)), 
+#                    rep("right", length(right))),
+#           score = c(left, right)) %>%
+#  ggplot(aes(x = score, fill = side)) +
+#    geom_density(alpha = 0.5, col = NA)
+ 
+```
+
+Now restricted to just the dictionary's vocabulary
+
+```{r}
+left <- mod_res$colcoord[intersect(rownames(mod_res$colcoord),
+                                   new_dict$Pro), 1]
+right <- mod_res$colcoord[intersect(rownames(mod_res$colcoord), 
+                                    new_dict$Con), 1]
+
+df <- dfm(post70s_corpus,
+          remove = stopwords(), remove_numbers = TRUE,
+          remove_punct = TRUE, remove_symbols = TRUE,
+          remove_separators = TRUE, remove_hyphens = FALSE)
+freqs <- colSums(df)
+freq_left <- freqs[names(left)]
+freq_right <- freqs[names(right)]
+
+w_left <-  freq_left / sum(freq_left)
+w_right <-  freq_right / sum(freq_right)
+
+mean_left <- weighted.mean(left, w_left)  
+mean_right <- weighted.mean(right, w_right)
+
+sd_left <- sqrt(weighted.mean((left - mean_left)^2, w_left))
+sd_right <- sqrt(weighted.mean((right - mean_right)^2, w_right))
+
+se_left <- sd_left * sum(w_left^2)
+se_right <- sd_right * sum(w_right^2)
+
+cat("CA scores for dictionary words:\n",
+    "Mean Left: ", round(mean_left, 3), 
+    "SE: ", round(se_left, 3), "(corpus freq weighted)\n",
+    "Mean Right: ", round(mean_right, 3), 
+    "SE: ", round(se_right, 3), "(corpus freq weighted)\n")
+
+#data.frame(side = c(rep("left", length(left)), 
+#                    rep("right", length(right))),
+#           score = c(left, right)) %>%
+#  ggplot(aes(x = score, fill = side)) +
+#    geom_density(alpha = 0.5, col = NA)
+ 
+```
+
+
+We can generate 'wordscore' type quantities by looking at the logit of the word
+generation probabilities from the topic model and comparing them to the scaling
+scores:
+
+```{r}
+set.seed(1234)
+mod5 <- topicdict_model(post70s_corpus, dict = new_dict,
+                stopwords = stopwords(), remove_numbers = TRUE,
+                remove_punct = TRUE, remove_symbols = TRUE,
+                remove_separators = TRUE, remove_hyphens = FALSE,
+                extra_k = 5)
+mod5 <- topicdict_train(mod5, 340)
+post <- posterior(mod5)
+
+on_topic_left <- post$beta["Pro", new_dict$Pro]
+not_pro <- setdiff(rownames(post$beta), "Pro")
+off_topic_left <- colSums(post$beta[not_pro, new_dict$Pro])
+diff_left <- off_topic_left - on_topic_left # -ve more 'correct'
+
+on_topic_right <- (post$beta["Con", new_dict$Con])
+not_con <- setdiff(rownames(post$beta), "Con")
+off_topic_right <- colSums(post$beta[not_con, new_dict$Con])
+diff_right <- on_topic_right - off_topic_right # +ve more 'correct'
+
+sorted_diff_right <- sort(diff_right)
+#plot(right[names(diff_right)], sorted_diff_right)
+ptab <- prop.table(table(td = ifelse(diff_right >= 0, ">=0 (correct)", "<0"), 
+                         ws = ifelse(right >= 0, ">=0", "<0")))
+addmargins(round(ptab, 2))
+
+ptab <- prop.table(table(td = ifelse(diff_left < 0, "<0 (correct)", ">=0"),
+                         ws = ifelse(left < 0, "<0", ">=0")))
+addmargins(round(ptab, 2))
+
+```
+
+Dictionary right that scaling model thinks are left
+```{r}
+names(diff_right[diff_right >= 0 & right < 0])
+```
+
+Dictionary left that scaling model thinks are right
+```{r}
+names(diff_left[diff_left < 0 & left > 0])
+```
+
+
+Turns out the positions are pretty close from manual dictionary and 
+scores from the logit scoring the topicdict output
+```{r}
+cmat <- data.frame(pos_manual = all_res$logitPOS, 
+                   pos_ca = all_res$ca_dim1,
+                   pos_ca_res = all_res$ca_dim1_res,
+                   pos_topicdict = log(post$theta[,2] / post$theta[,1]))
+
+# overall postion correlations
+cor(cmat)
+
+# scaling model is much better fit for the main parties (obvs)
+# but topicdict still good
+cor(cmat[all_res$main,])
+
+# and
+cor(cmat[!all_res$main,])
+```
+
+```{r}
+dd <- data.frame(pos_manual = (all_res$logitPOS), 
+                 pos_topicdict = (log(post$theta[,2] / post$theta[,1])),
+                 main = ifelse(all_res$main, "main", "other"))
+ggplot(dd, aes(x = pos_manual, y = pos_topicdict, color = main)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +
+  xlab("Logit score from dictionary") + 
+  ylab("Logit score from topicdict")
+```
+
+
+
+

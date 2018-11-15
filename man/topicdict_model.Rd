@@ -4,18 +4,21 @@
 \alias{topicdict_model}
 \title{Initialize a topicdict model}
 \usage{
-topicdict_model(files, dict, covariates_data = NULL,
-  covariates_formula = NULL, extra_k = 1, encoding = "UTF-8",
-  lowercase = TRUE, remove_numbers = TRUE, remove_punct = TRUE,
-  remove_symbols = TRUE, remove_separators = TRUE,
-  remove_twitter = FALSE, remove_hyphens = FALSE, remove_url = TRUE,
-  stem_language = NULL, stopwords = NULL, alpha = 50/(length(dict) +
-  extra_k), beta = 0.01, beta_s = 0.1, gamma_1 = 1, gamma_2 = 1)
+topicdict_model(files = NULL, dict = NULL, text_df = NULL,
+  covariates_data = NULL, covariates_formula = NULL, extra_k = 1,
+  encoding = "UTF-8", lowercase = TRUE, remove_numbers = TRUE,
+  remove_punct = TRUE, remove_symbols = TRUE,
+  remove_separators = TRUE, remove_twitter = FALSE,
+  remove_hyphens = FALSE, remove_url = TRUE, stem_language = NULL,
+  stopwords = NULL, alpha = 50/(length(dict) + extra_k), beta = 0.01,
+  beta_s = 0.1, gamma_1 = 1, gamma_2 = 1)
 }
 \arguments{
 \item{files}{names of each file to read (or a quanteda corpus object)}
 
 \item{dict}{a quanteda dictionary or named list of character vectors}
+
+\item{text_df}{directly passes a text in a data.frame}
 
 \item{covariates_data}{a data.frame or a tibble that is a covariate matrix. Columns are covariates.}
 
