@@ -421,3 +421,52 @@ diagnosis_p <- function(x, topicvec=c()){
 
 	return(g)
 }
+
+
+
+#' Calculate posterior theta 
+#'
+#' @param x The result object from a fitted model
+#'
+#' @return A list that contains estimated theta for each iteration
+#' @export
+posterior_theta <- function(x){
+	calc_theta <- function(x, cov){
+		Alpha <- exp(cov %*% t(x))
+		theta <- Alpha / rowSums(Alpha)
+		return(theta)
+	}
+	theta <- lapply(res$Lambda, calc_theta, cov=res$C)
+	return(theta)
+}
+
+
+#' Calculate posterior tau 
+#'
+#' @param x The result object from a fitted model
+#' @param topic_id 
+#' @param cov_id 
+#'
+#' @return A list that contains estimated tau for each iteration
+#' @export
+posterior_tau <- function(res, topic_id=1, cov_id=1){
+
+	calc_theta <- function(x, cov){
+		Alpha <- exp(cov %*% t(x))
+		theta <- Alpha / rowSums(Alpha)
+		return(theta)
+	}
+	theta <- lapply(res$Lambda, calc_theta, cov=res$C)
+
+	covariates <- res$C
+
+	calc_tau <- function(theta_i, covariates, topic_id, cov_id){
+			temp <- as.data.frame(theta_i)	
+			temp$cov <- covariates[, cov_id]
+			res <- mean(temp[ temp$cov==1, topic_id]) - mean(temp[ temp$cov==0, topic_id])
+		}
+
+	res <- unlist(lapply(theta, calc_tau, covariates, topic_id, cov_id))
+
+	return(res)
+}
