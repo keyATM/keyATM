@@ -37,11 +37,12 @@ lda_cov <- function(model, K, iter = 0L, output_iter = 10L) {
 #' Run the Collapsed Gibbs sampler for Ideal Point Estimation Model
 #'
 #' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+#' @param author_info author information
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-idealpoint <- function(model, K, iter = 0L, output_iter = 10L) {
-    .Call('_topicdict_idealpoint', PACKAGE = 'topicdict', model, K, iter, output_iter)
+topicdict_idealpoint <- function(model, author_info, iter = 0L, output_iter = 10L) {
+    .Call('_topicdict_topicdict_idealpoint', PACKAGE = 'topicdict', model, author_info, iter, output_iter)
 }
 

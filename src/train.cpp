@@ -1066,15 +1066,16 @@ List lda_cov(List model, int K, int iter=0, int output_iter=10)
 //' Run the Collapsed Gibbs sampler for Ideal Point Estimation Model
 //'
 //' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+//' @param author_info author information
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
 //' @export
 // [[Rcpp::export]]
-List idealpoint(List model, int K, int iter=0, int output_iter=10)
+List topicdict_idealpoint(List model, List author_info, int iter=0, int output_iter=10)
 {
 
-	IDEALPOINT idealpoint(model, K, iter, output_iter);
+	IDEALPOINT idealpoint(model, author_info, iter, output_iter);
 
 	return model;
 }

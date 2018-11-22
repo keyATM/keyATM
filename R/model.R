@@ -326,7 +326,7 @@ ExploreDocuments <- setRefClass(
 
 		},
 
-		visualize_words_documents = function(word, type="count", n_show=100, xaxis=F){
+		visualize_word_documents = function(word, type="count", n_show=100, xaxis=F){
 			"Visualize a word distribution"
 			# check the words existence
 			c <- check_existence(word)
@@ -336,7 +336,7 @@ ExploreDocuments <- setRefClass(
 			data_tfidf %>% filter(term==get("word")) %>%
 				summarize(total = sum(count)) %>% as.numeric() -> sumcount
 			message(paste0("Count of '", word, "': ", as.character(sumcount), " out of ", totalwords))
-			message(paste0("Proportion of '", word, "': ", as.character(round(sumcount/totalwords, 4))))
+			message(paste0("Proportion of '", word, "': ", as.character(round(sumcount/totalwords*100, 4)), "%"))
 
 			data_tfidf %>%
 				filter(term == get("word")) %>%
@@ -353,7 +353,7 @@ ExploreDocuments <- setRefClass(
 			p <- ggplot(temp, aes(x=reorder(document, -focus), y=focus)) +
 				geom_bar(stat="identity")
 
-			p <- p + ggtitle(paste0("Distribution of '", word, "' across documents")) +
+			p <- p + ggtitle(paste0("Counts of '", word, "' across documents")) +
 				theme_bw()
 
 			if(type=="count"){
