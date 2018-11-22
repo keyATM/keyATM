@@ -64,7 +64,7 @@ class IDEALPOINT
 		void lambda_store();
 		void loglik_store(int& r_index);
 		double loglik_calc();
-		double loglik_lambda();
+		double loglik_lambda(int &author_id);
 
 		// Sub functions
 		std::vector<int> shuffled_indexes(int m);

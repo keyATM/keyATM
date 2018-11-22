@@ -167,19 +167,20 @@ void IDEALPOINT::iteration()
 	}
 }
 
-double IDEALPOINT::loglik_lambda()
+double IDEALPOINT::loglik_lambda(int &author_id)
 {
 	double loglik = 0.0;
 	double mu = 0.0;
 	double sigma = 50.0;
-	int author_id;
-	MatrixXd Alpha = Lambda.array().exp();
-	VectorXd alpha = VectorXd::Zero(num_topics);
+	VectorXd alpha = Lambda.row(author_id).transpose().array().exp();
 
 	for(int d=0; d<num_doc; d++){
 
-		author_id = author_ids[d];
-		alpha = Alpha.row(author_id).transpose(); // Doc alpha, column vector
+		if (author_id != author_ids[d])
+			// Calculate only author_id matches
+			continue;
+
+		// alpha = Alpha.row(author_id).transpose(); // Doc alpha, column vector
 
 		loglik += lgamma(alpha.sum()); 
 				// the first term numerator in the first square bracket
@@ -213,38 +214,37 @@ void IDEALPOINT::lambda_sample()
 
 	double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
   std::vector<int> topic_ids = shuffled_indexes(num_topics);
-	std::vector<int> cov_ids = shuffled_indexes(num_cov);
+	std::vector<int> authors_shuffled = shuffled_indexes(num_authors);
 	static double A = 0.8; // important, 0.5-1.5
 	static int max_shrink_time = 1000;
 
-	double store_loglik = loglik_lambda();
 	double newlambdallk = 0.0;
 
-	for(int kk=0; kk<num_topics; kk++){
-		int k = topic_ids[kk];
+	for(int aa=0; aa<num_authors; aa++){
+		int author_id = authors_shuffled[aa];	
 
-		for(int tt=0; tt<num_cov; tt++){
-			int t = cov_ids[tt];
+
+		for(int kk=0; kk<num_topics; kk++){
+			int k = topic_ids[kk];
 
 			start = 0.0; // shrink
 			end = 1.0; // shrink
 
-			current_lambda = Lambda(k,t);
+			current_lambda = Lambda(author_id, k);
 			previous_p = shrink(current_lambda, A);
-			slice_ = store_loglik - std::log(A * previous_p * (1.0 - previous_p)) 
+			slice_ = loglik_lambda(author_id) - std::log(A * previous_p * (1.0 - previous_p)) 
 							+ log(unif_rand()); // <-- using R random uniform
 
 
 			for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
 				new_p = sampler::slice_uniform(start, end); // <-- using R function above
-				Lambda(k,t) = expand(new_p, A); // expand
+				Lambda(author_id, k) = expand(new_p, A); // expand
 
-				newlambdallk = loglik_lambda();
+				newlambdallk = loglik_lambda(author_id);
 
 				newlikelihood = newlambdallk - std::log(A * new_p * (1.0 - new_p));
 
 				if (slice_ < newlikelihood){
-					store_loglik = newlambdallk;
 					break;
 				} else if (previous_p < new_p){
 					end = new_p;
@@ -252,7 +252,7 @@ void IDEALPOINT::lambda_sample()
 					start = new_p;
 				} else {
 					Rcerr << "Something goes wrong in sample_lambda_slice()" << std::endl;
-					Lambda(k,t) = current_lambda;
+					Lambda(author_id, k) = current_lambda;
 					break;
 				}
 
