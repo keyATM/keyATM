@@ -56,7 +56,7 @@ void IDEALPOINT::initialize()
 	// Psi
 	Psi = VectorXd::Zero(num_authors);
 	for(int j=0; j<num_authors; j++){
-		Psi(j) = R::rnorm(0.0, 0.5);
+		Psi(j) = R::rnorm(0.0, sigma_psi);
 	}
 	
 	
@@ -65,7 +65,7 @@ void IDEALPOINT::initialize()
 	for(int j=0; j<num_authors; j++){
 		// Initialize with R random
 		for(int k=0; k<num_topics; k++){
-			Lambda.coeffRef(j, k) = R::rnorm(Psi(j), 0.2);
+			Lambda.coeffRef(j, k) = R::rnorm(Psi(j), sigma_lambda);
 		}
 	}
 
