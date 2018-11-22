@@ -24,7 +24,7 @@ class IDEALPOINT
 		int k_seeded;
 		Rcpp::List model_fit;
 
-		std::vector<int> author_id;
+		std::vector<int> author_ids;
 		int num_authors; // number of authors
 
 		std::vector< std::unordered_set<int> > keywords;
@@ -48,7 +48,6 @@ class IDEALPOINT
 	  Eigen::VectorXi n_x0_k;
 	  Eigen::VectorXi n_x1_k;
 		Eigen::MatrixXd Lambda;
-		Eigen::MatrixXd Alpha;
 		
 		// Constructor
 		IDEALPOINT(Rcpp::List model_, Rcpp::List author_info_,

@@ -14,7 +14,7 @@ IDEALPOINT::IDEALPOINT(List model_, List author_info_, const int iter_, const in
 
 	// Speaker Info
 	author_info = author_info_;
-	author_id = Rcpp::as<vector<int>> (author_info["author_id"]);
+	author_ids = Rcpp::as<vector<int>> (author_info["author_ids"]);
 	num_authors = Rcpp::as<int> (author_info["num_authors"]);
 
 	W = model["W"];
@@ -43,7 +43,7 @@ IDEALPOINT::IDEALPOINT(List model_, List author_info_, const int iter_, const in
 	initialize();
 	
 	// Iteration
-	// iteration();
+	iteration();
 	
 }
 
@@ -52,7 +52,7 @@ void IDEALPOINT::initialize()
 	// Psi
 	Psi = VectorXd::Zero(num_authors);
 	for(int j=0; j<num_authors; j++){
-		Psi(j) = R::rnorm(0.0, 0.8);
+		Psi(j) = R::rnorm(0.0, 0.5);
 	}
 	
 	
@@ -61,7 +61,7 @@ void IDEALPOINT::initialize()
 	for(int j=0; j<num_authors; j++){
 		// Initialize with R random
 		for(int k=0; k<num_topics; k++){
-			Lambda.coeffRef(j, k) = R::rnorm(Psi(j), 0.3);
+			Lambda.coeffRef(j, k) = R::rnorm(Psi(j), 0.2);
 		}
 	}
 
@@ -109,7 +109,7 @@ void IDEALPOINT::initialize()
       n_dk(doc_id, z) += 1.0;
     }
   }
-  int total_words = (int)n_dk.sum();
+  total_words = (int)n_dk.sum();
 
 }
 
@@ -118,20 +118,24 @@ void IDEALPOINT::iteration()
 {
 	// Iteration
 	VectorXd alpha_ = VectorXd::Zero(num_topics);
+	MatrixXd Alpha;
+	int author_id;
 	
 	for(int it=0; it<iter; it++){
 		std::vector<int> doc_indexes = shuffled_indexes(num_doc);
-	
+		
 		Alpha = Lambda.array().exp();
-	
+		
     for (int ii = 0; ii < num_doc; ii++){
       int doc_id_ = doc_indexes[ii];
+			author_id = author_ids[doc_id_];
+		
       IntegerVector doc_x = X[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
 			
       std::vector<int> token_indexes = shuffled_indexes(doc_z.size()); //shuffle
 			
 			// Prepare Alpha for the doc
-			alpha_ = Alpha.row(doc_id_).transpose(); // take out alpha
+			alpha_ = Alpha.row(author_id).transpose(); // take out alpha
 			
 			// Iterate each word in the document
       for (int jj = 0; jj < doc_z.size(); jj++){
@@ -141,7 +145,7 @@ void IDEALPOINT::iteration()
 				int new_z = sample_z(alpha_, z_, x_, w_, doc_id_);
         doc_z[w_position] = new_z;
 			
-
+		
 				z_ = doc_z[w_position]; // use updated z
 				int new_x = sample_x(alpha_, z_, x_, w_, doc_id_);
 				doc_x[w_position] = new_x;
@@ -168,12 +172,14 @@ double IDEALPOINT::loglik_lambda()
 	double loglik = 0.0;
 	double mu = 0.0;
 	double sigma = 50.0;
-	Alpha = Lambda.array().exp();
+	int author_id;
+	MatrixXd Alpha = Lambda.array().exp();
 	VectorXd alpha = VectorXd::Zero(num_topics);
 
 	for(int d=0; d<num_doc; d++){
-		alpha = Alpha.row(d).transpose(); // Doc alpha, column vector
-		// alpha = ((C.row(d) * Lambda)).array().exp(); // Doc alpha, column vector
+
+		author_id = author_ids[d];
+		alpha = Alpha.row(author_id).transpose(); // Doc alpha, column vector
 
 		loglik += lgamma(alpha.sum()); 
 				// the first term numerator in the first square bracket
@@ -297,9 +303,11 @@ double IDEALPOINT::loglik_calc()
   // z
 	MatrixXd Alpha = Lambda.array().exp();
 	VectorXd alpha = VectorXd::Zero(num_topics);
+	int author_id;
 
   for (int d = 0; d < num_doc; d++){
-		alpha = Alpha.row(d).transpose(); // Doc alpha, column vector	
+		author_id = author_ids[d];
+		alpha = Alpha.row(author_id).transpose(); // Doc alpha, column vector	
 
     loglik += lgamma( alpha.sum() ) - lgamma( n_dk.row(d).sum() + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
