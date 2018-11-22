@@ -16,6 +16,10 @@ IDEALPOINT::IDEALPOINT(List model_, List author_info_, const int iter_, const in
 	author_info = author_info_;
 	author_ids = Rcpp::as<vector<int>> (author_info["author_ids"]);
 	num_authors = Rcpp::as<int> (author_info["num_authors"]);
+	num_authordoc = Rcpp::as<vector<int>> (author_info["num_authordoc"]);
+
+	sigma_lambda = Rcpp::as<double> (author_info["sigma_lambda"]);
+	sigma_psi = Rcpp::as<double> (author_info["sigma_psi"]);
 
 	W = model["W"];
 	Z = model["Z"];
@@ -156,6 +160,8 @@ void IDEALPOINT::iteration()
     }
 		lambda_sample();
 		lambda_store();
+
+		psi_sample();
 	
 		int r_index = it + 1;
 		if(r_index % output_iter == 0 || r_index == 1 || r_index == iter ){
@@ -167,11 +173,46 @@ void IDEALPOINT::iteration()
 	}
 }
 
+
+void IDEALPOINT::psi_sample()
+{
+	double new_mu;
+	double new_sigma;
+	double new_psi = 0.0;
+	double mu = 0;
+
+	for(int j=0; j<num_authors; j++){
+		// int N = num_authordoc[j];
+		int N = num_topics;
+		double sigma_c2 = pow(sigma_lambda, 2);
+		double sigma_p2 = pow(sigma_psi, 2);
+
+		// new_mu
+		new_mu = (sigma_c2 * mu + sigma_p2 * Lambda.row(j).sum()) / (sigma_c2 + N * sigma_p2);
+
+		// new_sigma
+		new_sigma = (sigma_c2 * sigma_p2) / (sigma_c2 + N * sigma_p2);
+			// 1/(numerator/denominator) = denominator/numerator
+
+		// Sample
+		new_psi = R::rnorm(new_mu, new_sigma);
+
+		// Store
+		Psi(j) = new_psi;	
+	}
+
+	// Save
+	NumericVector Psi_vec = Rcpp::wrap(Psi);
+	List Psi_iter = author_info["Psi_iter"];
+	Psi_iter.push_back(Psi_vec);
+	author_info["Psi_iter"] = Psi_iter;
+
+}
+
 double IDEALPOINT::loglik_lambda(int &author_id)
 {
 	double loglik = 0.0;
-	double mu = 0.0;
-	double sigma = 50.0;
+	double mu = Psi(author_id);
 	VectorXd alpha = Lambda.row(author_id).transpose().array().exp();
 
 	for(int d=0; d<num_doc; d++){
@@ -196,12 +237,11 @@ double IDEALPOINT::loglik_lambda(int &author_id)
 	}
 
 	// Prior
-	double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
+	double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma_lambda, 2.0) );
 	for(int k=0; k<num_topics; k++){
-		for(int t=0; t<num_cov; t++){
-			loglik += prior_fixedterm;
-			loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
-		}
+		loglik += prior_fixedterm;
+
+		loglik -= ( std::pow( (Lambda(author_id,k) - mu) , 2.0) / (2.0 * std::pow(sigma_lambda, 2.0)) );
 	}
 
 	return loglik;

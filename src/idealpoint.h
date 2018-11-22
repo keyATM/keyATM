@@ -25,6 +25,7 @@ class IDEALPOINT
 		Rcpp::List model_fit;
 
 		std::vector<int> author_ids;
+		std::vector<int> num_authordoc;
 		int num_authors; // number of authors
 
 		std::vector< std::unordered_set<int> > keywords;
@@ -38,6 +39,10 @@ class IDEALPOINT
 		int iter;
 		int output_iter;
 		std::vector<int> mh_info{0,0};
+
+		// Ideal point related parameters
+		double sigma_lambda = 1.0;  // sigma_c
+		double sigma_psi = 1.0;  // sigma_p
 
 		// Variables for the Model
 	  Eigen::VectorXd Psi;  // speakers' ideal point
@@ -61,10 +66,13 @@ class IDEALPOINT
 		int sample_x(Eigen::VectorXd &alpha, int &z, int &x,
 				  	     int &w, int &doc_id);
 		void lambda_sample();
+
+		// Store functions
 		void lambda_store();
 		void loglik_store(int& r_index);
 		double loglik_calc();
 		double loglik_lambda(int &author_id);
+		void psi_sample();
 
 		// Sub functions
 		std::vector<int> shuffled_indexes(int m);
