@@ -7,6 +7,14 @@ using namespace std;
 # define PI_V   3.14159265358979323846  /* pi */
 
 
+// 今後の改善の方針
+// 今は直にalphaを決めてしまっているけれど、a0と掛け合わせる形にして
+// (CSTMみたいに)、トピックごとの標準の登場確率$alpha_0$を、
+// イデオロギーの位置$alpha$でずらす形にするのが良いのでは。
+//
+// alpha_d = alpha0 * exp(...ここに今のがくる...)
+
+
 IDEALPOINT::IDEALPOINT(List model_, List author_info_, const int iter_, const int output_iter_)
 {
 	// Get Info from R
@@ -255,8 +263,11 @@ void IDEALPOINT::lambda_sample()
 	double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
   std::vector<int> topic_ids = shuffled_indexes(num_topics);
 	std::vector<int> authors_shuffled = shuffled_indexes(num_authors);
-	static double A = 0.8; // important, 0.5-1.5
+	static double A = 0.7; // important, 0.5-1.5
 	static int max_shrink_time = 1000;
+
+	double start_min = -8.0;
+	double end_max = 8.0;
 
 	double newlambdallk = 0.0;
 
@@ -267,8 +278,8 @@ void IDEALPOINT::lambda_sample()
 		for(int kk=0; kk<num_topics; kk++){
 			int k = topic_ids[kk];
 
-			start = 0.0; // shrink
-			end = 1.0; // shrink
+			start = shrink(start_min, A); // shrink
+			end = shrink(end_max, A); // shrink
 
 			current_lambda = Lambda(author_id, k);
 			previous_p = shrink(current_lambda, A);
