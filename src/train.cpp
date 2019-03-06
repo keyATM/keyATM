@@ -749,6 +749,19 @@ void sample_lambda(MatrixXd& Lambda, MatrixXd& C,
 
 	double u = unif_rand(); // select sampling methods randomly
 
+	// if(u < 0.3){
+	// 	sample_lambda_mh(Lambda, C, n_dk,
+ //                   num_topics, num_cov,
+	// 								 k_seeded, num_doc, mh_info, mu, sigma);
+	// }else if (u < 0.6){
+	// 	sample_lambda_mh_single(Lambda, C, n_dk,
+ //                   num_topics, num_cov,
+	// 								 k_seeded, num_doc, mh_info, mu, sigma);
+	// }else{
+	// 	sample_lambda_slice(Lambda, C, n_dk, num_topics, num_cov,
+	// 				k_seeded, num_doc, mu, sigma);	
+	// }
+
 	if(u < 0.4){
 		sample_lambda_mh_single(Lambda, C, n_dk,
                    num_topics, num_cov,

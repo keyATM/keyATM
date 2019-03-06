@@ -38,7 +38,8 @@ posterior <- function(model){
 
   posterior_z <- function(zvec){
     tt <- table(factor(zvec, levels = 1:allK - 1))
-    (tt + model$alpha) / (sum(tt) + sum(model$alpha)) # posterior mean
+    # (tt + model$alpha) / (sum(tt) + sum(model$alpha)) # posterior mean
+    (tt) / (sum(tt)) # posterior mean
   }
   theta <- do.call(rbind, lapply(model$Z, posterior_z))
   rownames(theta) <- basename(model$files)
@@ -463,7 +464,7 @@ posterior_tau <- function(res, topic_id=1, cov_id=1){
 	calc_tau <- function(theta_i, covariates, topic_id, cov_id){
 			temp <- as.data.frame(theta_i)	
 			temp$cov <- covariates[, cov_id]
-			res <- mean(temp[ temp$cov==1, topic_id]) - mean(temp[ temp$cov==0, topic_id])
+			res <- mean(temp[temp$cov==1, topic_id]) - mean(temp[ temp$cov==0, topic_id])
 		}
 
 	res <- unlist(lapply(theta, calc_tau, covariates, topic_id, cov_id))
