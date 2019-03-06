@@ -27,6 +27,7 @@
 #'
 #' @param files names of each file to read (or a quanteda corpus object)
 #' @param dict a quanteda dictionary or named list of character vectors
+#' @param text_df directly passes a text in a data.frame 
 #' @param covariates_data a data.frame or a tibble that is a covariate matrix. Columns are covariates.
 #' @param covariates_formula formula for the covariates, for example, \code{~.} uses all variables
 #' @param extra_k number of unseeded topics in addition to the topics seeded by
@@ -75,7 +76,7 @@
 #' @importFrom hashmap hashmap
 #' @importFrom stats model.matrix
 #' @export
-topicdict_model <- function(files, dict,
+topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
 														covariates_data=NULL, covariates_formula=NULL,
 														extra_k = 1, encoding = "UTF-8",
                             lowercase = TRUE,
@@ -114,11 +115,14 @@ topicdict_model <- function(files, dict,
     ## preprocess each text
     ## for debugging
 	  # Use files <- list.files(doc_folder, pattern="txt", full.names=T) when you pass
-    df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
-                                                              collapse = "\n") })),
-                     stringsAsFactors = FALSE)
-    df$doc_id <- paste0("text", 1:nrow(df))
-    args$x <- corpus(df)
+		if(is.null(text_df)){
+			text_df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
+																																collapse = "\n") })),
+											 stringsAsFactors = FALSE)
+		}
+		
+    text_df$doc_id <- paste0("text", 1:nrow(text_df))
+    args$x <- corpus(text_df)
     ## debugging until here
   }
 
@@ -322,7 +326,7 @@ ExploreDocuments <- setRefClass(
 
 		},
 
-		visualize_words_documents = function(word, type="count", n_show=100, xaxis=F){
+		visualize_word_documents = function(word, type="count", n_show=100, xaxis=F){
 			"Visualize a word distribution"
 			# check the words existence
 			c <- check_existence(word)
@@ -332,7 +336,7 @@ ExploreDocuments <- setRefClass(
 			data_tfidf %>% filter(term==get("word")) %>%
 				summarize(total = sum(count)) %>% as.numeric() -> sumcount
 			message(paste0("Count of '", word, "': ", as.character(sumcount), " out of ", totalwords))
-			message(paste0("Proportion of '", word, "': ", as.character(round(sumcount/totalwords, 4))))
+			message(paste0("Proportion of '", word, "': ", as.character(round(sumcount/totalwords*100, 4)), "%"))
 
 			data_tfidf %>%
 				filter(term == get("word")) %>%
@@ -349,7 +353,7 @@ ExploreDocuments <- setRefClass(
 			p <- ggplot(temp, aes(x=reorder(document, -focus), y=focus)) +
 				geom_bar(stat="identity")
 
-			p <- p + ggtitle(paste0("Distribution of '", word, "' across documents")) +
+			p <- p + ggtitle(paste0("Counts of '", word, "' across documents")) +
 				theme_bw()
 
 			if(type=="count"){
@@ -511,6 +515,7 @@ ExploreDocuments <- setRefClass(
 #' Explore the documents.
 #'
 #' @param files names of each file to read
+#' @param text_df directly passes a text in a data.frame 
 #' @param encoding File encoding (Default: whatever \code{quanteda} guesses)
 #' @param lowercase whether to transform each token to lowercase letters
 #' @param remove_numbers whether to remove numbers
@@ -534,7 +539,7 @@ ExploreDocuments <- setRefClass(
 #' @import methods
 #' @import dplyr
 #' @export
-explore <- function(files, encoding = "UTF-8",
+explore <- function(files=NULL, text_df=NULL, encoding = "UTF-8",
                             lowercase = TRUE,
                             remove_numbers = TRUE, remove_punct = TRUE,
                             remove_symbols = TRUE, remove_separators = TRUE,
@@ -552,16 +557,19 @@ explore <- function(files, encoding = "UTF-8",
 
   ## preprocess each text
   ## for debugging
-  df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
-                                                                collapse = "\n") })),
-                   stringsAsFactors = FALSE)
-  df$doc_id <- paste0("text", 1:nrow(df))
-  args$x <- corpus(df)
+	if(is.null(text_df)){
+		text_df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
+																															collapse = "\n") })),
+										 stringsAsFactors = FALSE)
+	}
+	
+	text_df$doc_id <- paste0("text", 1:nrow(text_df))
+	args$x <- corpus(text_df)
   ## debugging until here
 
   # args$x <- corpus(readtext(file_pattern, encoding = encoding))
   # for new version quanteda, you need this
-  args$x$documents$doc_id <- paste0("text", 1:nrow(df))
+  args$x$documents$doc_id <- paste0("text", 1:nrow(text_df))
   doc_names <- docvars(args$x, "doc_id") # docnames
   toks <- do.call(tokens, args = args)
   if (lowercase)

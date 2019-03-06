@@ -38,7 +38,8 @@ posterior <- function(model){
 
   posterior_z <- function(zvec){
     tt <- table(factor(zvec, levels = 1:allK - 1))
-    (tt + model$alpha) / (sum(tt) + sum(model$alpha)) # posterior mean
+    # (tt + model$alpha) / (sum(tt) + sum(model$alpha)) # posterior mean
+    (tt) / (sum(tt)) # posterior mean
   }
   theta <- do.call(rbind, lapply(model$Z, posterior_z))
   rownames(theta) <- basename(model$files)
@@ -285,8 +286,23 @@ top_docs <- function(x, n = 10, measure = c("probability", "lift")){
 #' @export
 diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
                             scale = ""){
-	num_topic <-	x$seed_K + x$extra_k
-	res_alpha <- x$alpha
+
+
+	if("topicdict" %in% class(x)){
+		num_topic <-	length(x$dict) + x$extra_k
+
+		res_alpha <- data.frame(x$alpha_iter)
+		colnames(res_alpha) <- NULL
+		res_alpha <- data.frame(t(res_alpha))
+		if(nrow(res_alpha) > 0){
+			colnames(res_alpha) <- paste0("EstTopic", 1:ncol(res_alpha))
+			res_alpha$iter <- 1:nrow(res_alpha)
+		}
+		
+	}else if("topicdict_posterior" %in% class(x)){
+		num_topic <-	x$seed_K + x$extra_k
+		res_alpha <- x$alpha	
+	}
 
 	if(!is.null(show_topic)){
 		# show topic is a vector of column index e.g., c(1,3,5)
@@ -343,7 +359,17 @@ diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
 #' @importFrom stats as.formula
 #' @export
 diagnosis_model_fit <- function(x, start=NULL){
-	modelfit <- x$modelfit
+
+	if("topicdict_posterior" %in% class(x)){
+		modelfit <- x$modelfit
+	}else if("topicdict" %in% class(x)){
+		modelfit <- data.frame(x$model_fit)
+		colnames(modelfit) <- NULL
+		if(nrow(modelfit) > 0){
+			modelfit <- data.frame(t(modelfit))
+			colnames(modelfit) <-	c("Iteration", "Log Likelihood", "Perplexity")
+		}	
+	}
 
 	if(!is.null(start)){
 		modelfit <- modelfit[ modelfit$Iteration >= start, ]
@@ -395,4 +421,53 @@ diagnosis_p <- function(x, topicvec=c()){
 			theme(plot.title = element_text(hjust = 0.5))
 
 	return(g)
+}
+
+
+
+#' Calculate posterior theta 
+#'
+#' @param x The result object from a fitted model
+#'
+#' @return A list that contains estimated theta for each iteration
+#' @export
+posterior_theta <- function(x){
+	calc_theta <- function(x, cov){
+		Alpha <- exp(cov %*% t(x))
+		theta <- Alpha / rowSums(Alpha)
+		return(theta)
+	}
+	theta <- lapply(res$Lambda, calc_theta, cov=res$C)
+	return(theta)
+}
+
+
+#' Calculate posterior tau 
+#'
+#' @param x The result object from a fitted model
+#' @param topic_id 
+#' @param cov_id 
+#'
+#' @return A list that contains estimated tau for each iteration
+#' @export
+posterior_tau <- function(res, topic_id=1, cov_id=1){
+
+	calc_theta <- function(x, cov){
+		Alpha <- exp(cov %*% t(x))
+		theta <- Alpha / rowSums(Alpha)
+		return(theta)
+	}
+	theta <- lapply(res$Lambda, calc_theta, cov=res$C)
+
+	covariates <- res$C
+
+	calc_tau <- function(theta_i, covariates, topic_id, cov_id){
+			temp <- as.data.frame(theta_i)	
+			temp$cov <- covariates[, cov_id]
+			res <- mean(temp[temp$cov==1, topic_id]) - mean(temp[ temp$cov==0, topic_id])
+		}
+
+	res <- unlist(lapply(theta, calc_tau, covariates, topic_id, cov_id))
+
+	return(res)
 }

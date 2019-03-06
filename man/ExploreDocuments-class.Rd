@@ -13,7 +13,7 @@ Explore Documents Class
 \describe{
 \item{\code{top_words(n_show = 20)}}{Show frequent words}
 
-\item{\code{visualize_words_documents(word, type = "count", n_show = 100, xaxis = F)}}{Visualize a word distribution}
+\item{\code{visualize_word_documents(word, type = "count", n_show = 100, xaxis = F)}}{Visualize a word distribution}
 }}
 
 \section{Fields}{
