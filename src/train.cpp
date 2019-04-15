@@ -7,6 +7,7 @@
 #include "lda_cov.h"
 #include "idealpoint.h"
 #include "sampler.h"
+#include "keyATM_basic.h"
 
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
@@ -53,33 +54,33 @@ NumericVector alpha_reformat(VectorXd& alpha, int& num_topics){
 	return alpha_rvec;
 }
 
-int rcat(Eigen::VectorXd &prob){ // was called 'multi1'
-  double u = R::runif(0, 1);
-  double temp = 0.0;
-  int index = 0;
-  for (int ii = 0; ii < prob.size(); ii++){
-    temp += prob(ii);
-    if (u < temp){
-      index = ii;
-      break;
-    }
-  }
-  return index;
-}
+// int rcat(Eigen::VectorXd &prob){ // was called 'multi1'
+//   double u = R::runif(0, 1);
+//   double temp = 0.0;
+//   int index = 0;
+//   for (int ii = 0; ii < prob.size(); ii++){
+//     temp += prob(ii);
+//     if (u < temp){
+//       index = ii;
+//       break;
+//     }
+//   }
+//   return index;
+// }
 
-int rcat_without_normalize(Eigen::VectorXd &prob, double &total){ // was called 'multi1'
-  double u = R::runif(0, 1) * total;
-  double temp = 0.0;
-  int index = 0;
-  for (int ii = 0; ii < prob.size(); ii++){
-    temp += prob(ii);
-    if (u < temp){
-      index = ii;
-      break;
-    }
-  }
-  return index;
-}
+// int rcat_without_normalize(Eigen::VectorXd &prob, double &total){ // was called 'multi1'
+//   double u = R::runif(0, 1) * total;
+//   double temp = 0.0;
+//   int index = 0;
+//   for (int ii = 0; ii < prob.size(); ii++){
+//     temp += prob(ii);
+//     if (u < temp){
+//       index = ii;
+//       break;
+//     }
+//   }
+//   return index;
+// }
 
 double loglikelihood_normal(MatrixXi& n_x0_kv,
                       MatrixXi& n_x1_kv,
@@ -157,7 +158,7 @@ int sample_z(MatrixXi& n_x0_kv,
     }
 
     double sum = z_prob_vec.sum(); // normalize
-    new_z = rcat_without_normalize(z_prob_vec, sum); // take a sample
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum); // take a sample
 
   } else {
     for (int k = 0; k < num_topics; ++k){
@@ -177,7 +178,7 @@ int sample_z(MatrixXi& n_x0_kv,
 
 
 		double sum = z_prob_vec.sum();
-    new_z = rcat_without_normalize(z_prob_vec, sum); // take a sample
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum); // take a sample
 
   }
 
@@ -376,9 +377,17 @@ void slice_sample_alpha(VectorXd& alpha, MatrixXd& n_dk,
 //'
 //' @export
 // [[Rcpp::export]]
-List topicdict_train(List model, int iter = 0, int output_per = 10,
-  double eta_1 = 1, double eta_2 = 1, double eta_1_regular = 2, double eta_2_regular = 1){
+List topicdict_train(List model, int iter = 0, int output_per = 10){
+  // double eta_1 = 1, double eta_2 = 1, double eta_1_regular = 2, double eta_2_regular = 1){
+
+	keyATMbasic keyATMbasic_model(model, iter, output_per);
+
 	auto start = std::chrono::high_resolution_clock::now();
+
+	double eta_1 = 1;
+	double eta_2 = 1;
+	double eta_1_regular = 2;
+	double eta_2_regular = 1;
 
 	// Data
   List W = model["W"], Z = model["Z"], X = model["X"];
