@@ -77,7 +77,6 @@ void keyATMcov::iteration_single()
 			int new_z = sample_z(alpha, z_, x_, w_, doc_id_);
 			doc_z[w_position] = new_z;
 		
-		
 			z_ = doc_z[w_position]; // use updated z
 			int new_x = sample_x(alpha, z_, x_, w_, doc_id_);
 			doc_x[w_position] = new_x;
@@ -300,7 +299,8 @@ void keyATMcov::sample_lambda_slice()
 				} else if (new_p < previous_p){
 					start = new_p;
 				} else {
-					Rcerr << "Something goes wrong in sample_lambda_slice()" << std::endl;
+					// Rcerr << "Something goes wrong in sample_lambda_slice()" << std::endl;
+					Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
 					Lambda(k,t) = current_lambda;
 					break;
 				}

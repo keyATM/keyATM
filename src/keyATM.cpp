@@ -211,6 +211,11 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
 int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
 				  	     int &w, int &doc_id)
 {
+			
+	// If a word is not a keyword, no need to sample
+	if(keywords[z].find(w) == keywords[z].end())
+		return x;
+	
   // remove data
   if (x == 0){
     n_x0_kv(z, w) -= 1;
@@ -226,36 +231,28 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
   int k = z;
   double numerator;
   double denominator;
-  if ( keywords[k].find(w) == keywords[k].end() ){
-       x1_prob = -1.0;
-  } else {
-    numerator = (beta_s + (double)n_x1_kv(k, w)) *
-      ( ((double)n_x1_k(k) + gamma_1) );
-    denominator = ((double)seed_num[k] * beta_s + (double)n_x1_k(k) ) *
-      ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
-    x1_prob = numerator / denominator;
-  }
-
   int new_x;
-  if(x1_prob == -1.0){
-    // if probability of x_di = 1 case is 0, it should be x=0 (regular topic)
-    new_x = 0;
-  } else {
-    // newprob_x0()
-    int k = z;
-    numerator = (beta + (double)n_x0_kv(k, w)) *
-      ((double)n_x0_k(k) + gamma_2);
 
-    denominator = ((double)num_vocab * beta + (double)n_x0_k(k) ) *
-      ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
-    double x0_prob = numerator / denominator;
+	numerator = (beta_s + (double)n_x1_kv(k, w)) *
+		( ((double)n_x1_k(k) + gamma_1) );
+	denominator = ((double)seed_num[k] * beta_s + (double)n_x1_k(k) ) *
+		((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+	x1_prob = numerator / denominator;
 
-    // Normalize
-    double sum = x0_prob + x1_prob;
+	// newprob_x0()
+	numerator = (beta + (double)n_x0_kv(k, w)) *
+		((double)n_x0_k(k) + gamma_2);
 
-    x1_prob = x1_prob / sum;
-    new_x = R::runif(0,1) <= x1_prob;  //new_x = Bern(x0_prob, x1_prob);
-  }
+	denominator = ((double)num_vocab * beta + (double)n_x0_k(k) ) *
+		((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+	double x0_prob = numerator / denominator;
+
+	// Normalize
+	double sum = x0_prob + x1_prob;
+
+	x1_prob = x1_prob / sum;
+	new_x = R::runif(0,1) <= x1_prob;  //new_x = Bern(x0_prob, x1_prob);
+
   // add back data counts
   if (new_x == 0){
     n_x0_kv(z, w) += 1;

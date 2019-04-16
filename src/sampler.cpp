@@ -6,7 +6,7 @@ using namespace std;
 
 namespace sampler{
 	double slice_uniform(double& lower, double& upper){
-		return lower + (upper - lower) * unif_rand();
+		return lower + (upper - lower) * R::unif_rand();
 	}
 
 
