@@ -22,11 +22,13 @@ void keyATMbase::read_data()
 void keyATMbase::read_data_common()
 {
 	// Read data
-	W = model["W"], Z = model["Z"], X = model["X"];
-  files = model["files"], vocab = model["vocab"];
+	W = model["W"]; Z = model["Z"]; X = model["X"];
+  files = model["files"]; vocab = model["vocab"];
   nv_alpha = model["alpha"];
-  gamma_1 = model["gamma_1"], gamma_2 = model["gamma_2"];
-  beta = model["beta"], beta_s = model["beta_s"];
+  gamma_1 = model["gamma_1"];
+	gamma_2 = model["gamma_2"];
+  beta = model["beta"];
+	beta_s = model["beta_s"];
   k_free = model["extra_k"];
   seeds = model["seeds"];
   k_seeded = seeds.size();
@@ -42,6 +44,8 @@ void keyATMbase::initialize()
 {
 	initialize_common();
 	initialize_specific();
+
+	prepare_data = std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - start).count();
 }
 
 
@@ -95,7 +99,7 @@ void keyATMbase::initialize_common()
   }
   total_words = (int)n_dk.sum();
 	
-	prepare_data = std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - start).count();
+	
 }
 
 
@@ -126,7 +130,7 @@ void keyATMbase::sampling_store(int &r_index)
 	model_fit_vec.push_back(loglik);
 	model_fit_vec.push_back(perplexity);
 	model_fit.push_back(model_fit_vec);
-
+	
 	Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
 					 " (perplexity: " << perplexity << ")" << std::endl;
 }
@@ -306,13 +310,13 @@ NumericVector keyATMbase::alpha_reformat(VectorXd& alpha, int& num_topics){
 }
 
 
-double keyATMbase::expand(double& p){
-	double res = -(1.0/slice_A) * log((1.0/p) - 1.0);
+double keyATMbase::expand(double& p, const double& A){
+	double res = -(1.0/A) * log((1.0/p) - 1.0);
 	return res;
 }
 
-double keyATMbase::shrink(double& x){
-	double res = 1.0 / (1.0 + exp(-slice_A*x));
+double keyATMbase::shrink(double& x, const double& A){
+	double res = 1.0 / (1.0 + exp(-A*x));
 	return res;
 }
 

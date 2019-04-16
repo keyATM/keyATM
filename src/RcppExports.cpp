@@ -20,19 +20,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // topicdict_train_cov
-List topicdict_train_cov(List model, int iter, int output_per, double eta_1, double eta_2, double eta_1_regular, double eta_2_regular);
-RcppExport SEXP _topicdict_topicdict_train_cov(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP, SEXP eta_1SEXP, SEXP eta_2SEXP, SEXP eta_1_regularSEXP, SEXP eta_2_regularSEXP) {
+List topicdict_train_cov(List model, int iter, int output_per);
+RcppExport SEXP _topicdict_topicdict_train_cov(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    Rcpp::traits::input_parameter< double >::type eta_1(eta_1SEXP);
-    Rcpp::traits::input_parameter< double >::type eta_2(eta_2SEXP);
-    Rcpp::traits::input_parameter< double >::type eta_1_regular(eta_1_regularSEXP);
-    Rcpp::traits::input_parameter< double >::type eta_2_regular(eta_2_regularSEXP);
-    rcpp_result_gen = Rcpp::wrap(topicdict_train_cov(model, iter, output_per, eta_1, eta_2, eta_1_regular, eta_2_regular));
+    rcpp_result_gen = Rcpp::wrap(topicdict_train_cov(model, iter, output_per));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -67,7 +63,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_topicdict_topicdict_train", (DL_FUNC) &_topicdict_topicdict_train, 3},
-    {"_topicdict_topicdict_train_cov", (DL_FUNC) &_topicdict_topicdict_train_cov, 7},
+    {"_topicdict_topicdict_train_cov", (DL_FUNC) &_topicdict_topicdict_train_cov, 3},
     {"_topicdict_lda_cov", (DL_FUNC) &_topicdict_lda_cov, 4},
     {"_topicdict_topicdict_idealpoint", (DL_FUNC) &_topicdict_topicdict_idealpoint, 4},
     {NULL, NULL, 0}

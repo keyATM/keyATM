@@ -60,11 +60,11 @@ void keyATMbasic::iteration_single()
 
 void keyATMbasic::sample_parameters()
 {
-	slice_sample_alpha();
+	sample_alpha();
 }
 
 
-void keyATMbasic::slice_sample_alpha()
+void keyATMbasic::sample_alpha()
 {
 
   double start, end, previous_p, new_p, newlikelihood, slice_;
@@ -97,7 +97,7 @@ void keyATMbasic::slice_sample_alpha()
       } else if (new_p < previous_p){
         start = new_p;
       } else {
-				Rcerr << "Something goes wrong in slice_sample_alpha()" << std::endl;
+				Rcerr << "Something goes wrong in sample_alpha()" << std::endl;
         alpha(k) = keep_current_param(k);
 				break;
       }

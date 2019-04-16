@@ -23,7 +23,7 @@ class keyATMbase
 		double eta_1_regular = 2;
 		double eta_2_regular = 1;
 
-		double slice_A = 0.8; // parameter for slice sampling 
+		double slice_A = 1.2; // parameter for slice sampling 
 
 		// Data
 		List model;
@@ -90,8 +90,8 @@ class keyATMbase
 		double gammapdfln(const double x, const double a, const double b);
 		NumericVector alpha_reformat(VectorXd& alpha, int& num_topics);
 
-		double expand(double &p);
-		double shrink(double &x);
+		double expand(double &p, const double &A);
+		double shrink(double &x, const double &A);
 
 		List return_model();
 	
