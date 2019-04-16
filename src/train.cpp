@@ -9,6 +9,7 @@
 #include "sampler.h"
 #include "keyATM_basic.h"
 #include "keyATM_cov.h"
+#include "keyATM_HMM.h"
 
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
@@ -55,6 +56,22 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10){
 
 }
 
+
+//' Run the Collapsed Gibbs sampler for the HMM model
+//'
+//' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+//' @param iter Required number of iterations
+//' @param output_per Show log-likelihood and perplexity per this number during the iteration
+//'
+//' @export
+// [[Rcpp::export]]
+List topicdict_train_HMM(List model, int iter = 0, int output_per = 10){
+
+	// keyATMhmm keyATMhmm_model(model, iter, output_per);
+	// model = keyATMhmm_model.return_model();
+	return model;
+
+}
 
 
 //' Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)
