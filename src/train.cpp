@@ -59,7 +59,7 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10){
 
 //' Run the Collapsed Gibbs sampler for the HMM model
 //'
-//' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+//' @param model A model, from \code{init} or a previous invocation of \code{train}
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'

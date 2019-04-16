@@ -15,11 +15,25 @@ using namespace std;
 class keyATMhmm : public keyATMbase
 {
 	public:
+		// Parameters
+		int num_states;
 
 		// Constructor
 		keyATMhmm(List model_, const int iter_, const int output_per_);
 
+		// 
+		// Functions
+		//
+
+		// Read data and Initialize
+		void read_data_specific();
+		void initialize_specific();
+
+		// Iteration
+		void iteration_single();
+		void sample_parameters();
+		double loglik_total();
 };
 
-
 #endif
+
