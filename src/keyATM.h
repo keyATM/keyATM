@@ -23,6 +23,7 @@ class keyATMbase
 		double eta_1_regular = 2;
 		double eta_2_regular = 1;
 
+		double slice_A = 0.8; // parameter for slice sampling 
 
 		// Data
 		List model;
@@ -60,11 +61,40 @@ class keyATMbase
 		// Functions
 		//
 		keyATMbase(List model_, const int iter_, const int output_per_);
+
+		// Reading and Initialization
 		void read_data();
 		void read_data_common();
 		virtual void read_data_specific() = 0;
 
+		void initialize();
+		void initialize_common();
+		virtual void initialize_specific() = 0;
 
+		// Sampling
+		void iteration();
+		virtual void iteration_single() = 0;
+		virtual void sample_parameters() = 0;
+
+		int sample_z(VectorXd &alpha, int &z, int &x,
+									 int &w, int &doc_id);
+		int sample_x(VectorXd &alpha, int &z, int &x,
+									 int &w, int &doc_id);
+
+		void sampling_store(int &r_index);
+		virtual double loglik_total() = 0;
+
+		// Utilities
+		double logsumexp(double &x, double &y, bool flg);
+		double logsumexp_Eigen(VectorXd &vec);
+		double gammapdfln(const double x, const double a, const double b);
+		NumericVector alpha_reformat(VectorXd& alpha, int& num_topics);
+
+		double expand(double &p);
+		double shrink(double &x);
+
+		List return_model();
+	
 };
 
 #endif

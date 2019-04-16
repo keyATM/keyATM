@@ -14,6 +14,14 @@ using namespace std;
 class keyATMbasic : public keyATMbase
 {
 	public:	
+		//
+		// Parameters
+		//
+
+		// Slice Sampling
+		double min_v = 1e-9;
+		double max_v = 100.0;
+		int max_shrink_time = 1000;
 		
 		//
 		// Functions
@@ -24,6 +32,19 @@ class keyATMbasic : public keyATMbase
 
 		// Read data
 		void read_data_specific();
+
+		// Initialization
+		void initialize_specific();
+
+		// Iteration
+		void iteration_single();
+		void sample_parameters();
+		void slice_sample_alpha();
+		double alpha_loglik();
+		void sampling_store(int &r_index);
+		double loglik_total();
+
+
 };
 
 
