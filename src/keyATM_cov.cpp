@@ -17,10 +17,10 @@ keyATMcov::keyATMcov(List model_, const int iter_, const int output_per_) :
 	// Additional function
 	
 	// Add Sampling Info
-	// Rcpp::IntegerVector sampling_info = Rcpp::wrap(mh_info);
-	// List sampling_info_list = model["sampling_info"];
-	// sampling_info_list.push_back(sampling_info);
-	// model["sampling_info"] = sampling_info_list;
+	Rcpp::IntegerVector sampling_info = Rcpp::wrap(mh_info);
+	List sampling_info_list = model["sampling_info"];
+	sampling_info_list.push_back(sampling_info);
+	model["sampling_info"] = sampling_info_list;
 }
 
 
@@ -101,6 +101,14 @@ void keyATMcov::sample_lambda()
 {
 	// Sampling
 	double u = unif_rand(); // select sampling methods randomly
+
+	// if(u < 0.3){
+	// 	sample_lambda_mh();
+	// }else if (u < 0.6){
+	// 	sample_lambda_mh_single();
+	// }else{
+	// 	sample_lambda_slice();	
+	// }
 
 	if(u < 0.4){
 		sample_lambda_mh_single();
