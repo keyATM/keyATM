@@ -225,6 +225,7 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
              alpha = alpha, gamma_1 = gamma_1, gamma_2 = gamma_2,
              beta = beta, beta_s = beta_s,
 						 alpha_iter = list(), Lambda_iter = list(),
+						 S_iter = list(),  # states in HMM
 						 model_fit = list(), sampling_info = list(),
 						 C=C, use_cov=use_cov,
 						 num_states=num_states,

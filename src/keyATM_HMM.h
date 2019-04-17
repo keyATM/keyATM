@@ -16,6 +16,10 @@ class keyATMhmm : public keyATMbase
 	public:
 		// Parameters
 		int num_states;
+		int index_states;  // num_states - 1
+		MatrixXd Psk;
+		VectorXi S_est;
+		MatrixXd P_est;
 	
 		// Constructor
 		keyATMhmm(List model_, const int iter_, const int output_per_);
