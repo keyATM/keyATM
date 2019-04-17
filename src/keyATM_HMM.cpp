@@ -4,25 +4,31 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
+# define PI_V   3.14159265358979323846  /* pi */
 
 keyATMhmm::keyATMhmm(List model_, const int iter_, const int output_per_) :
-	keyATMbase(model_, iter_, output_per_) // pass to parent!
+  keyATMbase(model_, iter_, output_per_) // pass to parent!
 {
 	// Constructor
 	read_data();
-	// initialize();
-	// iteration();
+	initialize();
+	iteration();
 }
 
 
 void keyATMhmm::read_data_specific()
 {
-	num_states = model["num_states"];
-	cout << num_states << endl;
+
 }
 
 
 void keyATMhmm::initialize_specific()
+{
+
+}
+
+
+void keyATMhmm::iteration_single()
 {
 
 }
@@ -38,3 +44,4 @@ double keyATMhmm::loglik_total()
 {
 	return 0.0;
 }
+

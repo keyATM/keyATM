@@ -11,6 +11,7 @@
 #include "keyATM_cov.h"
 #include "keyATM_HMM.h"
 
+
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
 
@@ -67,8 +68,9 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10){
 // [[Rcpp::export]]
 List topicdict_train_HMM(List model, int iter = 0, int output_per = 10){
 
-	// keyATMhmm keyATMhmm_model(model, iter, output_per);
-	// model = keyATMhmm_model.return_model();
+	keyATMhmm hmm_model(model, iter, output_per);
+	// keyATMcov keyATMcov_model(model, iter, output_per);
+	// // model = hmm_model.return_model();
 	return model;
 
 }

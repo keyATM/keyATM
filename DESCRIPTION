@@ -21,7 +21,7 @@ Imports: Rcpp,
   tidytext,
   methods,
   Matrix
-SystemRequirements: C++11     
+SystemRequirements: C++11
 Suggests: knitr,
   rmarkdown,
   testthat,

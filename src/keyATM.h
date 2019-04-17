@@ -61,6 +61,7 @@ class keyATMbase
 		// Functions
 		//
 		keyATMbase(List model_, const int iter_, const int output_per_);
+		~keyATMbase();
 
 		// Reading and Initialization
 		void read_data();

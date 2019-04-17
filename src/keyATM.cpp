@@ -13,6 +13,10 @@ keyATMbase::keyATMbase(List model_, const int iter_, const int output_per_)
 	output_per = output_per_;
 }
 
+keyATMbase::~keyATMbase(){
+
+}
+
 void keyATMbase::read_data()
 {
 	read_data_common();
