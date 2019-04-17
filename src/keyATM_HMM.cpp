@@ -18,7 +18,7 @@ keyATMhmm::keyATMhmm(List model_, const int iter_, const int output_per_) :
 
 void keyATMhmm::read_data_specific()
 {
-
+	num_states = model["num_states"];
 }
 
 

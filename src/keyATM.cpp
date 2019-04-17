@@ -90,10 +90,14 @@ void keyATMbase::initialize_common()
   n_x1_k = VectorXi::Zero(num_topics);
 
 	int x, z, w;
+	int doc_len;
 	IntegerVector doc_x, doc_z, doc_w;
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
     doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
-    for(int w_position = 0; w_position < doc_x.size(); w_position++){
+		doc_len = doc_x.size();
+		doc_each_len.push_back(doc_len);
+
+    for(int w_position = 0; w_position < doc_len; w_position++){
       x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
       if (x == 0){
         n_x0_kv(z, w) += 1;

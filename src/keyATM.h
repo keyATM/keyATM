@@ -35,6 +35,7 @@ class keyATMbase
 		int k_free, k_seeded;
 		List seeds;
 		List model_fit;
+		std::vector<int> doc_each_len;
 		
 		int num_vocab, num_doc, total_words;
 
@@ -61,8 +62,8 @@ class keyATMbase
 			IntegerVector doc_x, doc_z, doc_w;
 			int w_position;
 			int x_, z_, w_;
-			int doc_z_size;
-			// int new_z, new_x;
+			int doc_length;
+			// int new_z, new_x;  // defined in sample_z and sample_x
 	
 			// sample_z
 			VectorXd z_prob_vec;

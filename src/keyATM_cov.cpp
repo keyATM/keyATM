@@ -63,15 +63,15 @@ void keyATMcov::iteration_single()
 	for (int ii = 0; ii < num_doc; ii++){
 		doc_id_ = doc_indexes[ii];
 		doc_x = X[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
+		doc_length = doc_each_len[doc_id_];
 		
-		token_indexes = sampler::shuffled_indexes(doc_z.size()); //shuffle
+		token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
 		
 		// Prepare Alpha for the doc
 		alpha = Alpha.row(doc_id_).transpose(); // take out alpha
 		
 		// Iterate each word in the document
-		doc_z_size = doc_z.size();
-		for (int jj = 0; jj < doc_z_size; jj++){
+		for (int jj = 0; jj < doc_length; jj++){
 			w_position = token_indexes[jj];
 			x_ = doc_x[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
 		
