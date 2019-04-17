@@ -56,13 +56,15 @@ void keyATMbase::initialize()
 void keyATMbase::initialize_common()
 {
 	// Vector that stores seed words (words in dictionary)
+	int wd_id;
+	IntegerVector wd_ids;
   for (int ii = 0; ii < k_seeded; ii++){
-    IntegerVector wd_ids = seeds[ii];
+    wd_ids = seeds[ii];
     seed_num.push_back(wd_ids.size());
 		
     std::unordered_set<int> keywords_set;
     for (int jj = 0; jj < wd_ids.size(); jj++){
-			int wd_id = wd_ids(jj);
+			wd_id = wd_ids(jj);
 			keywords_set.insert(wd_id);
 		}
 		
@@ -87,10 +89,12 @@ void keyATMbase::initialize_common()
   n_x0_k = VectorXi::Zero(num_topics);
   n_x1_k = VectorXi::Zero(num_topics);
 
+	int x, z, w;
+	IntegerVector doc_x, doc_z, doc_w;
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
-    IntegerVector doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
+    doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     for(int w_position = 0; w_position < doc_x.size(); w_position++){
-      int x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
+      x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
       if (x == 0){
         n_x0_kv(z, w) += 1;
         n_x0_k(z) += 1;

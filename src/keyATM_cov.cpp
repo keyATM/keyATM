@@ -100,7 +100,7 @@ void keyATMcov::sample_parameters()
 void keyATMcov::sample_lambda()
 {
 	// Sampling
-	double u = unif_rand(); // select sampling methods randomly
+	u = unif_rand(); // select sampling methods randomly
 
 	// if(u < 0.3){
 	// 	sample_lambda_mh();
@@ -126,19 +126,20 @@ void keyATMcov::sample_lambda()
 
 void keyATMcov::sample_lambda_mh_single()
 {
-	std::vector<int> topic_ids = sampler::shuffled_indexes(num_topics);
-	std::vector<int> cov_ids = sampler::shuffled_indexes(num_cov);
-	double Lambda_current;
-	double llk_current;
-	double llk_proposal;
-	double diffllk;
-	double r, u;
+	topic_ids = sampler::shuffled_indexes(num_topics);
+	cov_ids = sampler::shuffled_indexes(num_cov);
+	Lambda_current = 0.0;
+	llk_current = 0.0;
+	llk_proposal = 0.0;
+	diffllk = 0.0;
+	r = 0.0; u = 0.0;
+	int k, t;
 
 	for(int kk=0; kk<num_topics; kk++){
-		int k = topic_ids[kk];
+		k = topic_ids[kk];
 		
 		for(int tt=0; tt<num_cov; tt++){
-			int t = cov_ids[tt];
+			t = cov_ids[tt];
 		
 			mh_info[1] += 1; // how many times we run mh
 
@@ -172,15 +173,16 @@ void keyATMcov::sample_lambda_mh_single()
 void keyATMcov::sample_lambda_mh()
 {
 	
-	std::vector<int> topic_ids = sampler::shuffled_indexes(num_topics);
+	topic_ids = sampler::shuffled_indexes(num_topics);
 	VectorXd Lambda_current;
-	double llk_current;
-	double llk_proposal;
-	double diffllk;
-	double r, u;
+	llk_current = 0.0;
+	llk_proposal = 0.0;
+	diffllk = 0.0;
+	r = 0.0; u =0.0;
+	int k;
 
 	for(int kk=0; kk<num_topics; kk++){
-		int k = topic_ids[kk];
+		k = topic_ids[kk];
 		mh_info[1] += 1; // how many times we run mh
 
 		Lambda_current = Lambda.row(k).transpose();
@@ -261,19 +263,22 @@ void keyATMcov::sample_lambda_slice()
 {
 	// Slice sampling for Lambda
 
-	double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
-  std::vector<int> topic_ids = sampler::shuffled_indexes(num_topics);
-	std::vector<int> cov_ids = sampler::shuffled_indexes(num_cov);
+	start = 0.0; end = 0.0;
+	previous_p = 0.0; new_p = 0.0;
+	newlikelihood = 0.0; slice_ = 0.0; current_lambda = 0.0;
+  topic_ids = sampler::shuffled_indexes(num_topics);
+	cov_ids = sampler::shuffled_indexes(num_cov);
+	int k, t;
 	const double A = slice_A;
 
-	double store_loglik = likelihood_lambda();
-	double newlambdallk = 0.0;
+	store_loglik = likelihood_lambda();
+	newlambdallk = 0.0;
 
 	for(int kk=0; kk<num_topics; kk++){
-		int k = topic_ids[kk];
+		k = topic_ids[kk];
 
 		for(int tt=0; tt<num_cov; tt++){
-			int t = cov_ids[tt];
+			t = cov_ids[tt];
 
 			start = 0.0; // shrink
 			end = 1.0; // shrink

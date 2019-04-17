@@ -34,6 +34,22 @@ class keyATMcov : public keyATMbase
 
 		// Sampling info
 		std::vector<int> mh_info{0,0};
+
+		// During the sampling
+			// mh_single
+			std::vector<int> topic_ids;
+			std::vector<int> cov_ids;
+
+			double Lambda_current;
+			double llk_current;
+			double llk_proposal;
+			double diffllk;
+			double r, u;
+
+			// Slice sampling
+			double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
+			double store_loglik;
+			double newlambdallk;
 		
 		//
 		// Functions
