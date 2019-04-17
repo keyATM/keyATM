@@ -29,25 +29,27 @@ void keyATMbasic::initialize_specific()
 void keyATMbasic::iteration_single()
 { // Single iteration
 
-	std::vector<int> doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
+	doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
+
 
 	for (int ii = 0; ii < num_doc; ii++){
-		int doc_id_ = doc_indexes[ii];
-		IntegerVector doc_x = X[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
+		doc_id_ = doc_indexes[ii];
+		doc_x = X[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
 		
-		std::vector<int> token_indexes = sampler::shuffled_indexes(doc_z.size()); //shuffle
+		token_indexes = sampler::shuffled_indexes(doc_z.size()); //shuffle
 		
 		// Iterate each word in the document
-		for (int jj = 0; jj < doc_z.size(); jj++){
-			int w_position = token_indexes[jj];
-			int x_ = doc_x[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
+		doc_z_size = doc_z.size();
+		for (int jj = 0; jj < doc_z_size; jj++){
+			w_position = token_indexes[jj];
+			x_ = doc_x[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
 		
-			int new_z = sample_z(alpha, z_, x_, w_, doc_id_);
+			new_z = sample_z(alpha, z_, x_, w_, doc_id_);
 			doc_z[w_position] = new_z;
 		
 	
 			z_ = doc_z[w_position]; // use updated z
-			int new_x = sample_x(alpha, z_, x_, w_, doc_id_);
+			new_x = sample_x(alpha, z_, x_, w_, doc_id_);
 			doc_x[w_position] = new_x;
 		}
 		
@@ -72,9 +74,10 @@ void keyATMbasic::sample_alpha()
   std::vector<int> topic_ids = sampler::shuffled_indexes(num_topics);
 	double store_loglik = alpha_loglik();
 	double newalphallk = 0.0;
+	int k;
 
   for(int i = 0; i < num_topics; i++){
-    int k = topic_ids[i];
+    k = topic_ids[i];
     start = min_v / (1.0 + min_v); // shrinkp
     end = 1.0;
     // end = shrinkp(max_v);

@@ -53,6 +53,30 @@ class keyATMbase
 		VectorXi n_x0_k;
 		VectorXi n_x1_k;
 
+		// Use during the iteration
+			// Declaration
+			std::vector<int> doc_indexes;
+			int doc_id_;
+			std::vector<int> token_indexes;
+			IntegerVector doc_x, doc_z, doc_w;
+			int w_position;
+			int x_, z_, w_;
+			int doc_z_size;
+			// int new_z, new_x;
+	
+			// sample_z
+			VectorXd z_prob_vec;
+			int new_z;
+			double numerator, denominator;
+			double sum;
+
+			// sample_x
+			int new_x;
+			double x0_prob;
+			double x1_prob;
+			int k;
+
+
 		// Track time
 		std::chrono::time_point<std::chrono::high_resolution_clock> start;
 		double prepare_data;

@@ -103,6 +103,9 @@ void keyATMbase::initialize_common()
   }
   total_words = (int)n_dk.sum();
 	
+
+	// Use during the iteration
+	z_prob_vec = VectorXd::Zero(num_topics);
 	
 }
 
@@ -156,9 +159,8 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
 
   n_dk(doc_id, z) -= 1;
 
-  VectorXd z_prob_vec = VectorXd::Zero(num_topics);
-  int new_z = -1; // debug
-  double numerator, denominator;
+  // VectorXd z_prob_vec = VectorXd::Zero(num_topics);
+  new_z = -1; // debug
   if (x == 0){
     for (int k = 0; k < num_topics; ++k){
       numerator = (beta + (double)n_x0_kv(k, w)) *
@@ -171,7 +173,7 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
       z_prob_vec(k) = numerator / denominator;
     }
 
-    double sum = z_prob_vec.sum(); // normalize
+    sum = z_prob_vec.sum(); // normalize
     new_z = sampler::rcat_without_normalize(z_prob_vec, sum); // take a sample
 
   } else {
@@ -191,7 +193,7 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
     }
 
 
-		double sum = z_prob_vec.sum();
+		sum = z_prob_vec.sum();
     new_z = sampler::rcat_without_normalize(z_prob_vec, sum); // take a sample
 
   }
@@ -231,11 +233,7 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
   n_dk(doc_id, z) -= 1; // not necessary to remove
 
   // newprob_x1()
-  double x1_prob;
-  int k = z;
-  double numerator;
-  double denominator;
-  int new_x;
+  k = z;
 
 	numerator = (beta_s + (double)n_x1_kv(k, w)) *
 		( ((double)n_x1_k(k) + gamma_1) );
@@ -249,10 +247,10 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
 
 	denominator = ((double)num_vocab * beta + (double)n_x0_k(k) ) *
 		((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
-	double x0_prob = numerator / denominator;
+	x0_prob = numerator / denominator;
 
 	// Normalize
-	double sum = x0_prob + x1_prob;
+	sum = x0_prob + x1_prob;
 
 	x1_prob = x1_prob / sum;
 	new_x = R::runif(0,1) <= x1_prob;  //new_x = Bern(x0_prob, x1_prob);

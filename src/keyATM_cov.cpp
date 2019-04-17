@@ -55,30 +55,31 @@ void keyATMcov::initialize_specific()
 void keyATMcov::iteration_single()
 { // Single iteration
 
-	std::vector<int> doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
+	doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
 	// Create Alpha for this iteration
 	Alpha = (C * Lambda.transpose()).array().exp();
 
 	for (int ii = 0; ii < num_doc; ii++){
-		int doc_id_ = doc_indexes[ii];
-		IntegerVector doc_x = X[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
+		doc_id_ = doc_indexes[ii];
+		doc_x = X[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
 		
-		std::vector<int> token_indexes = sampler::shuffled_indexes(doc_z.size()); //shuffle
+		token_indexes = sampler::shuffled_indexes(doc_z.size()); //shuffle
 		
 		// Prepare Alpha for the doc
 		alpha = Alpha.row(doc_id_).transpose(); // take out alpha
 		
 		// Iterate each word in the document
-		for (int jj = 0; jj < doc_z.size(); jj++){
-			int w_position = token_indexes[jj];
-			int x_ = doc_x[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
+		doc_z_size = doc_z.size();
+		for (int jj = 0; jj < doc_z_size; jj++){
+			w_position = token_indexes[jj];
+			x_ = doc_x[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
 		
-			int new_z = sample_z(alpha, z_, x_, w_, doc_id_);
+			new_z = sample_z(alpha, z_, x_, w_, doc_id_);
 			doc_z[w_position] = new_z;
 		
 			z_ = doc_z[w_position]; // use updated z
-			int new_x = sample_x(alpha, z_, x_, w_, doc_id_);
+			new_x = sample_x(alpha, z_, x_, w_, doc_id_);
 			doc_x[w_position] = new_x;
 		}
 		
