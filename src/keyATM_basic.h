@@ -22,6 +22,10 @@ class keyATMbasic : public keyATMbase
 		double min_v = 1e-9;
 		double max_v = 100.0;
 		int max_shrink_time = 1000;
+
+
+			// in alpha_loglik
+			MatrixXd ndk_a;
 		
 		//
 		// Functions

@@ -83,11 +83,11 @@ void keyATMbase::initialize_common()
 	num_doc = files.size();
 
   // storage for sufficient statistics and their margins
-  n_x0_kv = MatrixXi::Zero(num_topics, num_vocab);
-  n_x1_kv = MatrixXi::Zero(num_topics, num_vocab);
+  n_x0_kv = MatrixXd::Zero(num_topics, num_vocab);
+  n_x1_kv = MatrixXd::Zero(num_topics, num_vocab);
   n_dk = MatrixXd::Zero(num_doc, num_topics);
-  n_x0_k = VectorXi::Zero(num_topics);
-  n_x1_k = VectorXi::Zero(num_topics);
+  n_x0_k = VectorXd::Zero(num_topics);
+  n_x1_k = VectorXd::Zero(num_topics);
 
 	int x, z, w;
 	int doc_len;
@@ -167,16 +167,15 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
 
   n_dk(doc_id, z) -= 1;
 
-  // VectorXd z_prob_vec = VectorXd::Zero(num_topics);
   new_z = -1; // debug
   if (x == 0){
     for (int k = 0; k < num_topics; ++k){
-      numerator = (beta + (double)n_x0_kv(k, w)) *
-        ((double)n_x0_k(k) + gamma_2) *
-        ((double)n_dk(doc_id, k) + alpha(k));
+      numerator = (beta + n_x0_kv(k, w)) *
+        (n_x0_k(k) + gamma_2) *
+        (n_dk(doc_id, k) + alpha(k));
 
-      denominator = ((double)num_vocab * beta + (double)n_x0_k(k)) *
-        ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+      denominator = ((double)num_vocab * beta + n_x0_k(k)) *
+        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);
 
       z_prob_vec(k) = numerator / denominator;
     }
@@ -190,12 +189,12 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
         z_prob_vec(k) = 0.0;
 				continue;
       } else{ // w not one of the seeds
-        numerator = (beta_s + (double)n_x1_kv(k, w)) *
-          ( ((double)n_x1_k(k) + gamma_1) ) *
-          ( ((double)n_dk(doc_id, k) + alpha(k)) );
+        numerator = (beta_s + n_x1_kv(k, w)) *
+          ( (n_x1_k(k) + gamma_1) ) *
+          ( (n_dk(doc_id, k) + alpha(k)) );
       }
-      denominator = ((double)seed_num[k] * beta_s + (double)n_x1_k(k) ) *
-        ((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+      denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
+        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);
 
       z_prob_vec(k) = numerator / denominator;
     }
@@ -243,18 +242,18 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
   // newprob_x1()
   k = z;
 
-	numerator = (beta_s + (double)n_x1_kv(k, w)) *
-		( ((double)n_x1_k(k) + gamma_1) );
-	denominator = ((double)seed_num[k] * beta_s + (double)n_x1_k(k) ) *
-		((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+	numerator = (beta_s + n_x1_kv(k, w)) *
+		( n_x1_k(k) + gamma_1 );
+	denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
+		(n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);
 	x1_prob = numerator / denominator;
 
 	// newprob_x0()
-	numerator = (beta + (double)n_x0_kv(k, w)) *
-		((double)n_x0_k(k) + gamma_2);
+	numerator = (beta + n_x0_kv(k, w)) *
+		(n_x0_k(k) + gamma_2);
 
-	denominator = ((double)num_vocab * beta + (double)n_x0_k(k) ) *
-		((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2);
+	denominator = ((double)num_vocab * beta + n_x0_k(k) ) *
+		(n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);
 	x0_prob = numerator / denominator;
 
 	// Normalize

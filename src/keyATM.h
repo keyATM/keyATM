@@ -48,11 +48,11 @@ class keyATMbase
 		std::vector<int> seed_num;
 
 		// Latent Variables
-		MatrixXi n_x0_kv;
-		MatrixXi n_x1_kv;
+		MatrixXd n_x0_kv;
+		MatrixXd n_x1_kv;
 		MatrixXd n_dk;
-		VectorXi n_x0_k;
-		VectorXi n_x1_k;
+		VectorXd n_x0_k;
+		VectorXd n_x1_k;
 
 		// Use during the iteration
 			// Declaration

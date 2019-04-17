@@ -323,15 +323,15 @@ double keyATMcov::loglik_total()
   double loglik = 0.0;
   for (int k = 0; k < num_topics; k++){
     for (int v = 0; v < num_vocab; v++){ // word
-      loglik += lgamma(beta + (double)n_x0_kv(k, v) ) - lgamma(beta);
-      loglik += lgamma(beta_s + (double)n_x1_kv(k, v) ) - lgamma(beta_s);
+      loglik += lgamma(beta + n_x0_kv(k, v) ) - lgamma(beta);
+      loglik += lgamma(beta_s + n_x1_kv(k, v) ) - lgamma(beta_s);
     }
     // word normalization
-    loglik += lgamma( beta * (double)num_vocab ) - lgamma(beta * (double)num_vocab + (double)n_x0_k(k) );
-    loglik += lgamma( beta_s * (double)num_vocab ) - lgamma(beta_s * (double)num_vocab + (double)n_x1_k(k) );
+    loglik += lgamma( beta * (double)num_vocab ) - lgamma(beta * (double)num_vocab + n_x0_k(k) );
+    loglik += lgamma( beta_s * (double)num_vocab ) - lgamma(beta_s * (double)num_vocab + n_x1_k(k) );
     // x
-    loglik += lgamma( (double)n_x0_k(k) + gamma_2 ) - lgamma((double)n_x1_k(k) + gamma_1 + (double)n_x0_k(k) + gamma_2)
-      + lgamma( (double)n_x1_k(k) + gamma_1 ) ;
+    loglik += lgamma( n_x0_k(k) + gamma_2 ) - lgamma(n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2)
+      + lgamma( n_x1_k(k) + gamma_1 ) ;
 		
     // x normalization
     loglik += lgamma(gamma_1 + gamma_2) - lgamma(gamma_1) - lgamma(gamma_2);
