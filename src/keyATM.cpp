@@ -292,8 +292,9 @@ double keyATMbase::logsumexp(double &x, double &y, bool flg){
 
 
 double keyATMbase::logsumexp_Eigen(VectorXd &vec){
-  double sum = 0.0;
-  for(int i = 0; i < vec.size(); i++){
+  sum = 0.0;
+	size = vec.size();
+  for(int i = 0; i < size; i++){
     sum = logsumexp(sum, vec[i], (i == 0));
   }
   return sum;

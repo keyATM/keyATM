@@ -224,7 +224,7 @@ double keyATMcov::likelihood_lambda()
 	
 		loglik += lgamma(alpha.sum()); 
 				// the first term numerator in the first square bracket
-		loglik -= lgamma( n_dk.row(d).sum() + alpha.sum() ); 
+		loglik -= lgamma( doc_each_len[d] + alpha.sum() ); 
 				// the second term denoinator in the first square bracket
 	
 		for(int k=0; k<num_topics; k++){

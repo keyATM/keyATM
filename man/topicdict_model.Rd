@@ -78,6 +78,7 @@ A list containing \describe{
         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
         \item{alpha_iter}{a list to store topic proportion hyperparameters}
         \item{Lambda_iter}{a list to store coefficients of the covariates}
+        \item{S_iter}{a list to store states sampled in HMM}
         \item{sampling_info}{information related to sampling}
         \item{model_fit}{a list to store perplexity and log-likelihood}
         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
@@ -85,6 +86,7 @@ A list containing \describe{
         \item{beta}{prior parameter for the non-seeded word generation probabilities}
         \item{beta_s}{prior parameter for the seeded word generation probabilities}
         \item{use_cov}{boolean, whether or not use the covariate}
+        \item{num_states}{number of states in HMM}
         \item{call}{details of the function call}
         }.
 }

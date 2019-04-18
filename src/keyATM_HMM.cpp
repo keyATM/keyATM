@@ -76,6 +76,11 @@ void keyATMhmm::initialize_specific()
 
 	// Initialize alphas;
 	alphas = MatrixXd::Constant(num_states, num_topics, 50.0/num_topics);
+
+	// Initialize variables we use in the sampling
+	logfy = VectorXd::Zero(num_states);
+	st_k = VectorXd::Zero(num_states);
+	logst_k = VectorXd::Zero(num_states);
 }
 
 
@@ -115,13 +120,90 @@ void keyATMhmm::iteration_single()
 
 void keyATMhmm::sample_parameters()
 {
+	sample_forward();  // calculate Psk
+	sample_backward();  // sample S_est
+	sample_P();  // sample P_est
 
+	store_S_est();
+}
+
+void keyATMhmm::sample_forward()
+{ // Calculate Psk (num_doc, num_states)
+	for(int d=0; d<num_doc; d++){
+		if(d == 0){
+			// First document should be the first state
+			Psk(0, 0) = 1.0;
+			continue;
+		}	
+
+		// Prepare f in Eq.(6) of Chib (1998)
+		for(int s=0; s<num_states; s++){
+			alpha = alphas.row(s).transpose();
+			logfy(s) = polyapdfln(d, alpha);
+		}	
+
+		// Prepare Pst
+		st_1l = Psk.row(d-1);  // previous observation
+		st_k = (st_1l.transpose() * P_est);
+
+		// Format numerator and calculate denominator at the same time
+		logsum = 0.0;
+		for(int s=0; s<num_states; s++){
+			if(st_k(s) != 0.0){
+				loglik = log(st_k(s)) + logfy(s);
+				logst_k(s) = log(st_k(s)) + logfy(s);
+				logsum = logsumexp(logsum, loglik, (s == 0));
+			}
+		}
+
+		for(int s=0; s<num_states; s++){
+			if(st_k(s) != 0.0){
+				Psk(d, s) = exp( logst_k(s) - logsum );	
+			}else{
+				Psk(d, s) = 0.0;	
+			}	
+		}
+
+	}
+
+}
+
+double keyATMhmm::polyapdfln(int &d, VectorXd &alpha)
+{ // Polya distribution log-likelihood
+	loglik = 0.0;
+
+	loglik += lgamma( alpha.sum() ) - lgamma( doc_each_len[d] + alpha.sum() );
+	for (int k = 0; k < num_topics; k++){
+		loglik += lgamma( n_dk(d,k) + alpha(k) ) - lgamma( alpha(k) );
+	}
+
+	return loglik;
+}
+
+
+void keyATMhmm::sample_backward()
+{
+}
+
+
+void keyATMhmm::sample_P()
+{
+}
+
+
+void keyATMhmm::store_S_est()
+{
+	// Store state
+	Rcpp::NumericVector state_R = Rcpp::wrap(S_est);
+	List S_iter = model["S_iter"];
+	S_iter.push_back(state_R);
+	model["S_iter"] = S_iter;
 }
 
 
 double keyATMhmm::loglik_total()
 {
-  double loglik = 0.0;
+  loglik = 0.0;
   for (int k = 0; k < num_topics; k++){
     for (int v = 0; v < num_vocab; v++){ // word
       loglik += lgamma(beta + n_x0_kv(k, v) ) - lgamma(beta);
@@ -143,10 +225,12 @@ double keyATMhmm::loglik_total()
   for (int d = 0; d < num_doc; d++){
 		alpha = alphas.row(S_est(doc_id_)).transpose(); // Doc alpha, column vector	
 		
-    loglik += lgamma( alpha.sum() ) - lgamma( n_dk.row(d).sum() + alpha.sum() );
+    loglik += lgamma( alpha.sum() ) - lgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += lgamma( n_dk(d,k) + alpha(k) ) - lgamma( alpha(k) );
     }
   }
+
+	return loglik;
 }
 

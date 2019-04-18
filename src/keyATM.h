@@ -63,6 +63,7 @@ class keyATMbase
 			int w_position;
 			int x_, z_, w_;
 			int doc_length;
+			int size;
 			// int new_z, new_x;  // defined in sample_z and sample_x
 	
 			// sample_z
