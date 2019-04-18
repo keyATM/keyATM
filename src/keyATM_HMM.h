@@ -38,6 +38,16 @@ class keyATMhmm : public keyATMbase
 			int state_id;
 			VectorXd state_prob_vec;
 			double pii;
+
+			// Sample alpha
+			VectorXi states_start;
+			VectorXi states_end;
+
+			double start, end, previous_p, new_p, newlikelihood, slice_;
+			std::vector<int> topic_ids;
+			VectorXd keep_current_param;
+			double store_loglik;
+			double newalphallk;
 	
 		// 
 		// Functions

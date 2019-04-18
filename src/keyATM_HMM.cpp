@@ -53,7 +53,7 @@ void keyATMhmm::initialize_specific()
 	}
 
 	S_est = VectorXi::Zero(num_doc);
-	S_count = VectorXi::Zero(num_states);
+	S_count = S_est_num;
 	int count;
 	index = 0;
 	for(int i=0; i<num_states; i++){
@@ -83,6 +83,9 @@ void keyATMhmm::initialize_specific()
 	st_k = VectorXd::Zero(num_states);
 	logst_k = VectorXd::Zero(num_states);
 	state_prob_vec = VectorXd::Zero(num_states);
+	
+	states_start = VectorXi::Zero(num_states);
+	states_end = VectorXi::Zero(num_states);
 }
 
 
@@ -135,7 +138,26 @@ void keyATMhmm::sample_parameters()
 
 void keyATMhmm::sample_alpha()
 {
+	cout << "sample_alpha: " << S_count.transpose() << endl;
 
+	// Retrieve start and end indexes of states in documents
+	for(int s=0; s<num_states; s++){
+		if(s == 0){
+			// First state
+			states_start(s) = 0;
+			states_end(s) = S_count(s) - 1;
+			continue;
+		}	
+		
+		states_start(s) = states_end(s-1) + 1;
+		states_end(s) = states_start(s) + S_count(s) - 1;
+	}
+
+	// cout << "start " << states_start.transpose() << endl;
+	// cout << "end   " << states_end.transpose() << endl;
+	
+
+	
 }
 
 
@@ -211,7 +233,8 @@ void keyATMhmm::sample_backward()
 		S_est(d) = state_id;
 		S_count(state_id) += 1;
 	}
-	cout << S_count.transpose() << endl;
+	S_count(index_states) += 1;  // last document
+	cout << "sample_backward: " << S_count.transpose() << endl;
 }
 
 

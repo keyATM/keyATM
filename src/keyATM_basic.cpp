@@ -68,11 +68,11 @@ void keyATMbasic::sample_parameters()
 void keyATMbasic::sample_alpha()
 {
 
-  double start, end, previous_p, new_p, newlikelihood, slice_;
-  VectorXd keep_current_param = alpha;
-  std::vector<int> topic_ids = sampler::shuffled_indexes(num_topics);
-	double store_loglik = alpha_loglik();
-	double newalphallk = 0.0;
+  start, end, previous_p, new_p, newlikelihood, slice_;
+  keep_current_param = alpha;
+  topic_ids = sampler::shuffled_indexes(num_topics);
+	store_loglik = alpha_loglik();
+	newalphallk = 0.0;
 	int k;
 
   for(int i = 0; i < num_topics; i++){
