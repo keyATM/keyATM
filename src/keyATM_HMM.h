@@ -19,6 +19,7 @@ class keyATMhmm : public keyATMbase
 		int index_states;  // num_states - 1
 		MatrixXd Psk;    // (num_doc, num_states)
 		VectorXi S_est;  // stores state index, (num_doc)
+		VectorXi S_count;  // stores the count of each state
 		MatrixXd P_est;  // (num_states, num_states)
 		MatrixXd alphas;  // (num_states, num_topics)
 		double loglik;
@@ -33,6 +34,10 @@ class keyATMhmm : public keyATMbase
 			VectorXd st_k;
 			VectorXd logst_k;
 			double logsum;
+
+			int state_id;
+			VectorXd state_prob_vec;
+			double pii;
 	
 		// 
 		// Functions
@@ -45,6 +50,7 @@ class keyATMhmm : public keyATMbase
 		// Iteration
 		void iteration_single();
 		void sample_parameters();
+		void sample_alpha();
 		void sample_forward();  // calculate Psk
 		void sample_backward();  // sample S_est
 		void sample_P();  // sample P_est

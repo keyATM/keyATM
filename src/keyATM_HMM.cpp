@@ -53,6 +53,7 @@ void keyATMhmm::initialize_specific()
 	}
 
 	S_est = VectorXi::Zero(num_doc);
+	S_count = VectorXi::Zero(num_states);
 	int count;
 	index = 0;
 	for(int i=0; i<num_states; i++){
@@ -81,6 +82,7 @@ void keyATMhmm::initialize_specific()
 	logfy = VectorXd::Zero(num_states);
 	st_k = VectorXd::Zero(num_states);
 	logst_k = VectorXd::Zero(num_states);
+	state_prob_vec = VectorXd::Zero(num_states);
 }
 
 
@@ -120,12 +122,22 @@ void keyATMhmm::iteration_single()
 
 void keyATMhmm::sample_parameters()
 {
+	// alpha
+	sample_alpha();	
+
+	// HMM
 	sample_forward();  // calculate Psk
 	sample_backward();  // sample S_est
 	sample_P();  // sample P_est
-
 	store_S_est();
 }
+
+
+void keyATMhmm::sample_alpha()
+{
+
+}
+
 
 void keyATMhmm::sample_forward()
 { // Calculate Psk (num_doc, num_states)
@@ -183,11 +195,37 @@ double keyATMhmm::polyapdfln(int &d, VectorXd &alpha)
 
 void keyATMhmm::sample_backward()
 {
+	// sample S_est
+	// num_doc - 2, because doc_index is (num_doc - 1)
+	// and we want to start from (doc_index - 1)
+
+	S_count = VectorXi::Zero(num_states); // reset counter
+
+	for(int d=(num_doc-2); 0<= d; --d){
+		state_id = S_est(d+1);
+
+		state_prob_vec.array() = Psk.row(d).transpose().array() * P_est.col(state_id).array(); 
+		state_prob_vec.array() = state_prob_vec.array() / state_prob_vec.sum();
+
+		state_id = sampler::rcat(state_prob_vec); // new state id
+		S_est(d) = state_id;
+		S_count(state_id) += 1;
+	}
+	cout << S_count.transpose() << endl;
 }
 
 
 void keyATMhmm::sample_P()
 {
+	// sample P_est
+	// iterate until index_state - 2
+	for(int s=0; s<=(num_states-2); ++s){
+		pii = R::rbeta(1+S_count(s), 1);	
+
+		P_est(s, s) = pii;
+		P_est(s, s+1) = 1.0 - pii;
+	}
+	// cout << P_est << endl;
 }
 
 
@@ -221,15 +259,20 @@ double keyATMhmm::loglik_total()
   }
 
 
-  // z
   for (int d = 0; d < num_doc; d++){
+		// z
 		alpha = alphas.row(S_est(doc_id_)).transpose(); // Doc alpha, column vector	
 		
     loglik += lgamma( alpha.sum() ) - lgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += lgamma( n_dk(d,k) + alpha(k) ) - lgamma( alpha(k) );
     }
+
+		// HMM part
+		state_id = S_est(d);
+		loglik += log( P_est(state_id, state_id) );
   }
+
 
 	return loglik;
 }
