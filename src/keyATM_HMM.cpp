@@ -52,6 +52,9 @@ void keyATMhmm::initialize_specific()
 		S_est_num(index) += 1;
 	}
 
+	S_est_num << 42, 68, 50, 40;  // For debug!!!!!!!
+	// cout << S_est_num << endl;
+
 	S_est = VectorXi::Zero(num_doc);
 	S_count = S_est_num;
 	int count;
@@ -127,12 +130,12 @@ void keyATMhmm::sample_parameters()
 {
 	// alpha
 	sample_alpha();	
-
-	// HMM
-	sample_forward();  // calculate Psk
-	sample_backward();  // sample S_est
-	sample_P();  // sample P_est
-	store_S_est();
+	
+	// // HMM
+	// sample_forward();  // calculate Psk
+	// sample_backward();  // sample S_est
+	// sample_P();  // sample P_est
+	// store_S_est();
 }
 
 
@@ -181,6 +184,7 @@ void keyATMhmm::sample_alpha_state(int &state, int &state_start, int &state_end)
 
 	alpha = alphas.row(state).transpose();  // select alpha to update
 	store_loglik = alpha_loglik(state_start, state_end);
+
 	
   for(int i = 0; i < num_topics; i++){
     k = topic_ids[i];
@@ -190,14 +194,14 @@ void keyATMhmm::sample_alpha_state(int &state, int &state_start, int &state_end)
 		previous_p = alpha(k) / (1.0 + alpha(k)); // shrinkp
     slice_ = store_loglik - 2.0 * log(1.0 - previous_p) 
 						+ log(unif_rand()); // <-- using R random uniform
-	
+		
     for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
       new_p = sampler::slice_uniform(start, end); // <-- using R function above
       alpha(k) = new_p / (1.0 - new_p); // expandp
-	
+		
 			newalphallk = alpha_loglik(state_start, state_end);
       newlikelihood = newalphallk - 2.0 * log(1.0 - new_p);
-	
+		
       if (slice_ < newlikelihood){
 				store_loglik = newalphallk;
         break;
@@ -227,6 +231,7 @@ double keyATMhmm::alpha_loglik(int &state_start, int &state_end)
 
   loglik = 0.0;
   fixed_part = 0.0;
+  ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
 	alpha_sum_val = alpha.sum();
 
 
