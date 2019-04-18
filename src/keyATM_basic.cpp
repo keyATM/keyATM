@@ -68,7 +68,7 @@ void keyATMbasic::sample_parameters()
 void keyATMbasic::sample_alpha()
 {
 
-  start, end, previous_p, new_p, newlikelihood, slice_;
+  // start, end, previous_p, new_p, newlikelihood, slice_;
   keep_current_param = alpha;
   topic_ids = sampler::shuffled_indexes(num_topics);
 	store_loglik = alpha_loglik();
@@ -99,7 +99,7 @@ void keyATMbasic::sample_alpha()
       } else if (new_p < previous_p){
         start = new_p;
       } else {
-				Rcerr << "Something goes wrong in sample_alpha()" << std::endl;
+				Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
         alpha(k) = keep_current_param(k);
 				break;
       }
@@ -118,8 +118,8 @@ void keyATMbasic::sample_alpha()
 
 double keyATMbasic::alpha_loglik()
 {
-  double loglik = 0.0;
-  double fixed_part = 0.0;
+  loglik = 0.0;
+  fixed_part = 0.0;
   ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
 
 

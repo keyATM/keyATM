@@ -156,8 +156,103 @@ void keyATMhmm::sample_alpha()
 	// cout << "start " << states_start.transpose() << endl;
 	// cout << "end   " << states_end.transpose() << endl;
 	
-
+	for(int s=0; s<num_states; s++){
+		sample_alpha_state(s, states_start(s),
+											    states_end(s));	
+	}
 	
+	// Store alphas
+	Rcpp::NumericMatrix alphas_R = Rcpp::wrap(alphas);
+	List alpha_iter = model["alpha_iter"];
+	alpha_iter.push_back(alphas_R);
+	model["alpha_iter"] = alpha_iter;
+	
+}
+
+
+void keyATMhmm::sample_alpha_state(int &state, int &state_start, int &state_end)
+{
+
+  // start, end, previous_p, new_p, newlikelihood, slice_;
+  keep_current_param = alpha;
+  topic_ids = sampler::shuffled_indexes(num_topics);
+	newalphallk = 0.0;
+	int k;
+
+	alpha = alphas.row(state).transpose();  // select alpha to update
+	store_loglik = alpha_loglik(state_start, state_end);
+	
+  for(int i = 0; i < num_topics; i++){
+    k = topic_ids[i];
+    start = min_v / (1.0 + min_v); // shrinkp
+    end = 1.0;
+    // end = shrinkp(max_v);
+		previous_p = alpha(k) / (1.0 + alpha(k)); // shrinkp
+    slice_ = store_loglik - 2.0 * log(1.0 - previous_p) 
+						+ log(unif_rand()); // <-- using R random uniform
+	
+    for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
+      new_p = sampler::slice_uniform(start, end); // <-- using R function above
+      alpha(k) = new_p / (1.0 - new_p); // expandp
+	
+			newalphallk = alpha_loglik(state_start, state_end);
+      newlikelihood = newalphallk - 2.0 * log(1.0 - new_p);
+	
+      if (slice_ < newlikelihood){
+				store_loglik = newalphallk;
+        break;
+      } else if (previous_p < new_p){
+        end = new_p;
+      } else if (new_p < previous_p){
+        start = new_p;
+      } else {
+				Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
+        alpha(k) = keep_current_param(k);
+				break;
+      }
+    }
+  }
+
+	// Set new alpha
+	cout << "###### " << state << " #####" << endl;
+	cout << "alpha " << alpha.transpose() << endl;
+	alphas.row(state) = alpha.transpose();
+	cout << "alphas " << alphas << endl;
+
+}
+
+
+double keyATMhmm::alpha_loglik(int &state_start, int &state_end)
+{
+
+  loglik = 0.0;
+  fixed_part = 0.0;
+  ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
+
+
+  fixed_part += lgamma(alpha.sum()); // first term numerator
+  for(int k = 0; k < num_topics; k++){
+    fixed_part -= lgamma(alpha(k)); // first term denominator
+    // Add prior
+		if(k < k_seeded){
+			loglik += gammapdfln(alpha(k), eta_1, eta_2);
+		}else{
+			loglik += gammapdfln(alpha(k), eta_1_regular, eta_2_regular);
+		}
+
+  }
+  for(int d = state_start; d <= state_end; d++){
+    loglik += fixed_part;
+    // second term numerator
+    for(int k = 0; k < num_topics; k++){
+      loglik += lgamma(ndk_a(d,k));
+    }
+    // second term denominator
+    loglik -= lgamma(ndk_a.row(d).sum());
+
+  }
+  return loglik;
+
 }
 
 

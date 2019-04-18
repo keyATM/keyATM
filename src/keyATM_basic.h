@@ -29,6 +29,9 @@ class keyATMbasic : public keyATMbase
 		double store_loglik;
 		double newalphallk;
 
+		double loglik;
+		double fixed_part;
+
 			// in alpha_loglik
 			MatrixXd ndk_a;
 		

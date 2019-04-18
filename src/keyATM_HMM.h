@@ -23,6 +23,7 @@ class keyATMhmm : public keyATMbase
 		MatrixXd P_est;  // (num_states, num_states)
 		MatrixXd alphas;  // (num_states, num_topics)
 		double loglik;
+		double fixed_part;
 	
 		// Constructor
 		keyATMhmm(List model_, const int iter_, const int output_per_);
@@ -43,11 +44,16 @@ class keyATMhmm : public keyATMbase
 			VectorXi states_start;
 			VectorXi states_end;
 
-			double start, end, previous_p, new_p, newlikelihood, slice_;
-			std::vector<int> topic_ids;
-			VectorXd keep_current_param;
-			double store_loglik;
-			double newalphallk;
+				// Slice Sampling
+				double min_v = 1e-9;
+				double max_v = 100.0;
+				int max_shrink_time = 1000;
+				double start, end, previous_p, new_p, newlikelihood, slice_;
+				std::vector<int> topic_ids;
+				VectorXd keep_current_param;
+				double store_loglik;
+				double newalphallk;
+				MatrixXd ndk_a;
 	
 		// 
 		// Functions
@@ -60,7 +66,11 @@ class keyATMhmm : public keyATMbase
 		// Iteration
 		void iteration_single();
 		void sample_parameters();
+
 		void sample_alpha();
+		void sample_alpha_state(int &state, int &state_start, int &state_end);
+		double alpha_loglik(int &state_start, int &state_end);
+
 		void sample_forward();  // calculate Psk
 		void sample_backward();  // sample S_est
 		void sample_P();  // sample P_est
