@@ -78,6 +78,9 @@ class keyATMbase
 			double x1_prob;
 			int k;
 
+			// sample alpha
+			double alpha_sum_val;
+
 
 		// Track time
 		std::chrono::time_point<std::chrono::high_resolution_clock> start;

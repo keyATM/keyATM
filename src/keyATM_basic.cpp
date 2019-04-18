@@ -121,9 +121,10 @@ double keyATMbasic::alpha_loglik()
   loglik = 0.0;
   fixed_part = 0.0;
   ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
+	alpha_sum_val = alpha.sum();
 
 
-  fixed_part += lgamma(alpha.sum()); // first term numerator
+  fixed_part += lgamma(alpha_sum_val); // first term numerator
   for(int k = 0; k < num_topics; k++){
     fixed_part -= lgamma(alpha(k)); // first term denominator
     // Add prior
@@ -141,7 +142,7 @@ double keyATMbasic::alpha_loglik()
       loglik += lgamma(ndk_a(d,k));
     }
     // second term denominator
-    loglik -= lgamma(ndk_a.row(d).sum());
+    loglik -= lgamma(doc_each_len[d] + alpha_sum_val);
 
   }
   return loglik;
