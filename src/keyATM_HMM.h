@@ -18,8 +18,9 @@ class keyATMhmm : public keyATMbase
 		int num_states;
 		int index_states;  // num_states - 1
 		MatrixXd Psk;
-		VectorXi S_est;
+		VectorXi S_est;  // state index, length is num_doc;
 		MatrixXd P_est;
+		MatrixXd alphas;  // num_states \times num_topics
 	
 		// Constructor
 		keyATMhmm(List model_, const int iter_, const int output_per_);
@@ -35,6 +36,10 @@ class keyATMhmm : public keyATMbase
 		// Iteration
 		void iteration_single();
 		void sample_parameters();
+		void sample_forward();
+		void sample_backward();
+		void sample_calcPsk();
+
 		double loglik_total();
 };
 

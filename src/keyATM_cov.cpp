@@ -345,7 +345,7 @@ double keyATMcov::loglik_total()
   for (int d = 0; d < num_doc; d++){
 		alpha = Alpha.row(d).transpose(); // Doc alpha, column vector	
 		
-    loglik += lgamma( alpha.sum() ) - lgamma( n_dk.row(d).sum() + alpha.sum() );
+    loglik += lgamma( alpha.sum() ) - lgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += lgamma( n_dk(d,k) + alpha(k) ) - lgamma( alpha(k) );
     }
