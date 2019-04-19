@@ -49,7 +49,7 @@ class keyATMbasic : public keyATMbase
 		void initialize_specific();
 
 		// Iteration
-		void iteration_single();
+		void iteration_single(int &it);
 		void sample_parameters();
 		void sample_alpha();
 		double alpha_loglik();

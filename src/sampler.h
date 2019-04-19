@@ -15,6 +15,7 @@ namespace sampler{
 
 	int rcat(VectorXd &prob);
 	int rcat_without_normalize(VectorXd &prob, double &total);
+
 }
 
 #endif

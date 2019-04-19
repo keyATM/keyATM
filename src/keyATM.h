@@ -103,7 +103,7 @@ class keyATMbase
 
 		// Sampling
 		void iteration();
-		virtual void iteration_single() = 0;
+		virtual void iteration_single(int &it) = 0;
 		virtual void sample_parameters() = 0;
 
 		int sample_z(VectorXd &alpha, int &z, int &x,
@@ -112,6 +112,8 @@ class keyATMbase
 									 int &w, int &doc_id);
 
 		void sampling_store(int &r_index);
+		virtual void verbose_special(int &r_index);
+
 		virtual double loglik_total() = 0;
 
 		// Utilities

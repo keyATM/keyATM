@@ -122,11 +122,12 @@ void keyATMbase::initialize_common()
 void keyATMbase::iteration()
 {
 	for(int it=0; it<iter; it++){
-		iteration_single();	
+		iteration_single(it);	
 
 		int r_index = it + 1;
 		if(r_index % output_per == 0 || r_index == 1 || r_index == iter ){
 			sampling_store(r_index);
+			verbose_special(r_index);
 		}
 
 		checkUserInterrupt();
@@ -148,6 +149,10 @@ void keyATMbase::sampling_store(int &r_index)
 	
 	Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
 					 " (perplexity: " << perplexity << ")" << std::endl;
+}
+
+void keyATMbase::verbose_special(int &r_index){
+	// If there is anything special to show, write here.
 }
 
 // Sampling

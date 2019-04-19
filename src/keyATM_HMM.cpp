@@ -52,8 +52,6 @@ void keyATMhmm::initialize_specific()
 		S_est_num(index) += 1;
 	}
 
-	S_est_num << 42, 68, 50, 40;  // For debug!!!!!!!
-	// cout << S_est_num << endl;
 
 	S_est = VectorXi::Zero(num_doc);
 	S_count = S_est_num;
@@ -89,10 +87,12 @@ void keyATMhmm::initialize_specific()
 	
 	states_start = VectorXi::Zero(num_states);
 	states_end = VectorXi::Zero(num_states);
+
+
 }
 
 
-void keyATMhmm::iteration_single()
+void keyATMhmm::iteration_single(int &it)
 {
 	doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
@@ -122,26 +122,32 @@ void keyATMhmm::iteration_single()
 		Z[doc_id_] = doc_z;
 		X[doc_id_] = doc_x;
 	}
-	sample_parameters();
+
+	if(floor(iter/2) < it)
+		sample_parameters();
 }
 
+void keyATMhmm::verbose_special(int &r_index){
+	// If there is anything special to show, write here.
+	if(floor(iter/2) < r_index-1)
+		cout << "  Sampled S: " << S_count.transpose() << endl;
+}
 
 void keyATMhmm::sample_parameters()
 {
 	// alpha
-	sample_alpha();	
+	sample_alpha();
 	
-	// // HMM
-	// sample_forward();  // calculate Psk
-	// sample_backward();  // sample S_est
-	// sample_P();  // sample P_est
-	// store_S_est();
+	// HMM
+	sample_forward();  // calculate Psk
+	sample_backward();  // sample S_est
+	sample_P();  // sample P_est
+	store_S_est();
 }
 
 
 void keyATMhmm::sample_alpha()
 {
-	cout << "sample_alpha: " << S_count.transpose() << endl;
 
 	// Retrieve start and end indexes of states in documents
 	for(int s=0; s<num_states; s++){
@@ -156,8 +162,6 @@ void keyATMhmm::sample_alpha()
 		states_end(s) = states_start(s) + S_count(s) - 1;
 	}
 
-	// cout << "start " << states_start.transpose() << endl;
-	// cout << "end   " << states_end.transpose() << endl;
 	
 	for(int s=0; s<num_states; s++){
 		sample_alpha_state(s, states_start(s),
@@ -218,10 +222,7 @@ void keyATMhmm::sample_alpha_state(int &state, int &state_start, int &state_end)
   }
 
 	// Set new alpha
-	cout << "###### " << state << " #####" << endl;
-	cout << "alpha " << alpha.transpose() << endl;
-	alphas.row(state) = alpha.transpose();
-	cout << "alphas " << alphas << endl;
+	alphas.row(state) = alpha.transpose();           // Use this line!!
 
 }
 
@@ -263,6 +264,9 @@ double keyATMhmm::alpha_loglik(int &state_start, int &state_end)
 
 void keyATMhmm::sample_forward()
 { // Calculate Psk (num_doc, num_states)
+
+	// Psk = MatrixXd::Zero(num_doc, num_states);
+
 	for(int d=0; d<num_doc; d++){
 		if(d == 0){
 			// First document should be the first state
@@ -282,11 +286,15 @@ void keyATMhmm::sample_forward()
 
 		// Format numerator and calculate denominator at the same time
 		logsum = 0.0;
+		added = 0;
 		for(int s=0; s<num_states; s++){
 			if(st_k(s) != 0.0){
 				loglik = log(st_k(s)) + logfy(s);
-				logst_k(s) = log(st_k(s)) + logfy(s);
-				logsum = logsumexp(logsum, loglik, (s == 0));
+				logst_k(s) = loglik;
+				logsum = logsumexp(logsum, loglik, (added == 0));
+				added += 1;
+			}else{
+				logst_k(s) = 0.0;  // place holder
 			}
 		}
 
@@ -323,6 +331,10 @@ void keyATMhmm::sample_backward()
 
 	S_count = VectorXi::Zero(num_states); // reset counter
 
+	// Last document
+	S_est(num_doc-1) = index_states;
+	S_count(index_states) += 1;  // last document
+
 	for(int d=(num_doc-2); 0<= d; --d){
 		state_id = S_est(d+1);
 
@@ -333,8 +345,7 @@ void keyATMhmm::sample_backward()
 		S_est(d) = state_id;
 		S_count(state_id) += 1;
 	}
-	S_count(index_states) += 1;  // last document
-	cout << "sample_backward: " << S_count.transpose() << endl;
+
 }
 
 
@@ -348,7 +359,6 @@ void keyATMhmm::sample_P()
 		P_est(s, s) = pii;
 		P_est(s, s+1) = 1.0 - pii;
 	}
-	// cout << P_est << endl;
 }
 
 

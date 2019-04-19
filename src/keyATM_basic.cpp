@@ -26,7 +26,7 @@ void keyATMbasic::initialize_specific()
 	// No additional initialization
 }
 
-void keyATMbasic::iteration_single()
+void keyATMbasic::iteration_single(int &it)
 { // Single iteration
 
 	doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle

@@ -52,7 +52,7 @@ void keyATMcov::initialize_specific()
 
 
 
-void keyATMcov::iteration_single()
+void keyATMcov::iteration_single(int &it)
 { // Single iteration
 
 	doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle

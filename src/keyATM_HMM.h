@@ -35,6 +35,7 @@ class keyATMhmm : public keyATMbase
 			VectorXd st_k;
 			VectorXd logst_k;
 			double logsum;
+			int added;
 
 			int state_id;
 			VectorXd state_prob_vec;
@@ -64,7 +65,7 @@ class keyATMhmm : public keyATMbase
 		void initialize_specific();
 	
 		// Iteration
-		void iteration_single();
+		void iteration_single(int &it);
 		void sample_parameters();
 
 		void sample_alpha();
@@ -78,6 +79,7 @@ class keyATMhmm : public keyATMbase
 
 		double polyapdfln(int &doc_id, VectorXd &alpha);
 		double loglik_total();
+		void verbose_special(int &r_index);
 };
 
 #endif
