@@ -8,8 +8,8 @@
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-topicdict_train <- function(model, iter = 0L, output_per = 10L, eta_1 = 1, eta_2 = 1, eta_1_regular = 2, eta_2_regular = 1) {
-    .Call('_topicdict_topicdict_train', PACKAGE = 'topicdict', model, iter, output_per, eta_1, eta_2, eta_1_regular, eta_2_regular)
+topicdict_train <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_topicdict_topicdict_train', PACKAGE = 'topicdict', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for the covariate model
@@ -19,8 +19,19 @@ topicdict_train <- function(model, iter = 0L, output_per = 10L, eta_1 = 1, eta_2
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-topicdict_train_cov <- function(model, iter = 0L, output_per = 10L, eta_1 = 1, eta_2 = 1, eta_1_regular = 2, eta_2_regular = 1) {
-    .Call('_topicdict_topicdict_train_cov', PACKAGE = 'topicdict', model, iter, output_per, eta_1, eta_2, eta_1_regular, eta_2_regular)
+topicdict_train_cov <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_topicdict_topicdict_train_cov', PACKAGE = 'topicdict', model, iter, output_per)
+}
+
+#' Run the Collapsed Gibbs sampler for the HMM model
+#'
+#' @param model A model, from \code{init} or a previous invocation of \code{train}
+#' @param iter Required number of iterations
+#' @param output_per Show log-likelihood and perplexity per this number during the iteration
+#'
+#' @export
+topicdict_train_HMM <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_topicdict_topicdict_train_HMM', PACKAGE = 'topicdict', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)

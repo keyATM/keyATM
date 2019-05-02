@@ -4,8 +4,7 @@
 \alias{topicdict_train_cov}
 \title{Run the Collapsed Gibbs sampler for the covariate model}
 \usage{
-topicdict_train_cov(model, iter = 0L, output_per = 10L, eta_1 = 1,
-  eta_2 = 1, eta_1_regular = 2, eta_2_regular = 1)
+topicdict_train_cov(model, iter = 0L, output_per = 10L)
 }
 \arguments{
 \item{model}{A model, from \code{init} or a previous invocation of \code{train}, including a covariate}

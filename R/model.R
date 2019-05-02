@@ -28,10 +28,12 @@
 #' @param files names of each file to read (or a quanteda corpus object)
 #' @param dict a quanteda dictionary or named list of character vectors
 #' @param text_df directly passes a text in a data.frame 
-#' @param covariates_data a data.frame or a tibble that is a covariate matrix. Columns are covariates.
-#' @param covariates_formula formula for the covariates, for example, \code{~.} uses all variables
+#' @param mode "basic", "cov", or "hmm"
 #' @param extra_k number of unseeded topics in addition to the topics seeded by
 #'                \code{dict}
+#' @param covariates_data a data.frame or a tibble that is a covariate matrix. Columns are covariates.
+#' @param covariates_formula formula for the covariates, for example, \code{~.} uses all variables
+#' @param num_state numer of state in HMM model
 #' @param encoding File encoding (Default: whatever \code{quanteda} guesses)
 #' @param lowercase whether to transform each token to lowercase letters
 #' @param remove_numbers whether to remove numbers
@@ -63,6 +65,7 @@
 #'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
 #'         \item{Lambda_iter}{a list to store coefficients of the covariates}
+#'         \item{S_iter}{a list to store states sampled in HMM}
 #'         \item{sampling_info}{information related to sampling}
 #'         \item{model_fit}{a list to store perplexity and log-likelihood}
 #'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
@@ -70,6 +73,7 @@
 #'         \item{beta}{prior parameter for the non-seeded word generation probabilities}
 #'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
 #'         \item{use_cov}{boolean, whether or not use the covariate}
+#'         \item{num_states}{number of states in HMM}
 #'         \item{call}{details of the function call}
 #'         }.
 #' @importFrom quanteda corpus is.corpus ndoc docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
@@ -77,8 +81,11 @@
 #' @importFrom stats model.matrix
 #' @export
 topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
+														mode="basic",
+														extra_k = 1,
 														covariates_data=NULL, covariates_formula=NULL,
-														extra_k = 1, encoding = "UTF-8",
+														num_states=NULL,
+														encoding = "UTF-8",
                             lowercase = TRUE,
                             remove_numbers = TRUE, remove_punct = TRUE,
                             remove_symbols = TRUE, remove_separators = TRUE,
@@ -90,8 +97,39 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
                             gamma_1 = 1.0, gamma_2 = 1.0){
   cl <- match.call()
 
+	##
+	## Check format
+	##
+	if(!is.null(covariates_data) & !is.null(covariates_formula) & mode != "cov"){
+		message("Covariates information provided, Covariate mode is used.")	
+		mode <- "cov"
+	}
+
+	if(is.null(num_states) & mode == "hmm"){
+		stop("Provide the number of states.")	
+	}
+
+	if(!is.null(text_df)){
+		if("text" %in% names(text_df)){
+			text_df <- text_df["text"]
+		}else{
+			stop("text_df should have a 'text' colum that has documents.")
+		}	
+	}
+
+	## Check length
+
   proper_len <- length(dict) + extra_k
 
+	if(mode == "cov"){
+		# make sure covariates are provided for all documents	
+		if( ( nrow(covariates_data) != length(files) ) & ( nrow(covariates_data) != nrow(text_df)) ){
+			stop("Covariates dimension does not match with the number of documents.")
+		}
+	}
+
+
+	## Create alpha 
 	if(is.null(covariates_data) || is.null(covariates_formula)){
 		# If it doesn't use covariates, make alpha inside
 		if (length(alpha) == 1){
@@ -100,6 +138,8 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
 		} else if (length(alpha) != proper_len)
 			stop("Starting alpha must be a scalar or a vector of length ", proper_len)
 	}
+
+	## Text preprocessing
 
   args <- list(remove_numbers = remove_numbers,
                remove_punct = remove_punct,
@@ -203,9 +243,10 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
              files = doc_names, dict = dtoks, seeds = seeds, extra_k = extra_k,
              alpha = alpha, gamma_1 = gamma_1, gamma_2 = gamma_2,
              beta = beta, beta_s = beta_s,
-						 alpha_iter = list(), Lambda_iter = list(),
+						 alpha_iter = list(), Lambda_iter = list(), S_iter = list(),
 						 model_fit = list(), sampling_info = list(),
 						 C=C, use_cov=use_cov,
+						 num_states=num_states,
 						 call = cl)
 
   class(ll) <- c("topicdict", class(ll))
