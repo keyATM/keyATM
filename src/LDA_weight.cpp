@@ -100,6 +100,12 @@ int LDAweight::sample_z(VectorXd &alpha, int &z, int &x,
 
   new_z = -1; // debug
 
+	if(use_weight == 1){
+		// Degrree correction in Larremore, Clauset, and Jacobs (2014)
+			
+	
+	}
+
 	for (int k = 0; k < num_topics; ++k){
 
 		numerator = (beta + n_kv(k, w)) *

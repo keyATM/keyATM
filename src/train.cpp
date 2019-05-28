@@ -120,9 +120,9 @@ List topicdict_idealpoint(List model, List author_info, int iter=0, int output_i
 //'
 //' @export
 // [[Rcpp::export]]
-List LDA_weight(List model, int iter = 0, int output_per = 10){
+List LDA_weight(List model, int iter = 0, int output_per = 10, int use_weight = 1){
 
-	LDAweight LDAweight_model(model, iter, output_per);
+	LDAweight LDAweight_model(model, iter, output_per, use_weight);
 	model = LDAweight_model.return_model();
 	return model;
 
