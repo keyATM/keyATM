@@ -52,7 +52,10 @@ class keyATMbase
 		MatrixXd n_x1_kv;
 		MatrixXd n_dk;
 		VectorXd n_x0_k;
+		VectorXd n_x0_k_noWeight;
 		VectorXd n_x1_k;
+		VectorXd n_x1_k_noWeight;
+		VectorXd vocab_weights;
 
 		// Use during the iteration
 			// Declaration
@@ -120,6 +123,7 @@ class keyATMbase
 		double logsumexp(double &x, double &y, bool flg);
 		double logsumexp_Eigen(VectorXd &vec);
 		double gammapdfln(const double x, const double a, const double b);
+		double betapdf(const double x, const double a, const double b);
 		NumericVector alpha_reformat(VectorXd& alpha, int& num_topics);
 
 		double expand(double &p, const double &A);

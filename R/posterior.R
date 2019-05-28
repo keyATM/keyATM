@@ -68,6 +68,26 @@ posterior <- function(model){
   tZW <- tZW / topic_counts
   rownames(tZW) <- tnames
 
+	#####
+	##### Can we replace by this?????
+	#####
+	# all_words <- res$vocab[as.integer(unlist(res$W)) + 1]
+	# all_topics <- as.integer(unlist(res$Z))
+	#
+	# res_tibble <- tibble(
+	# 											Word = all_words,
+	# 											Topic = all_topics
+	# 										 ) %>%
+	# 							group_by(Topic, Word) %>%
+	# 							summarize(Count = n())
+	#
+	# res_tibble %>%
+	# 	spread(key=Word, value=Count)  -> beta
+	# beta <- apply(beta, 2, function(x){ifelse(is.na(x), 0, x)})
+	# beta <- beta[, 2:ncol(beta)]
+	# counts <- rowSums(beta)
+	# beta <- beta / counts
+
 	# alpha
 	res_alpha <- data.frame(model$alpha_iter)
 	colnames(res_alpha) <- NULL
