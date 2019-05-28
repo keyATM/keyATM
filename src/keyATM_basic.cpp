@@ -5,7 +5,7 @@ using namespace Rcpp;
 using namespace std;
 
 
-keyATMbasic::keyATMbasic(List model_, const int iter_, const int output_per_, const int use_weight_) :
+keyATMbasic::keyATMbasic(List model_, const int iter_, const int output_per_) :
 	keyATMbase(model_, iter_, output_per_) // pass to parent!
 {
 	use_weight = use_weight_;
