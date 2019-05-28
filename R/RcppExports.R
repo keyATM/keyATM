@@ -57,3 +57,14 @@ topicdict_idealpoint <- function(model, author_info, iter = 0L, output_iter = 10
     .Call('_topicdict_topicdict_idealpoint', PACKAGE = 'topicdict', model, author_info, iter, output_iter)
 }
 
+#' Run the Collapsed Gibbs sampler for LDA with weights
+#'
+#' @param model A model, from \code{init} or a previous invocation of \code{train}
+#' @param iter Required number of iterations
+#' @param output_per Show log-likelihood and perplexity per this number during the iteration
+#'
+#' @export
+LDA_weight <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_topicdict_LDA_weight', PACKAGE = 'topicdict', model, iter, output_per)
+}
+

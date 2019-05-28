@@ -22,6 +22,7 @@ class keyATMbase
 		double eta_2 = 1;
 		double eta_1_regular = 2;
 		double eta_2_regular = 1;
+		int use_weight = 1;
 
 		double slice_A = 1.2; // parameter for slice sampling 
 
@@ -109,8 +110,8 @@ class keyATMbase
 		virtual void iteration_single(int &it) = 0;
 		virtual void sample_parameters() = 0;
 
-		int sample_z(VectorXd &alpha, int &z, int &x,
-									 int &w, int &doc_id);
+		virtual int sample_z(VectorXd &alpha, int &z, int &x,
+												 int &w, int &doc_id);
 		int sample_x(VectorXd &alpha, int &z, int &x,
 									 int &w, int &doc_id);
 

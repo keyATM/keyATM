@@ -114,7 +114,9 @@ void keyATMbase::initialize_common()
 	vocab_weights = - vocab_weights.array() / log(2);
 	
 
-	vocab_weights = VectorXd::Constant(num_vocab, 1.0);
+	if(use_weight == 0){
+		vocab_weights = VectorXd::Constant(num_vocab, 1.0);
+	}
 
 
 	// Construct data matrices

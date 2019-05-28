@@ -10,6 +10,7 @@
 #include "keyATM_basic.h"
 #include "keyATM_cov.h"
 #include "keyATM_HMM.h"
+#include "LDA_weight.h"
 
 
 // [[Rcpp::plugins(cpp11)]]
@@ -109,4 +110,22 @@ List topicdict_idealpoint(List model, List author_info, int iter=0, int output_i
 
 	return model;
 }
+
+
+//' Run the Collapsed Gibbs sampler for LDA with weights
+//'
+//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param iter Required number of iterations
+//' @param output_per Show log-likelihood and perplexity per this number during the iteration
+//'
+//' @export
+// [[Rcpp::export]]
+List LDA_weight(List model, int iter = 0, int output_per = 10){
+
+	LDAweight LDAweight_model(model, iter, output_per);
+	model = LDAweight_model.return_model();
+	return model;
+
+}
+
 
