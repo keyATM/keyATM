@@ -28,6 +28,7 @@
 #' @param files names of each file to read (or a quanteda corpus object)
 #' @param dict a quanteda dictionary or named list of character vectors
 #' @param text_df directly passes a text in a data.frame 
+#' @param dtm Document-Term matrix from \code{quanteda} package
 #' @param mode "basic", "cov", or "hmm"
 #' @param extra_k number of unseeded topics in addition to the topics seeded by
 #'                \code{dict}
@@ -80,7 +81,7 @@
 #' @importFrom hashmap hashmap
 #' @importFrom stats model.matrix
 #' @export
-topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
+topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 														mode="basic",
 														extra_k = 1,
 														covariates_data=NULL, covariates_formula=NULL,
@@ -140,6 +141,24 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
 	}
 
 	## Text preprocessing
+
+		# If you have quanteda object
+		if(!is.null(text_dfm)){
+			message("Use quanteda dfm.")	
+			remove_numbers = F ; remove_punct = F; remove_symbols = F;
+			remove_separators = T ; remove_twitter = F; remove_hyphens = F; remove_url = F
+
+			vocabulary <- colnames(text_dfm)
+			
+			texts <- apply(text_dfm, 1,
+										 function(x){
+										 		single_text <- paste(rep(vocabulary, x), collapse=" ")
+										 		return(single_text)
+										 })
+
+			text_df <- data.frame(text = texts)
+			text_df$text <- as.character(text_df$text)
+		}
 
   args <- list(remove_numbers = remove_numbers,
                remove_punct = remove_punct,

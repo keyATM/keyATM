@@ -5,13 +5,14 @@
 \title{Initialize a topicdict model}
 \usage{
 topicdict_model(files = NULL, dict = NULL, text_df = NULL,
-  mode = "basic", extra_k = 1, covariates_data = NULL,
-  covariates_formula = NULL, num_states = NULL, encoding = "UTF-8",
-  lowercase = TRUE, remove_numbers = TRUE, remove_punct = TRUE,
-  remove_symbols = TRUE, remove_separators = TRUE,
-  remove_twitter = FALSE, remove_hyphens = FALSE, remove_url = TRUE,
-  stem_language = NULL, stopwords = NULL, alpha = 50/(length(dict) +
-  extra_k), beta = 0.01, beta_s = 0.1, gamma_1 = 1, gamma_2 = 1)
+  text_dfm = NULL, mode = "basic", extra_k = 1,
+  covariates_data = NULL, covariates_formula = NULL,
+  num_states = NULL, encoding = "UTF-8", lowercase = TRUE,
+  remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE,
+  remove_separators = TRUE, remove_twitter = FALSE,
+  remove_hyphens = FALSE, remove_url = TRUE, stem_language = NULL,
+  stopwords = NULL, alpha = 50/(length(dict) + extra_k), beta = 0.01,
+  beta_s = 0.1, gamma_1 = 1, gamma_2 = 1)
 }
 \arguments{
 \item{files}{names of each file to read (or a quanteda corpus object)}
@@ -61,6 +62,8 @@ e.g. \code{quanteda::stopwords("english")}}
 \item{gamma_1}{First Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0}
 
 \item{gamma_2}{Second Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0}
+
+\item{dtm}{Document-Term matrix from \code{quanteda} package}
 
 \item{num_state}{numer of state in HMM model}
 }
