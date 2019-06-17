@@ -49,7 +49,7 @@ void keyATMbase::initialize()
 	initialize_common();
 	initialize_specific();
 
-	prepare_data = std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - start).count();
+	// prepare_data = std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - start).count();
 }
 
 
@@ -115,6 +115,7 @@ void keyATMbase::initialize_common()
 	
 
 	if(use_weight == 0){
+		cout << "Not using weights!! Check use_weight" << endl;
 		vocab_weights = VectorXd::Constant(num_vocab, 1.0);
 	}
 
@@ -370,7 +371,6 @@ double keyATMbase::shrink(double& x, const double& A){
 	double res = 1.0 / (1.0 + exp(-A*x));
 	return res;
 }
-
 
 List keyATMbase::return_model(){
 	return model;

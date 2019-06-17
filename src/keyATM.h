@@ -5,6 +5,7 @@
 #include <RcppEigen.h>
 #include <unordered_set>
 #include "sampler.h"
+#include "util.h"
 
 using namespace Eigen;
 using namespace Rcpp;
@@ -87,7 +88,7 @@ class keyATMbase
 
 
 		// Track time
-		std::chrono::time_point<std::chrono::high_resolution_clock> start;
+		// std::chrono::time_point<std::chrono::high_resolution_clock> start;
 		double prepare_data;
 
 		//
