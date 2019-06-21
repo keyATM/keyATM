@@ -1,4 +1,4 @@
-# topicdict
+# keyATM
 
 The topic dictionary code, broken out into a separate repository.
 
@@ -17,3 +17,5 @@ the package passes CRAN checks.
 
 Will Lowe with C++ code from Tomo and Shusei. Jan 2018.
 
+## Weighting
+* To use non-weighting model, modify `int use_weight = 1` to `int use_weight = 0` [here](https://github.com/Shusei-E/keyATM/blob/weighting_lda/src/keyATM.h#L26). The model is in `weighting_lda` branch.
