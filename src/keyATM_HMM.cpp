@@ -236,9 +236,9 @@ double keyATMhmm::alpha_loglik(int &state_start, int &state_end)
 	alpha_sum_val = alpha.sum();
 
 
-  fixed_part += lgamma(alpha_sum_val); // first term numerator
+  fixed_part += mylgamma(alpha_sum_val); // first term numerator
   for(int k = 0; k < num_topics; k++){
-    fixed_part -= lgamma(alpha(k)); // first term denominator
+    fixed_part -= mylgamma(alpha(k)); // first term denominator
     // Add prior
 		if(k < k_seeded){
 			loglik += gammapdfln(alpha(k), eta_1, eta_2);
@@ -251,10 +251,10 @@ double keyATMhmm::alpha_loglik(int &state_start, int &state_end)
     loglik += fixed_part;
     // second term numerator
     for(int k = 0; k < num_topics; k++){
-      loglik += lgamma(ndk_a(d,k));
+      loglik += mylgamma(ndk_a(d,k));
     }
     // second term denominator
-    loglik -= lgamma(doc_each_len[d] + alpha_sum_val);
+    loglik -= mylgamma(doc_each_len[d] + alpha_sum_val);
 
   }
   return loglik;
@@ -314,9 +314,9 @@ double keyATMhmm::polyapdfln(int &d, VectorXd &alpha)
 { // Polya distribution log-likelihood
 	loglik = 0.0;
 
-	loglik += lgamma( alpha.sum() ) - lgamma( doc_each_len[d] + alpha.sum() );
+	loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
 	for (int k = 0; k < num_topics; k++){
-		loglik += lgamma( n_dk(d,k) + alpha(k) ) - lgamma( alpha(k) );
+		loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
 	}
 
 	return loglik;
@@ -377,18 +377,18 @@ double keyATMhmm::loglik_total()
   loglik = 0.0;
   for (int k = 0; k < num_topics; k++){
     for (int v = 0; v < num_vocab; v++){ // word
-      loglik += lgamma(beta + n_x0_kv(k, v) / vocab_weights(v) ) - lgamma(beta);
-      loglik += lgamma(beta_s + n_x1_kv(k, v) / vocab_weights(v) ) - lgamma(beta_s);
+      loglik += mylgamma(beta + n_x0_kv(k, v) / vocab_weights(v) ) - mylgamma(beta);
+      loglik += mylgamma(beta_s + n_x1_kv(k, v) / vocab_weights(v) ) - mylgamma(beta_s);
     }
     // word normalization
-    loglik += lgamma( beta * (double)num_vocab ) - lgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
-    loglik += lgamma( beta_s * (double)num_vocab ) - lgamma(beta_s * (double)num_vocab + n_x1_k_noWeight(k) );
+    loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
+    loglik += mylgamma( beta_s * (double)num_vocab ) - mylgamma(beta_s * (double)num_vocab + n_x1_k_noWeight(k) );
     // x
-    loglik += lgamma( n_x0_k_noWeight(k) + gamma_2 ) - lgamma(n_x1_k_noWeight(k) + gamma_1 + n_x0_k_noWeight(k) + gamma_2)
-      + lgamma( n_x1_k_noWeight(k) + gamma_1 ) ;
+    loglik += mylgamma( n_x0_k_noWeight(k) + gamma_2 ) - mylgamma(n_x1_k_noWeight(k) + gamma_1 + n_x0_k_noWeight(k) + gamma_2)
+      + mylgamma( n_x1_k_noWeight(k) + gamma_1 ) ;
 		
     // x normalization
-    loglik += lgamma(gamma_1 + gamma_2) - lgamma(gamma_1) - lgamma(gamma_2);
+    loglik += mylgamma(gamma_1 + gamma_2) - mylgamma(gamma_1) - mylgamma(gamma_2);
   }
 
 
@@ -396,9 +396,9 @@ double keyATMhmm::loglik_total()
 		// z
 		alpha = alphas.row(S_est(doc_id_)).transpose(); // Doc alpha, column vector	
 		
-    loglik += lgamma( alpha.sum() ) - lgamma( doc_each_len[d] + alpha.sum() );
+    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
-      loglik += lgamma( n_dk(d,k) + alpha(k) ) - lgamma( alpha(k) );
+      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
     }
 
 		// HMM part

@@ -86,6 +86,9 @@ class keyATMbase
 			// sample alpha
 			double alpha_sum_val;
 
+			// gammaln_sum
+			double gammaln_val;
+
 
 		// Track time
 		// std::chrono::time_point<std::chrono::high_resolution_clock> start;
@@ -130,6 +133,9 @@ class keyATMbase
 
 		double expand(double &p, const double &A);
 		double shrink(double &x, const double &A);
+		
+		double gammaln_frac(const double &value, const int &count);
+		double mylgamma(const double &x);
 
 		List return_model();
 	

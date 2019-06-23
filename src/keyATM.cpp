@@ -375,3 +375,39 @@ double keyATMbase::shrink(double& x, const double& A){
 List keyATMbase::return_model(){
 	return model;
 }
+
+
+double keyATMbase::gammaln_frac(const double &value, const int &count){
+	// Calculate \log \frac{\gamma(value + count)}{\gamma(\value)}
+	// Not very fast
+	
+	if(count > 19){
+		return lgamma(value + count) - lgamma(value);	
+	}else{
+		gammaln_val = 0.0;
+
+		for(int i=0; i<count; i++){
+			gammaln_val += log(value + i);	
+		}
+
+		return gammaln_val;
+	}
+}
+
+
+double keyATMbase::mylgamma(const double &x){
+	// gammaln_val = 0.0;
+	// gammaln_val = lgamma(x);
+	
+	// Good approximation when x > 1
+	//    x > 1: max err: 5.059e-04
+	//    x > 0.5: 0.008
+	// Abramowitz and Stegun p.257
+	
+	if(x < 0.5)
+		return (lgamma(x));
+	else
+		return ((x-0.5)*log(x) - x + 0.91893853320467 + 1/(12*x));
+}
+
+

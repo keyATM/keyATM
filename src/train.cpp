@@ -7,7 +7,6 @@
 #include "lda_cov.h"
 #include "idealpoint.h"
 #include "sampler.h"
-#include "util.h"
 #include "keyATM_basic.h"
 #include "keyATM_cov.h"
 #include "keyATM_HMM.h"
