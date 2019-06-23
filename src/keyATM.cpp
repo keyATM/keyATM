@@ -400,11 +400,12 @@ double keyATMbase::mylgamma(const double &x){
 	// gammaln_val = lgamma(x);
 	
 	// Good approximation when x > 1
-	//    x > 1: max err: 5.059e-04
-	//    x > 0.5: 0.008
+	//    x > 1: max abs err: 2.272e-03
+	//    x > 0.5: 0.012
+	//    x > 0.6: 0.008
 	// Abramowitz and Stegun p.257
 	
-	if(x < 0.5)
+	if(x < 0.6)
 		return (lgamma(x));
 	else
 		return ((x-0.5)*log(x) - x + 0.91893853320467 + 1/(12*x));
