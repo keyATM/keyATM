@@ -51,7 +51,9 @@ class keyATMbase
 
 		// Latent Variables
 		MatrixXd n_x0_kv;
-		MatrixXd n_x1_kv;
+		// SparseMatrix<double> n_x0_kv;
+		SparseMatrix<double,RowMajor> n_x1_kv;
+		typedef Eigen::Triplet<double> Triplet;
 		MatrixXd n_dk;
 		VectorXd n_x0_k;
 		VectorXd n_x0_k_noWeight;

@@ -83,8 +83,9 @@ void keyATMbase::initialize_common()
 	num_doc = files.size();
 
   // storage for sufficient statistics and their margins
-  n_x0_kv = MatrixXd::Zero(num_topics, num_vocab);
-  n_x1_kv = MatrixXd::Zero(num_topics, num_vocab);
+  // n_x0_kv.resize(num_topics, num_vocab);
+	n_x0_kv = MatrixXd::Zero(num_topics, num_vocab);
+  n_x1_kv.resize(num_topics, num_vocab);
   n_dk = MatrixXd::Zero(num_doc, num_topics);
   n_x0_k = VectorXd::Zero(num_topics);
   n_x0_k_noWeight = VectorXd::Zero(num_topics);
@@ -121,6 +122,9 @@ void keyATMbase::initialize_common()
 
 
 	// Construct data matrices
+	vector<Triplet> trip_x0; 	
+	vector<Triplet> trip_x1; 	
+	
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
     doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
 		doc_len = doc_each_len[doc_id];
@@ -129,16 +133,20 @@ void keyATMbase::initialize_common()
       x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
       if (x == 0){
         n_x0_kv(z, w) += vocab_weights(w);
+				// trip_x0.push_back(Triplet(z, w, vocab_weights(w)));
         n_x0_k(z) += vocab_weights(w);
         n_x0_k_noWeight(z) += 1.0;
       } else {
-        n_x1_kv(z, w) += vocab_weights(w);
+        // n_x1_kv(z, w) += vocab_weights(w);
+				trip_x1.push_back(Triplet(z, w, vocab_weights(w)));
         n_x1_k(z) += vocab_weights(w);
         n_x1_k_noWeight(z) += 1.0;
       }
       n_dk(doc_id, z) += 1.0;
     }
   }
+	// n_x0_kv.setFromTriplets(trip_x0.begin(), trip_x0.end());
+	n_x1_kv.setFromTriplets(trip_x1.begin(), trip_x1.end());
 	
 
 	// Use during the iteration
@@ -194,7 +202,7 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
     n_x0_k(z) -= vocab_weights(w);
     n_x0_k_noWeight(z) -= 1.0;
   } else if (x==1) {
-    n_x1_kv(z, w) -= vocab_weights(w);
+    n_x1_kv.coeffRef(z, w) -= vocab_weights(w);
     n_x1_k(z) -= vocab_weights(w);
     n_x1_k_noWeight(z) -= 1.0;
   } else {
@@ -226,7 +234,7 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
         z_prob_vec(k) = 0.0;
 				continue;
       } else{ 
-        numerator = (beta_s + n_x1_kv(k, w)) *
+        numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
           ( (n_x1_k(k) + gamma_1) ) *
           ( (n_dk(doc_id, k) + alpha(k)) );
       }
@@ -248,7 +256,7 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
     n_x0_k(new_z) += vocab_weights(w);
     n_x0_k_noWeight(new_z) += 1.0;
   } else if (x==1) {
-    n_x1_kv(new_z, w) += vocab_weights(w);
+    n_x1_kv.coeffRef(new_z, w) += vocab_weights(w);
     n_x1_k(new_z) += vocab_weights(w);
     n_x1_k_noWeight(new_z) += 1.0;
   } else {
@@ -274,7 +282,7 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
     n_x0_k(z) -= vocab_weights(w);
     n_x0_k_noWeight(z) -= 1.0;
   } else {
-    n_x1_kv(z, w) -= vocab_weights(w);
+    n_x1_kv.coeffRef(z, w) -= vocab_weights(w);
     n_x1_k(z) -= vocab_weights(w);
     n_x1_k_noWeight(z) -= 1.0;
   }
@@ -282,7 +290,7 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
   // newprob_x1()
   k = z;
 
-	numerator = (beta_s + n_x1_kv(k, w)) *
+	numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
 		( n_x1_k(k) + gamma_1 );
 	denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
 		(n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);
@@ -308,7 +316,7 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
     n_x0_k(z) += vocab_weights(w);
     n_x0_k_noWeight(z) += 1.0;
   } else {
-    n_x1_kv(z, w) += vocab_weights(w);
+    n_x1_kv.coeffRef(z, w) += vocab_weights(w);
     n_x1_k(z) += vocab_weights(w);
     n_x1_k_noWeight(z) += 1.0;
   }
@@ -348,7 +356,7 @@ double keyATMbase::gammapdfln(const double x, const double a, const double b){
 
 
 double keyATMbase::betapdf(const double x, const double a, const double b){
-	return gamma(a+b) / (gamma(a) * gamma(b)) * pow(x, a-1) * pow(1-x, b-1);
+	return tgamma(a+b) / (tgamma(a) * tgamma(b)) * pow(x, a-1) * pow(1-x, b-1);
 }
 
 NumericVector keyATMbase::alpha_reformat(VectorXd& alpha, int& num_topics){

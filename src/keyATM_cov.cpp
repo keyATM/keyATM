@@ -324,8 +324,14 @@ double keyATMcov::loglik_total()
   for (int k = 0; k < num_topics; k++){
     for (int v = 0; v < num_vocab; v++){ // word
       loglik += mylgamma(beta + n_x0_kv(k, v) / vocab_weights(v) ) - mylgamma(beta);
-      loglik += mylgamma(beta_s + n_x1_kv(k, v) / vocab_weights(v) ) - mylgamma(beta_s);
+      // loglik += mylgamma(beta_s + n_x1_kv.coeffRef(k, v) / vocab_weights(v) ) - mylgamma(beta_s);
     }
+
+		// n_x1_kv
+		for (SparseMatrix<double,RowMajor>::InnerIterator it(n_x1_kv, k); it; ++it){
+			loglik += mylgamma(beta_s + it.value() / vocab_weights(it.index()) ) - mylgamma(beta_s);
+		}
+
     // word normalization
     loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
     loglik += mylgamma( beta_s * (double)num_vocab ) - mylgamma(beta_s * (double)num_vocab + n_x1_k_noWeight(k) );
