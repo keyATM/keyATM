@@ -53,13 +53,13 @@ void keyATMtot::iteration_single(int &it)
 	}
 
 	// Apply gamma
-	for(int k=0; k<num_topics; k++){
-		beta_a = beta_params(k, 0);
-		beta_b = beta_params(k, 1);	
-
-		beta_tg_num(k) = mylgamma(beta_a + beta_b);
-		beta_tg_denom(k) = mylgamma(beta_a) + mylgamma(beta_b);
-	}
+	// for(int k=0; k<num_topics; k++){  // for log version
+	// 	beta_a = beta_params(k, 0);
+	// 	beta_b = beta_params(k, 1);	
+	//
+	// 	beta_tg_num(k) = mylgamma(beta_a + beta_b);
+	// 	beta_tg_denom(k) = mylgamma(beta_a) + mylgamma(beta_b);
+	// }
 
 	// Sampling
 	for (int ii = 0; ii < num_doc; ii++){
@@ -71,10 +71,17 @@ void keyATMtot::iteration_single(int &it)
 
 		// Prepare beta_a and beta_b for sampling
 		timestamp_d = timestamps(doc_id_);
+		// for(int k=0; k<num_topics; k++){ // for log version
+		// 	beta_a = beta_params(k, 0);
+		// 	beta_b = beta_params(k, 1);
+		// 	beta_calced(k) = (beta_a - 1.0) * log(1.0 - timestamp_d) + (beta_b - 1.0) * log(timestamp_d);
+		// }
+
 		for(int k=0; k<num_topics; k++){
 			beta_a = beta_params(k, 0);
 			beta_b = beta_params(k, 1);
-			beta_calced(k) = (beta_a - 1.0) * log(1.0 - timestamp_d) + (beta_b - 1.0) * log(timestamp_d);
+			beta_tg_num(k) = pow(1.0 - timestamp_d, beta_a - 1.0) * pow(timestamp_d, beta_b - 1.0) * tgamma(beta_a + beta_b);
+			beta_tg_denom(k) = tgamma(beta_a) * tgamma(beta_b);
 		}
 		
 		// Iterate each word in the document
@@ -101,6 +108,96 @@ void keyATMtot::iteration_single(int &it)
 }
 
 
+// int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
+// 																		 int &w, int &doc_id)
+// {
+//   // remove data
+//   if (x == 0){
+//     n_x0_kv(z, w) -= vocab_weights(w);
+//     n_x0_k(z) -= vocab_weights(w);
+//     n_x0_k_noWeight(z) -= 1.0;
+//   } else if (x==1) {
+//     n_x1_kv.coeffRef(z, w) -= vocab_weights(w);
+//     n_x1_k(z) -= vocab_weights(w);
+//     n_x1_k_noWeight(z) -= 1.0;
+//   } else {
+// 		Rcerr << "Error at sample_z, remove" << std::endl;
+// 	}
+//
+//   n_dk(doc_id, z) -= 1;
+//
+//   new_z = -1; // debug
+//   if (x == 0){
+//     for (int k = 0; k < num_topics; ++k){
+//
+//       numerator = log( (beta + n_x0_kv(k, w)) *
+//         (n_x0_k(k) + gamma_2) *
+//         (n_dk(doc_id, k) + alpha(k)) ) +
+// 				beta_calced(k) +
+// 				beta_tg_num(k);
+//
+//       denominator = log( ((double)num_vocab * beta + n_x0_k(k)) *
+//         (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) ) +
+// 				beta_tg_denom(k);
+//
+//       z_prob_vec(k) = numerator - denominator;
+//     }
+//
+//
+// 		sum = logsumexp_Eigen(z_prob_vec);
+// 		z_prob_vec = (z_prob_vec.array() - sum).exp();
+// 		new_z = sampler::rcat(z_prob_vec, num_topics);
+//
+//
+//   } else {
+//     for (int k = 0; k < num_topics; ++k){
+//       if (keywords[k].find(w) == keywords[k].end()){
+//         z_prob_vec(k) = 0.0;
+// 				continue;
+//       } else{ 
+//
+//         numerator = log( (beta_s + n_x1_kv.coeffRef(k, w)) *
+//            (n_x1_k(k) + gamma_1)  *
+//            (n_dk(doc_id, k) + alpha(k)) ) +
+// 						beta_calced(k) +
+// 						beta_tg_num(k);
+//       }
+//       denominator = log( ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
+//         (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) ) +
+// 				beta_tg_denom(k);
+//
+//       z_prob_vec(k) = numerator - denominator;
+//     }
+//
+//
+//
+// 		sum = logsumexp_Eigen(z_prob_vec);
+// 		z_prob_vec = (z_prob_vec.array() - sum).exp();
+// 		new_z = sampler::rcat(z_prob_vec, num_topics);
+//
+//   }
+//
+//   // add back data counts
+//   if (x == 0){
+//     n_x0_kv(new_z, w) += vocab_weights(w);
+//     n_x0_k(new_z) += vocab_weights(w);
+//     n_x0_k_noWeight(new_z) += 1.0;
+//   } else if (x==1) {
+//     n_x1_kv.coeffRef(new_z, w) += vocab_weights(w);
+//     n_x1_k(new_z) += vocab_weights(w);
+//     n_x1_k_noWeight(new_z) += 1.0;
+//   } else {
+// 		Rcerr << "Error at sample_z, add" << std::endl;
+// 	}
+//   n_dk(doc_id, new_z) += 1;
+//
+// 	// Store time stamp
+// 	store_t[new_z].push_back(timestamp_d);
+//
+//   return new_z;
+// }
+
+
 int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
 																		 int &w, int &doc_id)
 {
@@ -123,24 +220,20 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
   if (x == 0){
     for (int k = 0; k < num_topics; ++k){
 
-      numerator = log( (beta + n_x0_kv(k, w)) *
+      numerator = (beta + n_x0_kv(k, w)) *
         (n_x0_k(k) + gamma_2) *
-        (n_dk(doc_id, k) + alpha(k)) ) +
-				beta_calced(k) +
+        (n_dk(doc_id, k) + alpha(k)) *
 				beta_tg_num(k);
 
-      denominator = log( ((double)num_vocab * beta + n_x0_k(k)) *
-        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) ) +
+      denominator = ((double)num_vocab * beta + n_x0_k(k)) *
+        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) *
 				beta_tg_denom(k);
 
-      z_prob_vec(k) = numerator - denominator;
+      z_prob_vec(k) = numerator / denominator;
     }
 
-
-		sum = logsumexp_Eigen(z_prob_vec);
-		z_prob_vec = (z_prob_vec.array() - sum).exp();
-		new_z = sampler::rcat(z_prob_vec, num_topics);
-
+    sum = z_prob_vec.sum(); // normalize
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
 
   } else {
     for (int k = 0; k < num_topics; ++k){
@@ -148,25 +241,21 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
         z_prob_vec(k) = 0.0;
 				continue;
       } else{ 
-
-        numerator = log( (beta_s + n_x1_kv.coeffRef(k, w)) *
+        numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
            (n_x1_k(k) + gamma_1)  *
-           (n_dk(doc_id, k) + alpha(k)) ) +
-						beta_calced(k) +
+           (n_dk(doc_id, k) + alpha(k)) *
 						beta_tg_num(k);
       }
-      denominator = log( ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
-        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) ) +
+      denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
+        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) *
 				beta_tg_denom(k);
 
-      z_prob_vec(k) = numerator - denominator;
+      z_prob_vec(k) = numerator / denominator;
     }
 
 
-
-		sum = logsumexp_Eigen(z_prob_vec);
-		z_prob_vec = (z_prob_vec.array() - sum).exp();
-		new_z = sampler::rcat(z_prob_vec, num_topics);
+		sum = z_prob_vec.sum();
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
 
   }
 
@@ -189,6 +278,7 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
 
   return new_z;
 }
+
 
 
 void keyATMtot::sample_parameters()
