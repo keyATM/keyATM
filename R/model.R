@@ -29,12 +29,13 @@
 #' @param dict a quanteda dictionary or named list of character vectors
 #' @param text_df directly passes a text in a data.frame 
 #' @param dtm Document-Term matrix from \code{quanteda} package
-#' @param mode "basic", "cov", or "hmm"
+#' @param mode "basic", "cov", "tot", or "hmm"
 #' @param extra_k number of unseeded topics in addition to the topics seeded by
 #'                \code{dict}
 #' @param covariates_data a data.frame or a tibble that is a covariate matrix. Columns are covariates.
 #' @param covariates_formula formula for the covariates, for example, \code{~.} uses all variables
 #' @param num_state numer of state in HMM model
+#' @param timestamps time data
 #' @param encoding File encoding (Default: whatever \code{quanteda} guesses)
 #' @param lowercase whether to transform each token to lowercase letters
 #' @param remove_numbers whether to remove numbers
@@ -75,6 +76,7 @@
 #'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
 #'         \item{use_cov}{boolean, whether or not use the covariate}
 #'         \item{num_states}{number of states in HMM}
+#'				 \item{timestamps}{time stamp for topic-over-time model}
 #'         \item{call}{details of the function call}
 #'         }.
 #' @importFrom quanteda corpus is.corpus ndoc docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
@@ -85,7 +87,7 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 														mode="basic",
 														extra_k = 1,
 														covariates_data=NULL, covariates_formula=NULL,
-														num_states=NULL,
+														num_states=NULL, timestamps=NULL,
 														encoding = "UTF-8",
                             lowercase = TRUE,
                             remove_numbers = TRUE, remove_punct = TRUE,
@@ -101,6 +103,12 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 	##
 	## Check format
 	##
+	if(mode %in% c("basic", "cov", "hmm", "tot")){
+	}else{
+		stop(paste0("Unknown model:", mode))	
+	}
+
+
 	if(!is.null(covariates_data) & !is.null(covariates_formula) & mode != "cov"){
 		message("Covariates information provided, Covariate mode is used.")	
 		mode <- "cov"
@@ -116,6 +124,14 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 		}else{
 			stop("text_df should have a 'text' colum that has documents.")
 		}	
+	}
+
+	if(mode == "tot"){
+		if(is.null(timestamps)){
+			stop("Please provide time stamps.")	
+		}else if(min(timestamps) < 0 | max(timestamps) > 1){
+			stop("Time stamps sholud be between 0 and 1. Please use `make_timestamps()` function to format time stamps.")	
+		}
 	}
 
 	## Check length
@@ -266,6 +282,7 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 						 model_fit = list(), sampling_info = list(),
 						 C=C, use_cov=use_cov,
 						 num_states=num_states,
+						 timestamps=timestamps,
 						 call = cl)
 
   class(ll) <- c("topicdict", class(ll))

@@ -235,8 +235,8 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
 				continue;
       } else{ 
         numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
-          ( (n_x1_k(k) + gamma_1) ) *
-          ( (n_dk(doc_id, k) + alpha(k)) );
+          (n_x1_k(k) + gamma_1) *
+          (n_dk(doc_id, k) + alpha(k));
       }
       denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
         (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);

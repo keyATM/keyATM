@@ -7,12 +7,12 @@
 topicdict_model(files = NULL, dict = NULL, text_df = NULL,
   text_dfm = NULL, mode = "basic", extra_k = 1,
   covariates_data = NULL, covariates_formula = NULL,
-  num_states = NULL, encoding = "UTF-8", lowercase = TRUE,
-  remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE,
-  remove_separators = TRUE, remove_twitter = FALSE,
-  remove_hyphens = FALSE, remove_url = TRUE, stem_language = NULL,
-  stopwords = NULL, alpha = 50/(length(dict) + extra_k), beta = 0.01,
-  beta_s = 0.1, gamma_1 = 1, gamma_2 = 1)
+  num_states = NULL, timestamps = NULL, encoding = "UTF-8",
+  lowercase = TRUE, remove_numbers = TRUE, remove_punct = TRUE,
+  remove_symbols = TRUE, remove_separators = TRUE,
+  remove_twitter = FALSE, remove_hyphens = FALSE, remove_url = TRUE,
+  stem_language = NULL, stopwords = NULL, alpha = 50/(length(dict) +
+  extra_k), beta = 0.01, beta_s = 0.1, gamma_1 = 1, gamma_2 = 1)
 }
 \arguments{
 \item{files}{names of each file to read (or a quanteda corpus object)}
@@ -21,7 +21,7 @@ topicdict_model(files = NULL, dict = NULL, text_df = NULL,
 
 \item{text_df}{directly passes a text in a data.frame}
 
-\item{mode}{"basic", "cov", or "hmm"}
+\item{mode}{"basic", "cov", "tot", or "hmm"}
 
 \item{extra_k}{number of unseeded topics in addition to the topics seeded by
 \code{dict}}
@@ -29,6 +29,8 @@ topicdict_model(files = NULL, dict = NULL, text_df = NULL,
 \item{covariates_data}{a data.frame or a tibble that is a covariate matrix. Columns are covariates.}
 
 \item{covariates_formula}{formula for the covariates, for example, \code{~.} uses all variables}
+
+\item{timestamps}{time data}
 
 \item{encoding}{File encoding (Default: whatever \code{quanteda} guesses)}
 
@@ -90,6 +92,7 @@ A list containing \describe{
         \item{beta_s}{prior parameter for the seeded word generation probabilities}
         \item{use_cov}{boolean, whether or not use the covariate}
         \item{num_states}{number of states in HMM}
+			 \item{timestamps}{time stamp for topic-over-time model}
         \item{call}{details of the function call}
         }.
 }
