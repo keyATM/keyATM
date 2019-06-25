@@ -189,7 +189,7 @@ void keyATMbase::sampling_store(int &r_index)
 }
 
 void keyATMbase::verbose_special(int &r_index){
-	// If there is anything special to show, write here.
+	// If there is anything special to show or store, write here.
 }
 
 // Sampling
@@ -226,7 +226,7 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
     }
 
     sum = z_prob_vec.sum(); // normalize
-    new_z = sampler::rcat_without_normalize(z_prob_vec, sum); // take a sample
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
 
   } else {
     for (int k = 0; k < num_topics; ++k){
@@ -246,7 +246,7 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
 
 
 		sum = z_prob_vec.sum();
-    new_z = sampler::rcat_without_normalize(z_prob_vec, sum); // take a sample
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
 
   }
 
@@ -335,7 +335,8 @@ double keyATMbase::logsumexp(double &x, double &y, bool flg){
   if (vmax > vmin + 50){
     return vmax;
   } else {
-    return vmax + std::log(std::exp(vmin - vmax) + 1.0);
+    // return vmax + std::log(std::exp(vmin - vmax) + 1.0);
+    return vmax + log(exp(vmin - vmax) + 1.0);
   }
 }
 
@@ -359,6 +360,10 @@ double keyATMbase::betapdf(const double x, const double a, const double b){
 	return tgamma(a+b) / (tgamma(a) * tgamma(b)) * pow(x, a-1) * pow(1-x, b-1);
 }
 
+double keyATMbase::betapdfln(const double x, const double a, const double b){
+	return (a-1)*log(x) + (b-1)*log(1.0-x) + mylgamma(a+b) - mylgamma(a) - mylgamma(b);
+}
+
 NumericVector keyATMbase::alpha_reformat(VectorXd& alpha, int& num_topics){
 	NumericVector alpha_rvec(num_topics);
 
@@ -370,19 +375,21 @@ NumericVector keyATMbase::alpha_reformat(VectorXd& alpha, int& num_topics){
 }
 
 
-double keyATMbase::expand(double& p, const double& A){
-	double res = -(1.0/A) * log((1.0/p) - 1.0);
-	return res;
-}
-
-double keyATMbase::shrink(double& x, const double& A){
-	double res = 1.0 / (1.0 + exp(-A*x));
-	return res;
-}
-
 List keyATMbase::return_model(){
 	return model;
 }
+
+// double keyATMbase::expand(double& p, const double& A){
+// 	double res = -(1.0/A) * log((1.0/p) - 1.0);
+// 	return res;
+// }
+
+// double keyATMbase::shrink(double& x, const double& A){
+// 	double res = 1.0 / (1.0 + exp(-A*x));
+// 	return res;
+// }
+
+
 
 
 double keyATMbase::gammaln_frac(const double &value, const int &count){
@@ -403,20 +410,9 @@ double keyATMbase::gammaln_frac(const double &value, const int &count){
 }
 
 
-double keyATMbase::mylgamma(const double &x){
-	// gammaln_val = 0.0;
-	// gammaln_val = lgamma(x);
-	
-	// Good approximation when x > 1
-	//    x > 1: max abs err: 2.272e-03
-	//    x > 0.5: 0.012
-	//    x > 0.6: 0.008
-	// Abramowitz and Stegun p.257
-	
-	if(x < 0.6)
-		return (lgamma(x));
-	else
-		return ((x-0.5)*log(x) - x + 0.91893853320467 + 1/(12*x));
-}
+// double keyATMbase::mylgamma(const double &x)
+
+
+// double keyATMbase::mypow(const double &a, const double &b)
 
 

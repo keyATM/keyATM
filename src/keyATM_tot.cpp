@@ -28,7 +28,10 @@ void keyATMtot::read_data_specific()
 void keyATMtot::initialize_specific()
 {
 	// Store parameters for time Beta
-	beta_params = VectorXd::Constant(num_topics, 2, 0.5);
+	beta_params = MatrixXd::Constant(num_topics, 2, 0.5);
+	beta_calced = VectorXd::Zero(num_topics);
+	beta_tg_num = VectorXd::Zero(num_topics);
+	beta_tg_denom = VectorXd::Zero(num_topics);
 
 
 	// Store time stamps
@@ -49,6 +52,15 @@ void keyATMtot::iteration_single(int &it)
 		store_t[k].clear();
 	}
 
+	// Apply gamma
+	for(int k=0; k<num_topics; k++){
+		beta_a = beta_params(k, 0);
+		beta_b = beta_params(k, 1);	
+
+		beta_tg_num(k) = mylgamma(beta_a + beta_b);
+		beta_tg_denom(k) = mylgamma(beta_a) + mylgamma(beta_b);
+	}
+
 	// Sampling
 	for (int ii = 0; ii < num_doc; ii++){
 		doc_id_ = doc_indexes[ii];
@@ -56,6 +68,14 @@ void keyATMtot::iteration_single(int &it)
 		doc_length = doc_each_len[doc_id_];
 		
 		token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
+
+		// Prepare beta_a and beta_b for sampling
+		timestamp_d = timestamps(doc_id_);
+		for(int k=0; k<num_topics; k++){
+			beta_a = beta_params(k, 0);
+			beta_b = beta_params(k, 1);
+			beta_calced(k) = (beta_a - 1.0) * log(1.0 - timestamp_d) + (beta_b - 1.0) * log(timestamp_d);
+		}
 		
 		// Iterate each word in the document
 		for (int jj = 0; jj < doc_length; jj++){
@@ -75,6 +95,8 @@ void keyATMtot::iteration_single(int &it)
 		X[doc_id_] = doc_x;
 	}
 	sample_parameters();
+
+	// if(floor(iter/2) < it)
 
 }
 
@@ -97,30 +119,28 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
 
   n_dk(doc_id, z) -= 1;
 
-	timestamp_d = timestamps(doc_id);
-
   new_z = -1; // debug
   if (x == 0){
     for (int k = 0; k < num_topics; ++k){
-				beta_a = beta_params(k, 0);
-				beta_b = beta_params(k, 1);
 
-      numerator = (beta + n_x0_kv(k, w)) *
+      numerator = log( (beta + n_x0_kv(k, w)) *
         (n_x0_k(k) + gamma_2) *
-        (n_dk(doc_id, k) + alpha(k)) *
-				pow(1.0 - timestamp_d, beta_a - 1.0) *
-				pow(timestamp_d, beta_b - 1.0) *
-				tgamma(beta_a + beta_b);
+        (n_dk(doc_id, k) + alpha(k)) ) +
+				beta_calced(k) +
+				beta_tg_num(k);
 
-      denominator = ((double)num_vocab * beta + n_x0_k(k)) *
-        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) *
-				tgamma(beta_a) * tgamma(beta_b);
+      denominator = log( ((double)num_vocab * beta + n_x0_k(k)) *
+        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) ) +
+				beta_tg_denom(k);
 
-      z_prob_vec(k) = numerator / denominator;
+      z_prob_vec(k) = numerator - denominator;
     }
 
-    sum = z_prob_vec.sum(); // normalize
-    new_z = sampler::rcat_without_normalize(z_prob_vec, sum); // take a sample
+
+		sum = logsumexp_Eigen(z_prob_vec);
+		z_prob_vec = (z_prob_vec.array() - sum).exp();
+		new_z = sampler::rcat(z_prob_vec, num_topics);
+
 
   } else {
     for (int k = 0; k < num_topics; ++k){
@@ -128,26 +148,25 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
         z_prob_vec(k) = 0.0;
 				continue;
       } else{ 
-				beta_a = beta_params(k, 0);
-				beta_b = beta_params(k, 1);
 
-        numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
+        numerator = log( (beta_s + n_x1_kv.coeffRef(k, w)) *
            (n_x1_k(k) + gamma_1)  *
-           (n_dk(doc_id, k) + alpha(k)) *
-						pow(1.0 - timestamp_d, beta_a - 1.0) *
-						pow(timestamp_d, beta_b - 1.0) *
-						tgamma(beta_a + beta_b);;
+           (n_dk(doc_id, k) + alpha(k)) ) +
+						beta_calced(k) +
+						beta_tg_num(k);
       }
-      denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
-        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) *
-				tgamma(beta_a) * tgamma(beta_b);
+      denominator = log( ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
+        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) ) +
+				beta_tg_denom(k);
 
-      z_prob_vec(k) = numerator / denominator;
+      z_prob_vec(k) = numerator - denominator;
     }
 
 
-		sum = z_prob_vec.sum();
-    new_z = sampler::rcat_without_normalize(z_prob_vec, sum); // take a sample
+
+		sum = logsumexp_Eigen(z_prob_vec);
+		z_prob_vec = (z_prob_vec.array() - sum).exp();
+		new_z = sampler::rcat(z_prob_vec, num_topics);
 
   }
 
@@ -180,7 +199,22 @@ void keyATMtot::sample_parameters()
 
 
 void keyATMtot::sample_betaparam(){
-
+	for(int k=0; k<num_topics; k++){
+		timestamps_k = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>
+													(store_t[k].data(), store_t[k].size());		
+	
+		beta_mean = timestamps_k.mean();
+		beta_var = ( (timestamps_k.array() - beta_mean) * (timestamps_k.array() - beta_mean) ).sum() /
+									(store_t[k].size() - 1.0);
+	
+	
+		beta_var = 1.0 / (beta_var);  // beta_var reciprocal
+		beta_var = ( (beta_mean * (1-beta_mean)) * beta_var - 1.0);
+		
+		// cout << beta_mean * beta_var << "/" << (1.0 - beta_mean) * beta_var << endl;  // debug
+		beta_params(k, 0) = beta_mean * beta_var;
+		beta_params(k, 1) = (1.0 - beta_mean) * beta_var;
+	}
 }
 
 
@@ -232,6 +266,16 @@ void keyATMtot::sample_alpha()
 	List alpha_iter = model["alpha_iter"];
 	alpha_iter.push_back(alpha_rvec);
 	model["alpha_iter"] = alpha_iter;
+}
+
+
+void keyATMtot::verbose_special(int &r_index){
+	// Store beta param
+
+	Rcpp::NumericMatrix tot_beta_R = Rcpp::wrap(beta_params);
+	List tot_beta = model["tot_beta"];
+	tot_beta.push_back(tot_beta_R);
+	model["tot_beta"] = tot_beta;
 }
 
 
@@ -297,12 +341,17 @@ double keyATMtot::loglik_total()
 
     // x normalization
     loglik += mylgamma(gamma_1 + gamma_2) - mylgamma(gamma_1) - mylgamma(gamma_2);
+
   }
   // z
   for (int d = 0; d < num_doc; d++){
     loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+
+
+			// time stamps
+			loglik += n_dk(d, k) * betapdfln(timestamps(d), beta_params(k,0), beta_params(k,1));
     }
   }
   return loglik;

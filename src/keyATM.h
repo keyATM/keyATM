@@ -131,13 +131,63 @@ class keyATMbase
 		double logsumexp_Eigen(VectorXd &vec);
 		double gammapdfln(const double x, const double a, const double b);
 		double betapdf(const double x, const double a, const double b);
+		double betapdfln(const double x, const double a, const double b);
 		NumericVector alpha_reformat(VectorXd& alpha, int& num_topics);
 
-		double expand(double &p, const double &A);
-		double shrink(double &x, const double &A);
-		
 		double gammaln_frac(const double &value, const int &count);
-		double mylgamma(const double &x);
+
+		// Inline functions
+
+		double expand(double &p, const double &A){
+			return (-(1.0/A) * log((1.0/p) - 1.0));
+		};
+		double shrink(double &x, const double &A){
+			return (1.0 / (1.0 + exp(-A*x)));
+		};
+		
+
+
+		double mylgamma(const double &x){
+			// gammaln_val = 0.0;
+			// gammaln_val = lgamma(x);
+			
+			// Good approximation when x > 1
+			//    x > 1: max abs err: 2.272e-03
+			//    x > 0.5: 0.012
+			//    x > 0.6: 0.008
+			// Abramowitz and Stegun p.257
+			
+			if(x < 0.6)
+				return (lgamma(x));
+			else
+				return ((x-0.5)*log(x) - x + 0.91893853320467 + 1/(12*x));
+		};
+
+		double mypow(const double &a, const double &b){
+			// Reference: https://github.com/ekmett/approximate/blob/master/cbits/fast.c
+			// Probably not good to use if b>1.0
+			
+			if(b > 1.0)
+				return(pow(a,b));
+
+			union { double d; long long x; } u = { a };
+			u.x = (long long)(b * (u.x - 4606921278410026770LL) + 4606921278410026770LL);
+			return u.d;
+		};
+
+		double myexp(const double &a){
+			// Seems to be not very good
+  		union { double d; long long x; } u, v;
+  		u.x = (long long)(3248660424278399LL * a + 0x3fdf127e83d16f12LL);
+  		v.x = (long long)(0x3fdf127e83d16f12LL - 3248660424278399LL * a);
+  		return u.d / v.d;
+		};
+
+		double mylog(const double &a){
+			// Looks fine even with large a
+			union { double d; long long x; } u = { a };
+			return (u.x - 4606921278410026770) * 1.539095918623324e-16;	
+		};
 
 		List return_model();
 	

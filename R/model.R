@@ -68,6 +68,7 @@
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
 #'         \item{Lambda_iter}{a list to store coefficients of the covariates}
 #'         \item{S_iter}{a list to store states sampled in HMM}
+#'         \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
 #'         \item{sampling_info}{information related to sampling}
 #'         \item{model_fit}{a list to store perplexity and log-likelihood}
 #'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
@@ -129,7 +130,7 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 	if(mode == "tot"){
 		if(is.null(timestamps)){
 			stop("Please provide time stamps.")	
-		}else if(min(timestamps) < 0 | max(timestamps) > 1){
+		}else if(min(timestamps) < 0 | max(timestamps) >= 1){
 			stop("Time stamps sholud be between 0 and 1. Please use `make_timestamps()` function to format time stamps.")	
 		}
 	}
@@ -279,7 +280,7 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
              alpha = alpha, gamma_1 = gamma_1, gamma_2 = gamma_2,
              beta = beta, beta_s = beta_s,
 						 alpha_iter = list(), Lambda_iter = list(), S_iter = list(),
-						 model_fit = list(), sampling_info = list(),
+						 model_fit = list(), sampling_info = list(), tot_beta = list(),
 						 C=C, use_cov=use_cov,
 						 num_states=num_states,
 						 timestamps=timestamps,

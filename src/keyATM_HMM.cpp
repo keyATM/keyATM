@@ -131,6 +131,9 @@ void keyATMhmm::verbose_special(int &r_index){
 	// If there is anything special to show, write here.
 	if(floor(iter/2) < r_index-1)
 		cout << "  Sampled S: " << S_count.transpose() << endl;
+
+	// Store S
+	store_S_est();
 }
 
 void keyATMhmm::sample_parameters()
@@ -142,7 +145,6 @@ void keyATMhmm::sample_parameters()
 	sample_forward();  // calculate Psk
 	sample_backward();  // sample S_est
 	sample_P();  // sample P_est
-	store_S_est();
 }
 
 
@@ -341,7 +343,7 @@ void keyATMhmm::sample_backward()
 		state_prob_vec.array() = Psk.row(d).transpose().array() * P_est.col(state_id).array(); 
 		state_prob_vec.array() = state_prob_vec.array() / state_prob_vec.sum();
 
-		state_id = sampler::rcat(state_prob_vec); // new state id
+		state_id = sampler::rcat(state_prob_vec, num_states); // new state id
 		S_est(d) = state_id;
 		S_count(state_id) += 1;
 	}

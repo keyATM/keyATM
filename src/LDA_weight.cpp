@@ -117,7 +117,7 @@ int LDAweight::sample_z(VectorXd &alpha, int &z, int &x,
 	}
 
 	sum = z_prob_vec.sum(); // normalize
-	new_z = sampler::rcat_without_normalize(z_prob_vec, sum); // take a sample
+	new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
 
 
   // add back data counts

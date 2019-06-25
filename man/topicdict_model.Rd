@@ -84,6 +84,7 @@ A list containing \describe{
         \item{alpha_iter}{a list to store topic proportion hyperparameters}
         \item{Lambda_iter}{a list to store coefficients of the covariates}
         \item{S_iter}{a list to store states sampled in HMM}
+        \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
         \item{sampling_info}{information related to sampling}
         \item{model_fit}{a list to store perplexity and log-likelihood}
         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}

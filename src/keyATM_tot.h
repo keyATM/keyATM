@@ -17,7 +17,9 @@ class keyATMtot : public keyATMbase
 		// Parameters
 		VectorXd timestamps;  // time stamps (document share the same time)
 		MatrixXd beta_params;  // parameter for time Beta, K \times 2
-
+		VectorXd beta_tg_num;  // apply tgamma to the above
+		VectorXd beta_tg_denom;  // apply tgamma to the above
+		
 		// Constructor
 		keyATMtot(List model_, const int iter_, const int output_per_);
 
@@ -50,7 +52,14 @@ class keyATMtot : public keyATMbase
 				// In sampling z
 				double beta_a;
 				double beta_b;
+				// double tgamma_numerator;
+				// double tgamma_denominator;
 				double timestamp_d;
+				VectorXd beta_calced;
+
+				// In sampling betaparam
+				double beta_mean;
+				double beta_var;
 	
 		// 
 		// Functions
@@ -71,6 +80,7 @@ class keyATMtot : public keyATMbase
 		void sample_alpha();
 		double alpha_loglik();
 		double loglik_total();
+		void verbose_special(int &r_index);  // store sampled beta param
 };
 
 #endif

@@ -13,8 +13,8 @@ namespace sampler{
 
 	std::vector<int> shuffled_indexes(int m);
 
-	int rcat(VectorXd &prob);
-	int rcat_without_normalize(VectorXd &prob, double &total);
+	int rcat(VectorXd &prob, int &size);
+	int rcat_without_normalize(VectorXd &prob, double &total, int &size);
 
 }
 
