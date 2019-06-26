@@ -204,8 +204,9 @@ double keyATMbasic::loglik_total()
     loglik += mylgamma(gamma_1 + gamma_2) - mylgamma(gamma_1) - mylgamma(gamma_2);
   }
   // z
+	fixed_part = alpha.sum();
   for (int d = 0; d < num_doc; d++){
-    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
+    loglik += mylgamma( fixed_part ) - mylgamma( doc_each_len[d] + fixed_part );
     for (int k = 0; k < num_topics; k++){
       loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
     }

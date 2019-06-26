@@ -136,7 +136,7 @@ void LDAweightTOT::iteration_single(int &it)
 			w_position = token_indexes[jj];
 			z_ = doc_z[w_position], w_ = doc_w[w_position];
 		
-			new_z = sample_z_log(alpha, z_, x_, w_, doc_id_);
+			new_z = sample_z(alpha, z_, x_, w_, doc_id_);
 			doc_z[w_position] = new_z;
 		}
 		
@@ -240,24 +240,77 @@ void LDAweightTOT::sample_parameters()
 
 
 void LDAweightTOT::sample_betaparam(){
-	for(int k=0; k<num_topics; k++){
-		if(store_t[k].size() == 0)
-			continue;
+	// for(int k=0; k<num_topics; k++){
+	// 	if(store_t[k].size() == 0)
+	// 		continue;
+	//
+	// 	timestamps_k = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>
+	// 												(store_t[k].data(), store_t[k].size());		
+	//
+	// 	beta_mean = timestamps_k.mean();
+	// 	beta_var = ( (timestamps_k.array() - beta_mean) * (timestamps_k.array() - beta_mean) ).sum() /
+	// 								(store_t[k].size() - 1.0);
+	//
+	//
+	// 	beta_var = 1.0 / (beta_var);  // beta_var reciprocal
+	// 	beta_var = ( (beta_mean * (1-beta_mean)) * beta_var - 1.0);
+	//	
+	// 	beta_params(k, 0) = beta_mean * beta_var;
+	// 	beta_params(k, 1) = (1.0 - beta_mean) * beta_var;
+	// }
 
-		timestamps_k = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>
-													(store_t[k].data(), store_t[k].size());		
-	
-		beta_mean = timestamps_k.mean();
-		beta_var = ( (timestamps_k.array() - beta_mean) * (timestamps_k.array() - beta_mean) ).sum() /
-									(store_t[k].size() - 1.0);
-	
-	
-		beta_var = 1.0 / (beta_var);  // beta_var reciprocal
-		beta_var = ( (beta_mean * (1-beta_mean)) * beta_var - 1.0);
+	topic_ids = sampler::shuffled_indexes(num_topics);
+
+	for(int j=0; j<num_topics; j++){
+		for(int i=0; i<2; i++){
+			k = topic_ids[j];
+			current_param = beta_params(k, i);
+
+			start = min_v / (1.0 + min_v);
+			end = 1.0;
+
+			previous_p = current_param / (1.0 + current_param);
+			slice_ = beta_loglik(k, i) - 2.0 * log(1.0 - previous_p) 
+								+ log(unif_rand()); 
+
+
+			for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
+				new_p = sampler::slice_uniform(start, end); // <-- using R function above
+				beta_params(k, i) = new_p / (1.0 - new_p); // expandp
+
+				newlikelihood = beta_loglik(k, i) - 2.0 * log(1.0 - new_p);
+
+				if (slice_ < newlikelihood){
+					store_loglik = newalphallk;
+					break;
+				} else if (previous_p < new_p){
+					end = new_p;
+				} else if (new_p < previous_p){
+					start = new_p;
+				} else {
+					Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
+					beta_params(k, i) = current_param;
+					break;
+				}
+			}
 		
-		beta_params(k, 0) = beta_mean * beta_var;
-		beta_params(k, 1) = (1.0 - beta_mean) * beta_var;
-	}
+		}  // for i	
+	}  // for j
+}
+
+
+double LDAweightTOT::beta_loglik(const int &k, const int &i){
+	loglik = 0.0;
+
+  for (int d = 0; d < num_doc; d++){
+		loglik += n_dk(d, k) * betapdfln(timestamps(d), beta_params(k,0), beta_params(k,1));
+  }
+
+	// Prior
+	loglik += gammapdfln(beta_params(k, i), ts_g1, ts_g2);
+
+	return loglik;
+
 }
 
 
@@ -355,8 +408,9 @@ double LDAweightTOT::loglik_total()
 		// Rcout << (double)n_x0_k(k) << " / " << (double)n_x1_k(k) << std::endl; // debug
   }
   // z and time stamps
+	fixed_part = alpha.sum();
   for (int d = 0; d < num_doc; d++){
-    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
+    loglik += mylgamma( fixed_part ) - mylgamma( doc_each_len[d] + fixed_part );
     for (int k = 0; k < num_topics; k++){
       loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
 
@@ -364,6 +418,14 @@ double LDAweightTOT::loglik_total()
 			loglik += n_dk(d, k) * betapdfln(timestamps(d), beta_params(k,0), beta_params(k,1));
     }
   }
+
+	// Prior
+	for(int k=0; k<num_topics; k++){
+		for(int i=0; i<2; i++){
+			loglik += gammapdfln(beta_params(k, i), ts_g1, ts_g2);
+		}	
+	}
+
   return loglik;
 }
 

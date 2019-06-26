@@ -498,8 +498,10 @@ double keyATMtot::loglik_total()
 
   }
   // z and time stamps
+	fixed_part = alpha.sum();
+
   for (int d = 0; d < num_doc; d++){
-    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
+    loglik += mylgamma( fixed_part ) - mylgamma( doc_each_len[d] + fixed_part );
     for (int k = 0; k < num_topics; k++){
       loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
 
@@ -508,10 +510,9 @@ double keyATMtot::loglik_total()
     }
   }
 
-	// Prior
+	// Time stamps Prior
 	for(int k=0; k<num_topics; k++){
 		for(int i=0; i<2; i++){
-			current_param = beta_params(k, i);	
 			loglik += gammapdfln(beta_params(k, i), ts_g1, ts_g2);
 		}	
 	}
