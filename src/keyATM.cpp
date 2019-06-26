@@ -326,28 +326,6 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
 
 
 // Utilities
-double keyATMbase::logsumexp(double &x, double &y, bool flg){
-  if (flg) return y; // init mode
-  if (x == y) return x + 0.69314718055; // log(2)
-  vmin = std::min(x, y);
-  vmax = std::max(x, y);
-  if (vmax > vmin + 50){
-    return vmax;
-  } else {
-    return vmax + log(exp(vmin - vmax) + 1.0);
-  }
-}
-
-
-double keyATMbase::logsumexp_Eigen(VectorXd &vec, const int size){
-  sum = 0.0;
-  for(int i = 0; i < size; i++){
-    sum = logsumexp(sum, vec[i], (i == 0));
-  }
-  return sum;
-}
-
-
 double keyATMbase::gammapdfln(const double x, const double a, const double b){
   return a * log(b) - lgamma(a) + (a - 1.0) * log(x) - b * x;
 }
@@ -372,23 +350,6 @@ NumericVector keyATMbase::alpha_reformat(VectorXd& alpha, int& num_topics){
 }
 
 
-List keyATMbase::return_model(){
-	return model;
-}
-
-// double keyATMbase::expand(double& p, const double& A){
-// 	double res = -(1.0/A) * log((1.0/p) - 1.0);
-// 	return res;
-// }
-
-// double keyATMbase::shrink(double& x, const double& A){
-// 	double res = 1.0 / (1.0 + exp(-A*x));
-// 	return res;
-// }
-
-
-
-
 double keyATMbase::gammaln_frac(const double &value, const int &count){
 	// Calculate \log \frac{\gamma(value + count)}{\gamma(\value)}
 	// Not very fast
@@ -407,9 +368,9 @@ double keyATMbase::gammaln_frac(const double &value, const int &count){
 }
 
 
-// double keyATMbase::mylgamma(const double &x)
+List keyATMbase::return_model(){
+	return model;
+}
 
-
-// double keyATMbase::mypow(const double &a, const double &b)
 
 

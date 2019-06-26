@@ -5,7 +5,6 @@
 #include <RcppEigen.h>
 #include <unordered_set>
 #include "sampler.h"
-#include "util.h"
 
 using namespace Eigen;
 using namespace Rcpp;
@@ -129,8 +128,7 @@ class keyATMbase
 		double vmin;
 		double vmax;
 
-		double logsumexp(double &x, double &y, bool flg);
-		double logsumexp_Eigen(VectorXd &vec, const int size);
+
 		double gammapdfln(const double x, const double a, const double b);
 		double betapdf(const double x, const double a, const double b);
 		double betapdfln(const double x, const double a, const double b);
@@ -147,7 +145,25 @@ class keyATMbase
 			return (1.0 / (1.0 + exp(-A*x)));
 		};
 		
+		double logsumexp(double &x, double &y, bool flg){
+			if (flg) return y; // init mode
+			if (x == y) return x + 0.69314718055; // log(2)
+			vmin = std::min(x, y);
+			vmax = std::max(x, y);
+			if (vmax > vmin + 50){
+				return vmax;
+			} else {
+				return vmax + log(exp(vmin - vmax) + 1.0);
+			}
+		};
 
+		double logsumexp_Eigen(VectorXd &vec, const int size){
+			sum = 0.0;
+			for(int i = 0; i < size; i++){
+				sum = logsumexp(sum, vec[i], (i == 0));
+			}
+			return sum;
+		};
 
 		double mylgamma(const double &x){
 			// gammaln_val = 0.0;

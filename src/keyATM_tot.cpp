@@ -60,10 +60,10 @@ void keyATMtot::iteration_single(int &it)
 		beta_b = beta_params(k, 1);	
 
 		// Log version
-		beta_lg(k) = beta_lg_base(k) + mylgamma(beta_a + beta_b) - (mylgamma(beta_a) + mylgamma(beta_b));	
+		beta_lg(k) =  mylgamma(beta_a + beta_b) - (mylgamma(beta_a) + mylgamma(beta_b));	
 
 		// Normal version
-		beta_tg(k) = beta_tg_base(k) * tgamma(beta_a + beta_b) / (tgamma(beta_a) * tgamma(beta_b));
+		beta_tg(k) =  tgamma(beta_a + beta_b) / (tgamma(beta_a) * tgamma(beta_b));
 	}
 
 	
@@ -84,10 +84,10 @@ void keyATMtot::iteration_single(int &it)
 			beta_b = beta_params(k, 1);
 		
 			// for log version
-			beta_lg(k) += (beta_a - 1.0) * log(1.0 - timestamp_d) + (beta_b - 1.0) * log(timestamp_d);
+			beta_lg(k) = beta_lg_base(k) + (beta_a - 1.0) * log(1.0 - timestamp_d) + (beta_b - 1.0) * log(timestamp_d);
 		
 			// For normal version
-			beta_tg(k) *=  pow(1.0 - timestamp_d, beta_a - 1.0) * pow(timestamp_d, beta_b - 1.0);
+			beta_tg(k) = beta_tg_base(k) * pow(1.0 - timestamp_d, beta_a - 1.0) * pow(timestamp_d, beta_b - 1.0);
 			
 		}
 		
@@ -260,7 +260,6 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
 
   // add back data counts
 
-	UPDATE:
   if (x == 0){
     n_x0_kv(new_z, w) += vocab_weights(w);
     n_x0_k(new_z) += vocab_weights(w);
