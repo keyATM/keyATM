@@ -17,11 +17,6 @@ class keyATMtot : public keyATMbase
 		// Parameters
 		VectorXd timestamps;  // time stamps (document share the same time)
 		MatrixXd beta_params;  // parameter for time Beta, K \times 2
-		// VectorXd beta_tg_num;  // apply tgamma to the above
-		// VectorXd beta_tg_denom;  // apply tgamma to the above
-		//
-		// VectorXd beta_lg_num;  // apply lgamma to the above
-		// VectorXd beta_lg_denom;  // apply lgamma to the above
 
 		VectorXd beta_tg;  // apply tgamma 
 		VectorXd beta_lg;  // apply lgamma 
