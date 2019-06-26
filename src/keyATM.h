@@ -70,7 +70,6 @@ class keyATMbase
 			int w_position;
 			int x_, z_, w_;
 			int doc_length;
-			int size;
 			// int new_z, new_x;  // defined in sample_z and sample_x
 	
 			// sample_z
@@ -127,8 +126,11 @@ class keyATMbase
 		virtual double loglik_total() = 0;
 
 		// Utilities
+		double vmin;
+		double vmax;
+
 		double logsumexp(double &x, double &y, bool flg);
-		double logsumexp_Eigen(VectorXd &vec);
+		double logsumexp_Eigen(VectorXd &vec, const int size);
 		double gammapdfln(const double x, const double a, const double b);
 		double betapdf(const double x, const double a, const double b);
 		double betapdfln(const double x, const double a, const double b);

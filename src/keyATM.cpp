@@ -122,7 +122,6 @@ void keyATMbase::initialize_common()
 
 
 	// Construct data matrices
-	vector<Triplet> trip_x0; 	
 	vector<Triplet> trip_x1; 	
 	
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
@@ -330,20 +329,18 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
 double keyATMbase::logsumexp(double &x, double &y, bool flg){
   if (flg) return y; // init mode
   if (x == y) return x + 0.69314718055; // log(2)
-  double vmin = std::min(x, y);
-  double vmax = std::max(x, y);
+  vmin = std::min(x, y);
+  vmax = std::max(x, y);
   if (vmax > vmin + 50){
     return vmax;
   } else {
-    // return vmax + std::log(std::exp(vmin - vmax) + 1.0);
     return vmax + log(exp(vmin - vmax) + 1.0);
   }
 }
 
 
-double keyATMbase::logsumexp_Eigen(VectorXd &vec){
+double keyATMbase::logsumexp_Eigen(VectorXd &vec, const int size){
   sum = 0.0;
-	size = vec.size();
   for(int i = 0; i < size; i++){
     sum = logsumexp(sum, vec[i], (i == 0));
   }
