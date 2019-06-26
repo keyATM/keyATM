@@ -110,6 +110,7 @@ void LDAweightTOT::iteration_single(int &it)
 		// Prepare beta_a and beta_b for sampling
 		timestamp_d = timestamps(doc_id_);
 	
+		use_log = 0;
 		for(int k=0; k<num_topics; k++){ 
 			beta_a = beta_params(k, 0);
 			beta_b = beta_params(k, 1);
@@ -118,7 +119,14 @@ void LDAweightTOT::iteration_single(int &it)
 			beta_lg(k) = beta_lg_base(k) + (beta_a - 1.0) * log(1.0 - timestamp_d) + (beta_b - 1.0) * log(timestamp_d);
 		
 			// For normal version
-			beta_tg(k) = beta_tg_base(k) * pow(1.0 - timestamp_d, beta_a - 1.0) * pow(timestamp_d, beta_b - 1.0);
+			check_frac = beta_tg_base(k) * pow(1.0 - timestamp_d, beta_a - 1.0) * pow(timestamp_d, beta_b - 1.0);
+			
+			if(check_frac < numeric_limits<double>::min() | 
+					check_frac > numeric_limits<double>::max()){
+				use_log = 1;
+			}else{
+				beta_tg(k) = check_frac;
+			}
 			
 		}
 	
@@ -128,7 +136,7 @@ void LDAweightTOT::iteration_single(int &it)
 			w_position = token_indexes[jj];
 			z_ = doc_z[w_position], w_ = doc_w[w_position];
 		
-			new_z = sample_z(alpha, z_, x_, w_, doc_id_);
+			new_z = sample_z_log(alpha, z_, x_, w_, doc_id_);
 			doc_z[w_position] = new_z;
 		}
 		
@@ -151,6 +159,8 @@ int LDAweightTOT::sample_z(VectorXd &alpha, int &z, int &x,
 
   new_z = -1; // debug
 
+	if(use_log == 1)
+		return sample_z_log(alpha, z, x, w, doc_id);
 
 	for (int k = 0; k < num_topics; ++k){
 
@@ -231,6 +241,9 @@ void LDAweightTOT::sample_parameters()
 
 void LDAweightTOT::sample_betaparam(){
 	for(int k=0; k<num_topics; k++){
+		if(store_t[k].size() == 0)
+			continue;
+
 		timestamps_k = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>
 													(store_t[k].data(), store_t[k].size());		
 	
@@ -319,10 +332,10 @@ double LDAweightTOT::alpha_loglik()
     loglik += fixed_part;
     // second term numerator
     for(int k = 0; k < num_topics; k++){
-      loglik += lgamma(ndk_a(d,k));
+      loglik += mylgamma(ndk_a(d,k));
     }
     // second term denominator
-    loglik -= lgamma(doc_each_len[d] + alpha_sum_val);
+    loglik -= mylgamma(doc_each_len[d] + alpha_sum_val);
 
   }
   return loglik;
@@ -334,24 +347,34 @@ double LDAweightTOT::loglik_total()
   double loglik = 0.0;
   for (int k = 0; k < num_topics; k++){
     for (int v = 0; v < num_vocab; v++){ // word
-      loglik += lgamma(beta + n_kv(k, v) / vocab_weights(v) ) - lgamma(beta);
+      loglik += mylgamma(beta + n_kv(k, v) / vocab_weights(v) ) - mylgamma(beta);
     }
     // word normalization
-    loglik += lgamma( beta * (double)num_vocab ) - lgamma(beta * (double)num_vocab + n_k_noWeight(k) );
+    loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_k_noWeight(k) );
 
 		// Rcout << (double)n_x0_k(k) << " / " << (double)n_x1_k(k) << std::endl; // debug
   }
   // z and time stamps
   for (int d = 0; d < num_doc; d++){
-    loglik += lgamma( alpha.sum() ) - lgamma( doc_each_len[d] + alpha.sum() );
+    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
-      loglik += lgamma( n_dk(d,k) + alpha(k) ) - lgamma( alpha(k) );
+      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
 
 			// time stamps
 			loglik += n_dk(d, k) * betapdfln(timestamps(d), beta_params(k,0), beta_params(k,1));
     }
   }
   return loglik;
+}
+
+
+void LDAweightTOT::verbose_special(int &r_index){
+	// Store beta param
+
+	Rcpp::NumericMatrix tot_beta_R = Rcpp::wrap(beta_params);
+	List tot_beta = model["tot_beta"];
+	tot_beta.push_back(tot_beta_R);
+	model["tot_beta"] = tot_beta;
 }
 
 

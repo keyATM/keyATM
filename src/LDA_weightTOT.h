@@ -54,6 +54,7 @@ class LDAweightTOT : public keyATMbase
 		double beta_b;
 		double check_frac;
 		double timestamp_d;
+		int use_log;
 
 		// In sampling betaparam
 		double beta_mean;
@@ -88,6 +89,7 @@ class LDAweightTOT : public keyATMbase
 								     int &w, int &doc_id);
 		double alpha_loglik();
 		double loglik_total();
+		void verbose_special(int &r_index);  // store sampled beta param
 };
 
 #endif

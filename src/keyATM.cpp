@@ -158,7 +158,7 @@ void keyATMbase::initialize_common()
 void keyATMbase::iteration()
 {
 	for(int it=0; it<iter; it++){
-		iteration_single(it);	
+		iteration_single(it);
 
 		int r_index = it + 1;
 		if(r_index % output_per == 0 || r_index == 1 || r_index == iter ){

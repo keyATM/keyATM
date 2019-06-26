@@ -62,6 +62,9 @@ class keyATMtot : public keyATMbase
 				// In sampling betaparam
 				double beta_mean;
 				double beta_var;
+				double current_param;
+				double ts_g1 = 1.5;  // parameters for gamma
+				double ts_g2 = 2.0;  // parameters for gamma
 	
 		// 
 		// Functions
@@ -82,6 +85,7 @@ class keyATMtot : public keyATMbase
 		void sample_betaparam();
 		void sample_alpha();
 		double alpha_loglik();
+		double beta_loglik(const int &k, const int &i);
 		double loglik_total();
 		void verbose_special(int &r_index);  // store sampled beta param
 };
