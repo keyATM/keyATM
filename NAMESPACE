@@ -2,6 +2,7 @@
 
 export(ExploreDocuments)
 export(LDA_weight)
+export(LDA_weight_tot)
 export(diagnosis_alpha)
 export(diagnosis_model_fit)
 export(diagnosis_p)

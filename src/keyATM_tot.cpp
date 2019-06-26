@@ -60,10 +60,10 @@ void keyATMtot::iteration_single(int &it)
 		beta_b = beta_params(k, 1);	
 
 		// Log version
-		beta_lg(k) =  mylgamma(beta_a + beta_b) - (mylgamma(beta_a) + mylgamma(beta_b));	
+		beta_lg_base(k) =  mylgamma(beta_a + beta_b) - (mylgamma(beta_a) + mylgamma(beta_b));	
 
 		// Normal version
-		beta_tg(k) =  tgamma(beta_a + beta_b) / (tgamma(beta_a) * tgamma(beta_b));
+		beta_tg_base(k) =  tgamma(beta_a + beta_b) / (tgamma(beta_a) * tgamma(beta_b));
 	}
 
 	
@@ -79,6 +79,7 @@ void keyATMtot::iteration_single(int &it)
 		// Prepare beta_a and beta_b for sampling
 		timestamp_d = timestamps(doc_id_);
 
+		use_log = 0;
 		for(int k=0; k<num_topics; k++){ 
 			beta_a = beta_params(k, 0);
 			beta_b = beta_params(k, 1);
@@ -87,8 +88,15 @@ void keyATMtot::iteration_single(int &it)
 			beta_lg(k) = beta_lg_base(k) + (beta_a - 1.0) * log(1.0 - timestamp_d) + (beta_b - 1.0) * log(timestamp_d);
 		
 			// For normal version
-			beta_tg(k) = beta_tg_base(k) * pow(1.0 - timestamp_d, beta_a - 1.0) * pow(timestamp_d, beta_b - 1.0);
-			
+			check_frac = beta_tg_base(k) * pow(1.0 - timestamp_d, beta_a - 1.0) * pow(timestamp_d, beta_b - 1.0);
+
+			if(beta_tg(k) < numeric_limits<double>::min() | 
+					beta_tg(k) > numeric_limits<double>::max()){
+				use_log = 1;
+			}else{
+				beta_tg(k) = check_frac;
+			}
+
 		}
 		
 		// Iterate each word in the document
@@ -203,6 +211,9 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
   n_dk(doc_id, z) -= 1;
 
   new_z = -1; // debug
+
+	if(use_log == 1)
+		return sample_z_log(alpha, z, x, w, doc_id);
 
   if (x == 0){
     for (int k = 0; k < num_topics; ++k){
@@ -431,12 +442,11 @@ double keyATMtot::loglik_total()
     loglik += mylgamma(gamma_1 + gamma_2) - mylgamma(gamma_1) - mylgamma(gamma_2);
 
   }
-  // z
+  // z and time stamps
   for (int d = 0; d < num_doc; d++){
     loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
-
 
 			// time stamps
 			loglik += n_dk(d, k) * betapdfln(timestamps(d), beta_params(k,0), beta_params(k,1));

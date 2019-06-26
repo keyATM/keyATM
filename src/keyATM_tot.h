@@ -57,6 +57,7 @@ class keyATMtot : public keyATMbase
 				double beta_b;
 				double check_frac;
 				double timestamp_d;
+				int use_log;
 
 				// In sampling betaparam
 				double beta_mean;

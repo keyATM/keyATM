@@ -1,11 +1,11 @@
-#include "LDA_weight.h"
+#include "LDA_weightTOT.h"
 
 using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
 
-LDAweight::LDAweight(List model_, const int iter_, const int output_per_, const int use_weight_) :
+LDAweightTOT::LDAweightTOT(List model_, const int iter_, const int output_per_, const int use_weight_) :
 	keyATMbase(model_, iter_, output_per_) // pass to parent!
 {
 	use_weight = use_weight_;
@@ -16,14 +16,16 @@ LDAweight::LDAweight(List model_, const int iter_, const int output_per_, const 
 }
 
 
-void LDAweight::read_data_specific()
+void LDAweightTOT::read_data_specific()
 {
 	alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
 
+	// Read time stamp
+	timestamps = Rcpp::as<Eigen::VectorXd>(model["timestamps"]);
 }
 
 
-void LDAweight::initialize_specific()
+void LDAweightTOT::initialize_specific()
 {
 	// Initialization for LDA weights 
 
@@ -53,14 +55,46 @@ void LDAweight::initialize_specific()
   }
 	
 
+	// Store parameters for time Beta
+	beta_params = MatrixXd::Constant(num_topics, 2, 0.5);
+
 	// Use during the iteration
 	z_prob_vec = VectorXd::Zero(num_topics);
 
+	beta_tg = VectorXd::Zero(num_topics);
+	beta_lg = VectorXd::Zero(num_topics);
+	beta_tg_base = VectorXd::Zero(num_topics);
+	beta_lg_base = VectorXd::Zero(num_topics);
+
+	// Store time stamps
+	for(int k=0; k<num_topics; k++){
+		vector<double> temp;
+		store_t.push_back(temp);
+	}
 
 }
 
-void LDAweight::iteration_single(int &it)
+void LDAweightTOT::iteration_single(int &it)
 { // Single iteration
+
+
+	// Clear temporary time stamp
+	for(int k=0; k<num_topics; k++){
+		store_t[k].clear();
+	}
+
+	// Apply gamma
+	for(int k=0; k<num_topics; k++){ 
+		beta_a = beta_params(k, 0);
+		beta_b = beta_params(k, 1);	
+
+		// Log version
+		beta_lg_base(k) =  mylgamma(beta_a + beta_b) - (mylgamma(beta_a) + mylgamma(beta_b));	
+
+		// Normal version
+		beta_tg_base(k) =  tgamma(beta_a + beta_b) / (tgamma(beta_a) * tgamma(beta_b));
+	}
+
 
 	x_ = -1;  // we do not use x_ in LDA weight
 	doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
@@ -71,6 +105,23 @@ void LDAweight::iteration_single(int &it)
 		doc_length = doc_each_len[doc_id_];
 		
 		token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
+	
+	
+		// Prepare beta_a and beta_b for sampling
+		timestamp_d = timestamps(doc_id_);
+	
+		for(int k=0; k<num_topics; k++){ 
+			beta_a = beta_params(k, 0);
+			beta_b = beta_params(k, 1);
+		
+			// for log version
+			beta_lg(k) = beta_lg_base(k) + (beta_a - 1.0) * log(1.0 - timestamp_d) + (beta_b - 1.0) * log(timestamp_d);
+		
+			// For normal version
+			beta_tg(k) = beta_tg_base(k) * pow(1.0 - timestamp_d, beta_a - 1.0) * pow(timestamp_d, beta_b - 1.0);
+			
+		}
+	
 		
 		// Iterate each word in the document
 		for (int jj = 0; jj < doc_length; jj++){
@@ -89,7 +140,7 @@ void LDAweight::iteration_single(int &it)
 
 
 // Sampling
-int LDAweight::sample_z(VectorXd &alpha, int &z, int &x,
+int LDAweightTOT::sample_z(VectorXd &alpha, int &z, int &x,
 												 int &w, int &doc_id)
 {
   // remove data
@@ -108,7 +159,14 @@ int LDAweight::sample_z(VectorXd &alpha, int &z, int &x,
 
 		denominator = ((double)num_vocab * beta + n_k(k)) ;
 
-		z_prob_vec(k) = numerator / denominator;
+		check_frac = numerator / denominator * beta_tg(k);
+
+		if(check_frac < numeric_limits<double>::min() | 
+				check_frac > numeric_limits<double>::max()){
+			return sample_z_log(alpha, z, x, w, doc_id);
+		}
+
+		z_prob_vec(k) = check_frac;
 	}
 
 	sum = z_prob_vec.sum(); // normalize
@@ -121,17 +179,76 @@ int LDAweight::sample_z(VectorXd &alpha, int &z, int &x,
 	n_k_noWeight(new_z) += 1.0;
   n_dk(doc_id, new_z) += 1;
 
+	// Store time stamp
+	store_t[new_z].push_back(timestamp_d);
+
   return new_z;
 }
 
 
-void LDAweight::sample_parameters()
+int LDAweightTOT::sample_z_log(VectorXd &alpha, int &z, int &x,
+																		 int &w, int &doc_id)
 {
-	sample_alpha();
+  // removing data is already done in sample_z
+
+  new_z = -1; // debug
+
+	for (int k = 0; k < num_topics; ++k){
+
+		numerator = log( (beta + n_kv(k, w)) *
+			(n_dk(doc_id, k) + alpha(k)) );
+
+		denominator = log((double)num_vocab * beta + n_k(k));
+
+		z_prob_vec(k) = numerator - denominator + beta_lg(k);
+	}
+
+	sum = logsumexp_Eigen(z_prob_vec, num_topics);
+	z_prob_vec = (z_prob_vec.array() - sum).exp();
+	new_z = sampler::rcat(z_prob_vec, num_topics);
+
+
+  // add back data counts
+	n_kv(new_z, w) += vocab_weights(w);
+	n_k(new_z) += vocab_weights(w);
+	n_k_noWeight(new_z) += 1.0;
+  n_dk(doc_id, new_z) += 1;
+
+	// Store time stamp
+	store_t[new_z].push_back(timestamp_d);
+
+  return new_z;
 }
 
 
-void LDAweight::sample_alpha()
+
+void LDAweightTOT::sample_parameters()
+{
+	sample_alpha();
+	sample_betaparam();
+}
+
+
+void LDAweightTOT::sample_betaparam(){
+	for(int k=0; k<num_topics; k++){
+		timestamps_k = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>
+													(store_t[k].data(), store_t[k].size());		
+	
+		beta_mean = timestamps_k.mean();
+		beta_var = ( (timestamps_k.array() - beta_mean) * (timestamps_k.array() - beta_mean) ).sum() /
+									(store_t[k].size() - 1.0);
+	
+	
+		beta_var = 1.0 / (beta_var);  // beta_var reciprocal
+		beta_var = ( (beta_mean * (1-beta_mean)) * beta_var - 1.0);
+		
+		beta_params(k, 0) = beta_mean * beta_var;
+		beta_params(k, 1) = (1.0 - beta_mean) * beta_var;
+	}
+}
+
+
+void LDAweightTOT::sample_alpha()
 {
 
   // start, end, previous_p, new_p, newlikelihood, slice_;
@@ -182,7 +299,7 @@ void LDAweight::sample_alpha()
 }
 
 
-double LDAweight::alpha_loglik()
+double LDAweightTOT::alpha_loglik()
 {
   loglik = 0.0;
   fixed_part = 0.0;
@@ -212,7 +329,7 @@ double LDAweight::alpha_loglik()
 }
 
 
-double LDAweight::loglik_total()
+double LDAweightTOT::loglik_total()
 {
   double loglik = 0.0;
   for (int k = 0; k < num_topics; k++){
@@ -224,13 +341,17 @@ double LDAweight::loglik_total()
 
 		// Rcout << (double)n_x0_k(k) << " / " << (double)n_x1_k(k) << std::endl; // debug
   }
-  // z
+  // z and time stamps
   for (int d = 0; d < num_doc; d++){
     loglik += lgamma( alpha.sum() ) - lgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += lgamma( n_dk(d,k) + alpha(k) ) - lgamma( alpha(k) );
+
+			// time stamps
+			loglik += n_dk(d, k) * betapdfln(timestamps(d), beta_params(k,0), beta_params(k,1));
     }
   }
   return loglik;
 }
+
 

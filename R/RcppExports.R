@@ -79,3 +79,14 @@ LDA_weight <- function(model, iter = 0L, output_per = 10L, use_weight = 1L) {
     .Call('_topicdict_LDA_weight', PACKAGE = 'topicdict', model, iter, output_per, use_weight)
 }
 
+#' Run the Collapsed Gibbs sampler for LDA topic-over-time with weights
+#'
+#' @param model A model, from \code{init} or a previous invocation of \code{train}
+#' @param iter Required number of iterations
+#' @param output_per Show log-likelihood and perplexity per this number during the iteration
+#'
+#' @export
+LDA_weight_tot <- function(model, iter = 0L, output_per = 10L, use_weight = 1L) {
+    .Call('_topicdict_LDA_weight_tot', PACKAGE = 'topicdict', model, iter, output_per, use_weight)
+}
+

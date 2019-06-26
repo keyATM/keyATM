@@ -100,6 +100,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// LDA_weight_tot
+List LDA_weight_tot(List model, int iter, int output_per, int use_weight);
+RcppExport SEXP _topicdict_LDA_weight_tot(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP, SEXP use_weightSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
+    Rcpp::traits::input_parameter< int >::type use_weight(use_weightSEXP);
+    rcpp_result_gen = Rcpp::wrap(LDA_weight_tot(model, iter, output_per, use_weight));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_topicdict_topicdict_train", (DL_FUNC) &_topicdict_topicdict_train, 3},
@@ -109,6 +123,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_topicdict_lda_cov", (DL_FUNC) &_topicdict_lda_cov, 4},
     {"_topicdict_topicdict_idealpoint", (DL_FUNC) &_topicdict_topicdict_idealpoint, 4},
     {"_topicdict_LDA_weight", (DL_FUNC) &_topicdict_LDA_weight, 4},
+    {"_topicdict_LDA_weight_tot", (DL_FUNC) &_topicdict_LDA_weight_tot, 4},
     {NULL, NULL, 0}
 };
 
