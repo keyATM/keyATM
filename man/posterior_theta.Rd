@@ -4,7 +4,7 @@
 \alias{posterior_theta}
 \title{Calculate posterior theta}
 \usage{
-posterior_theta(x)
+posterior_theta(res)
 }
 \arguments{
 \item{x}{The result object from a fitted model}

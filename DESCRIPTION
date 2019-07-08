@@ -19,6 +19,7 @@ Imports: Rcpp,
   ggplot2,
 	ggrepel,
   dplyr,
+	tidyr,
   tidytext,
   methods,
   Matrix

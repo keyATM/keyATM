@@ -24,6 +24,8 @@
 #'   }
 #' @export
 posterior <- function(model){
+	message("Creating a posterior object. It may take time...")
+
   check_arg_type(model, "topicdict")
   allK <- model$extra_k + length(model$dict)
   V <- length(model$vocab)
@@ -82,7 +84,7 @@ posterior <- function(model){
 								summarize(Count = n())
 	
 	res_tibble %>%
-		spread(key=Word, value=Count)  -> beta
+		tidyr::spread(key=Word, value=Count)  -> beta
 	beta <- apply(beta, 2, function(x){ifelse(is.na(x), 0, x)})
 	beta <- beta[, 2:ncol(beta)]
 	beta <- beta[, model$vocab]
@@ -456,7 +458,7 @@ diagnosis_p <- function(x, topicvec=c()){
 #'
 #' @return A list that contains estimated theta for each iteration
 #' @export
-posterior_theta <- function(x){
+posterior_theta <- function(res){
 	calc_theta <- function(x, cov){
 		Alpha <- exp(cov %*% t(x))
 		theta <- Alpha / rowSums(Alpha)
