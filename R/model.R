@@ -28,12 +28,14 @@
 #' @param files names of each file to read (or a quanteda corpus object)
 #' @param dict a quanteda dictionary or named list of character vectors
 #' @param text_df directly passes a text in a data.frame 
-#' @param mode "basic", "cov", or "hmm"
+#' @param dtm Document-Term matrix from \code{quanteda} package
+#' @param mode "basic", "cov", "tot", or "hmm"
 #' @param extra_k number of unseeded topics in addition to the topics seeded by
 #'                \code{dict}
 #' @param covariates_data a data.frame or a tibble that is a covariate matrix. Columns are covariates.
 #' @param covariates_formula formula for the covariates, for example, \code{~.} uses all variables
 #' @param num_state numer of state in HMM model
+#' @param timestamps time data
 #' @param encoding File encoding (Default: whatever \code{quanteda} guesses)
 #' @param lowercase whether to transform each token to lowercase letters
 #' @param remove_numbers whether to remove numbers
@@ -66,6 +68,7 @@
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
 #'         \item{Lambda_iter}{a list to store coefficients of the covariates}
 #'         \item{S_iter}{a list to store states sampled in HMM}
+#'         \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
 #'         \item{sampling_info}{information related to sampling}
 #'         \item{model_fit}{a list to store perplexity and log-likelihood}
 #'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
@@ -74,17 +77,18 @@
 #'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
 #'         \item{use_cov}{boolean, whether or not use the covariate}
 #'         \item{num_states}{number of states in HMM}
+#'				 \item{timestamps}{time stamp for topic-over-time model}
 #'         \item{call}{details of the function call}
 #'         }.
 #' @importFrom quanteda corpus is.corpus ndoc docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
 #' @importFrom hashmap hashmap
 #' @importFrom stats model.matrix
 #' @export
-topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
+topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 														mode="basic",
 														extra_k = 1,
 														covariates_data=NULL, covariates_formula=NULL,
-														num_states=NULL,
+														num_states=NULL, timestamps=NULL,
 														encoding = "UTF-8",
                             lowercase = TRUE,
                             remove_numbers = TRUE, remove_punct = TRUE,
@@ -100,6 +104,12 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
 	##
 	## Check format
 	##
+	if(mode %in% c("basic", "cov", "hmm", "tot")){
+	}else{
+		stop(paste0("Unknown model:", mode))	
+	}
+
+
 	if(!is.null(covariates_data) & !is.null(covariates_formula) & mode != "cov"){
 		message("Covariates information provided, Covariate mode is used.")	
 		mode <- "cov"
@@ -115,6 +125,14 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
 		}else{
 			stop("text_df should have a 'text' colum that has documents.")
 		}	
+	}
+
+	if(mode == "tot"){
+		if(is.null(timestamps)){
+			stop("Please provide time stamps.")	
+		}else if(min(timestamps) < 0 | max(timestamps) >= 1){
+			stop("Time stamps sholud be between 0 and 1. Please use `make_timestamps()` function to format time stamps.")	
+		}
 	}
 
 	## Check length
@@ -140,6 +158,24 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
 	}
 
 	## Text preprocessing
+
+		# If you have quanteda object
+		if(!is.null(text_dfm)){
+			message("Use quanteda dfm.")	
+			remove_numbers = F ; remove_punct = F; remove_symbols = F;
+			remove_separators = T ; remove_twitter = F; remove_hyphens = F; remove_url = F
+
+			vocabulary <- colnames(text_dfm)
+			
+			texts <- apply(text_dfm, 1,
+										 function(x){
+										 		single_text <- paste(rep(vocabulary, x), collapse=" ")
+										 		return(single_text)
+										 })
+
+			text_df <- data.frame(text = texts)
+			text_df$text <- as.character(text_df$text)
+		}
 
   args <- list(remove_numbers = remove_numbers,
                remove_punct = remove_punct,
@@ -244,9 +280,10 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL,
              alpha = alpha, gamma_1 = gamma_1, gamma_2 = gamma_2,
              beta = beta, beta_s = beta_s,
 						 alpha_iter = list(), Lambda_iter = list(), S_iter = list(),
-						 model_fit = list(), sampling_info = list(),
+						 model_fit = list(), sampling_info = list(), tot_beta = list(),
 						 C=C, use_cov=use_cov,
 						 num_states=num_states,
+						 timestamps=timestamps,
 						 call = cl)
 
   class(ll) <- c("topicdict", class(ll))

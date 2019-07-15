@@ -5,8 +5,9 @@
 \title{Initialize a topicdict model}
 \usage{
 topicdict_model(files = NULL, dict = NULL, text_df = NULL,
-  mode = "basic", extra_k = 1, covariates_data = NULL,
-  covariates_formula = NULL, num_states = NULL, encoding = "UTF-8",
+  text_dfm = NULL, mode = "basic", extra_k = 1,
+  covariates_data = NULL, covariates_formula = NULL,
+  num_states = NULL, timestamps = NULL, encoding = "UTF-8",
   lowercase = TRUE, remove_numbers = TRUE, remove_punct = TRUE,
   remove_symbols = TRUE, remove_separators = TRUE,
   remove_twitter = FALSE, remove_hyphens = FALSE, remove_url = TRUE,
@@ -20,7 +21,7 @@ topicdict_model(files = NULL, dict = NULL, text_df = NULL,
 
 \item{text_df}{directly passes a text in a data.frame}
 
-\item{mode}{"basic", "cov", or "hmm"}
+\item{mode}{"basic", "cov", "tot", or "hmm"}
 
 \item{extra_k}{number of unseeded topics in addition to the topics seeded by
 \code{dict}}
@@ -28,6 +29,8 @@ topicdict_model(files = NULL, dict = NULL, text_df = NULL,
 \item{covariates_data}{a data.frame or a tibble that is a covariate matrix. Columns are covariates.}
 
 \item{covariates_formula}{formula for the covariates, for example, \code{~.} uses all variables}
+
+\item{timestamps}{time data}
 
 \item{encoding}{File encoding (Default: whatever \code{quanteda} guesses)}
 
@@ -62,6 +65,8 @@ e.g. \code{quanteda::stopwords("english")}}
 
 \item{gamma_2}{Second Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0}
 
+\item{dtm}{Document-Term matrix from \code{quanteda} package}
+
 \item{num_state}{numer of state in HMM model}
 }
 \value{
@@ -79,6 +84,7 @@ A list containing \describe{
         \item{alpha_iter}{a list to store topic proportion hyperparameters}
         \item{Lambda_iter}{a list to store coefficients of the covariates}
         \item{S_iter}{a list to store states sampled in HMM}
+        \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
         \item{sampling_info}{information related to sampling}
         \item{model_fit}{a list to store perplexity and log-likelihood}
         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
@@ -87,6 +93,7 @@ A list containing \describe{
         \item{beta_s}{prior parameter for the seeded word generation probabilities}
         \item{use_cov}{boolean, whether or not use the covariate}
         \item{num_states}{number of states in HMM}
+			 \item{timestamps}{time stamp for topic-over-time model}
         \item{call}{details of the function call}
         }.
 }

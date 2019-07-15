@@ -9,7 +9,10 @@
 #include "sampler.h"
 #include "keyATM_basic.h"
 #include "keyATM_cov.h"
+#include "keyATM_tot.h"
 #include "keyATM_HMM.h"
+#include "LDA_weight.h"
+#include "LDA_weightTOT.h"
 
 
 // [[Rcpp::plugins(cpp11)]]
@@ -69,11 +72,31 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10){
 List topicdict_train_HMM(List model, int iter = 0, int output_per = 10){
 
 	keyATMhmm hmm_model(model, iter, output_per);
-	// keyATMcov keyATMcov_model(model, iter, output_per);
-	// // model = hmm_model.return_model();
+	model = hmm_model.return_model();
 	return model;
 
 }
+
+
+
+//' Run the Collapsed Gibbs sampler for the topic-over-time model
+//'
+//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param iter Required number of iterations
+//' @param output_per Show log-likelihood and perplexity per this number during the iteration
+//'
+//' @export
+// [[Rcpp::export]]
+List topicdict_train_tot(List model, int iter = 0, int output_per = 10){
+
+	keyATMtot tot_model(model, iter, output_per);
+	model = tot_model.return_model();
+	return model;
+
+}
+
+
+
 
 
 //' Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)
@@ -109,4 +132,41 @@ List topicdict_idealpoint(List model, List author_info, int iter=0, int output_i
 
 	return model;
 }
+
+
+//' Run the Collapsed Gibbs sampler for LDA with weights
+//'
+//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param iter Required number of iterations
+//' @param output_per Show log-likelihood and perplexity per this number during the iteration
+//'
+//' @export
+// [[Rcpp::export]]
+List LDA_weight(List model, int iter = 0, int output_per = 10, int use_weight = 1){
+
+	LDAweight LDAweight_model(model, iter, output_per, use_weight);
+	model = LDAweight_model.return_model();
+	return model;
+
+}
+
+
+//' Run the Collapsed Gibbs sampler for LDA topic-over-time with weights
+//'
+//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param iter Required number of iterations
+//' @param output_per Show log-likelihood and perplexity per this number during the iteration
+//'
+//' @export
+// [[Rcpp::export]]
+List LDA_weight_tot(List model, int iter = 0, int output_per = 10, int use_weight = 1){
+
+	LDAweightTOT LDAweightTOT_model(model, iter, output_per, use_weight);
+	model = LDAweightTOT_model.return_model();
+	return model;
+
+}
+
+
+
 

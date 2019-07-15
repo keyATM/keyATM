@@ -5,6 +5,10 @@ using namespace Rcpp;
 using namespace std;
 
 namespace sampler{
+	double u;
+	double temp;
+	int index;
+
 	double slice_uniform(double& lower, double& upper){
 		return lower + (upper - lower) * R::unif_rand();
 	}
@@ -17,11 +21,11 @@ namespace sampler{
 		return v;
 	}
 
-	int rcat(Eigen::VectorXd &prob){ // was called 'multi1'
-		double u = R::runif(0, 1);
-		double temp = 0.0;
-		int index = 0;
-		for (int ii = 0; ii < prob.size(); ii++){
+	int rcat(Eigen::VectorXd &prob, int &size){ // was called 'multi1'
+		u = R::runif(0, 1);
+		temp = 0.0;
+		index = 0;
+		for (int ii = 0; ii < size; ii++){
 			temp += prob(ii);
 			if (u < temp){
 				index = ii;
@@ -31,11 +35,11 @@ namespace sampler{
 		return index;
 	}
 
-	int rcat_without_normalize(Eigen::VectorXd &prob, double &total){ // was called 'multi1'
-		double u = R::runif(0, 1) * total;
-		double temp = 0.0;
-		int index = 0;
-		for (int ii = 0; ii < prob.size(); ii++){
+	int rcat_without_normalize(Eigen::VectorXd &prob, double &total, int &size){ // was called 'multi1'
+		u = R::runif(0, 1) * total;
+		temp = 0.0;
+		index = 0;
+		for (int ii = 0; ii < size; ii++){
 			temp += prob(ii);
 			if (u < temp){
 				index = ii;

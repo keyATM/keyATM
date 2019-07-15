@@ -24,6 +24,8 @@
 #'   }
 #' @export
 posterior <- function(model){
+	message("Creating a posterior object. It may take time...")
+
   check_arg_type(model, "topicdict")
   allK <- model$extra_k + length(model$dict)
   V <- length(model$vocab)
@@ -50,23 +52,48 @@ posterior <- function(model){
   #                                             factor(w, levels = 1:V - 1)) },
   #                       model$Z, model$W, SIMPLIFY = FALSE))
 
-  num_docs <- length(model$Z)
-  tmp <- list()
-  ## with sparse matrix
-  ## the attirubites given to data frame starts with 1
-  for (i in 1:num_docs){
-    tmp[[i]] <- Matrix::Matrix(table(factor(model$Z[[i]], levels = 1:allK - 1),
-                                     factor(model$W[[i]], levels = 1:V - 1)),
-                               sparse = TRUE)
-  }
-  tZW <- Reduce(`+`, tmp)
+  # num_docs <- length(model$Z)
+  # tmp <- list()
+  # ## with sparse matrix
+  # ## the attirubites given to data frame starts with 1
+  # for (i in 1:num_docs){
+  #   tmp[[i]] <- Matrix::Matrix(table(factor(model$Z[[i]], levels = 1:allK - 1),
+  #                                    factor(model$W[[i]], levels = 1:V - 1)),
+  #                              sparse = TRUE)
+  # }
+  # tZW <- Reduce(`+`, tmp)
+		#
+  # word_counts <- Matrix::colSums(tZW)
+		#
+  # colnames(tZW) <- model$vocab
+  # topic_counts <- Matrix::rowSums(tZW)
+  # tZW <- tZW / topic_counts
+  # rownames(tZW) <- tnames
 
-  word_counts <- Matrix::colSums(tZW)
+	#####
+	##### Can we replace by this????? -> Yes!
+	#####
+	all_words <- res$vocab[as.integer(unlist(res$W)) + 1]
+	all_topics <- as.integer(unlist(res$Z))
+	
+	res_tibble <- tibble(
+												Word = all_words,
+												Topic = all_topics
+											 ) %>%
+								group_by(Topic, Word) %>%
+								summarize(Count = n())
+	
+	res_tibble %>%
+		tidyr::spread(key=Word, value=Count)  -> beta
+	beta <- apply(beta, 2, function(x){ifelse(is.na(x), 0, x)})
+	beta <- beta[, 2:ncol(beta)]
+	beta <- beta[, model$vocab]
 
-  colnames(tZW) <- model$vocab
-  topic_counts <- Matrix::rowSums(tZW)
-  tZW <- tZW / topic_counts
-  rownames(tZW) <- tnames
+	topic_counts <- Matrix::rowSums(beta)
+	word_counts <- Matrix::colSums(beta)
+
+	tZW <- beta / topic_counts
+	rownames(tZW) <- tnames
 
 	# alpha
 	res_alpha <- data.frame(model$alpha_iter)
@@ -107,7 +134,7 @@ posterior <- function(model){
 
   ll <- list(seed_K = length(model$dict), extra_K = model$extra_k,
              V = V, N = N,
-             theta = theta, beta = as.matrix(as.data.frame.matrix(tZW)),
+             theta = theta, beta = tZW, # as.matrix(as.data.frame.matrix(tZW)),
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = doc_lens, vocab = model$vocab,
              dict = dict,
@@ -431,7 +458,7 @@ diagnosis_p <- function(x, topicvec=c()){
 #'
 #' @return A list that contains estimated theta for each iteration
 #' @export
-posterior_theta <- function(x){
+posterior_theta <- function(res){
 	calc_theta <- function(x, cov){
 		Alpha <- exp(cov %*% t(x))
 		theta <- Alpha / rowSums(Alpha)

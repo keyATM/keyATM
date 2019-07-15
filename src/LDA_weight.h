@@ -1,5 +1,5 @@
-#ifndef __keyATM_basic__INCLUDED__
-#define __keyATM_basic__INCLUDED__
+#ifndef __LDA_weight__INCLUDED__
+#define __LDA_weight__INCLUDED__
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -11,7 +11,7 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-class keyATMbasic : public keyATMbase
+class LDAweight : public keyATMbase
 {
 	public:	
 		//
@@ -34,13 +34,19 @@ class keyATMbasic : public keyATMbase
 
 			// in alpha_loglik
 			MatrixXd ndk_a;
+
+		// Latent variables for LDA weight
+		MatrixXd n_kv;
+			// n_dk is already defined in parent class
+		VectorXd n_k;
+		VectorXd n_k_noWeight;
 		
 		//
 		// Functions
 		//
 
 		// Constructor
-		keyATMbasic(List model_, const int iter_, const int output_per_);
+		LDAweight(List model_, const int iter_, const int output_per_, const int use_weight_);
 
 		// Read data
 		void read_data_specific();
@@ -52,10 +58,10 @@ class keyATMbasic : public keyATMbase
 		void iteration_single(int &it);
 		void sample_parameters();
 		void sample_alpha();
+		int sample_z(VectorXd &alpha, int &z, int &x,
+								 int &w, int &doc_id);
 		double alpha_loglik();
 		double loglik_total();
 };
 
-
 #endif
-
