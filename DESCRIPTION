@@ -3,7 +3,7 @@ Title: Topic Modeling Informed by a Content Analysis Dictionary
 Version: 0.1.0
 Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", role = c("aut","cre")),
 		person("Will", "Lowe", email = "wlowe@princeton.edu", role = c("aut")),
-		person("Tomoya", "Sasaki", email = "tomo1990sasaki@gmail.com", role = c("aut")),
+		person("Tomoya", "Sasaki", email = "tomoyas@mit.edu”, role = c("aut")),
 		person("Kosuke", "Imai", email = "imai@harvard.edu", role = c("aut")))
 Description: Fits a topic model using seeds from a content analysis dictionary.
 Maintainer: Shusei Eshima <shuseieshima@g.harvard.edu>

@@ -1,4 +1,4 @@
-# topicdict
+# keyATM
 
 The topic dictionary code, broken out into a separate repository.
 
@@ -21,4 +21,4 @@ Will Lowe with C++ code from Tomo and Shusei. Jan 2018.
 * Wang, Xuerui and Andrew McCallum. 2006. ``Topics over Time: A Non-Markov Continuous-Time Model of Topical Trends.'' Proceedings of the 12th ACM SIGKDD international conference on Knowledge discovery and data mining. [here](https://people.cs.umass.edu/~mccallum/papers/tot-kdd06s.pdf)
 
 ## Weighting
-* To use non-weighting model, modify `int use_weight = 1` to `int use_weight = 0` [here](https://github.com/Shusei-E/keyATM/blob/TOT/src/keyATM.h#L26). The model is in `weighting_lda` branch.
+* To use non-weighting model, modify `int use_weight = 1` to `int use_weight = 0` [here](https://github.com/Shusei-E/keyATM/blob/weighting_lda/src/keyATM.h#L26). The model is in `weighting_lda` branch.
