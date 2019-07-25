@@ -125,8 +125,7 @@ class keyATMbase
 		virtual double loglik_total() = 0;
 
 		// Utilities
-		double vmin;
-		double vmax;
+		double vmax, vmin;
 
 
 		double gammapdfln(const double x, const double a, const double b);
@@ -145,25 +144,30 @@ class keyATMbase
 			return (1.0 / (1.0 + exp(-A*x)));
 		};
 		
-		double logsumexp(double &x, double &y, bool flg){
-			if (flg) return y; // init mode
-			if (x == y) return x + 0.69314718055; // log(2)
-			vmin = std::min(x, y);
-			vmax = std::max(x, y);
-			if (vmax > vmin + 50){
-				return vmax;
-			} else {
-				return vmax + log(exp(vmin - vmax) + 1.0);
-			}
+
+		double logsumexp (double x, double y, bool flg)
+		{
+		  if (flg) return y; // init mode
+		  if (x == y) return x + 0.69314718055; // log(2)
+		  double vmin = std::min (x, y);
+		  double vmax = std::max (x, y);
+		  if (vmax > vmin + 50) {
+		    return vmax;
+		  } else {
+		    return vmax + std::log (std::exp (vmin - vmax) + 1.0);
+		  }
 		};
 
 		double logsumexp_Eigen(VectorXd &vec, const int size){
+			vmax = vec.maxCoeff();
 			sum = 0.0;
-			for(int i = 0; i < size; i++){
-				sum = logsumexp(sum, vec[i], (i == 0));
+
+			for(int i=0; i<size; i++){
+				sum += exp(vec(i) - vmax);
 			}
-			return sum;
-		};
+			
+			return vmax + log(sum);
+		}
 
 		double mylgamma(const double &x){
 			// gammaln_val = 0.0;
