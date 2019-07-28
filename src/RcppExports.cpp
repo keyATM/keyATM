@@ -87,30 +87,28 @@ BEGIN_RCPP
 END_RCPP
 }
 // LDA_weight
-List LDA_weight(List model, int iter, int output_per, int use_weight);
-RcppExport SEXP _topicdict_LDA_weight(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP, SEXP use_weightSEXP) {
+List LDA_weight(List model, int iter, int output_per);
+RcppExport SEXP _topicdict_LDA_weight(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    Rcpp::traits::input_parameter< int >::type use_weight(use_weightSEXP);
-    rcpp_result_gen = Rcpp::wrap(LDA_weight(model, iter, output_per, use_weight));
+    rcpp_result_gen = Rcpp::wrap(LDA_weight(model, iter, output_per));
     return rcpp_result_gen;
 END_RCPP
 }
 // LDA_weight_tot
-List LDA_weight_tot(List model, int iter, int output_per, int use_weight);
-RcppExport SEXP _topicdict_LDA_weight_tot(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP, SEXP use_weightSEXP) {
+List LDA_weight_tot(List model, int iter, int output_per);
+RcppExport SEXP _topicdict_LDA_weight_tot(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    Rcpp::traits::input_parameter< int >::type use_weight(use_weightSEXP);
-    rcpp_result_gen = Rcpp::wrap(LDA_weight_tot(model, iter, output_per, use_weight));
+    rcpp_result_gen = Rcpp::wrap(LDA_weight_tot(model, iter, output_per));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -122,8 +120,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_topicdict_topicdict_train_tot", (DL_FUNC) &_topicdict_topicdict_train_tot, 3},
     {"_topicdict_lda_cov", (DL_FUNC) &_topicdict_lda_cov, 4},
     {"_topicdict_topicdict_idealpoint", (DL_FUNC) &_topicdict_topicdict_idealpoint, 4},
-    {"_topicdict_LDA_weight", (DL_FUNC) &_topicdict_LDA_weight, 4},
-    {"_topicdict_LDA_weight_tot", (DL_FUNC) &_topicdict_LDA_weight_tot, 4},
+    {"_topicdict_LDA_weight", (DL_FUNC) &_topicdict_LDA_weight, 3},
+    {"_topicdict_LDA_weight_tot", (DL_FUNC) &_topicdict_LDA_weight_tot, 3},
     {NULL, NULL, 0}
 };
 

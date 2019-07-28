@@ -14,6 +14,9 @@ using namespace std;
 class LDAweightTOT : public keyATMbase
 {
 	public:	
+		// Settings	
+		int logsumexp_approx;
+
 		//
 		// Parameters
 		//
@@ -27,9 +30,9 @@ class LDAweightTOT : public keyATMbase
 		VectorXd beta_lg_base;  // apply lgamma 
 
 		// Slice Sampling
-		double min_v = 1e-9;
-		double max_v = 100.0;
-		int max_shrink_time = 1000;
+		// double min_v = 1e-9;
+		// double max_v = 100.0;
+		// int max_shrink_time = 1000;
 
 		double start, end, previous_p, new_p, newlikelihood, slice_;
 		std::vector<int> topic_ids;
@@ -73,7 +76,7 @@ class LDAweightTOT : public keyATMbase
 		//
 
 		// Constructor
-		LDAweightTOT(List model_, const int iter_, const int output_per_, const int use_weight_);
+		LDAweightTOT(List model_, const int iter_, const int output_per_);
 
 		// Read data
 		void read_data_specific();

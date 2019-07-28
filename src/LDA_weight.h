@@ -46,7 +46,7 @@ class LDAweight : public keyATMbase
 		//
 
 		// Constructor
-		LDAweight(List model_, const int iter_, const int output_per_, const int use_weight_);
+		LDAweight(List model_, const int iter_, const int output_per_);
 
 		// Read data
 		void read_data_specific();

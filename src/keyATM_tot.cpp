@@ -23,6 +23,10 @@ void keyATMtot::read_data_specific()
 
 	// Read time stamp
 	timestamps = Rcpp::as<Eigen::VectorXd>(model["timestamps"]);
+
+	// Options
+	List options = model["options"];
+	logsumexp_approx = options["logsumexp_approx"];
 }
 
 
@@ -60,7 +64,8 @@ void keyATMtot::iteration_single(int &it)
 		beta_b = beta_params(k, 1);	
 
 		// Log version
-		beta_lg_base(k) =  mylgamma(beta_a + beta_b) - (mylgamma(beta_a) + mylgamma(beta_b));	
+		if(!logsumexp_approx)
+			beta_lg_base(k) =  mylgamma(beta_a + beta_b) - (mylgamma(beta_a) + mylgamma(beta_b));	
 
 		// Normal version
 		beta_tg_base(k) =  tgamma(beta_a + beta_b) / (tgamma(beta_a) * tgamma(beta_b));
@@ -85,14 +90,20 @@ void keyATMtot::iteration_single(int &it)
 			beta_b = beta_params(k, 1);
 		
 			// for log version
-			beta_lg(k) = beta_lg_base(k) + (beta_a - 1.0) * log(1.0 - timestamp_d) + (beta_b - 1.0) * log(timestamp_d);
+			if(!logsumexp_approx)
+				beta_lg(k) = beta_lg_base(k) + (beta_a - 1.0) * log(1.0 - timestamp_d) +
+										 (beta_b - 1.0) * log(timestamp_d);
 		
 			// For normal version
 			check_frac = beta_tg_base(k) * pow(1.0 - timestamp_d, beta_a - 1.0) * pow(timestamp_d, beta_b - 1.0);
 
-			if(check_frac < numeric_limits<double>::min() | 
+			if(check_frac < numeric_limits<double>::min() || 
 					check_frac > numeric_limits<double>::max()){
-				use_log = 1;
+				if(logsumexp_approx){
+					beta_tg(k) = 2.22507e-200;	
+				}else{
+					use_log = 1;
+				}
 			}else{
 				beta_tg(k) = check_frac;
 			}
@@ -227,9 +238,14 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
 
 			check_frac = numerator / denominator * beta_tg(k);
 
-			if(check_frac < numeric_limits<double>::min() | 
+			if(check_frac < numeric_limits<double>::min() || 
 					check_frac > numeric_limits<double>::max()){
-				return sample_z_log(alpha, z, x, w, doc_id);
+					cout << check_frac << " ";  // debug
+				if(logsumexp_approx){
+					check_frac = 2.22507e-200;	
+				}else{
+					return sample_z_log(alpha, z, x, w, doc_id);
+				}
 			}
 
 			z_prob_vec(k) = check_frac;

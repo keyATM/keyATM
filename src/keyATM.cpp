@@ -40,6 +40,11 @@ void keyATMbase::read_data_common()
 
   num_topics = k_seeded + k_free;
   // alpha -> specific function	
+	
+	// Options
+	List options = model["options"];
+	use_weight = options["use_weights"];
+	slice_A = options["slice_shape"];
 
 }
 
