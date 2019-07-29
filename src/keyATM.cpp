@@ -332,6 +332,7 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
 
 // Utilities
 double keyATMbase::gammapdfln(const double x, const double a, const double b){
+	// a: shape, b: rate
   return a * log(b) - lgamma(a) + (a - 1.0) * log(x) - b * x;
 }
 
