@@ -131,9 +131,9 @@ class keyATMbase
 		double vmax, vmin;
 
 
-		double gammapdfln(const double x, const double a, const double b);
-		double betapdf(const double x, const double a, const double b);
-		double betapdfln(const double x, const double a, const double b);
+		double gammapdfln(const double &x, const double &a, const double &b);
+		double betapdf(const double &x, const double &a, const double &b);
+		double betapdfln(const double &x, const double &a, const double &b);
 		NumericVector alpha_reformat(VectorXd& alpha, int& num_topics);
 
 		double gammaln_frac(const double &value, const int &count);

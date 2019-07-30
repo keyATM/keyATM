@@ -331,17 +331,17 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
 
 
 // Utilities
-double keyATMbase::gammapdfln(const double x, const double a, const double b){
-	// a: shape, b: rate
-  return a * log(b) - lgamma(a) + (a - 1.0) * log(x) - b * x;
+double keyATMbase::gammapdfln(const double &x, const double &a, const double &b){
+  // a: shape, b: scale
+  return - a * log(b) - lgamma(a) + (a-1.0) * log(x) - x/b;
 }
 
 
-double keyATMbase::betapdf(const double x, const double a, const double b){
+double keyATMbase::betapdf(const double &x, const double &a, const double &b){
 	return tgamma(a+b) / (tgamma(a) * tgamma(b)) * pow(x, a-1) * pow(1-x, b-1);
 }
 
-double keyATMbase::betapdfln(const double x, const double a, const double b){
+double keyATMbase::betapdfln(const double &x, const double &a, const double &b){
 	return (a-1)*log(x) + (b-1)*log(1.0-x) + mylgamma(a+b) - mylgamma(a) - mylgamma(b);
 }
 
