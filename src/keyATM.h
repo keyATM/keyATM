@@ -87,7 +87,7 @@ class keyATMbase
 			double alpha_sum_val;
 			double min_v = 1e-9;
 			double max_v = 100.0;
-			int max_shrink_time = 1000;
+			int max_shrink_time = 200;
 
 			// gammaln_sum
 			double gammaln_val;

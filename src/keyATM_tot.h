@@ -16,6 +16,7 @@ class keyATMtot : public keyATMbase
 	public:
 		// Settings	
 		int logsumexp_approx;
+		int use_mom;
 
 		// Parameters
 		VectorXd timestamps;  // time stamps (document share the same time)
@@ -66,6 +67,7 @@ class keyATMtot : public keyATMbase
 				double beta_mean;
 				double beta_var;
 				double current_param;
+				double temp_beta_loglik;
 				double ts_g1 = 1.5;  // parameters for gamma
 				double ts_g2 = 2.0;  // parameters for gamma
 	

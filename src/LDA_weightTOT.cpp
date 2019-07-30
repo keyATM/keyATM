@@ -25,6 +25,7 @@ void LDAweightTOT::read_data_specific()
 	// Options
 	List options = model["options"];
 	logsumexp_approx = options["logsumexp_approx"];
+	use_mom = options["use_mom"];
 }
 
 
@@ -255,62 +256,80 @@ void LDAweightTOT::sample_parameters()
 
 
 void LDAweightTOT::sample_betaparam(){
-	// for(int k=0; k<num_topics; k++){
-	// 	if(store_t[k].size() == 0)
-	// 		continue;
-	//
-	// 	timestamps_k = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>
-	// 												(store_t[k].data(), store_t[k].size());		
-	//
-	// 	beta_mean = timestamps_k.mean();
-	// 	beta_var = ( (timestamps_k.array() - beta_mean) * (timestamps_k.array() - beta_mean) ).sum() /
-	// 								(store_t[k].size() - 1.0);
-	//
-	//
-	// 	beta_var = 1.0 / (beta_var);  // beta_var reciprocal
-	// 	beta_var = ( (beta_mean * (1-beta_mean)) * beta_var - 1.0);
-	//	
-	// 	beta_params(k, 0) = beta_mean * beta_var;
-	// 	beta_params(k, 1) = (1.0 - beta_mean) * beta_var;
-	// }
 
-	topic_ids = sampler::shuffled_indexes(num_topics);
-
-	for(int j=0; j<num_topics; j++){
-		for(int i=0; i<2; i++){
-			k = topic_ids[j];
-			current_param = beta_params(k, i);
-
-			start = min_v / (1.0 + min_v);
-			end = 1.0;
-
-			previous_p = current_param / (1.0 + current_param);
-			slice_ = beta_loglik(k, i) - 2.0 * log(1.0 - previous_p) 
-								+ log(unif_rand()); 
-
-
-			for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
-				new_p = sampler::slice_uniform(start, end); // <-- using R function above
-				beta_params(k, i) = new_p / (1.0 - new_p); // expandp
-
-				newlikelihood = beta_loglik(k, i) - 2.0 * log(1.0 - new_p);
-
-				if (slice_ < newlikelihood){
-					store_loglik = newalphallk;
-					break;
-				} else if (previous_p < new_p){
-					end = new_p;
-				} else if (new_p < previous_p){
-					start = new_p;
-				} else {
-					Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
-					beta_params(k, i) = current_param;
-					break;
-				}
-			}
+	if(use_mom){
+		for(int k=0; k<num_topics; k++){
+			if(store_t[k].size() == 0)
+				continue;
 		
-		}  // for i	
-	}  // for j
+			timestamps_k = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>
+														(store_t[k].data(), store_t[k].size());		
+		
+			beta_mean = timestamps_k.mean();
+			beta_var = ( (timestamps_k.array() - beta_mean) * (timestamps_k.array() - beta_mean) ).sum() /
+										(store_t[k].size());
+
+			if(beta_var == 0.0)
+				continue;
+
+			// cout << k << " / " << beta_mean << ", " << beta_var << " " << store_t[k].size() << endl;
+		
+			beta_var = 1.0 / (beta_var);  // beta_var reciprocal
+			beta_var = ( (beta_mean * (1-beta_mean)) * beta_var - 1.0);
+	
+			beta_params(k, 0) = beta_mean * beta_var;
+			beta_params(k, 1) = (1.0 - beta_mean) * beta_var;
+		}
+
+	}else{
+
+		topic_ids = sampler::shuffled_indexes(num_topics);
+
+		for(int j=0; j<num_topics; j++){
+			for(int i=0; i<2; i++){
+				k = topic_ids[j];
+				current_param = beta_params(k, i);
+
+				// start = min_v / (1.0 + min_v);
+				// end = 1.0;
+
+				start = min_v / (1.0 + min_v);
+				end = 15.0 / (1.0 + 15.0);
+
+				previous_p = current_param / (1.0 + current_param);
+				temp_beta_loglik = beta_loglik(k, i);
+
+				if(temp_beta_loglik == -1.0)
+					continue;
+
+				slice_ =  temp_beta_loglik - 2.0 * log(1.0 - previous_p) 
+									+ log(unif_rand()); 
+
+
+				for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
+					new_p = sampler::slice_uniform(start, end); // <-- using R function above
+					beta_params(k, i) = new_p / (1.0 - new_p); // expandp
+
+					newlikelihood = beta_loglik(k, i) - 2.0 * log(1.0 - new_p);
+
+					if (slice_ < newlikelihood){
+						store_loglik = newalphallk;
+						break;
+					} else if (previous_p < new_p){
+						end = new_p;
+					} else if (new_p < previous_p){
+						start = new_p;
+					} else {
+						Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
+						beta_params(k, i) = current_param;
+						break;
+					}
+				}
+			
+			}  // for i	
+		}  // for j
+
+	}
 }
 
 
@@ -320,6 +339,9 @@ double LDAweightTOT::beta_loglik(const int &k, const int &i){
   for (int d = 0; d < num_doc; d++){
 		loglik += n_dk(d, k) * betapdfln(timestamps(d), beta_params(k,0), beta_params(k,1));
   }
+
+	if(loglik == 0)
+		return -1.0;
 
 	// Prior
 	loglik += gammapdfln(beta_params(k, i), ts_g1, ts_g2);
@@ -420,8 +442,9 @@ double LDAweightTOT::loglik_total()
     // word normalization
     loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_k_noWeight(k) );
 
-		// Rcout << (double)n_x0_k(k) << " / " << (double)n_x1_k(k) << std::endl; // debug
   }
+
+
   // z and time stamps
 	fixed_part = alpha.sum();
   for (int d = 0; d < num_doc; d++){
@@ -433,6 +456,7 @@ double LDAweightTOT::loglik_total()
 			loglik += n_dk(d, k) * betapdfln(timestamps(d), beta_params(k,0), beta_params(k,1));
     }
   }
+
 
 	// Prior
 	for(int k=0; k<num_topics; k++){

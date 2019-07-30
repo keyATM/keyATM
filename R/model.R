@@ -173,6 +173,10 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 		# parameter for slice sampling
 		options$slice_shape = 1.2
 	}
+	if(is.null(options$use_mom)){
+		# Method of Moments in TOT
+		options$use_mom = 0
+	}
 
 
 	## Text preprocessing
