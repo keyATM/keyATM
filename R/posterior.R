@@ -73,8 +73,8 @@ posterior <- function(model){
 	#####
 	##### Can we replace by this????? -> Yes!
 	#####
-	all_words <- res$vocab[as.integer(unlist(res$W)) + 1]
-	all_topics <- as.integer(unlist(res$Z))
+	all_words <- model$vocab[as.integer(unlist(model$W)) + 1]
+	all_topics <- as.integer(unlist(model$Z))
 	
 	res_tibble <- tibble(
 												Word = all_words,

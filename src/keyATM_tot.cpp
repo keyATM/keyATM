@@ -23,6 +23,11 @@ void keyATMtot::read_data_specific()
 
 	// Read time stamp
 	timestamps = Rcpp::as<Eigen::VectorXd>(model["timestamps"]);
+
+	// Options
+	List options = model["options"];
+	logsumexp_approx = options["logsumexp_approx"];
+	use_mom = options["use_mom"];
 }
 
 
@@ -60,7 +65,8 @@ void keyATMtot::iteration_single(int &it)
 		beta_b = beta_params(k, 1);	
 
 		// Log version
-		beta_lg_base(k) =  mylgamma(beta_a + beta_b) - (mylgamma(beta_a) + mylgamma(beta_b));	
+		if(!logsumexp_approx)
+			beta_lg_base(k) =  mylgamma(beta_a + beta_b) - (mylgamma(beta_a) + mylgamma(beta_b));	
 
 		// Normal version
 		beta_tg_base(k) =  tgamma(beta_a + beta_b) / (tgamma(beta_a) * tgamma(beta_b));
@@ -85,14 +91,20 @@ void keyATMtot::iteration_single(int &it)
 			beta_b = beta_params(k, 1);
 		
 			// for log version
-			beta_lg(k) = beta_lg_base(k) + (beta_a - 1.0) * log(1.0 - timestamp_d) + (beta_b - 1.0) * log(timestamp_d);
+			if(!logsumexp_approx)
+				beta_lg(k) = beta_lg_base(k) + (beta_a - 1.0) * log(1.0 - timestamp_d) +
+										 (beta_b - 1.0) * log(timestamp_d);
 		
 			// For normal version
 			check_frac = beta_tg_base(k) * pow(1.0 - timestamp_d, beta_a - 1.0) * pow(timestamp_d, beta_b - 1.0);
 
-			if(check_frac < numeric_limits<double>::min() | 
+			if(check_frac < numeric_limits<double>::min() || 
 					check_frac > numeric_limits<double>::max()){
-				use_log = 1;
+				if(logsumexp_approx){
+					beta_tg(k) = 2.22507e-200;	
+				}else{
+					use_log = 1;
+				}
 			}else{
 				beta_tg(k) = check_frac;
 			}
@@ -227,9 +239,14 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
 
 			check_frac = numerator / denominator * beta_tg(k);
 
-			if(check_frac < numeric_limits<double>::min() | 
+			if(check_frac < numeric_limits<double>::min() || 
 					check_frac > numeric_limits<double>::max()){
-				return sample_z_log(alpha, z, x, w, doc_id);
+					cout << check_frac << " ";  // debug
+				if(logsumexp_approx){
+					check_frac = 2.22507e-200;	
+				}else{
+					return sample_z_log(alpha, z, x, w, doc_id);
+				}
 			}
 
 			z_prob_vec(k) = check_frac;
@@ -300,62 +317,79 @@ void keyATMtot::sample_parameters()
 
 
 void keyATMtot::sample_betaparam(){
-	// for(int k=0; k<num_topics; k++){
-	// 	if(store_t[k].size() == 0)
-	// 		continue;
-	//
-	// 	timestamps_k = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>
-	// 												(store_t[k].data(), store_t[k].size());		
-	//
-	// 	beta_mean = timestamps_k.mean();
-	// 	beta_var = ( (timestamps_k.array() - beta_mean) * (timestamps_k.array() - beta_mean) ).sum() /
-	// 								(store_t[k].size() - 1.0);
-	//
-	//
-	// 	beta_var = 1.0 / (beta_var);  // beta_var reciprocal
-	// 	beta_var = ( (beta_mean * (1-beta_mean)) * beta_var - 1.0);
-	//	
-	// 	beta_params(k, 0) = beta_mean * beta_var;
-	// 	beta_params(k, 1) = (1.0 - beta_mean) * beta_var;
-	// }
 
-	topic_ids = sampler::shuffled_indexes(num_topics);
-
-	for(int j=0; j<num_topics; j++){
-		for(int i=0; i<2; i++){
-			k = topic_ids[j];
-			current_param = beta_params(k, i);
-
-			start = min_v / (1.0 + min_v);
-			end = 1.0;
-
-			previous_p = current_param / (1.0 + current_param);
-			slice_ = beta_loglik(k, i) - 2.0 * log(1.0 - previous_p) 
-								+ log(unif_rand()); 
-
-
-			for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
-				new_p = sampler::slice_uniform(start, end); // <-- using R function above
-				beta_params(k, i) = new_p / (1.0 - new_p); // expandp
-
-				newlikelihood = beta_loglik(k, i) - 2.0 * log(1.0 - new_p);
-
-				if (slice_ < newlikelihood){
-					store_loglik = newalphallk;
-					break;
-				} else if (previous_p < new_p){
-					end = new_p;
-				} else if (new_p < previous_p){
-					start = new_p;
-				} else {
-					Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
-					beta_params(k, i) = current_param;
-					break;
-				}
-			}
+	if(use_mom){
+		for(int k=0; k<num_topics; k++){
+			if(store_t[k].size() == 0)
+				continue;
 		
-		}  // for i	
-	}  // for j
+			timestamps_k = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>
+														(store_t[k].data(), store_t[k].size());		
+		
+			beta_mean = timestamps_k.mean();
+			beta_var = ( (timestamps_k.array() - beta_mean) * (timestamps_k.array() - beta_mean) ).sum() /
+										(store_t[k].size() - 1.0);
+
+			if(beta_var == 0.0)
+				continue;
+		
+			beta_var = 1.0 / (beta_var);  // beta_var reciprocal
+			beta_var = ( (beta_mean * (1-beta_mean)) * beta_var - 1.0);
+			
+			beta_params(k, 0) = beta_mean * beta_var;
+			beta_params(k, 1) = (1.0 - beta_mean) * beta_var;
+		}
+
+	}else{
+
+		topic_ids = sampler::shuffled_indexes(num_topics);
+
+		for(int j=0; j<num_topics; j++){
+			for(int i=0; i<2; i++){
+				k = topic_ids[j];
+				current_param = beta_params(k, i);
+
+				// start = min_v / (1.0 + min_v);
+				// end = 1.0;
+
+				start = min_v / (1.0 + min_v);
+				end = 15.0 / (1.0 + 15.0);
+
+				previous_p = current_param / (1.0 + current_param);
+
+				temp_beta_loglik = beta_loglik(k, i);
+
+				if(temp_beta_loglik == -1.0)
+					continue;
+
+				slice_ = temp_beta_loglik - 2.0 * log(1.0 - previous_p) 
+									+ log(unif_rand()); 
+
+
+				for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
+					new_p = sampler::slice_uniform(start, end); // <-- using R function above
+					beta_params(k, i) = new_p / (1.0 - new_p); // expandp
+
+					newlikelihood = beta_loglik(k, i) - 2.0 * log(1.0 - new_p);
+
+					if (slice_ < newlikelihood){
+						store_loglik = newalphallk;
+						break;
+					} else if (previous_p < new_p){
+						end = new_p;
+					} else if (new_p < previous_p){
+						start = new_p;
+					} else {
+						Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
+						beta_params(k, i) = current_param;
+						break;
+					}
+				}
+			
+			}  // for i	
+		}  // for j
+
+	}
 }
 
 
@@ -365,6 +399,9 @@ double keyATMtot::beta_loglik(const int &k, const int &i){
   for (int d = 0; d < num_doc; d++){
 		loglik += n_dk(d, k) * betapdfln(timestamps(d), beta_params(k,0), beta_params(k,1));
   }
+
+	if(loglik == 0)
+		return -1.0;
 
 	// Prior
 	loglik += gammapdfln(beta_params(k, i), ts_g1, ts_g2);

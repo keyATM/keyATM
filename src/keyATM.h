@@ -22,9 +22,9 @@ class keyATMbase
 		double eta_2 = 1;
 		double eta_1_regular = 2;
 		double eta_2_regular = 1;
-		int use_weight = 1;
+		int use_weight;
 
-		double slice_A = 1.2; // parameter for slice sampling 
+		double slice_A; // parameter for slice sampling 
 
 		// Data
 		List model;
@@ -44,7 +44,7 @@ class keyATMbase
 		int num_topics;
 		VectorXd alpha;
 
-		// Keywords
+		// Keywordq
 		std::vector< std::unordered_set<int> > keywords;
 		std::vector<int> seed_num;
 
@@ -85,6 +85,9 @@ class keyATMbase
 
 			// sample alpha
 			double alpha_sum_val;
+			double min_v = 1e-9;
+			double max_v = 100.0;
+			int max_shrink_time = 200;
 
 			// gammaln_sum
 			double gammaln_val;
@@ -128,9 +131,9 @@ class keyATMbase
 		double vmax, vmin;
 
 
-		double gammapdfln(const double x, const double a, const double b);
-		double betapdf(const double x, const double a, const double b);
-		double betapdfln(const double x, const double a, const double b);
+		double gammapdfln(const double &x, const double &a, const double &b);
+		double betapdf(const double &x, const double &a, const double &b);
+		double betapdfln(const double &x, const double &a, const double &b);
 		NumericVector alpha_reformat(VectorXd& alpha, int& num_topics);
 
 		double gammaln_frac(const double &value, const int &count);

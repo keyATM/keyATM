@@ -98,7 +98,10 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
                             stopwords = NULL,
                             alpha = 50/(length(dict) + extra_k),
                             beta = 0.01, beta_s = 0.1,
-                            gamma_1 = 1.0, gamma_2 = 1.0){
+                            gamma_1 = 1.0, gamma_2 = 1.0,
+														options = list()
+													 )
+{
   cl <- match.call()
 
 	##
@@ -156,6 +159,25 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 		} else if (length(alpha) != proper_len)
 			stop("Starting alpha must be a scalar or a vector of length ", proper_len)
 	}
+
+
+	## Format options
+	if(is.null(options$use_weights)){
+		options$use_weights = 1	
+	}
+	if(is.null(options$logsumexp_approx)){
+		# 0: do not approximate logsumexp
+		options$logsumexp_approx = 0
+	}
+	if(is.null(options$slice_shape)){
+		# parameter for slice sampling
+		options$slice_shape = 1.2
+	}
+	if(is.null(options$use_mom)){
+		# Method of Moments in TOT
+		options$use_mom = 0
+	}
+
 
 	## Text preprocessing
 
@@ -284,6 +306,7 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 						 C=C, use_cov=use_cov,
 						 num_states=num_states,
 						 timestamps=timestamps,
+						 options=options,
 						 call = cl)
 
   class(ll) <- c("topicdict", class(ll))

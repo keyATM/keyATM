@@ -14,6 +14,10 @@ using namespace std;
 class keyATMtot : public keyATMbase
 {
 	public:
+		// Settings	
+		int logsumexp_approx;
+		int use_mom;
+
 		// Parameters
 		VectorXd timestamps;  // time stamps (document share the same time)
 		MatrixXd beta_params;  // parameter for time Beta, K \times 2
@@ -36,9 +40,9 @@ class keyATMtot : public keyATMbase
 			// Sample alpha
 
 				// Slice Sampling
-				double min_v = 1e-9;
-				double max_v = 100.0;
-				int max_shrink_time = 1000;
+				// double min_v = 1e-9;
+				// double max_v = 100.0;
+				// int max_shrink_time = 1000;
 
 				double start, end, previous_p, new_p, newlikelihood, slice_;
 				std::vector<int> topic_ids;
@@ -63,6 +67,7 @@ class keyATMtot : public keyATMbase
 				double beta_mean;
 				double beta_var;
 				double current_param;
+				double temp_beta_loglik;
 				double ts_g1 = 1.5;  // parameters for gamma
 				double ts_g2 = 2.0;  // parameters for gamma
 	

@@ -12,7 +12,8 @@ topicdict_model(files = NULL, dict = NULL, text_df = NULL,
   remove_symbols = TRUE, remove_separators = TRUE,
   remove_twitter = FALSE, remove_hyphens = FALSE, remove_url = TRUE,
   stem_language = NULL, stopwords = NULL, alpha = 50/(length(dict) +
-  extra_k), beta = 0.01, beta_s = 0.1, gamma_1 = 1, gamma_2 = 1)
+  extra_k), beta = 0.01, beta_s = 0.1, gamma_1 = 1, gamma_2 = 1,
+  options = list())
 }
 \arguments{
 \item{files}{names of each file to read (or a quanteda corpus object)}

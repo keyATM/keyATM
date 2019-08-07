@@ -4,7 +4,7 @@
 \alias{LDA_weight_tot}
 \title{Run the Collapsed Gibbs sampler for LDA topic-over-time with weights}
 \usage{
-LDA_weight_tot(model, iter = 0L, output_per = 10L, use_weight = 1L)
+LDA_weight_tot(model, iter = 0L, output_per = 10L)
 }
 \arguments{
 \item{model}{A model, from \code{init} or a previous invocation of \code{train}}
