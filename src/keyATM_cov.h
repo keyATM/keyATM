@@ -22,11 +22,6 @@ class keyATMcov : public keyATMbase
 		MatrixXd Lambda;
 		MatrixXd C;
 
-		// Slice Sampling
-		// double min_v = 1e-9;
-		// double max_v = 100.0;
-		// int max_shrink_time = 1000;
-
 		// MH sampling
 		double mu = 0.0;
 		double sigma = 50.0;

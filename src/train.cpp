@@ -10,6 +10,7 @@
 #include "keyATM_basic.h"
 #include "keyATM_cov.h"
 #include "keyATM_tot.h"
+#include "keyATM_totcov.h"
 #include "keyATM_HMM.h"
 #include "LDA_weight.h"
 #include "LDA_weightTOT.h"
@@ -94,6 +95,24 @@ List topicdict_train_tot(List model, int iter = 0, int output_per = 10){
 	return model;
 
 }
+
+
+//' Run the Collapsed Gibbs sampler for the topic-over-time model with covariate
+//'
+//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param iter Required number of iterations
+//' @param output_per Show log-likelihood and perplexity per this number during the iteration
+//'
+//' @export
+// [[Rcpp::export]]
+List topicdict_train_totcov(List model, int iter = 0, int output_per = 10){
+
+	keyATMtotcov totcov_model(model, iter, output_per);
+	model = totcov_model.return_model();
+	return model;
+
+}
+
 
 
 

@@ -113,8 +113,8 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 	}
 
 
-	if(!is.null(covariates_data) & !is.null(covariates_formula) & mode != "cov"){
-		message("Covariates information provided, Covariate mode is used.")	
+	if(!is.null(covariates_data) & !is.null(covariates_formula) & (mode != "cov" & mode != "totcov")){
+		message("Covariates information provided, specify the model.")	
 		mode <- "cov"
 	}
 
