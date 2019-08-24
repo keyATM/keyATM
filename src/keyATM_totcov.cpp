@@ -571,6 +571,15 @@ void keyATMtotcov::sample_lambda_slice()
 }
 
 
+void keyATMtotcov::verbose_special(int &r_index){
+	// Store beta param
+
+	Rcpp::NumericMatrix tot_beta_R = Rcpp::wrap(beta_params);
+	List tot_beta = model["tot_beta"];
+	tot_beta.push_back(tot_beta_R);
+	model["tot_beta"] = tot_beta;
+}
+
 
 void keyATMtotcov::sample_betaparam(){
 
