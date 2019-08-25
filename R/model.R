@@ -151,6 +151,7 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 											)
 		if( nrow(covariates_data) != doc_num ){
 			stop("Covariates dimension does not match with the number of documents.")	
+		}
 	}
 
 
