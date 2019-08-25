@@ -1,0 +1,70 @@
+destination: docs
+
+authors:
+  Shusei Eshima:
+    href: "https://shusei-e.github.io"
+  Tomoya Sasaki:
+    href: "https://polisci.mit.edu/people/tomoya-sasaki"
+  Will Lowe:
+    href: "http://conjugateprior.org/"
+  Kosuke Imai:
+    href: "https://imai.fas.harvard.edu/"
+
+news:
+- one_page: false
+
+navbar:
+  title: "keyATM"
+  left:
+    - text: "Quick Start"
+      menu:
+        - text: "Installation"
+          href: articles/pkgdown_examples/Installation.html
+        - text: "keyATM Basic"
+          href: articles/pkgdown_examples/keyATM_basic.html
+        - text: "keyATM Covariate"
+          href: articles/pkgdown_examples/keyATM_cov.html
+        - text: "keyATM Topic Over Time"
+          href: articles/pkgdown_examples/keyATM_tot.html
+        - text: "keyATM TOT with Covariates"
+          href: articles/pkgdown_examples/keyATM_totcov.html
+    - text: "Reference"
+      href: reference/index.html
+    - text: "Changelog"
+      href: news/index.html
+
+
+reference:
+- title: All functions
+  desc: ~
+  contents:
+  - '`LDA_weight`'
+  - '`LDA_weight_tot`'
+  - '`diagnosis_alpha`'
+  - '`diagnosis_model_fit`'
+  - '`diagnosis_p`'
+  - '`keyATM_idealpoint`'
+  - '`keyATM_model`'
+  - '`keyATM_posterior`'
+  - '`keyATM_run`'
+  - '`keyATM_train`'
+  - '`keyATM_train_HMM`'
+  - '`keyATM_train_cov`'
+  - '`keyATM_train_tot`'
+  - '`keyATM_train_totcov`'
+  - '`lda_cov`'
+  - '`posterior`'
+  - '`set_doc_names`'
+  - '`set_topic_names`'
+  - '`top_docs`'
+  - '`top_terms`'
+  - '`top_topics`'
+  - '`topicdict_model`'
+  - '`topicmodel_train`'
+  - '`topicmodel_train_cov`'
+  - '`topicmodel_train_tot`'
+  - '`topicmodel_train_totcov`'
+
+toc:
+  depth: 2
+

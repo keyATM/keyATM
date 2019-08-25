@@ -1,0 +1,35 @@
+---
+title: "keyATM Basic"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r, eval = FALSE}
+fitted <- keyATM_run(texts = quanteda_dfm,
+                     iteration=1000,
+                     extra_k=3,
+                     keywords=keywords_list,
+                     mode="basic",
+                     options=list(seed=225))
+post <- keyATM_posterior(fitted)
+```
+
+To visualize keywords,
+```{r, eval=FALSE}
+fitted$visualize_keywords
+```
+
+If you just want to check the visualization,
+```{r, eval = FALSE}
+model <- keyATM_run(texts = quanteda_dfm,
+                    iteration=0,
+                    extra_k=3,
+                    keywords=keywords_list,
+                    mode="basic",
+                    options=list(seed=225))
+model$visualize_keywords
+```
+
+
+

@@ -34,7 +34,7 @@ void keyATMbase::read_data_common()
   beta = model["beta"];
 	beta_s = model["beta_s"];
   k_free = model["extra_k"];
-  seeds = model["seeds"];
+  seeds = model["keywords"];
   k_seeded = seeds.size();
 	model_fit = model["model_fit"];
 

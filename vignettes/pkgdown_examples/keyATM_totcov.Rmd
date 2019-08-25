@@ -1,0 +1,16 @@
+---
+title: "keyATM Topic Over Time with covariates"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r, eval = FALSE}
+# Install release version from CRAN
+install.packages("keyATM")
+
+# Install development version from GitHub
+devtools::install_github("Shusei-E/keyATM")
+```
+
+

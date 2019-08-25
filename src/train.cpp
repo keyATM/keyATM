@@ -36,7 +36,7 @@ using namespace std;
 //'
 //' @export
 // [[Rcpp::export]]
-List topicdict_train(List model, int iter = 0, int output_per = 10){
+List keyATM_train(List model, int iter = 0, int output_per = 10){
 
 	keyATMbasic keyATMbasic_model(model, iter, output_per);
 	model = keyATMbasic_model.return_model();
@@ -53,7 +53,7 @@ List topicdict_train(List model, int iter = 0, int output_per = 10){
 //'
 //' @export
 // [[Rcpp::export]]
-List topicdict_train_cov(List model, int iter = 0, int output_per = 10){
+List keyATM_train_cov(List model, int iter = 0, int output_per = 10){
 
 	keyATMcov keyATMcov_model(model, iter, output_per);
 	model = keyATMcov_model.return_model();
@@ -70,7 +70,7 @@ List topicdict_train_cov(List model, int iter = 0, int output_per = 10){
 //'
 //' @export
 // [[Rcpp::export]]
-List topicdict_train_HMM(List model, int iter = 0, int output_per = 10){
+List keyATM_train_HMM(List model, int iter = 0, int output_per = 10){
 
 	keyATMhmm hmm_model(model, iter, output_per);
 	model = hmm_model.return_model();
@@ -88,7 +88,7 @@ List topicdict_train_HMM(List model, int iter = 0, int output_per = 10){
 //'
 //' @export
 // [[Rcpp::export]]
-List topicdict_train_tot(List model, int iter = 0, int output_per = 10){
+List keyATM_train_tot(List model, int iter = 0, int output_per = 10){
 
 	keyATMtot tot_model(model, iter, output_per);
 	model = tot_model.return_model();
@@ -105,7 +105,7 @@ List topicdict_train_tot(List model, int iter = 0, int output_per = 10){
 //'
 //' @export
 // [[Rcpp::export]]
-List topicdict_train_totcov(List model, int iter = 0, int output_per = 10){
+List keyATM_train_totcov(List model, int iter = 0, int output_per = 10){
 
 	keyATMtotcov totcov_model(model, iter, output_per);
 	model = totcov_model.return_model();
@@ -144,7 +144,7 @@ List lda_cov(List model, int K, int iter=0, int output_iter=10)
 //'
 //' @export
 // [[Rcpp::export]]
-List topicdict_idealpoint(List model, List author_info, int iter=0, int output_iter=10)
+List keyATM_idealpoint(List model, List author_info, int iter=0, int output_iter=10)
 {
 
 	IDEALPOINT idealpoint(model, author_info, iter, output_iter);

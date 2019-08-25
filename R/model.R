@@ -1,5 +1,161 @@
 
-#' Initialize a topicdict model
+
+#' Initialize a model (deprecated)
+#'
+#' @export
+topicdict_model <- function(...){
+  message("Warning: `topicdict_model` is deprecated, please use `keyATM_run` instead.")
+  return(keyATM_model(...))
+}
+
+
+#' Run a keyATM model
+#'
+#' This function takes a text input, initialize and fit keyATM model.
+#'
+#' @param texts Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.
+#' @param keywords a quanteda dictionary or a list of character vectors
+#' @param mode number of iteration
+#' @param extra_k number of regular topics in addition to the keyword topics by
+#'                \code{keywords}
+#' @param iteration number of iteration
+#' @param covariates_data covariate
+#' @param covariates_formula formula applied to covariate data
+#' @param timestamps timestamps
+#' @param options options are seed (default: 225), use_weights (default: 1),
+#'           visualize_keywords (default: TRUE),
+#'          slice_shape (default: 1.2), and output_per (default: 10).
+#'
+#' @return A list
+#'
+#' @export
+keyATM_run <- function(texts, keywords, mode, extra_k,
+                       iteration=1000,
+                       covariates_data=NULL, covariates_formula= ~.+0,
+                       timestamps=NULL,
+                       options=list()
+                      )
+{
+  # Set option
+  if(is.null(options$output_per))
+    options$output_per <- 10
+
+  if(is.null(options$visualize_keywords))
+    options$visualize_keywords <- TRUE
+
+  # Set random seed
+  if(is.null(options$seed))
+    options$seed <- 225
+  set.seed(options$seed)
+
+  # Detect input
+  if("data.frame" %in% class(texts)){
+    text_dfm <- NULL
+    files <- NULL
+    text_df <- texts
+  }else if(class(texts) == "dfm"){
+    text_dfm <- texts
+    files <- NULL
+    text_df <- NULL
+  }else if(class(texts) == "character"){
+    text_dfm <- NULL
+    files <- texts
+    text_df <- NULL
+  }else{
+    stop("Check `texts` argument.\n
+         It can take quanteda dfm, data.frame, tibble, and a vector of characters.")  
+  }
+
+  # Reformat keywords
+  if(class(keywords) != "dictionary2"){
+    if(class(keywords) != "list"){
+      stop("`keywords` should be a quanteda dictionary or a list of character vectors")
+    }else{
+      names(keywords) <- 1:length(keywords)
+      keywords <- quanteda::dictionary(keywords)  
+    }
+  }
+
+  # Initialize model
+  message("Initializing a model...")
+  model <- keyATM_model(
+                          files=files, text_df=text_df, text_dfm=text_dfm,
+                          extra_k=extra_k,
+                          dict=keywords,
+                          mode=mode,
+                          covariates_data=covariates_data, covariates_formula=covariates_formula,
+                          timestamps=timestamps,
+                          options=options,
+                          # quanteda options
+                          lowercase=F, remove_numbers=F, remove_punct=F,
+                          remove_symbols=F, remove_twitter=F,
+                          remove_hyphens=F, remove_url=F
+                        )
+
+  # Run model
+  if(iteration == 0){
+    message("Return initialized model.")  
+    return(model)
+  }
+
+  if(mode == "basic"){
+    res <- keyATM_train(model, iter=iteration, output_per=model$options$output_per)
+  }else if(mode == "cov"){
+    res <- keyATM_train_cov(model, iter=iteration, output_per=model$options$output_per)
+  }else if(mode == "tot"){
+    res <- keyATM_train_tot(model, iter=iteration, output_per=model$options$output_per)
+  }else if(mode == "totcov"){
+    res <- keyATM_train_totcov(model, iter=iteration, output_per=model$options$output_per)
+  }else{
+    stop("Model name does not match.")  
+  }
+
+  return(res)
+}
+
+
+#' Fit topic model (deprecated)
+#'
+#' `topicmodel_train` is deprecated. Use `keyATM_run`
+#'
+#' @export
+topicmodel_train <- function(...){
+  message("Warning: `topicmodel_train` is deprecated. Use `keyATM_run`")
+  return(keyATM_train(...))
+}
+
+#' Fit topic model (deprecated)
+#'
+#' `topicmodel_train_cov` is deprecated. Use `keyATM_run`
+#'
+#' @export
+topicmodel_train_cov <- function(...){
+  message("Warning: `topicmodel_train_cov` is deprecated. Use `keyATM_run`")
+  return(keyATM_train_cov(...))
+}
+
+#' Fit topic model (deprecated)
+#'
+#' `topicmodel_train_tot` is deprecated. Use `keyATM_run`
+#'
+#' @export
+topicmodel_train_tot <- function(...){
+  message("Warning: `topicmodel_train_tot` is deprecated. Use `keyATM_run`")
+  return(keyATM_train_tot(...))
+}
+
+#' Fit topic model (deprecated)
+#'
+#' `topicmodel_train_totcov` is deprecated. Use `keyATM_run`
+#'
+#' @export
+topicmodel_train_totcov <- function(...){
+  message("Warning: `topicmodel_train_totcov` is deprecated. Use `keyATM_run`")
+  return(keyATM_train_totcov(...))
+}
+
+
+#' Initialize a keyATM model
 #'
 #' This function creates a list of word indexes W, topic indicators Z,
 #' seed indicators X, a vocabulary list \code{vocab} from \code{files}.
@@ -77,132 +233,150 @@
 #'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
 #'         \item{use_cov}{boolean, whether or not use the covariate}
 #'         \item{num_states}{number of states in HMM}
-#'				 \item{timestamps}{time stamp for topic-over-time model}
+#'         \item{timestamps}{time stamp for topic-over-time model}
+#'         \item{visualize_keywords}{ggplot2 object}
 #'         \item{call}{details of the function call}
 #'         }.
 #' @importFrom quanteda corpus is.corpus ndoc docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
 #' @importFrom hashmap hashmap
+#' @importFrom tidytext tidy
 #' @importFrom stats model.matrix
+#' @import ggplot2
+#' @import ggrepel
 #' @export
-topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
-														mode="basic",
-														extra_k = 1,
-														covariates_data=NULL, covariates_formula=NULL,
-														num_states=NULL, timestamps=NULL,
-														encoding = "UTF-8",
-                            lowercase = TRUE,
-                            remove_numbers = TRUE, remove_punct = TRUE,
-                            remove_symbols = TRUE, remove_separators = TRUE,
-                            remove_twitter = FALSE, remove_hyphens = FALSE,
-                            remove_url = TRUE, stem_language = NULL,
-                            stopwords = NULL,
-                            alpha = 50/(length(dict) + extra_k),
-                            beta = 0.01, beta_s = 0.1,
-                            gamma_1 = 1.0, gamma_2 = 1.0,
-														options = list()
-													 )
+keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
+                         mode="basic",
+                         extra_k = 1,
+                         covariates_data=NULL, covariates_formula=NULL,
+                         num_states=NULL, timestamps=NULL,
+                         encoding = "UTF-8",
+                         lowercase = TRUE,
+                         remove_numbers = TRUE, remove_punct = TRUE,
+                         remove_symbols = TRUE, remove_separators = TRUE,
+                         remove_twitter = FALSE, remove_hyphens = FALSE,
+                         remove_url = TRUE, stem_language = NULL,
+                         stopwords = NULL,
+                         alpha = 50/(length(dict) + extra_k),
+                         beta = 0.01, beta_s = 0.1,
+                         gamma_1 = 1.0, gamma_2 = 1.0,
+                         options = list()
+                        )
 {
   cl <- match.call()
 
-	##
-	## Check format
-	##
-	if(mode %in% c("basic", "cov", "hmm", "tot", "totcov")){
-	}else{
-		stop(paste0("Unknown model:", mode))	
-	}
+  ##
+  ## Check format
+  ##
+  if(mode %in% c("basic", "cov", "hmm", "tot", "totcov")){
+  }else{
+    stop(paste0("Unknown model:", mode))  
+  }
 
 
-	if(!is.null(covariates_data) & !is.null(covariates_formula) & (mode != "cov" & mode != "totcov")){
-		stop("Covariates information provided, specify the model.")	
-	}
+  if(!is.null(covariates_data) & !is.null(covariates_formula) & (mode != "cov" & mode != "totcov")){
+    stop("Covariates information provided, specify the model.")  
+  }
 
-	if(is.null(num_states) & mode == "hmm"){
-		stop("Provide the number of states.")	
-	}
+  if(is.null(num_states) & mode == "hmm"){
+    stop("Provide the number of states.")  
+  }
 
-	if(!is.null(text_df)){
-		if("text" %in% names(text_df)){
-			text_df <- text_df["text"]
-		}else{
-			stop("text_df should have a 'text' colum that has documents.")
-		}	
-	}
+  if(!is.null(text_df)){
+    if("text" %in% names(text_df)){
+      text_df <- text_df["text"]
+    }else{
+      stop("text_df should have a 'text' colum that has documents.")
+    }  
+  }
 
-	if(mode == "tot" | mode == "totcov"){
-		if(is.null(timestamps)){
-			stop("Please provide time stamps.")	
-		}else if(min(timestamps) < 0 | max(timestamps) >= 1){
-			stop("Time stamps sholud be between 0 and 1. Please use `make_timestamps()` function to format time stamps.")	
-		}
-	}
+  if(mode == "tot" | mode == "totcov"){
+    if(is.null(timestamps)){
+      stop("Please provide time stamps.")  
+    }else if(min(timestamps) < 0 | max(timestamps) >= 1){
+      stop("Time stamps sholud be between 0 and 1. Please use `make_timestamps()` function to format time stamps.")  
+    }
+  }
 
-	## Check length
+
+  ##
+  ## Check length
+  ##
 
   proper_len <- length(dict) + extra_k
 
-	if(mode == "cov" | mode == "totcov"){
-		# make sure covariates are provided for all documents	
-		doc_num <- ifelse(!is.null(files), length(files),
-											ifelse(!is.null(text_df), nrow(text_df),
-														 ifelse(!is.null(text_dfm), nrow(text_dfm),
-																		0)
-														 )
-											)
-		if( nrow(covariates_data) != doc_num ){
-			stop("Covariates dimension does not match with the number of documents.")	
-		}
-	}
+  if(mode == "cov" | mode == "totcov"){
+    # make sure covariates are provided for all documents  
+    doc_num <- ifelse(!is.null(files), length(files),
+                      ifelse(!is.null(text_df), nrow(text_df),
+                             ifelse(!is.null(text_dfm), nrow(text_dfm),
+                                    0)
+                             )
+                      )
+    if( nrow(covariates_data) != doc_num ){
+      stop("Covariates dimension does not match with the number of documents.")  
+    }
+  }
 
 
-	## Create alpha 
-	if(is.null(covariates_data) || is.null(covariates_formula)){
-		# If it doesn't use covariates, make alpha inside
-		if (length(alpha) == 1){
-			message("All ", proper_len, " values for alpha starting as ", alpha)
-			alpha = rep(alpha, proper_len)
-		} else if (length(alpha) != proper_len)
-			stop("Starting alpha must be a scalar or a vector of length ", proper_len)
-	}
+  ##
+  ## Set options
+  ##
+  if(is.null(options$use_weights)){
+    options$use_weights = 1  
+  }
+  if(!is.null(options$logsumexp_approx)){
+    message("Warning: `logsumexp_approx` option will be deprecated.")
+  }
+  if(is.null(options$logsumexp_approx)){
+    # 0: do not approximate logsumexp
+    options$logsumexp_approx = 0
+  }
+  if(is.null(options$slice_shape)){
+    # parameter for slice sampling
+    options$slice_shape = 1.2
+  }
+  if(is.null(options$use_mom)){
+    # Method of Moments in TOT
+    options$use_mom = 0
+  }
+  if(!is.null(options$alpha)){
+    # If alpha value is overwritten
+    alpha = options$alpha
+  }
 
 
-	## Format options
-	if(is.null(options$use_weights)){
-		options$use_weights = 1	
-	}
-	if(is.null(options$logsumexp_approx)){
-		# 0: do not approximate logsumexp
-		options$logsumexp_approx = 0
-	}
-	if(is.null(options$slice_shape)){
-		# parameter for slice sampling
-		options$slice_shape = 1.2
-	}
-	if(is.null(options$use_mom)){
-		# Method of Moments in TOT
-		options$use_mom = 0
-	}
+  ## Create alpha 
+  if(is.null(covariates_data) || is.null(covariates_formula)){
+    # If it doesn't use covariates, make alpha inside
+    if (length(alpha) == 1){
+      message("All ", proper_len, " values for alpha starting as ", alpha)
+      alpha = rep(alpha, proper_len)
+    } else if (length(alpha) != proper_len)
+      stop("Starting alpha must be a scalar or a vector of length ", proper_len)
+  }
 
 
-	## Text preprocessing
+  ##
+  ## Text preprocessing
+  ##
 
-		# If you have quanteda object
-		if(!is.null(text_dfm)){
-			message("Use quanteda dfm.")	
-			remove_numbers = F ; remove_punct = F; remove_symbols = F;
-			remove_separators = T ; remove_twitter = F; remove_hyphens = F; remove_url = F
+    # If you have quanteda object
+    if(!is.null(text_dfm)){
+      message("Use quanteda dfm.")  
+      remove_numbers = F ; remove_punct = F; remove_symbols = F;
+      remove_separators = T ; remove_twitter = F; remove_hyphens = F; remove_url = F
 
-			vocabulary <- colnames(text_dfm)
-			
-			texts <- apply(text_dfm, 1,
-										 function(x){
-										 		single_text <- paste(rep(vocabulary, x), collapse=" ")
-										 		return(single_text)
-										 })
+      vocabulary <- colnames(text_dfm)
+      
+      texts <- apply(text_dfm, 1,
+                     function(x){
+                         single_text <- paste(rep(vocabulary, x), collapse=" ")
+                         return(single_text)
+                     })
 
-			text_df <- data.frame(text = texts)
-			text_df$text <- as.character(text_df$text)
-		}
+      text_df <- data.frame(text = texts)
+      text_df$text <- as.character(text_df$text)
+    }
 
   args <- list(remove_numbers = remove_numbers,
                remove_punct = remove_punct,
@@ -217,13 +391,17 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   else {
     ## preprocess each text
     ## for debugging
-	  # Use files <- list.files(doc_folder, pattern="txt", full.names=T) when you pass
-		if(is.null(text_df)){
-			text_df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
-																																collapse = "\n") })),
-											 stringsAsFactors = FALSE)
-		}
-		
+    # Use files <- list.files(doc_folder, pattern="txt", full.names=T) when you pass
+    if(is.null(text_df)){
+      text_df <- data.frame(text = unlist(lapply(files, 
+                                                 function(x)
+                                                 { 
+                                                     paste0(readLines(x, encoding = encoding),
+                                                           collapse = "\n") 
+                                                 })),
+                            stringsAsFactors = FALSE)
+    }
+    
     text_df$doc_id <- paste0("text", 1:nrow(text_df))
     args$x <- corpus(text_df)
     ## debugging until here
@@ -252,6 +430,68 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
     dtoks <- tokens_wordstem(dtoks, language = stem_language)
   K <- length(dtoks) # number of seeded categories a.k.a. size of dictionary
 
+
+  ##
+  ## Visualize keywords
+  ##
+  if(options$visualize_keywords){
+    dfm_ <- dfm(toks)  
+    data <- tidy(dfm_)
+    totalwords <- sum(data$count)
+
+    data %>%
+      rename(Word=term) %>%
+      group_by(Word) %>%
+      summarize(WordCount = sum(count)) %>%
+      ungroup() %>%
+      mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
+      arrange(desc(WordCount)) %>%
+      mutate(Ranking = 1:n()) -> data
+
+
+    seed_list <- dict
+
+    names(seed_list) <- paste0("EstTopic", 1:length(seed_list))
+    seeds <- lapply(seed_list, function(x){unlist(strsplit(x," "))})
+    ext_k <- length(seeds)
+    max_num_words <- max(unlist(lapply(seeds, function(x){length(x)})))
+
+    seeds_df <- data.frame(EstTopic=1, Word=1)
+    for(k in 1:ext_k){
+      words <- seeds[[k]]
+      numwords <- length(words)
+      topicname <- paste0("EstTopic", k)
+      for(w in 1:numwords){
+        seeds_df <- rbind(seeds_df, data.frame(EstTopic=topicname, Word=words[w]))
+      }
+    }
+    seeds_df <- seeds_df[2:nrow(seeds_df), ]
+
+    dplyr::inner_join(data, seeds_df, by="Word") %>%
+      group_by(EstTopic) %>%
+      mutate(Ranking = 1:n()) -> temp
+
+    visualize_keywords <- 
+      ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=EstTopic)) +
+        geom_line() +
+        geom_point() +
+        geom_label_repel(aes(label = Word), size=2.8,
+                         box.padding = 0.20, label.padding = 0.12,
+                         arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
+                         show.legend = F) +
+        scale_x_continuous(breaks=1:max_num_words) +
+        ylab("Proportion (%)") +
+        theme_bw()
+  
+  }else{
+    visualize_keywords <- NULL  
+  }
+
+
+  ##
+  ## Initialization
+  ##
+
   ## construct W and a vocab list (W elements are 0 based ids)
   wd_names <- attr(toks, "types") # vocab
   wd_map <- hashmap(wd_names, as.integer(1:length(wd_names) - 1))
@@ -262,434 +502,61 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   cat_ids <- rep(1:K - 1, unlist(lapply(dtoks, length)))
   zx_assigner <- hashmap(as.integer(seed_wdids), as.integer(cat_ids))
 
-	## xx indicates whether the word comes from a seed topic-word distribution or not
-	make_x <- function(x){
+  ## xx indicates whether the word comes from a seed topic-word distribution or not
+  make_x <- function(x){
     seeded <- as.numeric(zx_assigner$has_keys(x)) # 1 if they're a seed
-		# Use x structure
+    # Use x structure
     x[seeded == 0] <- 0 # non-seeded words have x=0
-		x[seeded == 1] <- sample(0:1, length(x[seeded == 1]), prob = c(0.3, 0.7), replace = TRUE)
-			# seeded words have x=1 probabilistically
+    x[seeded == 1] <- sample(0:1, length(x[seeded == 1]), prob = c(0.3, 0.7), replace = TRUE)
+      # seeded words have x=1 probabilistically
     x
-	}
+  }
 
   X <- lapply(W, make_x)
 
   # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
   make_z <- function(x){
-		zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
-		zz[is.na(zx_assigner[[x]])] <- sample(1:(K + extra_k) - 1,
-																					sum(as.numeric(is.na(zx_assigner[[x]]))),
-																					replace = TRUE)
+    zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
+    zz[is.na(zx_assigner[[x]])] <- sample(1:(K + extra_k) - 1,
+                                          sum(as.numeric(is.na(zx_assigner[[x]]))),
+                                          replace = TRUE)
     zz
   }
   Z <- lapply(W, make_z)
 
   # dictionary category names -> vector of word_id.
   # (Later processes ignore names)
-  seeds <- lapply(dtoks, function(x){ wd_map$find(x) })
-  names(seeds) <- names(dict)
+  keywords <- lapply(dtoks, function(x){ wd_map$find(x) })
+  names(keywords) <- names(dict)
 
-	# Covariate
-	if(is.null(covariates_data) || is.null(covariates_formula)){
-		C <- matrix()
-		use_cov <- FALSE
-	}else{
-		C <- model.matrix(covariates_formula, covariates_data)
-		use_cov <- TRUE
-		if(sum(is.na(C)) != 0){
-			stop("Covariate data should not contain missing values.")
-		}
-	}
+  # Covariate
+  if(is.null(covariates_data) || is.null(covariates_formula)){
+    C <- matrix()
+    use_cov <- FALSE
+  }else{
+    C <- model.matrix(covariates_formula, covariates_data)
+    use_cov <- TRUE
+    if(sum(is.na(C)) != 0){
+      stop("Covariate data should not contain missing values.")
+    }
+  }
 
 
-  ll <- list(W = W, Z = Z, X = X, vocab = wd_names,
-             files = doc_names, dict = dtoks, seeds = seeds, extra_k = extra_k,
+  ll <- list(W = W, Z = Z, X = X, vocab = wd_names, mode=mode,
+             files = doc_names, dict = dtoks, keywords = keywords, extra_k = extra_k,
              alpha = alpha, gamma_1 = gamma_1, gamma_2 = gamma_2,
              beta = beta, beta_s = beta_s,
-						 alpha_iter = list(), Lambda_iter = list(), S_iter = list(),
-						 model_fit = list(), sampling_info = list(), tot_beta = list(),
-						 C=C, use_cov=use_cov,
-						 num_states=num_states,
-						 timestamps=timestamps,
-						 options=options,
-						 call = cl)
+             alpha_iter = list(), Lambda_iter = list(), S_iter = list(),
+             model_fit = list(), sampling_info = list(), tot_beta = list(),
+             C=C, use_cov=use_cov,
+             num_states=num_states,
+             timestamps=timestamps,
+             options=options,
+             visualize_keywords=visualize_keywords,
+             call = cl)
 
-  class(ll) <- c("topicdict", class(ll))
+  class(ll) <- c("keyATM", class(ll))
 
   return(ll)
 }
 
-#' A Reference Class to explore documents
-#'
-#' Explore Documents Class
-#'
-#' @docType class
-#'
-#' @section Fields:
-#'  \describe{
-#'    \item{\code{data}}{ data in tidytext format}
-#'    \item{\code{data_tfidf}}{ data in tidytext format}
-#'    \item{\code{uniquewords}}{ a vector of unique words}
-#'    \item{\code{num_uniquewords}}{ a number of unique words}
-#'    \item{\code{totalwords}}{ number of words in the entire documents}
-#'  }
-#'
-#'
-#' @section Methods:
-#'  \describe{
-#'    \item{\code{initialize}}{ Constructor}
-#'    \item{\code{check_existence}}{ Check whether the word exists in the corpus}
-#'    \item{\code{visualize_dict_proportion}}{ Dictionary proportion list}
-#'    \item{\code{visualize_words_documents(word, type="count", n_show=100, xaxis=F)}}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
-#'    \item{\code{visualize_words(word, n_show=1:num_uniquewords)}}{ show a vector of words distribution.}
-#'    \item{\code{top_words(n_show=10)}}{ show top words}
-#'    \item{\code{visualize_tfidf(n_show=10)}}{ show top tf_idf}
-#'    \item{\code{words_distribution(n_show)}}{ show a distribution of words}
-#'  }
-#'
-#' @importFrom tidytext tidy bind_tf_idf
-#' @import ggplot2
-#' @import ggrepel
-#' @import dplyr
-#' @export ExploreDocuments
-#' @exportClass ExploreDocuments
-ExploreDocuments <- setRefClass(
-	Class = "ExploreDocuments",
-
-	fields = list(
-		data = "data.frame",
-		data_tfidf = "data.frame",
-		uniquewords = "character",
-		num_uniquewords = "numeric",
-		totalwords = "numeric"
-	),
-
-	methods = list(
-		initialize = function(data_=tidy_){
-			data_tfidf <<- data_ %>%
-				group_by(document) %>%
-				mutate(countdoc = sum(count)) %>%
-				ungroup() %>%
-				bind_tf_idf(term, document, count)
-
-			uniquewords <<- unique(data_$term)
-			num_uniquewords <<- length(uniquewords)
-			totalwords <<- sum(data_$count)
-
-			data_ %>%
-				mutate(Word = term) %>%
-				select(-term) %>%
-				group_by(Word) %>%
-				summarize(WordCount = sum(count)) %>%
-				ungroup() %>%
-				mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
-				arrange(desc(WordCount)) %>%
-				mutate(Ranking = 1:n()) ->> data
-		},
-
-		check_existence = function(word){
-			if(! (word %in% uniquewords)){
-				message(paste0("'", word, "' is not in a corpus"))
-				return (1)
-			}else{
-				return (0)
-			}
-		},
-
-		visualize_dict_prop = function(seed_list){
-			names(seed_list) <- paste0("EstTopic", 1:length(seed_list))
-			seeds <- lapply(seed_list, function(x){unlist(strsplit(x," "))})
-			ext_k <- length(seeds)
-			max_num_words <- max(unlist(lapply(seeds, function(x){length(x)})))
-
-			seeds_df <- data.frame(EstTopic=1, Word=1)
-			for(k in 1:ext_k){
-				words <- seeds[[k]]
-				numwords <- length(words)
-				topicname <- paste0("EstTopic", k)
-				for(w in 1:numwords){
-					seeds_df <- rbind(seeds_df, data.frame(EstTopic=topicname, Word=words[w]))
-				}
-			}
-			seeds_df <- seeds_df[2:nrow(seeds_df), ]
-
-			inner_join(data, seeds_df, by="Word") %>%
-				group_by(EstTopic) %>%
-				mutate(Ranking = 1:n()) -> temp
-
-			p <- ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=EstTopic)) +
-				geom_line() +
-				geom_point() +
-				geom_label_repel(aes(label = Word), size=2.8,
-												 box.padding = 0.20, label.padding = 0.12,
-												 arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
-												 show.legend = F) +
-			  scale_x_continuous(breaks=1:max_num_words) +
-				ylab("Proportion (%)") +
-				theme_bw()
-
-			return(p)
-
-		},
-
-		visualize_word_documents = function(word, type="count", n_show=100, xaxis=F){
-			"Visualize a word distribution"
-			# check the words existence
-			c <- check_existence(word)
-			if(c){ return()}
-
-			# Visualize
-			data_tfidf %>% filter(term==get("word")) %>%
-				summarize(total = sum(count)) %>% as.numeric() -> sumcount
-			message(paste0("Count of '", word, "': ", as.character(sumcount), " out of ", totalwords))
-			message(paste0("Proportion of '", word, "': ", as.character(round(sumcount/totalwords*100, 4)), "%"))
-
-			data_tfidf %>%
-				filter(term == get("word")) %>%
-				group_by(document) %>%
-				mutate(Proportion = count/countdoc*100) %>%
-				ungroup() -> temp
-
-			if(type=="count"){
-				temp <- temp %>% top_n(n_show, count) %>% mutate(focus=count)
-			}else{
-				temp <- temp %>% top_n(get("n_show"), Proportion) %>% mutate(focus=Proportion)
-			}
-
-			p <- ggplot(temp, aes(x=reorder(document, -focus), y=focus)) +
-				geom_bar(stat="identity")
-
-			p <- p + ggtitle(paste0("Counts of '", word, "' across documents")) +
-				theme_bw()
-
-			if(type=="count"){
-				p <- p + ylab("Count")
-			}else{
-				p <- p + ylab("Proportion")
-			}
-
-			if(!xaxis){
-				p <- p + xlab("Documents") +
-										theme(axis.text.x=element_blank(),
-											axis.ticks.x=element_blank(),
-											plot.title = element_text(hjust = 0.5))
-			}else{
-				p <- p + xlab("Documents")
-				p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1),
-											 plot.title = element_text(hjust = 0.5))
-			}
-
-			return(p)
-
-		},
-
-		visualize_words = function(words, n_show=1:num_uniquewords){
-			# Distribution across words
-				data %>%
-					mutate(Show = if_else(.$Word %in% get("words"), "1", "0")) %>%
-					slice(n_show) -> temp
-
-				temp %>%
-					mutate(Width=if_else(Show==1, length(get("n_show"))/10, 1)) -> temp
-				temp$right <- cumsum(temp$Width) + 30*c(0:(nrow(temp)-1))
-				temp$left <- temp$right - temp$Width
-
-				p <- ggplot(temp, aes(ymin = 0)) +
-					geom_rect(aes(xmin = left, xmax = right, ymax = `Proportion(%)`, colour = Show, fill = Show)) +
-					scale_fill_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) +
-					scale_colour_manual("legend", values = c("0" = "#282828", "1" = "#d53800")) +
-					xlab("Words") + ylab("Proportion (%)") + ggtitle("Distribution of words") +
-					theme_bw() +
-					theme(axis.text.x=element_blank(),
-								axis.ticks.x=element_blank(),
-								legend.position="none",
-								plot.title = element_text(hjust = 0.5))
-
-			return(p)
-
-		},
-
-		top_words = function(n_show=20){
-			"Show frequent words"
-				if(length(n_show)>1){
-					data %>%
-						slice(n_show) %>%
-						arrange(-WordCount) %>%
-						print(n=nrow(.))
-				}else{
-					data %>%
-						top_n(n_show, WordCount) %>%
-						arrange(-WordCount) %>%
-						print(n=nrow(.))
-				}
-
-		},
-
-		visualize_tfidf = function(seed_list){
-
-			names(seed_list) <- paste0("EstTopic", 1:length(seed_list))
-			seeds <- lapply(seed_list, function(x){unlist(strsplit(x," "))})
-			ext_k <- length(seeds)
-			max_num_words <- max(unlist(lapply(seeds, function(x){length(x)})))
-
-			seeds_df <- data.frame(EstTopic=1, Word=1)
-			for(k in 1:ext_k){
-				words <- seeds[[k]]
-				numwords <- length(words)
-				topicname <- paste0("EstTopic", k)
-				for(w in 1:numwords){
-					seeds_df <- rbind(seeds_df, data.frame(EstTopic=topicname, Word=words[w]))
-				}
-			}
-			seeds_df <- seeds_df[2:nrow(seeds_df), ]
-
-			data_tfidf %>%
-				inner_join(., seeds_df, by=c("term"="Word")) %>%
-				ggplot(aes(x=tf_idf, y=..density.., colour=EstTopic)) +
-					geom_density(stat = "density", position = "identity") +
-					xlab("TF-IDF") + ylab("Density") +
-					ggtitle("TF-IDF Desity of Words in Dictionary") +
-					theme_bw() +
-					theme(plot.title = element_text(hjust = 0.5)) -> p1
-
-			data_tfidf %>%
-				inner_join(., seeds_df, by=c("term"="Word")) %>%
-				group_by(EstTopic, term) %>%
-				summarize(Median = median(tf_idf)) %>%
-				ungroup() %>%
-				group_by(EstTopic) %>%
-				arrange(desc(Median)) %>%
-				mutate(Ranking = 1:n()) %>%
-				ggplot(., aes(x=Ranking, y=Median, colour=EstTopic)) +
-				geom_line() +
-				geom_point() +
-				geom_label_repel(aes(label = term), size=2.8,
-												 box.padding = 0.20, label.padding = 0.12,
-												 arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
-												 show.legend = F) +
-				scale_x_continuous(breaks=1:max_num_words) +
-				ylab("Median TF-IDF") +
-				ggtitle("Median TF-IDF of Words in Dictionary") +
-				theme_bw() +
-				theme(plot.title = element_text(hjust = 0.5)) -> p2
-
-			return(list(density=p1, median=p2))
-
-		},
-
-		words_distribution = function(n_show=num_uniquewords){
-			# Distribution across documents
-				if(length(n_show)>1){
-					data %>%
-						slice(n_show) %>%
-						arrange(-WordCount) -> temp
-				}else{
-					data %>%
-						top_n(n_show, WordCount) %>%
-						arrange(-WordCount) -> temp
-				}
-
-				p <- ggplot(temp, aes(x=Word, y=`Proportion(%)`)) +
-					geom_bar(stat="identity") +
-					scale_x_discrete(limits = temp$Word)
-
-				p <- p +
-					ggtitle(paste0("Distribution of words")) +
-					ylab("Proportion (%)") +
-					theme_bw()
-
-				if(nrow(temp) <= 50){
-					p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1),,
-												 plot.title = element_text(hjust = 0.5))
-				}else{
-					p <- p +
-						theme(axis.text.x=element_blank(),
-									axis.ticks.x=element_blank(),
-									plot.title = element_text(hjust = 0.5))
-				}
-
-
-			return(p)
-
-		}
-	)
-)
-
-
-#' Explore Documents
-#'
-#' Explore the documents.
-#'
-#' @param files names of each file to read
-#' @param text_df directly passes a text in a data.frame 
-#' @param encoding File encoding (Default: whatever \code{quanteda} guesses)
-#' @param lowercase whether to transform each token to lowercase letters
-#' @param remove_numbers whether to remove numbers
-#' @param remove_punct whether to remove punctuation
-#' @param remove_symbols whether to remove non-alphanumerical symbols
-#' @param remove_separators whether to remove tabs, spaces, newlines, etc.
-#' @param remove_twitter whether to remove Twitter detritus
-#' @param remove_hyphens whether to split hyphenated words
-#' @param remove_url whether to remove URLs
-#' @param stem_language if not NULL, the language to use for stemming
-#' @param stopwords if not NULL, a character vector of words to remove,
-#'                  e.g. \code{quanteda::stopwords("english")}
-#'
-#' @return A R4 objects \describe{
-#'         \item{show_words(word, type="count", n_show=100, xaxis=F)}{ show a word distribution. \code{type} should be \code{count} or \code{proportion}.}
-#'         \item{top_words(n_show=10)}{ It selects the top n rows. If \code{n_show} is negative, it selects the bottom n rows.}
-#'         }.
-#' @importFrom quanteda corpus docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary dfm
-#' @importFrom tidytext tidy
-#' @import ggplot2
-#' @import methods
-#' @import dplyr
-#' @export
-explore <- function(files=NULL, text_df=NULL, encoding = "UTF-8",
-                            lowercase = TRUE,
-                            remove_numbers = TRUE, remove_punct = TRUE,
-                            remove_symbols = TRUE, remove_separators = TRUE,
-                            remove_twitter = FALSE, remove_hyphens = FALSE,
-                            remove_url = TRUE, stem_language = NULL,
-                            stopwords = NULL){
-
-  args <- list(remove_numbers = remove_numbers,
-               remove_punct = remove_punct,
-               remove_symbols = remove_symbols,
-               remove_separators = remove_separators,
-               remove_twitter = remove_twitter,
-               remove_hyphens = remove_hyphens,
-               remove_url = remove_url)
-
-  ## preprocess each text
-  ## for debugging
-	if(is.null(text_df)){
-		text_df <- data.frame(text = unlist(lapply(files, function(x){ paste0(readLines(x, encoding = encoding),
-																															collapse = "\n") })),
-										 stringsAsFactors = FALSE)
-	}
-	
-	text_df$doc_id <- paste0("text", 1:nrow(text_df))
-	args$x <- corpus(text_df)
-  ## debugging until here
-
-  # args$x <- corpus(readtext(file_pattern, encoding = encoding))
-  # for new version quanteda, you need this
-  args$x$documents$doc_id <- paste0("text", 1:nrow(text_df))
-  doc_names <- docvars(args$x, "doc_id") # docnames
-  toks <- do.call(tokens, args = args)
-  if (lowercase)
-    toks <- tokens_tolower(toks)
-  if (!is.null(stopwords))
-    toks <- tokens_remove(toks, stopwords)
-  if (!is.null(stem_language))
-    toks <- tokens_wordstem(toks, language = stem_language)
-
-	dfm_ <- dfm(toks, tolower=lowercase)
-	tidy_ <- tidy(dfm_)
-
-	res <- ExploreDocuments$new(tidy_)
-
-	return(res)
-
-}

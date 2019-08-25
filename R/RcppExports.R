@@ -8,8 +8,8 @@
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-topicdict_train <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_topicdict_topicdict_train', PACKAGE = 'topicdict', model, iter, output_per)
+keyATM_train <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_train', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for the covariate model
@@ -19,8 +19,8 @@ topicdict_train <- function(model, iter = 0L, output_per = 10L) {
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-topicdict_train_cov <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_topicdict_topicdict_train_cov', PACKAGE = 'topicdict', model, iter, output_per)
+keyATM_train_cov <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_train_cov', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for the HMM model
@@ -30,8 +30,8 @@ topicdict_train_cov <- function(model, iter = 0L, output_per = 10L) {
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-topicdict_train_HMM <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_topicdict_topicdict_train_HMM', PACKAGE = 'topicdict', model, iter, output_per)
+keyATM_train_HMM <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_train_HMM', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for the topic-over-time model
@@ -41,8 +41,8 @@ topicdict_train_HMM <- function(model, iter = 0L, output_per = 10L) {
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-topicdict_train_tot <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_topicdict_topicdict_train_tot', PACKAGE = 'topicdict', model, iter, output_per)
+keyATM_train_tot <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_train_tot', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for the topic-over-time model with covariate
@@ -52,8 +52,8 @@ topicdict_train_tot <- function(model, iter = 0L, output_per = 10L) {
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-topicdict_train_totcov <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_topicdict_topicdict_train_totcov', PACKAGE = 'topicdict', model, iter, output_per)
+keyATM_train_totcov <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_train_totcov', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)
@@ -64,7 +64,7 @@ topicdict_train_totcov <- function(model, iter = 0L, output_per = 10L) {
 #'
 #' @export
 lda_cov <- function(model, K, iter = 0L, output_iter = 10L) {
-    .Call('_topicdict_lda_cov', PACKAGE = 'topicdict', model, K, iter, output_iter)
+    .Call('_keyATM_lda_cov', PACKAGE = 'keyATM', model, K, iter, output_iter)
 }
 
 #' Run the Collapsed Gibbs sampler for Ideal Point Estimation Model
@@ -75,8 +75,8 @@ lda_cov <- function(model, K, iter = 0L, output_iter = 10L) {
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-topicdict_idealpoint <- function(model, author_info, iter = 0L, output_iter = 10L) {
-    .Call('_topicdict_topicdict_idealpoint', PACKAGE = 'topicdict', model, author_info, iter, output_iter)
+keyATM_idealpoint <- function(model, author_info, iter = 0L, output_iter = 10L) {
+    .Call('_keyATM_keyATM_idealpoint', PACKAGE = 'keyATM', model, author_info, iter, output_iter)
 }
 
 #' Run the Collapsed Gibbs sampler for LDA with weights
@@ -87,7 +87,7 @@ topicdict_idealpoint <- function(model, author_info, iter = 0L, output_iter = 10
 #'
 #' @export
 LDA_weight <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_topicdict_LDA_weight', PACKAGE = 'topicdict', model, iter, output_per)
+    .Call('_keyATM_LDA_weight', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for LDA topic-over-time with weights
@@ -98,6 +98,6 @@ LDA_weight <- function(model, iter = 0L, output_per = 10L) {
 #'
 #' @export
 LDA_weight_tot <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_topicdict_LDA_weight_tot', PACKAGE = 'topicdict', model, iter, output_per)
+    .Call('_keyATM_LDA_weight_tot', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
