@@ -143,14 +143,14 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 
 	if(mode == "cov" | mode == "totcov"){
 		# make sure covariates are provided for all documents	
-		if( ( nrow(covariates_data) != length(files) ) & ( nrow(covariates_data) != nrow(text_df))  ){
-			if(is.null(text_dfm)){
-				stop("Covariates dimension does not match with the number of documents.")
-			}else{
-				if(nrow(covariates_data) != nrow(text_dfm))	
-					stop("Covariates dimension does not match with the number of documents.")
-			}
-		}
+		doc_num <- ifelse(!is.null(files), length(files),
+											ifelse(!is.null(text_df), nrow(text_df),
+														 ifelse(!is.null(text_dfm), nrow(text_dfm),
+																		0)
+														 )
+											)
+		if( nrow(covariates_data) != doc_num ){
+			stop("Covariates dimension does not match with the number of documents.")	
 	}
 
 
