@@ -2,8 +2,6 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please run README.Rmd like a Rmarkdown -->
-
 # keyATM
 
 <!-- badges: start -->
