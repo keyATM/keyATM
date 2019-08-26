@@ -103,7 +103,7 @@ keyATM_run <- function(texts, keywords, mode, extra_k,
   }
 
   # Initialize model
-  message("Initializing a model...")
+  message("Initializing keyATM...")
   model <- keyATM_model(
                           files=files, text_df=text_df, text_dfm=text_dfm,
                           extra_k=extra_k,
@@ -124,6 +124,7 @@ keyATM_run <- function(texts, keywords, mode, extra_k,
     return(model)
   }
 
+	message("Start fitting keyATM...")  
   if(mode == "basic"){
     res <- keyATM_train(model, iter=iteration, output_per=model$options$output_per)
   }else if(mode == "cov"){
@@ -543,9 +544,9 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
   make_z <- function(x){
     zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
-    zz[is.na(zx_assigner[[x]])] <- sample(1:(K + extra_k) - 1,
-                                          sum(as.numeric(is.na(zx_assigner[[x]]))),
-                                          replace = TRUE)
+    zz[is.na(zz)] <- sample(1:(K + extra_k) - 1,
+                            sum(as.numeric(is.na(zz))),
+                            replace = TRUE)
     zz
   }
   Z <- lapply(W, make_z)
