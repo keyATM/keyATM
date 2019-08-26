@@ -141,20 +141,18 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 
   proper_len <- length(dict) + extra_k
 
-        # make sure covariates are provided for all documents    
-	if(mode == "cov" | mode == "totcov"){
-		if (length(files) > 0){
-			if ( nrow(covariates_data) == length(files) ) {
-			} else {
-				stop("Covariates dimension does not match with the number of documents.")
-			}
-		} else {
-			if ( nrow(covariates_data) == nrow(text_df)  | nrow(covariates_data) != nrow(text_dfm)){
-			} else {
-				stop("Covariates dimension does not match with the number of documents.")    
-			}
-		}
-	}
+  if(mode == "cov" | mode == "totcov"){
+    # make sure covariates are provided for all documents  
+    doc_num <- ifelse(!is.null(files), length(files),
+                      ifelse(!is.null(text_df), nrow(text_df),
+                             ifelse(!is.null(text_dfm), nrow(text_dfm),
+                                    0)
+                             )
+                      )
+    if( nrow(covariates_data) != doc_num ){
+      stop("Covariates dimension does not match with the number of documents.")  
+    }
+  }
 
 	## Create alpha 
 	if(is.null(covariates_data) || is.null(covariates_formula)){
