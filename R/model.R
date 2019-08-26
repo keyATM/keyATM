@@ -107,15 +107,14 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 	##
 	## Check format
 	##
-	if(mode %in% c("basic", "cov", "hmm", "tot")){
+	if(mode %in% c("basic", "cov", "hmm", "tot", "totcov")){
 	}else{
 		stop(paste0("Unknown model:", mode))	
 	}
 
 
-	if(!is.null(covariates_data) & !is.null(covariates_formula) & mode != "cov"){
-		message("Covariates information provided, Covariate mode is used.")	
-		mode <- "cov"
+	if(!is.null(covariates_data) & !is.null(covariates_formula) & (mode != "cov" & mode != "totcov")){
+		stop("Covariates information provided, specify the model.")	
 	}
 
 	if(is.null(num_states) & mode == "hmm"){
@@ -130,7 +129,7 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 		}	
 	}
 
-	if(mode == "tot"){
+	if(mode == "tot" | mode == "totcov"){
 		if(is.null(timestamps)){
 			stop("Please provide time stamps.")	
 		}else if(min(timestamps) < 0 | max(timestamps) >= 1){
@@ -142,13 +141,18 @@ topicdict_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 
   proper_len <- length(dict) + extra_k
 
-	if(mode == "cov"){
-		# make sure covariates are provided for all documents	
-		if( ( nrow(covariates_data) != length(files) ) & ( nrow(covariates_data) != nrow(text_df)) ){
-			stop("Covariates dimension does not match with the number of documents.")
-		}
-	}
-
+  if(mode == "cov" | mode == "totcov"){
+    # make sure covariates are provided for all documents  
+    doc_num <- ifelse(!is.null(files), length(files),
+                      ifelse(!is.null(text_df), nrow(text_df),
+                             ifelse(!is.null(text_dfm), nrow(text_dfm),
+                                    0)
+                             )
+                      )
+    if( nrow(covariates_data) != doc_num ){
+      stop("Covariates dimension does not match with the number of documents.")  
+    }
+  }
 
 	## Create alpha 
 	if(is.null(covariates_data) || is.null(covariates_formula)){

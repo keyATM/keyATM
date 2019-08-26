@@ -17,9 +17,9 @@ Imports: Rcpp,
   hashmap,
   quanteda,
   ggplot2,
-	ggrepel,
+  ggrepel,
   dplyr,
-	tidyr,
+  tidyr,
   tidytext,
   methods,
   Matrix
@@ -31,4 +31,4 @@ Suggests: knitr,
   readtext,
   tidyr
 VignetteBuilder: knitr
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
