@@ -147,7 +147,7 @@ keyATM_run <- function(texts, keywords, mode, extra_k,
 #'
 #' @export
 topicdict_train <- function(...){
-  message("Warning: `topicdict_train` is deprecated. Use `keyATM_run`")
+  message("Warning: `topicdict_train` is deprecated, please use `keyATM_run` instead.")
   return(keyATM_train(...))
 }
 
@@ -157,7 +157,7 @@ topicdict_train <- function(...){
 #'
 #' @export
 topicdict_train_cov <- function(...){
-  message("Warning: `topicdict_train_cov` is deprecated. Use `keyATM_run`")
+  message("Warning: `topicdict_train_cov` is deprecated, please use `keyATM_run` instead.")
   return(keyATM_train_cov(...))
 }
 
@@ -167,7 +167,7 @@ topicdict_train_cov <- function(...){
 #'
 #' @export
 topicdict_train_tot <- function(...){
-  message("Warning: `topicdict_train_tot` is deprecated. Use `keyATM_run`")
+  message("Warning: `topicdict_train_tot` is deprecated, please use `keyATM_run` instead.")
   return(keyATM_train_tot(...))
 }
 
@@ -177,7 +177,7 @@ topicdict_train_tot <- function(...){
 #'
 #' @export
 topicdict_train_totcov <- function(...){
-  message("Warning: `topicdict_train_totcov` is deprecated. Use `keyATM_run`")
+  message("Warning: `topicdict_train_totcov` is deprecated, please use `keyATM_run` instead.")
   return(keyATM_train_totcov(...))
 }
 
