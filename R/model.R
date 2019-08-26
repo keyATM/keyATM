@@ -143,41 +143,41 @@ keyATM_run <- function(texts, keywords, mode, extra_k,
 
 #' Fit topic model (deprecated)
 #'
-#' `topicmodel_train` is deprecated. Use `keyATM_run`
+#' `topicdict_train` is deprecated. Use `keyATM_run`
 #'
 #' @export
-topicmodel_train <- function(...){
-  message("Warning: `topicmodel_train` is deprecated. Use `keyATM_run`")
+topicdict_train <- function(...){
+  message("Warning: `topicdict_train` is deprecated. Use `keyATM_run`")
   return(keyATM_train(...))
 }
 
 #' Fit topic model (deprecated)
 #'
-#' `topicmodel_train_cov` is deprecated. Use `keyATM_run`
+#' `topicdict_train_cov` is deprecated. Use `keyATM_run`
 #'
 #' @export
-topicmodel_train_cov <- function(...){
-  message("Warning: `topicmodel_train_cov` is deprecated. Use `keyATM_run`")
+topicdict_train_cov <- function(...){
+  message("Warning: `topicdict_train_cov` is deprecated. Use `keyATM_run`")
   return(keyATM_train_cov(...))
 }
 
 #' Fit topic model (deprecated)
 #'
-#' `topicmodel_train_tot` is deprecated. Use `keyATM_run`
+#' `topicdict_train_tot` is deprecated. Use `keyATM_run`
 #'
 #' @export
-topicmodel_train_tot <- function(...){
-  message("Warning: `topicmodel_train_tot` is deprecated. Use `keyATM_run`")
+topicdict_train_tot <- function(...){
+  message("Warning: `topicdict_train_tot` is deprecated. Use `keyATM_run`")
   return(keyATM_train_tot(...))
 }
 
 #' Fit topic model (deprecated)
 #'
-#' `topicmodel_train_totcov` is deprecated. Use `keyATM_run`
+#' `topicdict_train_totcov` is deprecated. Use `keyATM_run`
 #'
 #' @export
-topicmodel_train_totcov <- function(...){
-  message("Warning: `topicmodel_train_totcov` is deprecated. Use `keyATM_run`")
+topicdict_train_totcov <- function(...){
+  message("Warning: `topicdict_train_totcov` is deprecated. Use `keyATM_run`")
   return(keyATM_train_totcov(...))
 }
 

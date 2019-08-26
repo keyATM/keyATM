@@ -176,7 +176,33 @@ slice_shape (default: 1.2), and output_per (default: 10).</p></td>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list</p>
+    <p>A list containing</p><dl class='dl-horizontal'>
+        <dt>W</dt><dd><p>a list of vectors of word indexes</p></dd>
+        <dt>Z</dt><dd><p>a list of vectors of topic indicators isomorphic to W</p></dd>
+        <dt>C</dt><dd><p>a covariate matrix is there is an input</p></dd>
+        <dt>X</dt><dd><p>a list of vectors of seed indicators (0/1) isomorphic to W</p></dd>
+        <dt>vocab</dt><dd><p>a vector of vocabulary items</p></dd>
+        <dt>files</dt><dd><p>a vector of document filenames</p></dd>
+        <dt>dict</dt><dd><p>a tokenized version of the dictionary</p></dd>
+        <dt>seeds</dt><dd><p>a list of words for the seed words in dict, named by dictionary category</p></dd>
+        <dt>extra_k</dt><dd><p>how many extra non-seeded topics are required</p></dd>
+        <dt>alpha</dt><dd><p>a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.</p></dd>
+        <dt>alpha_iter</dt><dd><p>a list to store topic proportion hyperparameters</p></dd>
+        <dt>Lambda_iter</dt><dd><p>a list to store coefficients of the covariates</p></dd>
+        <dt>S_iter</dt><dd><p>a list to store states sampled in HMM</p></dd>
+        <dt>tot_beta</dt><dd><p>a list to store sampled beta parameters in topic-over-time</p></dd>
+        <dt>sampling_info</dt><dd><p>information related to sampling</p></dd>
+        <dt>model_fit</dt><dd><p>a list to store perplexity and log-likelihood</p></dd>
+        <dt>gamma1</dt><dd><p>First prior probability parameter for X (currently the same for all topics)</p></dd>
+        <dt>gamma2</dt><dd><p>Second prior probability parameter for X (currently the same for all topics)</p></dd>
+        <dt>beta</dt><dd><p>prior parameter for the non-seeded word generation probabilities</p></dd>
+        <dt>beta_s</dt><dd><p>prior parameter for the seeded word generation probabilities</p></dd>
+        <dt>use_cov</dt><dd><p>boolean, whether or not use the covariate</p></dd>
+        <dt>num_states</dt><dd><p>number of states in HMM</p></dd>
+        <dt>timestamps</dt><dd><p>time stamp for topic-over-time model</p></dd>
+        <dt>visualize_keywords</dt><dd><p>ggplot2 object</p></dd>
+        <dt>call</dt><dd><p>details of the function call</p></dd>
+        </dl><p>.</p>
     
 
   </div>
@@ -193,7 +219,7 @@ slice_shape (default: 1.2), and output_per (default: 10).</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by <a href='https://shusei-e.github.io'>Shusei Eshima</a>, <a href='https://polisci.mit.edu/people/tomoya-sasaki'>Tomoya Sasaki</a>, William Lowe, <a href='https://imai.fas.harvard.edu/'>Kosuke Imai</a>.</p>
+  <p>Developed by <a href='https://shusei-e.github.io'>Shusei Eshima</a>, <a href='https://polisci.mit.edu/people/tomoya-sasaki'>Tomoya Sasaki</a>, <a href='http://conjugateprior.org/'>William Lowe</a>, <a href='https://imai.fas.harvard.edu/'>Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
