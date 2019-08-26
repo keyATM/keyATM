@@ -461,7 +461,7 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   ## Visualize keywords
   ##
   if(options$visualize_keywords){
-    dfm_ <- dfm(toks)  
+    dfm_ <- quanteda::dfm(toks)  
     data <- tidy(dfm_)
     totalwords <- sum(data$count)
 

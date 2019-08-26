@@ -31,7 +31,33 @@ keyATM_run(texts, keywords, mode, extra_k, iteration = 1000,
 slice_shape (default: 1.2), and output_per (default: 10).}
 }
 \value{
-A list
+A list containing \describe{
+        \item{W}{a list of vectors of word indexes}
+        \item{Z}{a list of vectors of topic indicators isomorphic to W}
+        \item{C}{a covariate matrix is there is an input}
+        \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
+        \item{vocab}{a vector of vocabulary items}
+        \item{files}{a vector of document filenames}
+        \item{dict}{a tokenized version of the dictionary}
+        \item{seeds}{a list of words for the seed words in dict, named by dictionary category}
+        \item{extra_k}{how many extra non-seeded topics are required}
+        \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
+        \item{alpha_iter}{a list to store topic proportion hyperparameters}
+        \item{Lambda_iter}{a list to store coefficients of the covariates}
+        \item{S_iter}{a list to store states sampled in HMM}
+        \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
+        \item{sampling_info}{information related to sampling}
+        \item{model_fit}{a list to store perplexity and log-likelihood}
+        \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
+        \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
+        \item{beta}{prior parameter for the non-seeded word generation probabilities}
+        \item{beta_s}{prior parameter for the seeded word generation probabilities}
+        \item{use_cov}{boolean, whether or not use the covariate}
+        \item{num_states}{number of states in HMM}
+        \item{timestamps}{time stamp for topic-over-time model}
+        \item{visualize_keywords}{ggplot2 object}
+        \item{call}{details of the function call}
+        }.
 }
 \description{
 This function takes a text input, initialize and fit keyATM model.

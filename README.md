@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# keyATM
+# keyATM: Keyword-assisted Topic Model
 
 <!-- badges: start -->
 
