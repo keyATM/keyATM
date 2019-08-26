@@ -15,8 +15,8 @@ output: github_document
 * [Installation](articles/pkgdown_examples/Installation.html)
 * [keyATM Basic](articles/pkgdown_examples/keyATM_basic.html)
 * [keyATM Covariate](articles/pkgdown_examples/keyATM_cov.html)
-* [keyATM Topic Over Time](articles/pkgdown_examples/keyATM_tot.html)
-* [keyATM Topic Over Time with covariates](articles/pkgdown_examples/keyATM_totcov.html)
+* [keyATM Topics Over Time](articles/pkgdown_examples/keyATM_tot.html)
+* [keyATM Topics Over Time with covariates](articles/pkgdown_examples/keyATM_totcov.html)
 
 ## How to report a bug
 We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/Shusei-E/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format. 

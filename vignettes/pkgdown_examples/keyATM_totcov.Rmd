@@ -1,5 +1,5 @@
 ---
-title: "keyATM Topic Over Time with covariates"
+title: "keyATM Topics Over Time with covariates"
 output: 
   html_document:
     toc: true

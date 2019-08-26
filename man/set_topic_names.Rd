@@ -7,7 +7,7 @@
 set_topic_names(x, topic_names)
 }
 \arguments{
-\item{x}{Posterior from a seededlda model (see \code{posterior})}
+\item{x}{Posterior from a keyATM model (see \code{keyATM_posterior})}
 
 \item{topic_names}{new names for topics}
 }

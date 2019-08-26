@@ -30,7 +30,7 @@ using namespace std;
 
 //' Run the Collapsed Gibbs sampler for the standard model
 //'
-//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param model A initialized model
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
@@ -47,7 +47,7 @@ List keyATM_train(List model, int iter = 0, int output_per = 10){
 
 //' Run the Collapsed Gibbs sampler for the covariate model
 //'
-//' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+//' @param model A initialized model
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
@@ -64,7 +64,7 @@ List keyATM_train_cov(List model, int iter = 0, int output_per = 10){
 
 //' Run the Collapsed Gibbs sampler for the HMM model
 //'
-//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param model A initialized model
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
@@ -80,9 +80,9 @@ List keyATM_train_HMM(List model, int iter = 0, int output_per = 10){
 
 
 
-//' Run the Collapsed Gibbs sampler for the topic-over-time model
+//' Run the Collapsed Gibbs sampler for the topics-over-time model
 //'
-//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param model A initialized model
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
@@ -97,9 +97,9 @@ List keyATM_train_tot(List model, int iter = 0, int output_per = 10){
 }
 
 
-//' Run the Collapsed Gibbs sampler for the topic-over-time model with covariate
+//' Run the Collapsed Gibbs sampler for the topics-over-time model with covariate
 //'
-//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param model A initialized model
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
@@ -120,7 +120,7 @@ List keyATM_train_totcov(List model, int iter = 0, int output_per = 10){
 
 //' Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)
 //'
-//' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+//' @param model A initialized model
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
@@ -137,7 +137,7 @@ List lda_cov(List model, int K, int iter=0, int output_iter=10)
 
 //' Run the Collapsed Gibbs sampler for Ideal Point Estimation Model
 //'
-//' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+//' @param model A initialized model
 //' @param author_info author information
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
@@ -155,7 +155,7 @@ List keyATM_idealpoint(List model, List author_info, int iter=0, int output_iter
 
 //' Run the Collapsed Gibbs sampler for LDA with weights
 //'
-//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param model A initialized model
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
@@ -173,7 +173,7 @@ List LDA_weight(List model, int iter = 0, int output_per = 10){
 
 //' Run the Collapsed Gibbs sampler for LDA topic-over-time with weights
 //'
-//' @param model A model, from \code{init} or a previous invocation of \code{train}
+//' @param model A initialized model
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'

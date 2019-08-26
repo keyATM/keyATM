@@ -7,7 +7,7 @@
 set_doc_names(x, doc_names)
 }
 \arguments{
-\item{x}{Posterior from a seededlda model (see \code{posterior})}
+\item{x}{Posterior from a keyATM model (see \code{keyATM_posterior})}
 
 \item{doc_names}{new names for documents}
 }

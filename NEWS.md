@@ -1,11 +1,14 @@
 # keyATM 0.1.0
 ### Major chages
 * We organize functions into a package
-* We add Topic Over Time with covariates model
+
+# keyATM 0.0.6
+### Major changes
+* We add Topics Over Time with covariates model
 
 # keyATM 0.0.5
 ### Major changes
-* We add Topic Over Time model
+* We add Topics Over Time model
 
 # keyATM 0.0.4
 ### Major changes

@@ -15,8 +15,8 @@ posterior <- function(...){
 #'
 #' @param model a fitted keyATM model
 #'
-#' @return a list with elements
-#'   \itemize{
+#' @return A list containing:
+#'   \describe{
 #'     \item{seed_K}{ Number of seeded topics}
 #'     \item{extra_K}{ Number of regular unseeded topics}
 #'     \item{V}{ Number of word types}
@@ -140,7 +140,7 @@ check_arg_type <- function(arg, typename){
 
 #' Set topic names
 #'
-#' @param x Posterior from a seededlda model (see \code{posterior})
+#' @param x Posterior from a keyATM model (see \code{keyATM_posterior})
 #' @param topic_names new names for topics
 #'
 #' @return a posterior object with new topic names in its components
@@ -156,7 +156,7 @@ set_topic_names <- function(x, topic_names){
 
 #' Set document names
 #'
-#' @param x Posterior from a seededlda model (see \code{posterior})
+#' @param x Posterior from a keyATM model (see \code{keyATM_posterior})
 #' @param doc_names new names for documents
 #'
 #' @return a posterior object with new document names in its components

@@ -237,7 +237,7 @@ topicdict_train_totcov <- function(...){
 #' @param gamma_1 First Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0
 #' @param gamma_2 Second Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0
 #'
-#' @return A list containing \describe{
+#' @return A list containing: \describe{
 #'         \item{W}{a list of vectors of word indexes}
 #'         \item{Z}{a list of vectors of topic indicators isomorphic to W}
 #'         \item{C}{a covariate matrix is there is an input}
@@ -263,7 +263,7 @@ topicdict_train_totcov <- function(...){
 #'         \item{timestamps}{time stamp for topic-over-time model}
 #'         \item{visualize_keywords}{ggplot2 object}
 #'         \item{call}{details of the function call}
-#'         }.
+#'         }
 #' @importFrom quanteda corpus is.corpus ndoc docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
 #' @importFrom hashmap hashmap
 #' @importFrom tidytext tidy

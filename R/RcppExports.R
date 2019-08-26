@@ -3,7 +3,7 @@
 
 #' Run the Collapsed Gibbs sampler for the standard model
 #'
-#' @param model A model, from \code{init} or a previous invocation of \code{train}
+#' @param model A initialized model
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
@@ -14,7 +14,7 @@ keyATM_train <- function(model, iter = 0L, output_per = 10L) {
 
 #' Run the Collapsed Gibbs sampler for the covariate model
 #'
-#' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+#' @param model A initialized model
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
@@ -25,7 +25,7 @@ keyATM_train_cov <- function(model, iter = 0L, output_per = 10L) {
 
 #' Run the Collapsed Gibbs sampler for the HMM model
 #'
-#' @param model A model, from \code{init} or a previous invocation of \code{train}
+#' @param model A initialized model
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
@@ -34,9 +34,9 @@ keyATM_train_HMM <- function(model, iter = 0L, output_per = 10L) {
     .Call('_keyATM_keyATM_train_HMM', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
-#' Run the Collapsed Gibbs sampler for the topic-over-time model
+#' Run the Collapsed Gibbs sampler for the topics-over-time model
 #'
-#' @param model A model, from \code{init} or a previous invocation of \code{train}
+#' @param model A initialized model
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
@@ -45,9 +45,9 @@ keyATM_train_tot <- function(model, iter = 0L, output_per = 10L) {
     .Call('_keyATM_keyATM_train_tot', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
-#' Run the Collapsed Gibbs sampler for the topic-over-time model with covariate
+#' Run the Collapsed Gibbs sampler for the topics-over-time model with covariate
 #'
-#' @param model A model, from \code{init} or a previous invocation of \code{train}
+#' @param model A initialized model
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
@@ -58,7 +58,7 @@ keyATM_train_totcov <- function(model, iter = 0L, output_per = 10L) {
 
 #' Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)
 #'
-#' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+#' @param model A initialized model
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
@@ -69,7 +69,7 @@ lda_cov <- function(model, K, iter = 0L, output_iter = 10L) {
 
 #' Run the Collapsed Gibbs sampler for Ideal Point Estimation Model
 #'
-#' @param model A model, from \code{init} or a previous invocation of \code{train}, including a covariate
+#' @param model A initialized model
 #' @param author_info author information
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
@@ -81,7 +81,7 @@ keyATM_idealpoint <- function(model, author_info, iter = 0L, output_iter = 10L) 
 
 #' Run the Collapsed Gibbs sampler for LDA with weights
 #'
-#' @param model A model, from \code{init} or a previous invocation of \code{train}
+#' @param model A initialized model
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
@@ -92,7 +92,7 @@ LDA_weight <- function(model, iter = 0L, output_per = 10L) {
 
 #' Run the Collapsed Gibbs sampler for LDA topic-over-time with weights
 #'
-#' @param model A model, from \code{init} or a previous invocation of \code{train}
+#' @param model A initialized model
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'

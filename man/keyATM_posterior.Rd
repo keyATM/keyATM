@@ -10,8 +10,8 @@ keyATM_posterior(model)
 \item{model}{a fitted keyATM model}
 }
 \value{
-a list with elements
-  \itemize{
+A list containing:
+  \describe{
     \item{seed_K}{ Number of seeded topics}
     \item{extra_K}{ Number of regular unseeded topics}
     \item{V}{ Number of word types}

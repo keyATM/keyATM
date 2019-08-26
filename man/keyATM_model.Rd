@@ -71,7 +71,7 @@ e.g. \code{quanteda::stopwords("english")}}
 \item{num_state}{numer of state in HMM model}
 }
 \value{
-A list containing \describe{
+A list containing: \describe{
         \item{W}{a list of vectors of word indexes}
         \item{Z}{a list of vectors of topic indicators isomorphic to W}
         \item{C}{a covariate matrix is there is an input}
@@ -97,7 +97,7 @@ A list containing \describe{
         \item{timestamps}{time stamp for topic-over-time model}
         \item{visualize_keywords}{ggplot2 object}
         \item{call}{details of the function call}
-        }.
+        }
 }
 \description{
 This function creates a list of word indexes W, topic indicators Z,
