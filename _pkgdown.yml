@@ -1,5 +1,9 @@
 destination: docs
 
+template:
+  params:
+    bootswatch: spacelab
+
 authors:
   Shusei Eshima:
     href: "https://shusei-e.github.io"
@@ -28,6 +32,8 @@ navbar:
           href: articles/pkgdown_examples/keyATM_tot.html
         - text: "keyATM TOT with Covariates"
           href: articles/pkgdown_examples/keyATM_totcov.html
+        - text: "Guidline"
+          href: articles/pkgdown_examples/guidline.html
     - text: "Reference"
       href: reference/index.html
     - text: "Changelog"

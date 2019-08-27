@@ -8,14 +8,26 @@
 \description{
 Fits a topic model using keywords.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/Shusei-E/keyATM/}
+  \item Report bugs at \url{https://github.com/Shusei-E/keyATM/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Shusei Eshima \email{shuseieshima@g.harvard.edu}
 
 Authors:
 \itemize{
   \item Tomoya Sasaki \email{tomoyas@mit.edu}
-  \item William Lowe \email{wlowe@princeton.edu}
   \item Kosuke Imai \email{imai@harvard.edu}
+}
+
+Other contributors:
+\itemize{
+  \item William Lowe \email{wlowe@princeton.edu} [contributor]
 }
 
 }
