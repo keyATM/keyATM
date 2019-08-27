@@ -32,6 +32,9 @@ navbar:
       href: reference/index.html
     - text: "Changelog"
       href: news/index.html
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/Shusei-E/keyATM
 
 
 reference:
@@ -41,13 +44,8 @@ reference:
   - '`diagnosis_alpha`'
   - '`diagnosis_model_fit`'
   - '`diagnosis_p`'
-  - '`keyATM_model`'
   - '`keyATM_posterior`'
   - '`keyATM_run`'
-  - '`keyATM_train`'
-  - '`keyATM_train_cov`'
-  - '`keyATM_train_tot`'
-  - '`keyATM_train_totcov`'
   - '`set_doc_names`'
   - '`set_topic_names`'
   - '`top_docs`'

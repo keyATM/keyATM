@@ -11,13 +11,14 @@ posterior <- function(...){
 #'
 #' Constructs a (N x K) matrix \code{theta} and (K x V) matrix \code{beta}
 #' plus their margins from the sample of Z and W in \code{model}.
+#' \code{model} is an output of \code{keyATM_run()}.
 #' These statistics implicitly marginalize over X.
 #'
 #' @param model a fitted keyATM model
 #'
 #' @return A list containing:
 #'   \describe{
-#'     \item{seed_K}{ Number of seeded topics}
+#'     \item{seed_K}{ Number of keyword topics}
 #'     \item{extra_K}{ Number of regular unseeded topics}
 #'     \item{V}{ Number of word types}
 #'     \item{N}{ Number of documents}
@@ -116,7 +117,7 @@ keyATM_posterior <- function(model){
   dict <- model$dict
   names(dict) <- names(model$keywords)
 
-  ll <- list(seed_K = length(model$dict), extra_K = model$extra_k,
+  ll <- list(keyword_K = length(model$dict), extra_K = model$extra_k,
              V = V, N = N,
              model=model$mode,
              theta = theta, beta = tZW, # as.matrix(as.data.frame.matrix(tZW)),

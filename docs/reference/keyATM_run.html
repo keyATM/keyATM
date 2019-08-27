@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Run a keyATM model — keyATM_run • keyATM</title>
+<title>Initialize and fit a keyATM model — keyATM_run • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,10 @@
 
 
 
-<meta property="og:title" content="Run a keyATM model — keyATM_run" />
+<meta property="og:title" content="Initialize and fit a keyATM model — keyATM_run" />
 
-<meta property="og:description" content="This function takes a text input, initialize and fit keyATM model." />
+<meta property="og:description" content="This function takes a text input, initialize and fit keyATM model.
+Internally, keyATM_run() calls keyATM_model() to initialize a model." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -102,7 +103,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Shusei-E/keyATM">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -115,14 +121,15 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Run a keyATM model</h1>
+    <h1>Initialize and fit a keyATM model</h1>
     
     <div class="hidden name"><code>keyATM_run.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function takes a text input, initialize and fit keyATM model.</p>
+    <p>This function takes a text input, initialize and fit keyATM model.
+Internally, <code>keyATM_run()</code> calls <code><a href='keyATM_model.html'>keyATM_model()</a></code> to initialize a model.</p>
     
     </div>
 
@@ -183,8 +190,8 @@ slice_shape (default: 1.2), and output_per (default: 10).</p></td>
         <dt>X</dt><dd><p>a list of vectors of seed indicators (0/1) isomorphic to W</p></dd>
         <dt>vocab</dt><dd><p>a vector of vocabulary items</p></dd>
         <dt>files</dt><dd><p>a vector of document filenames</p></dd>
-        <dt>dict</dt><dd><p>a tokenized version of the dictionary</p></dd>
-        <dt>seeds</dt><dd><p>a list of words for the seed words in dict, named by dictionary category</p></dd>
+        <dt>dict</dt><dd><p>a tokenized version of the keyword dictionary</p></dd>
+        <dt>keywords</dt><dd><p>a list of keywords in dict, named by dictionary category</p></dd>
         <dt>extra_k</dt><dd><p>how many extra non-seeded topics are required</p></dd>
         <dt>alpha</dt><dd><p>a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.</p></dd>
         <dt>alpha_iter</dt><dd><p>a list to store topic proportion hyperparameters</p></dd>
@@ -199,7 +206,7 @@ slice_shape (default: 1.2), and output_per (default: 10).</p></td>
         <dt>beta_s</dt><dd><p>prior parameter for the seeded word generation probabilities</p></dd>
         <dt>use_cov</dt><dd><p>boolean, whether or not use the covariate</p></dd>
         <dt>num_states</dt><dd><p>number of states in HMM</p></dd>
-        <dt>timestamps</dt><dd><p>time stamp for topic-over-time model</p></dd>
+        <dt>timestamps</dt><dd><p>time stamp for topics-over-time model</p></dd>
         <dt>visualize_keywords</dt><dd><p>ggplot2 object</p></dd>
         <dt>call</dt><dd><p>details of the function call</p></dd>
         </dl><p>.</p>

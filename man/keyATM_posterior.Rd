@@ -12,7 +12,7 @@ keyATM_posterior(model)
 \value{
 A list containing:
   \describe{
-    \item{seed_K}{ Number of seeded topics}
+    \item{seed_K}{ Number of keyword topics}
     \item{extra_K}{ Number of regular unseeded topics}
     \item{V}{ Number of word types}
     \item{N}{ Number of documents}
@@ -30,5 +30,6 @@ A list containing:
 \description{
 Constructs a (N x K) matrix \code{theta} and (K x V) matrix \code{beta}
 plus their margins from the sample of Z and W in \code{model}.
+\code{model} is an output of \code{keyATM_run()}.
 These statistics implicitly marginalize over X.
 }

@@ -7,5 +7,5 @@
 topicdict_train_tot(...)
 }
 \description{
-`topicdict_train_tot` is deprecated. Use `keyATM_run`
+`topicdict_train_tot()` is deprecated. Use `keyATM_run()`
 }

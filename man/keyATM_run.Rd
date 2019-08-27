@@ -2,7 +2,7 @@
 % Please edit documentation in R/model.R
 \name{keyATM_run}
 \alias{keyATM_run}
-\title{Run a keyATM model}
+\title{Initialize and fit a keyATM model}
 \usage{
 keyATM_run(texts, keywords, mode, extra_k, iteration = 1000,
   covariates_data = NULL, covariates_formula = ~. + 0,
@@ -38,8 +38,8 @@ A list containing \describe{
         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
         \item{vocab}{a vector of vocabulary items}
         \item{files}{a vector of document filenames}
-        \item{dict}{a tokenized version of the dictionary}
-        \item{seeds}{a list of words for the seed words in dict, named by dictionary category}
+        \item{dict}{a tokenized version of the keyword dictionary}
+        \item{keywords}{a list of keywords in dict, named by dictionary category}
         \item{extra_k}{how many extra non-seeded topics are required}
         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
         \item{alpha_iter}{a list to store topic proportion hyperparameters}
@@ -54,11 +54,12 @@ A list containing \describe{
         \item{beta_s}{prior parameter for the seeded word generation probabilities}
         \item{use_cov}{boolean, whether or not use the covariate}
         \item{num_states}{number of states in HMM}
-        \item{timestamps}{time stamp for topic-over-time model}
+        \item{timestamps}{time stamp for topics-over-time model}
         \item{visualize_keywords}{ggplot2 object}
         \item{call}{details of the function call}
         }.
 }
 \description{
 This function takes a text input, initialize and fit keyATM model.
+Internally, \code{keyATM_run()} calls \code{keyATM_model()} to initialize a model.
 }
