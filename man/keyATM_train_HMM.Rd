@@ -7,7 +7,7 @@
 keyATM_train_HMM(model, iter = 0L, output_per = 10L)
 }
 \arguments{
-\item{model}{A model, from \code{init} or a previous invocation of \code{train}}
+\item{model}{A initialized model}
 
 \item{iter}{Required number of iterations}
 

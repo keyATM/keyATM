@@ -7,7 +7,7 @@
 lda_cov(model, K, iter = 0L, output_iter = 10L)
 }
 \arguments{
-\item{model}{A model, from \code{init} or a previous invocation of \code{train}, including a covariate}
+\item{model}{A initialized model}
 
 \item{iter}{Required number of iterations}
 

@@ -2,17 +2,17 @@
 % Please edit documentation in R/RcppExports.R
 \name{keyATM_train_totcov}
 \alias{keyATM_train_totcov}
-\title{Run the Collapsed Gibbs sampler for the topic-over-time model with covariate}
+\title{Run the Collapsed Gibbs sampler for the topics-over-time model with covariate}
 \usage{
 keyATM_train_totcov(model, iter = 0L, output_per = 10L)
 }
 \arguments{
-\item{model}{A model, from \code{init} or a previous invocation of \code{train}}
+\item{model}{A initialized model}
 
 \item{iter}{Required number of iterations}
 
 \item{output_per}{Show log-likelihood and perplexity per this number during the iteration}
 }
 \description{
-Run the Collapsed Gibbs sampler for the topic-over-time model with covariate
+Run the Collapsed Gibbs sampler for the topics-over-time model with covariate
 }

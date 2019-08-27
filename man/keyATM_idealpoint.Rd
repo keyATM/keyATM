@@ -7,7 +7,7 @@
 keyATM_idealpoint(model, author_info, iter = 0L, output_iter = 10L)
 }
 \arguments{
-\item{model}{A model, from \code{init} or a previous invocation of \code{train}, including a covariate}
+\item{model}{A initialized model}
 
 \item{author_info}{author information}
 

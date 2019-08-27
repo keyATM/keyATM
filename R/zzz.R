@@ -1,5 +1,7 @@
-.onAttach <- function(libname, pkgname) {
+.onAttach <- function(...) {
+	pkgname <- "keyATM"
   pd <- utils::packageDescription(pkgname);
-  packageStartupMessage(pkgname, " v", pd$Version, " (",
-                    pd$Date, ") successfully loaded. See ?", pkgname, " for help. \n Papers, resources, and other materials at xxx.xxx");
+  packageStartupMessage(pkgname, " v", pd$Version, 
+												" successfully loaded.",
+												"\n Papers, examples, resources, and other materials are at xxx.xxx");
 }
