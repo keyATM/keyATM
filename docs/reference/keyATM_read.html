@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get posterior quantities from model output — keyATM_posterior • keyATM</title>
+<title>Initialize a keyATM model — keyATM_read • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,12 +30,10 @@
 
 
 
-<meta property="og:title" content="Get posterior quantities from model output — keyATM_posterior" />
+<meta property="og:title" content="Initialize a keyATM model — keyATM_read" />
 
-<meta property="og:description" content="Constructs a (N x K) matrix theta and (K x V) matrix beta
-plus their margins from the sample of Z and W in model.
-model is an output of keyATM_run().
-These statistics implicitly marginalize over X." />
+<meta property="og:description" content="This function reads a text input and initialize a keyATM model.
+Internally, keyATM_read() calls keyATM_model() to initialize a model." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,49 +124,91 @@ These statistics implicitly marginalize over X." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get posterior quantities from model output</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/posterior.R'><code>R/posterior.R</code></a></small>
-    <div class="hidden name"><code>keyATM_posterior.Rd</code></div>
+    <h1>Initialize a keyATM model</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/model.R'><code>R/model.R</code></a></small>
+    <div class="hidden name"><code>keyATM_read.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Constructs a (N x K) matrix <code>theta</code> and (K x V) matrix <code>beta</code>
-plus their margins from the sample of Z and W in <code>model</code>.
-<code>model</code> is an output of <code>keyATM_run()</code>.
-These statistics implicitly marginalize over X.</p>
+    <p>This function reads a text input and initialize a keyATM model.
+Internally, <code>keyATM_read()</code> calls <code><a href='keyATM_model.html'>keyATM_model()</a></code> to initialize a model.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>keyATM_posterior</span>(<span class='no'>model</span>)</pre>
+    <pre class="usage"><span class='fu'>keyATM_read</span>(<span class='no'>texts</span>, <span class='no'>keywords</span>, <span class='no'>mode</span>, <span class='no'>extra_k</span>, <span class='kw'>iteration</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+  <span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~<span class='no'>.</span> + <span class='fl'>0</span>,
+  <span class='kw'>timestamps</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>225</span>, <span class='kw'>output_per</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>use_weights</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>visualize_keywords</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>model</th>
-      <td><p>a fitted keyATM model</p></td>
+      <th>texts</th>
+      <td><p>Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.</p></td>
+    </tr>
+    <tr>
+      <th>keywords</th>
+      <td><p>a quanteda dictionary or a list of character vectors</p></td>
+    </tr>
+    <tr>
+      <th>mode</th>
+      <td><p>number of iteration</p></td>
+    </tr>
+    <tr>
+      <th>extra_k</th>
+      <td><p>number of regular topics in addition to the keyword topics by
+<code>keywords</code></p></td>
+    </tr>
+    <tr>
+      <th>covariates_data</th>
+      <td><p>covariate</p></td>
+    </tr>
+    <tr>
+      <th>covariates_formula</th>
+      <td><p>formula applied to covariate data</p></td>
+    </tr>
+    <tr>
+      <th>timestamps</th>
+      <td><p>timestamps</p></td>
+    </tr>
+    <tr>
+      <th>options</th>
+      <td><p>options are seed, use_weights,
+visualize_keywords, and output_per.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list containing:</p><dl class='dl-horizontal'>
-    <dt>seed_K</dt><dd><p>Number of keyword topics</p></dd>
-    <dt>extra_K</dt><dd><p>Number of regular unseeded topics</p></dd>
-    <dt>V</dt><dd><p>Number of word types</p></dd>
-    <dt>N</dt><dd><p>Number of documents</p></dd>
-    <dt>theta</dt><dd><p>Normalized tpoic proportions for each document</p></dd>
-    <dt>beta</dt><dd><p>Normalized topic specific word generation probabilities</p></dd>
-    <dt>topic_counts</dt><dd><p>Number of tokens assigned to each topic</p></dd>
-    <dt>word_counts</dt><dd><p>Number of times each word type appears</p></dd>
-    <dt>doc_lens</dt><dd><p>Length of each document in tokens</p></dd>
-    <dt>vocab</dt><dd><p>Words in the vocabulary</p></dd>
-    <dt>alpha</dt><dd><p><code>alpha</code> during the iteration</p></dd>
-    <dt>modelfit</dt><dd><p>Perplexity and log-likelihood</p></dd>
-    <dt>p</dt><dd><p>Estimated p</p></dd>
-  </dl>
-
+    <p>keyATM object, which is a list containing</p><dl class='dl-horizontal'>
+        <dt>W</dt><dd><p>a list of vectors of word indexes</p></dd>
+        <dt>Z</dt><dd><p>a list of vectors of topic indicators isomorphic to W</p></dd>
+        <dt>C</dt><dd><p>a covariate matrix is there is an input</p></dd>
+        <dt>X</dt><dd><p>a list of vectors of seed indicators (0/1) isomorphic to W</p></dd>
+        <dt>vocab</dt><dd><p>a vector of vocabulary items</p></dd>
+        <dt>files</dt><dd><p>a vector of document filenames</p></dd>
+        <dt>dict</dt><dd><p>a tokenized version of the keyword dictionary</p></dd>
+        <dt>keywords</dt><dd><p>a list of keywords in dict, named by dictionary category</p></dd>
+        <dt>extra_k</dt><dd><p>how many extra non-seeded topics are required</p></dd>
+        <dt>alpha</dt><dd><p>a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.</p></dd>
+        <dt>alpha_iter</dt><dd><p>a list to store topic proportion hyperparameters</p></dd>
+        <dt>Lambda_iter</dt><dd><p>a list to store coefficients of the covariates</p></dd>
+        <dt>S_iter</dt><dd><p>a list to store states sampled in HMM</p></dd>
+        <dt>tot_beta</dt><dd><p>a list to store sampled beta parameters in topic-over-time</p></dd>
+        <dt>sampling_info</dt><dd><p>information related to sampling</p></dd>
+        <dt>model_fit</dt><dd><p>a list to store perplexity and log-likelihood</p></dd>
+        <dt>gamma1</dt><dd><p>First prior probability parameter for X (currently the same for all topics)</p></dd>
+        <dt>gamma2</dt><dd><p>Second prior probability parameter for X (currently the same for all topics)</p></dd>
+        <dt>beta</dt><dd><p>prior parameter for the non-seeded word generation probabilities</p></dd>
+        <dt>beta_s</dt><dd><p>prior parameter for the seeded word generation probabilities</p></dd>
+        <dt>use_cov</dt><dd><p>boolean, whether or not use the covariate</p></dd>
+        <dt>num_states</dt><dd><p>number of states in HMM</p></dd>
+        <dt>timestamps</dt><dd><p>time stamp for topics-over-time model</p></dd>
+        <dt>visualize_keywords</dt><dd><p>ggplot2 object</p></dd>
+        <dt>call</dt><dd><p>details of the function call</p></dd>
+        </dl><p>.</p>
     
 
   </div>

@@ -5,31 +5,25 @@ output:
     toc: true
 ---
 
+
+First, we read the corpus.
 ```{r, eval = FALSE}
-fitted <- keyATM_run(texts = quanteda_dfm,
-                     iteration=1000,
+model <- keyATM_read(texts = quanteda_dfm,
                      extra_k=3,
                      keywords=keywords_list,
                      mode="basic",
                      options=list(seed=225))
-post <- keyATM_posterior(fitted)
 ```
 
-To visualize keywords,
+We visualize keywords before fitting the model,
 ```{r, eval=FALSE}
-fitted$visualize_keywords
-```
-
-If you just want to check the visualization,
-```{r, eval = FALSE}
-model <- keyATM_run(texts = quanteda_dfm,
-                    iteration=0,
-                    extra_k=3,
-                    keywords=keywords_list,
-                    mode="basic",
-                    options=list(seed=225))
 model$visualize_keywords
 ```
 
+We fit the model.
+```{r, eval=FALSE}
+fitted <- keyATM_fit(model, iteration=1000)
+post <- keyATM_posterior(fitted)
+```
 
 

@@ -9,25 +9,23 @@ topicdict_model <- function(...){
 }
 
 
-#' Initialize and fit a keyATM model
+#' Initialize a keyATM model
 #'
-#' This function takes a text input, initialize and fit keyATM model.
-#' Internally, \code{keyATM_run()} calls \code{keyATM_model()} to initialize a model.
+#' This function reads a text input and initialize a keyATM model.
+#' Internally, \code{keyATM_read()} calls \code{keyATM_model()} to initialize a model.
 #'
 #' @param texts Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.
 #' @param keywords a quanteda dictionary or a list of character vectors
 #' @param mode number of iteration
 #' @param extra_k number of regular topics in addition to the keyword topics by
 #'                \code{keywords}
-#' @param iteration number of iteration
 #' @param covariates_data covariate
 #' @param covariates_formula formula applied to covariate data
 #' @param timestamps timestamps
-#' @param options options are seed (default: 225), use_weights (default: 1),
-#'           visualize_keywords (default: TRUE),
-#'          slice_shape (default: 1.2), and output_per (default: 10).
+#' @param options options are seed, use_weights,
+#'           visualize_keywords, and output_per.
 #'
-#' @return A list containing \describe{
+#' @return keyATM object, which is a list containing \describe{
 #'         \item{W}{a list of vectors of word indexes}
 #'         \item{Z}{a list of vectors of topic indicators isomorphic to W}
 #'         \item{C}{a covariate matrix is there is an input}
@@ -56,12 +54,17 @@ topicdict_model <- function(...){
 #'         }.
 #'
 #' @export
-keyATM_run <- function(texts, keywords, mode, extra_k,
-                       iteration=1000,
-                       covariates_data=NULL, covariates_formula= ~.+0,
-                       timestamps=NULL,
-                       options=list()
-                      )
+keyATM_read <- function(texts, keywords, mode, extra_k,
+                        iteration=1000,
+                        covariates_data=NULL, covariates_formula= ~.+0,
+                        timestamps=NULL,
+                        options=list(
+                                     seed=225,
+                                     output_per=10,
+                                     use_weights=TRUE,
+                                     visualize_keywords=TRUE
+                                    )
+                       )
 {
   # Set option
   if(is.null(options$output_per))
@@ -119,13 +122,56 @@ keyATM_run <- function(texts, keywords, mode, extra_k,
                           remove_hyphens=F, remove_url=F
                         )
 
-  # Run model
-  if(iteration == 0){
-    message("Return initialized model.")  
-    return(model)
-  }
+  return(model)
+}
 
-	message("Start fitting keyATM...")  
+
+#' Fit a keyATM model
+#'
+#' Fit keyATM model.
+#'
+#' @param model keyATM object (the output of \code{keyATM_read()})
+#' @param iteration number of iteration
+#'
+#' @return keyATM object, which is a list containing \describe{
+#'         \item{W}{a list of vectors of word indexes}
+#'         \item{Z}{a list of vectors of topic indicators isomorphic to W}
+#'         \item{C}{a covariate matrix is there is an input}
+#'         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
+#'         \item{vocab}{a vector of vocabulary items}
+#'         \item{files}{a vector of document filenames}
+#'         \item{dict}{a tokenized version of the keyword dictionary}
+#'         \item{keywords}{a list of keywords in dict, named by dictionary category}
+#'         \item{extra_k}{how many extra non-seeded topics are required}
+#'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
+#'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
+#'         \item{Lambda_iter}{a list to store coefficients of the covariates}
+#'         \item{S_iter}{a list to store states sampled in HMM}
+#'         \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
+#'         \item{sampling_info}{information related to sampling}
+#'         \item{model_fit}{a list to store perplexity and log-likelihood}
+#'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
+#'         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
+#'         \item{beta}{prior parameter for the non-seeded word generation probabilities}
+#'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
+#'         \item{use_cov}{boolean, whether or not use the covariate}
+#'         \item{num_states}{number of states in HMM}
+#'         \item{timestamps}{time stamp for topics-over-time model}
+#'         \item{visualize_keywords}{ggplot2 object}
+#'         \item{call}{details of the function call}
+#'         }.
+#'
+#' @export
+keyATM_fit <- function(model, iteration=1000){
+
+  argname <- deparse(match.call()[['model']])
+  if (!inherits(model, "keyATM"))
+    stop(paste("'", argname, '" is not a keyATM object. Please use `keyATM_read()`'))
+
+  mode <- model$mode
+	set.seed(options$seed)
+
+  message("Start fitting keyATM...")  
   if(mode == "basic"){
     res <- keyATM_train(model, iter=iteration, output_per=model$options$output_per)
   }else if(mode == "cov"){
@@ -135,10 +181,11 @@ keyATM_run <- function(texts, keywords, mode, extra_k,
   }else if(mode == "totcov"){
     res <- keyATM_train_totcov(model, iter=iteration, output_per=model$options$output_per)
   }else{
-    stop("Model name does not match.")  
+    stop("Please check `mode`.")  
   }
 
   return(res)
+
 }
 
 
@@ -187,7 +234,7 @@ topicdict_train_totcov <- function(...){
 #'
 #' This function creates a list of word indexes W, topic indicators Z,
 #' seed indicators X, a vocabulary list \code{vocab} from inputs.
-#' We do not recommend to call this function directly. Please use \code{keyATM_run()}.
+#' We do not recommend to call this function directly. Please use \code{keyATM_read()}.
 #'
 #' \code{Z} represents which topic a word topken was generated by.
 #' It is initialized randomly
@@ -274,7 +321,7 @@ topicdict_train_totcov <- function(...){
 #' @import ggrepel
 #' @export
 keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
-                         mode="basic",
+                         mode="",
                          extra_k = 1,
                          covariates_data=NULL, covariates_formula=NULL,
                          num_states=NULL, timestamps=NULL,
@@ -351,22 +398,24 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   ## Set options
   ##
   if(is.null(options$use_weights)){
-    options$use_weights = 1  
+    options$use_weights <- 1  
+  }else{
+    options$use_weights <- as.numeric(options$use_weights)
   }
   if(!is.null(options$logsumexp_approx)){
     message("Warning: `logsumexp_approx` option will be deprecated.")
   }
   if(is.null(options$logsumexp_approx)){
     # 0: do not approximate logsumexp
-    options$logsumexp_approx = 0
+    options$logsumexp_approx <- 0
   }
   if(is.null(options$slice_shape)){
     # parameter for slice sampling
-    options$slice_shape = 1.2
+    options$slice_shape <- 1.2
   }
   if(is.null(options$use_mom)){
     # Method of Moments in TOT
-    options$use_mom = 0
+    options$use_mom <- 0
   }
   if(!is.null(options$alpha)){
     # If alpha value is overwritten
@@ -480,28 +529,28 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 
     seed_list <- dict
 
-    names(seed_list) <- paste0("EstTopic", 1:length(seed_list))
+    names(seed_list) <- paste0("Topic", 1:length(seed_list))
     seeds <- lapply(seed_list, function(x){unlist(strsplit(x," "))})
     ext_k <- length(seeds)
     max_num_words <- max(unlist(lapply(seeds, function(x){length(x)})))
 
-    seeds_df <- data.frame(EstTopic=1, Word=1)
+    seeds_df <- data.frame(Topic=1, Word=1)
     for(k in 1:ext_k){
       words <- seeds[[k]]
       numwords <- length(words)
-      topicname <- paste0("EstTopic", k)
+      topicname <- paste0("Topic", k)
       for(w in 1:numwords){
-        seeds_df <- rbind(seeds_df, data.frame(EstTopic=topicname, Word=words[w]))
+        seeds_df <- rbind(seeds_df, data.frame(Topic=topicname, Word=words[w]))
       }
     }
     seeds_df <- seeds_df[2:nrow(seeds_df), ]
 
     dplyr::inner_join(data, seeds_df, by="Word") %>%
-      group_by(EstTopic) %>%
+      group_by(Topic) %>%
       mutate(Ranking = 1:n()) -> temp
 
     visualize_keywords <- 
-      ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=EstTopic)) +
+      ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=Topic)) +
         geom_line() +
         geom_point() +
         geom_label_repel(aes(label = Word), size=2.8,

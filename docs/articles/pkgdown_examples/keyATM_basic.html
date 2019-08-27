@@ -99,23 +99,17 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>fitted &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_run.html">keyATM_run</a></span>(<span class="dt">texts =</span> quanteda_dfm,</span>
-<span id="cb1-2"><a href="#cb1-2"></a>                     <span class="dt">iteration=</span><span class="dv">1000</span>,</span>
-<span id="cb1-3"><a href="#cb1-3"></a>                     <span class="dt">extra_k=</span><span class="dv">3</span>,</span>
-<span id="cb1-4"><a href="#cb1-4"></a>                     <span class="dt">keywords=</span>keywords_list,</span>
-<span id="cb1-5"><a href="#cb1-5"></a>                     <span class="dt">mode=</span><span class="st">"basic"</span>,</span>
-<span id="cb1-6"><a href="#cb1-6"></a>                     <span class="dt">options=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed=</span><span class="dv">225</span>))</span>
-<span id="cb1-7"><a href="#cb1-7"></a>post &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_posterior.html">keyATM_posterior</a></span>(fitted)</span></code></pre></div>
-<p>To visualize keywords,</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>fitted<span class="op">$</span>visualize_keywords</span></code></pre></div>
-<p>If you just want to check the visualization,</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>model &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_run.html">keyATM_run</a></span>(<span class="dt">texts =</span> quanteda_dfm,</span>
-<span id="cb3-2"><a href="#cb3-2"></a>                    <span class="dt">iteration=</span><span class="dv">0</span>,</span>
-<span id="cb3-3"><a href="#cb3-3"></a>                    <span class="dt">extra_k=</span><span class="dv">3</span>,</span>
-<span id="cb3-4"><a href="#cb3-4"></a>                    <span class="dt">keywords=</span>keywords_list,</span>
-<span id="cb3-5"><a href="#cb3-5"></a>                    <span class="dt">mode=</span><span class="st">"basic"</span>,</span>
-<span id="cb3-6"><a href="#cb3-6"></a>                    <span class="dt">options=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed=</span><span class="dv">225</span>))</span>
-<span id="cb3-7"><a href="#cb3-7"></a>model<span class="op">$</span>visualize_keywords</span></code></pre></div>
+<p>First, we read the corpus.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>model &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(<span class="dt">texts =</span> quanteda_dfm,</span>
+<span id="cb1-2"><a href="#cb1-2"></a>                     <span class="dt">extra_k=</span><span class="dv">3</span>,</span>
+<span id="cb1-3"><a href="#cb1-3"></a>                     <span class="dt">keywords=</span>keywords_list,</span>
+<span id="cb1-4"><a href="#cb1-4"></a>                     <span class="dt">mode=</span><span class="st">"basic"</span>,</span>
+<span id="cb1-5"><a href="#cb1-5"></a>                     <span class="dt">options=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed=</span><span class="dv">225</span>))</span></code></pre></div>
+<p>We visualize keywords before fitting the model,</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>model<span class="op">$</span>visualize_keywords</span></code></pre></div>
+<p>We fit the model.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>fitted &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_fit.html">keyATM_fit</a></span>(model, <span class="dt">iteration=</span><span class="dv">1000</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>post &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_posterior.html">keyATM_posterior</a></span>(fitted)</span></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

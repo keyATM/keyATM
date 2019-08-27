@@ -34,7 +34,7 @@
 
 <meta property="og:description" content="This function creates a list of word indexes W, topic indicators Z,
 seed indicators X, a vocabulary list vocab from inputs.
-We do not recommend to call this function directly. Please use keyATM_run()." />
+We do not recommend to call this function directly. Please use keyATM_read()." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -134,20 +134,19 @@ We do not recommend to call this function directly. Please use keyATM_run()." />
     
     <p>This function creates a list of word indexes W, topic indicators Z,
 seed indicators X, a vocabulary list <code>vocab</code> from inputs.
-We do not recommend to call this function directly. Please use <code><a href='keyATM_run.html'>keyATM_run()</a></code>.</p>
+We do not recommend to call this function directly. Please use <code><a href='keyATM_read.html'>keyATM_read()</a></code>.</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>keyATM_model</span>(<span class='kw'>files</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dict</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>text_df</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>text_dfm</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>mode</span> <span class='kw'>=</span> <span class='st'>"basic"</span>, <span class='kw'>extra_k</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>covariates_formula</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timestamps</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>encoding</span> <span class='kw'>=</span> <span class='st'>"UTF-8"</span>,
-  <span class='kw'>lowercase</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>remove_numbers</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>remove_punct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>remove_symbols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>remove_separators</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>remove_twitter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>remove_hyphens</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>remove_url</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>stem_language</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stopwords</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>50</span>/(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>dict</span>) +
-  <span class='no'>extra_k</span>), <span class='kw'>beta</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>beta_s</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>gamma_1</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>gamma_2</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>())</pre>
+  <span class='kw'>text_dfm</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>mode</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>extra_k</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>covariates_formula</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timestamps</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>encoding</span> <span class='kw'>=</span> <span class='st'>"UTF-8"</span>, <span class='kw'>lowercase</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>remove_numbers</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>remove_punct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>remove_symbols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>remove_separators</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>remove_twitter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>remove_hyphens</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>remove_url</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>stem_language</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>stopwords</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>50</span>/(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>dict</span>) + <span class='no'>extra_k</span>), <span class='kw'>beta</span> <span class='kw'>=</span> <span class='fl'>0.01</span>,
+  <span class='kw'>beta_s</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>gamma_1</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>gamma_2</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

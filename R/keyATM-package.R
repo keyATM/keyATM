@@ -8,13 +8,6 @@
 NULL
 
 
-#' keyATM: Keyword-assisted Topic Model
-#'
-#'
-#' @docType package
-#' @name keyATM
-NULL
-
 
 #' @useDynLib keyATM
 #' @importFrom Rcpp sourceCpp

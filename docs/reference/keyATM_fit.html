@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • keyATM</title>
+<title>Fit a keyATM model — keyATM_fit • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,10 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Fit a keyATM model — keyATM_fit" />
+
+<meta property="og:description" content="Fit keyATM model." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -47,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -118,102 +121,74 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Fit a keyATM model</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/model.R'><code>R/model.R</code></a></small>
+    <div class="hidden name"><code>keyATM_fit.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p>Fit keyATM model.</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
-
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="diagnosis_alpha.html">diagnosis_alpha()</a></code> </p>
-        </td>
-        <td><p>Show a diagnosis plot of alpha</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="diagnosis_model_fit.html">diagnosis_model_fit()</a></code> </p>
-        </td>
-        <td><p>Show a diagnosis plot of log-likelihood and perplexity</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="diagnosis_p.html">diagnosis_p()</a></code> </p>
-        </td>
-        <td><p>Show a diagnosis plot of p</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="keyATM_fit.html">keyATM_fit()</a></code> </p>
-        </td>
-        <td><p>Fit a keyATM model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="keyATM_posterior.html">keyATM_posterior()</a></code> </p>
-        </td>
-        <td><p>Get posterior quantities from model output</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="keyATM_read.html">keyATM_read()</a></code> </p>
-        </td>
-        <td><p>Initialize a keyATM model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="set_doc_names.html">set_doc_names()</a></code> </p>
-        </td>
-        <td><p>Set document names</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="set_topic_names.html">set_topic_names()</a></code> </p>
-        </td>
-        <td><p>Set topic names</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="top_docs.html">top_docs()</a></code> </p>
-        </td>
-        <td><p>Show the top documents for each topic</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="top_terms.html">top_terms()</a></code> </p>
-        </td>
-        <td><p>Show the top terms for each topic</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="top_topics.html">top_topics()</a></code> </p>
-        </td>
-        <td><p>Show the top topics for each document</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>keyATM_fit</span>(<span class='no'>model</span>, <span class='kw'>iteration</span> <span class='kw'>=</span> <span class='fl'>1000</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>model</th>
+      <td><p>keyATM object (the output of <code><a href='keyATM_read.html'>keyATM_read()</a></code>)</p></td>
+    </tr>
+    <tr>
+      <th>iteration</th>
+      <td><p>number of iteration</p></td>
+    </tr>
     </table>
-  </div>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>keyATM object, which is a list containing</p><dl class='dl-horizontal'>
+        <dt>W</dt><dd><p>a list of vectors of word indexes</p></dd>
+        <dt>Z</dt><dd><p>a list of vectors of topic indicators isomorphic to W</p></dd>
+        <dt>C</dt><dd><p>a covariate matrix is there is an input</p></dd>
+        <dt>X</dt><dd><p>a list of vectors of seed indicators (0/1) isomorphic to W</p></dd>
+        <dt>vocab</dt><dd><p>a vector of vocabulary items</p></dd>
+        <dt>files</dt><dd><p>a vector of document filenames</p></dd>
+        <dt>dict</dt><dd><p>a tokenized version of the keyword dictionary</p></dd>
+        <dt>keywords</dt><dd><p>a list of keywords in dict, named by dictionary category</p></dd>
+        <dt>extra_k</dt><dd><p>how many extra non-seeded topics are required</p></dd>
+        <dt>alpha</dt><dd><p>a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.</p></dd>
+        <dt>alpha_iter</dt><dd><p>a list to store topic proportion hyperparameters</p></dd>
+        <dt>Lambda_iter</dt><dd><p>a list to store coefficients of the covariates</p></dd>
+        <dt>S_iter</dt><dd><p>a list to store states sampled in HMM</p></dd>
+        <dt>tot_beta</dt><dd><p>a list to store sampled beta parameters in topic-over-time</p></dd>
+        <dt>sampling_info</dt><dd><p>information related to sampling</p></dd>
+        <dt>model_fit</dt><dd><p>a list to store perplexity and log-likelihood</p></dd>
+        <dt>gamma1</dt><dd><p>First prior probability parameter for X (currently the same for all topics)</p></dd>
+        <dt>gamma2</dt><dd><p>Second prior probability parameter for X (currently the same for all topics)</p></dd>
+        <dt>beta</dt><dd><p>prior parameter for the non-seeded word generation probabilities</p></dd>
+        <dt>beta_s</dt><dd><p>prior parameter for the seeded word generation probabilities</p></dd>
+        <dt>use_cov</dt><dd><p>boolean, whether or not use the covariate</p></dd>
+        <dt>num_states</dt><dd><p>number of states in HMM</p></dd>
+        <dt>timestamps</dt><dd><p>time stamp for topics-over-time model</p></dd>
+        <dt>visualize_keywords</dt><dd><p>ggplot2 object</p></dd>
+        <dt>call</dt><dd><p>details of the function call</p></dd>
+        </dl><p>.</p>
+    
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
-    </ul>
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
+          </ul>
+
   </div>
 </div>
 
