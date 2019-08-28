@@ -42,9 +42,10 @@ void keyATMbase::read_data_common()
   // alpha -> specific function	
 	
 	// Options
-	List options = model["options"];
-	use_weight = options["use_weights"];
-	slice_A = options["slice_shape"];
+	options_list = model["options"];
+	use_weight = options_list["use_weights"];
+	slice_A = options_list["slice_shape"];
+	store_theta = options_list["store_theta"];
 
 }
 
@@ -179,6 +180,9 @@ void keyATMbase::iteration()
 
 void keyATMbase::sampling_store(int &r_index)
 {
+	if(store_theta)
+		store_theta_iter(r_index);
+
 	double loglik = loglik_total();
 	double perplexity = exp(-loglik / (double)total_words);
 
@@ -190,6 +194,14 @@ void keyATMbase::sampling_store(int &r_index)
 	
 	Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
 					 " (perplexity: " << perplexity << ")" << std::endl;
+}
+
+void keyATMbase::store_theta_iter(int &r_index)
+{
+	Z_tables = options_list["Z_tables"];
+	NumericMatrix Z_table = Rcpp::wrap(n_dk);
+	Z_tables.push_back(Z_table);
+	options_list["Z_tables"] = Z_tables;
 }
 
 void keyATMbase::verbose_special(int &r_index){

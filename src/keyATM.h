@@ -23,6 +23,7 @@ class keyATMbase
 		double eta_1_regular = 2;
 		double eta_2_regular = 1;
 		int use_weight;
+		int store_theta;
 
 		double slice_A; // parameter for slice sampling 
 
@@ -40,17 +41,20 @@ class keyATMbase
 		
 		int num_vocab, num_doc, total_words;
 
+		List options_list;
+		List Z_tables;
+		NumericMatrix Z_table;
+
 		// alpha
 		int num_topics;
 		VectorXd alpha;
 
-		// Keywordq
+		// Keywords
 		std::vector< std::unordered_set<int> > keywords;
 		std::vector<int> seed_num;
 
 		// Latent Variables
 		MatrixXd n_x0_kv;
-		// SparseMatrix<double> n_x0_kv;
 		SparseMatrix<double,RowMajor> n_x1_kv;
 		typedef Eigen::Triplet<double> Triplet;
 		MatrixXd n_dk;
@@ -123,13 +127,14 @@ class keyATMbase
 									 int &w, int &doc_id);
 
 		void sampling_store(int &r_index);
+		void store_theta_iter(int &r_index);
+
 		virtual void verbose_special(int &r_index);
 
 		virtual double loglik_total() = 0;
 
 		// Utilities
 		double vmax, vmin;
-
 
 		double gammapdfln(const double &x, const double &a, const double &b);
 		double betapdf(const double &x, const double &a, const double &b);

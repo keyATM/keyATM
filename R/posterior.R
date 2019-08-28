@@ -31,6 +31,7 @@ posterior <- function(...){
 #'     \item{alpha}{ \code{alpha} during the iteration}
 #'     \item{modelfit}{ Perplexity and log-likelihood}
 #'     \item{p}{ Estimated p}
+#'     \item{options}{ Options used in the \code{model}}
 #'   }
 #' @export
 keyATM_posterior <- function(model){
@@ -117,6 +118,18 @@ keyATM_posterior <- function(model){
   dict <- model$dict
   names(dict) <- names(model$keywords)
 
+
+	# theta by iteration
+	if(model$options$store_theta){
+		posterior_theta <- function(x){
+			doc_length <- Matrix::rowSums(x)
+			return(sweep(x, 1, doc_length, "/"))
+		}	
+
+		model$options$theta_iter <- lapply(model$options$Z_tables,
+																 			 posterior_theta)
+	}
+
   ll <- list(keyword_K = length(model$dict), extra_K = model$extra_k,
              V = V, N = N,
              model=model$mode,
@@ -124,7 +137,7 @@ keyATM_posterior <- function(model){
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = doc_lens, vocab = model$vocab,
              dict = dict,
-             alpha=res_alpha, modelfit=modelfit, p=p_estimated)
+             alpha=res_alpha, modelfit=modelfit, p=p_estimated, options=model$options)
   class(ll) <- c("keyATM_posterior", class(ll))
   ll
 }

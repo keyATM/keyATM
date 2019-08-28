@@ -168,8 +168,16 @@ keyATM_fit <- function(model, iteration=1000){
   if (!inherits(model, "keyATM"))
     stop(paste("'", argname, '" is not a keyATM object. Please use `keyATM_read()`'))
 
+
+	# Prepare for store_theta
+	if(model$options$store_theta){
+		# We need matrices to store theta	
+		model$options$Z_tables <- list()
+	}	
+
+
   mode <- model$mode
-	set.seed(options$seed)
+	set.seed(model$options$seed)
 
   message("Start fitting keyATM...")  
   if(mode == "basic"){
@@ -421,6 +429,11 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
     # If alpha value is overwritten
     alpha = options$alpha
   }
+  if(is.null(options$store_theta)){
+    options$store_theta <- 0
+	}else{
+		options$store_theta <- as.numeric(options$store_theta)	
+	}
 
 
   ## Create alpha 

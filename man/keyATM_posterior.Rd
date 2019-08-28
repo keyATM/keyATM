@@ -25,6 +25,7 @@ A list containing:
     \item{alpha}{ \code{alpha} during the iteration}
     \item{modelfit}{ Perplexity and log-likelihood}
     \item{p}{ Estimated p}
+    \item{options}{ Options used in the \code{model}}
   }
 }
 \description{
