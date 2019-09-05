@@ -23,7 +23,7 @@ model$visualize_keywords
 We fit the model.
 ```{r, eval=FALSE}
 fitted <- keyATM_fit(model, iteration=1000)
-post <- keyATM_posterior(fitted)
+post <- keyATM_output(fitted)
 ```
 
 
