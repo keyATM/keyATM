@@ -34,8 +34,8 @@ posterior <- function(...){
 #'     \item{options}{ Options used in the \code{model}}
 #'   }
 #' @export
-keyATM_posterior <- function(model){
-  message("Creating a posterior object. It may take time...")
+keyATM_output <- function(model){
+  message("Creating an output object. It may take time...")
 
   check_arg_type(model, "keyATM")
   allK <- model$extra_k + length(model$dict)

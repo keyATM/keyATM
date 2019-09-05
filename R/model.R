@@ -4,7 +4,7 @@
 #'
 #' @export
 topicdict_model <- function(...){
-  message("Warning: `topicdict_model` is deprecated, please use `keyATM_run` instead.")
+  message("Warning: `topicdict_model` is deprecated, please use `keyATM_read` instead.")
   return(keyATM_model(...))
 }
 
@@ -199,41 +199,41 @@ keyATM_fit <- function(model, iteration=1000){
 
 #' Fit topic model (deprecated)
 #'
-#' `topicdict_train()` is deprecated. Use `keyATM_run()`
+#' `topicdict_train()` is deprecated. Use `keyATM_fit()`
 #'
 #' @export
 topicdict_train <- function(...){
-  message("Warning: `topicdict_train` is deprecated, please use `keyATM_run` instead.")
+  message("Warning: `topicdict_train` is deprecated, please use `keyATM_fit` instead.")
   return(keyATM_train(...))
 }
 
 #' Fit topic model (deprecated)
 #'
-#' `topicdict_train_cov()` is deprecated. Use `keyATM_run()`
+#' `topicdict_train_cov()` is deprecated. Use `keyATM_fit()`
 #'
 #' @export
 topicdict_train_cov <- function(...){
-  message("Warning: `topicdict_train_cov` is deprecated, please use `keyATM_run` instead.")
+  message("Warning: `topicdict_train_cov` is deprecated, please use `keyATM_fit` instead.")
   return(keyATM_train_cov(...))
 }
 
 #' Fit topic model (deprecated)
 #'
-#' `topicdict_train_tot()` is deprecated. Use `keyATM_run()`
+#' `topicdict_train_tot()` is deprecated. Use `keyATM_fit()`
 #'
 #' @export
 topicdict_train_tot <- function(...){
-  message("Warning: `topicdict_train_tot` is deprecated, please use `keyATM_run` instead.")
+  message("Warning: `topicdict_train_tot` is deprecated, please use `keyATM_fit` instead.")
   return(keyATM_train_tot(...))
 }
 
 #' Fit topic model (deprecated)
 #'
-#' `topicdict_train_totcov()` is deprecated. Use `keyATM_run()`
+#' `topicdict_train_totcov()` is deprecated. Use `keyATM_fit()`
 #'
 #' @export
 topicdict_train_totcov <- function(...){
-  message("Warning: `topicdict_train_totcov` is deprecated, please use `keyATM_run` instead.")
+  message("Warning: `topicdict_train_totcov` is deprecated, please use `keyATM_fit` instead.")
   return(keyATM_train_totcov(...))
 }
 
