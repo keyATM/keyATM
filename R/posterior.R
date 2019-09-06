@@ -2,7 +2,7 @@
 #'
 #' @export
 posterior <- function(...){
-  message("Warning: `posterior` is deprecated, please use `keyATM_posterior` instead.")
+  message("Warning: `posterior` is deprecated, please use `keyATM_output` instead.")
   return(keyATM_posterior(...))
 }
 

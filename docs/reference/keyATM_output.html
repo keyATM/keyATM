@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • keyATM</title>
+<title>Get posterior quantities from model output — keyATM_output • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,13 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Get posterior quantities from model output — keyATM_output" />
+
+<meta property="og:description" content="Constructs a (N x K) matrix theta and (K x V) matrix beta
+plus their margins from the sample of Z and W in model.
+model is an output of keyATM_run().
+These statistics implicitly marginalize over X." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -47,7 +53,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -118,102 +124,63 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Get posterior quantities from model output</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/posterior.R'><code>R/posterior.R</code></a></small>
+    <div class="hidden name"><code>keyATM_output.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p>Constructs a (N x K) matrix <code>theta</code> and (K x V) matrix <code>beta</code>
+plus their margins from the sample of Z and W in <code>model</code>.
+<code>model</code> is an output of <code>keyATM_run()</code>.
+These statistics implicitly marginalize over X.</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
-
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="diagnosis_alpha.html">diagnosis_alpha()</a></code> </p>
-        </td>
-        <td><p>Show a diagnosis plot of alpha</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="diagnosis_model_fit.html">diagnosis_model_fit()</a></code> </p>
-        </td>
-        <td><p>Show a diagnosis plot of log-likelihood and perplexity</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="diagnosis_p.html">diagnosis_p()</a></code> </p>
-        </td>
-        <td><p>Show a diagnosis plot of p</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="keyATM_fit.html">keyATM_fit()</a></code> </p>
-        </td>
-        <td><p>Fit a keyATM model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="keyATM_output.html">keyATM_output()</a></code> </p>
-        </td>
-        <td><p>Get posterior quantities from model output</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="keyATM_read.html">keyATM_read()</a></code> </p>
-        </td>
-        <td><p>Initialize a keyATM model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="set_doc_names.html">set_doc_names()</a></code> </p>
-        </td>
-        <td><p>Set document names</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="set_topic_names.html">set_topic_names()</a></code> </p>
-        </td>
-        <td><p>Set topic names</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="top_docs.html">top_docs()</a></code> </p>
-        </td>
-        <td><p>Show the top documents for each topic</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="top_terms.html">top_terms()</a></code> </p>
-        </td>
-        <td><p>Show the top terms for each topic</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="top_topics.html">top_topics()</a></code> </p>
-        </td>
-        <td><p>Show the top topics for each document</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>keyATM_output</span>(<span class='no'>model</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>model</th>
+      <td><p>a fitted keyATM model</p></td>
+    </tr>
     </table>
-  </div>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>A list containing:</p><dl class='dl-horizontal'>
+    <dt>seed_K</dt><dd><p>Number of keyword topics</p></dd>
+    <dt>extra_K</dt><dd><p>Number of regular unseeded topics</p></dd>
+    <dt>V</dt><dd><p>Number of word types</p></dd>
+    <dt>N</dt><dd><p>Number of documents</p></dd>
+    <dt>theta</dt><dd><p>Normalized tpoic proportions for each document</p></dd>
+    <dt>beta</dt><dd><p>Normalized topic specific word generation probabilities</p></dd>
+    <dt>topic_counts</dt><dd><p>Number of tokens assigned to each topic</p></dd>
+    <dt>word_counts</dt><dd><p>Number of times each word type appears</p></dd>
+    <dt>doc_lens</dt><dd><p>Length of each document in tokens</p></dd>
+    <dt>vocab</dt><dd><p>Words in the vocabulary</p></dd>
+    <dt>alpha</dt><dd><p><code>alpha</code> during the iteration</p></dd>
+    <dt>modelfit</dt><dd><p>Perplexity and log-likelihood</p></dd>
+    <dt>p</dt><dd><p>Estimated p</p></dd>
+    <dt>options</dt><dd><p>Options used in the <code>model</code></p></dd>
+  </dl>
+
+    
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
-    </ul>
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
+          </ul>
+
   </div>
 </div>
 

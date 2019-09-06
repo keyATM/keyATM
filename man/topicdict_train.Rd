@@ -7,5 +7,5 @@
 topicdict_train(...)
 }
 \description{
-`topicdict_train()` is deprecated. Use `keyATM_run()`
+`topicdict_train()` is deprecated. Use `keyATM_fit()`
 }

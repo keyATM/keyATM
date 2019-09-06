@@ -143,11 +143,11 @@ int keyATMtot::sample_z_log(VectorXd &alpha, int &z, int &x,
     for (int k = 0; k < num_topics; ++k){
 
       numerator = log( (beta + n_x0_kv(k, w)) *
-        (n_x0_k(k) + gamma_2) *
+        (n_x0_k(k) + x_prior(k, 1)) *
         (n_dk(doc_id, k) + alpha(k)) );
 
       denominator = log( ((double)num_vocab * beta + n_x0_k(k)) *
-        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) );
+        (n_x1_k(k) + x_prior(k, 0) + n_x0_k(k) + x_prior(k, 1)) );
 
       z_prob_vec(k) = numerator - denominator + beta_lg(k);
     }
@@ -166,11 +166,11 @@ int keyATMtot::sample_z_log(VectorXd &alpha, int &z, int &x,
       } else{ 
 
         numerator = log( (beta_s + n_x1_kv.coeffRef(k, w)) *
-           (n_x1_k(k) + gamma_1)  *
+           (n_x1_k(k) + x_prior(k, 0))  *
            (n_dk(doc_id, k) + alpha(k)) );
       }
       denominator = log( ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
-        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2) );
+        (n_x1_k(k) + x_prior(k, 0) + n_x0_k(k) + x_prior(k, 1)) );
 
       z_prob_vec(k) = numerator - denominator + beta_lg(k);
     }
@@ -230,11 +230,11 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
   if (x == 0){
     for (int k = 0; k < num_topics; ++k){
       numerator = (beta + n_x0_kv(k, w)) *
-        (n_x0_k(k) + gamma_2) *
+        (n_x0_k(k) + x_prior(k, 1)) *
         (n_dk(doc_id, k) + alpha(k));
 
       denominator = ((double)num_vocab * beta + n_x0_k(k)) *
-        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);
+        (n_x1_k(k) + x_prior(k, 0) + n_x0_k(k) + x_prior(k, 1));
 
 
 			check_frac = numerator / denominator * beta_tg(k);
@@ -263,11 +263,11 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
 				continue;
       } else{ 
         numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
-           (n_x1_k(k) + gamma_1)  *
+           (n_x1_k(k) + x_prior(k, 0))  *
            (n_dk(doc_id, k) + alpha(k));
       }
       denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
-        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);
+        (n_x1_k(k) + x_prior(k, 0) + n_x0_k(k) + x_prior(k, 1));
 
 
 			check_frac = numerator / denominator * beta_tg(k);
@@ -525,12 +525,12 @@ double keyATMtot::loglik_total()
     loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
     loglik += mylgamma( beta_s * (double)num_vocab ) - mylgamma(beta_s * (double)num_vocab + n_x1_k_noWeight(k) );
     // x
-    loglik += mylgamma( n_x0_k_noWeight(k) + gamma_2 ) - mylgamma(n_x1_k_noWeight(k) + gamma_1 + n_x0_k_noWeight(k) + gamma_2)
-      + mylgamma( n_x1_k_noWeight(k) + gamma_1 ) ;
+    loglik += mylgamma( n_x0_k_noWeight(k) + x_prior(k, 1) ) - mylgamma(n_x1_k_noWeight(k) + x_prior(k, 0) + n_x0_k_noWeight(k) + x_prior(k, 1))
+      + mylgamma( n_x1_k_noWeight(k) + x_prior(k, 0) ) ;
 
 
     // x normalization
-    loglik += mylgamma(gamma_1 + gamma_2) - mylgamma(gamma_1) - mylgamma(gamma_2);
+    loglik += mylgamma(x_prior(k, 0) + x_prior(k, 1)) - mylgamma(x_prior(k, 0)) - mylgamma(x_prior(k, 1));
 
   }
   // z and time stamps
