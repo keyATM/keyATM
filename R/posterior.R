@@ -49,12 +49,30 @@ keyATM_output <- function(model){
     tnames <- c(names(model$keywords))
   }
 
-  posterior_z <- function(zvec){
-    tt <- table(factor(zvec, levels = 1:allK - 1))
-    # (tt + model$alpha) / (sum(tt) + sum(model$alpha)) # posterior mean
-    (tt) / (sum(tt)) # posterior mean
-  }
-  theta <- do.call(rbind, lapply(model$Z, posterior_z))
+	if(model$mode %in% c("cov", "totcov")){
+		Alpha <- exp(model$C %*% t(model$Lambda[[length(model$Lambda)]]))
+
+		posterior_z <- function(docid){
+			zvec <- model$Z[[docid]]
+			alpha <- Alpha[docid, ]
+			tt <- table(factor(zvec, levels = 1:allK - 1))
+			(tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
+		}
+
+		theta <- do.call(rbind, lapply(1:length(model$Z), posterior_z))
+
+	}else if(model$mode %in% c("basic", "tot")){
+		alpha <- model$alpha_iter[[length(model$alpha_iter)]]	
+
+		posterior_z <- function(zvec){
+			tt <- table(factor(zvec, levels = 1:allK - 1))
+			(tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
+		}	
+
+		theta <- do.call(rbind, lapply(model$Z, posterior_z))
+
+	}
+
   rownames(theta) <- basename(model$files)
   colnames(theta) <- tnames # label seeded topics
 
