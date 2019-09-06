@@ -63,7 +63,7 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
                                      output_per=10,
                                      use_weights=TRUE,
                                      visualize_keywords=TRUE,
-																		 x_prior=NULL
+                                     x_prior=NULL
                                     )
                        )
 {
@@ -170,15 +170,15 @@ keyATM_fit <- function(model, iteration=1000){
     stop(paste("'", argname, '" is not a keyATM object. Please use `keyATM_read()`'))
 
 
-	# Prepare for store_theta
-	if(model$options$store_theta){
-		# We need matrices to store theta	
-		model$options$Z_tables <- list()
-	}	
+  # Prepare for store_theta
+  if(model$options$store_theta){
+    # We need matrices to store theta  
+    model$options$Z_tables <- list()
+  }  
 
 
   mode <- model$mode
-	set.seed(model$options$seed)
+  set.seed(model$options$seed)
 
   message("Start fitting keyATM...")  
   if(mode == "basic"){
@@ -431,18 +431,18 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   }
   if(is.null(options$store_theta)){
     options$store_theta <- 0
-	}else{
-		options$store_theta <- as.numeric(options$store_theta)	
-	}
-	if(is.null(options$x_prior)){
-		options$x_prior <- matrix(1.0, nrow=proper_len, ncol=2)	
-	}
-	if(!is.null(options$x_prior)){
-		if(dim(options$x_prior)[1] != proper_len)	
-			stop("Check the dimension of `options$x_prior`")
-		if(dim(options$x_prior)[2] != 2)	
-			stop("Check the dimension of `options$x_prior`")
-	}
+  }else{
+    options$store_theta <- as.numeric(options$store_theta)  
+  }
+  if(is.null(options$x_prior)){
+    options$x_prior <- matrix(1.0, nrow=proper_len, ncol=2)  
+  }
+  if(!is.null(options$x_prior)){
+    if(dim(options$x_prior)[1] != proper_len)  
+      stop("Check the dimension of `options$x_prior`")
+    if(dim(options$x_prior)[2] != 2)  
+      stop("Check the dimension of `options$x_prior`")
+  }
 
 
   ## Create alpha 

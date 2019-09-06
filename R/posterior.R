@@ -49,29 +49,29 @@ keyATM_output <- function(model){
     tnames <- c(names(model$keywords))
   }
 
-	if(model$mode %in% c("cov", "totcov")){
-		Alpha <- exp(model$C %*% t(model$Lambda[[length(model$Lambda)]]))
+  if(model$mode %in% c("cov", "totcov")){
+    Alpha <- exp(model$C %*% t(model$Lambda[[length(model$Lambda)]]))
 
-		posterior_z <- function(docid){
-			zvec <- model$Z[[docid]]
-			alpha <- Alpha[docid, ]
-			tt <- table(factor(zvec, levels = 1:allK - 1))
-			(tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
-		}
+    posterior_z <- function(docid){
+      zvec <- model$Z[[docid]]
+      alpha <- Alpha[docid, ]
+      tt <- table(factor(zvec, levels = 1:allK - 1))
+      (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
+    }
 
-		theta <- do.call(rbind, lapply(1:length(model$Z), posterior_z))
+    theta <- do.call(rbind, lapply(1:length(model$Z), posterior_z))
 
-	}else if(model$mode %in% c("basic", "tot")){
-		alpha <- model$alpha_iter[[length(model$alpha_iter)]]	
+  }else if(model$mode %in% c("basic", "tot")){
+    alpha <- model$alpha_iter[[length(model$alpha_iter)]]  
 
-		posterior_z <- function(zvec){
-			tt <- table(factor(zvec, levels = 1:allK - 1))
-			(tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
-		}	
+    posterior_z <- function(zvec){
+      tt <- table(factor(zvec, levels = 1:allK - 1))
+      (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
+    }  
 
-		theta <- do.call(rbind, lapply(model$Z, posterior_z))
+    theta <- do.call(rbind, lapply(model$Z, posterior_z))
 
-	}
+  }
 
   rownames(theta) <- basename(model$files)
   colnames(theta) <- tnames # label seeded topics
@@ -137,16 +137,16 @@ keyATM_output <- function(model){
   names(dict) <- names(model$keywords)
 
 
-	# theta by iteration
-	if(model$options$store_theta){
-		posterior_theta <- function(x){
-			doc_length <- Matrix::rowSums(x)
-			return(sweep(x, 1, doc_length, "/"))
-		}	
+  # theta by iteration
+  if(model$options$store_theta){
+    posterior_theta <- function(x){
+      doc_length <- Matrix::rowSums(x)
+      return(sweep(x, 1, doc_length, "/"))
+    }  
 
-		model$options$theta_iter <- lapply(model$options$Z_tables,
-																 			 posterior_theta)
-	}
+    model$options$theta_iter <- lapply(model$options$Z_tables,
+                                        posterior_theta)
+  }
 
   ll <- list(keyword_K = length(model$dict), extra_K = model$extra_k,
              V = V, N = N,
