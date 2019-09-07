@@ -12,7 +12,7 @@ keyATM_model(files = NULL, dict = NULL, text_df = NULL,
   remove_separators = TRUE, remove_twitter = FALSE,
   remove_hyphens = FALSE, remove_url = TRUE, stem_language = NULL,
   stopwords = NULL, alpha = 50/(length(dict) + extra_k), beta = 0.01,
-  beta_s = 0.1, gamma_1 = 1, gamma_2 = 1, options = list())
+  beta_s = 0.1, options = list())
 }
 \arguments{
 \item{files}{names of each file to read (or a quanteda corpus object)}
@@ -61,13 +61,13 @@ e.g. \code{quanteda::stopwords("english")}}
 
 \item{beta_s}{Hyperparameter for seeded word probabilities. Default: 0.1}
 
-\item{gamma_1}{First Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0}
-
-\item{gamma_2}{Second Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0}
-
 \item{dtm}{Document-Term matrix from \code{quanteda} package}
 
 \item{num_state}{numer of state in HMM model}
+
+\item{gamma_1}{First Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0}
+
+\item{gamma_2}{Second Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0}
 }
 \value{
 A list containing: \describe{

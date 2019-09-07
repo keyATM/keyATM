@@ -32,7 +32,8 @@ class keyATMbase
 		List W, Z, X;
 		StringVector files, vocab;
 		NumericVector nv_alpha;
-		double gamma_1, gamma_2;
+		// double gamma_1, gamma_2;
+		MatrixXd x_prior;
 		double beta, beta_s;
 		int k_free, k_seeded;
 		List seeds;

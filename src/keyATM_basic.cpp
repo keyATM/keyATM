@@ -195,13 +195,13 @@ double keyATMbasic::loglik_total()
     loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
     loglik += mylgamma( beta_s * (double)num_vocab ) - mylgamma(beta_s * (double)num_vocab + n_x1_k_noWeight(k) );
     // x
-    loglik += mylgamma( n_x0_k_noWeight(k) + gamma_2 ) - mylgamma(n_x1_k_noWeight(k) + gamma_1 + n_x0_k_noWeight(k) + gamma_2)
-      + mylgamma( n_x1_k_noWeight(k) + gamma_1 ) ;
+    loglik += mylgamma( n_x0_k_noWeight(k) + x_prior(k, 1) ) - mylgamma(n_x1_k_noWeight(k) + x_prior(k, 0) + n_x0_k_noWeight(k) + x_prior(k, 1))
+      + mylgamma( n_x1_k_noWeight(k) + x_prior(k, 0) ) ;
 
 		// Rcout << (double)n_x0_k(k) << " / " << (double)n_x1_k(k) << std::endl; // debug
 
     // x normalization
-    loglik += mylgamma(gamma_1 + gamma_2) - mylgamma(gamma_1) - mylgamma(gamma_2);
+    loglik += mylgamma(x_prior(k, 0) + x_prior(k, 1)) - mylgamma(x_prior(k, 0)) - mylgamma(x_prior(k, 1));
   }
   // z
 	fixed_part = alpha.sum();

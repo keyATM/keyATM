@@ -62,7 +62,8 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
                                      seed=225,
                                      output_per=10,
                                      use_weights=TRUE,
-                                     visualize_keywords=TRUE
+                                     visualize_keywords=TRUE,
+                                     x_prior=NULL
                                     )
                        )
 {
@@ -169,15 +170,15 @@ keyATM_fit <- function(model, iteration=1000){
     stop(paste("'", argname, '" is not a keyATM object. Please use `keyATM_read()`'))
 
 
-	# Prepare for store_theta
-	if(model$options$store_theta){
-		# We need matrices to store theta	
-		model$options$Z_tables <- list()
-	}	
+  # Prepare for store_theta
+  if(model$options$store_theta){
+    # We need matrices to store theta  
+    model$options$Z_tables <- list()
+  }  
 
 
   mode <- model$mode
-	set.seed(model$options$seed)
+  set.seed(model$options$seed)
 
   message("Start fitting keyATM...")  
   if(mode == "basic"){
@@ -342,7 +343,6 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
                          stopwords = NULL,
                          alpha = 50/(length(dict) + extra_k),
                          beta = 0.01, beta_s = 0.1,
-                         gamma_1 = 1.0, gamma_2 = 1.0,
                          options = list()
                         )
 {
@@ -431,9 +431,18 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   }
   if(is.null(options$store_theta)){
     options$store_theta <- 0
-	}else{
-		options$store_theta <- as.numeric(options$store_theta)	
-	}
+  }else{
+    options$store_theta <- as.numeric(options$store_theta)  
+  }
+  if(is.null(options$x_prior)){
+    options$x_prior <- matrix(1.0, nrow=proper_len, ncol=2)  
+  }
+  if(!is.null(options$x_prior)){
+    if(dim(options$x_prior)[1] != proper_len)  
+      stop("Check the dimension of `options$x_prior`")
+    if(dim(options$x_prior)[2] != 2)  
+      stop("Check the dimension of `options$x_prior`")
+  }
 
 
   ## Create alpha 
@@ -635,7 +644,7 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names, mode=mode,
              files = doc_names, dict = dtoks, keywords = keywords, extra_k = extra_k,
-             alpha = alpha, gamma_1 = gamma_1, gamma_2 = gamma_2,
+             alpha = alpha,
              beta = beta, beta_s = beta_s,
              alpha_iter = list(), Lambda_iter = list(), S_iter = list(),
              model_fit = list(), sampling_info = list(), tot_beta = list(),

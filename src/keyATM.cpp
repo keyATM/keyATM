@@ -29,8 +29,8 @@ void keyATMbase::read_data_common()
 	W = model["W"]; Z = model["Z"]; X = model["X"];
   files = model["files"]; vocab = model["vocab"];
   nv_alpha = model["alpha"];
-  gamma_1 = model["gamma_1"];
-	gamma_2 = model["gamma_2"];
+ //  gamma_1 = model["gamma_1"];
+	// gamma_2 = model["gamma_2"];
   beta = model["beta"];
 	beta_s = model["beta_s"];
   k_free = model["extra_k"];
@@ -46,6 +46,10 @@ void keyATMbase::read_data_common()
 	use_weight = options_list["use_weights"];
 	slice_A = options_list["slice_shape"];
 	store_theta = options_list["store_theta"];
+
+	x_prior = MatrixXd::Zero(num_topics, 2);
+	NumericMatrix RMatrix = options_list["x_prior"];
+	x_prior = Rcpp::as<Eigen::MatrixXd>(RMatrix);
 
 }
 
@@ -232,11 +236,11 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
     for (int k = 0; k < num_topics; ++k){
 
       numerator = (beta + n_x0_kv(k, w)) *
-        (n_x0_k(k) + gamma_2) *
+        (n_x0_k(k) + x_prior(k, 1)) *
         (n_dk(doc_id, k) + alpha(k));
 
       denominator = ((double)num_vocab * beta + n_x0_k(k)) *
-        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);
+        (n_x1_k(k) + x_prior(k, 0) + n_x0_k(k) + x_prior(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
     }
@@ -251,11 +255,11 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
 				continue;
       } else{ 
         numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
-          (n_x1_k(k) + gamma_1) *
+          (n_x1_k(k) + x_prior(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
       }
       denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
-        (n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);
+        (n_x1_k(k) + x_prior(k, 0) + n_x0_k(k) + x_prior(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
     }
@@ -307,17 +311,17 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
   k = z;
 
 	numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
-		( n_x1_k(k) + gamma_1 );
+		( n_x1_k(k) + x_prior(k, 0) );
 	denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
-		(n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);
+		(n_x1_k(k) + x_prior(k, 0) + n_x0_k(k) + x_prior(k, 1));
 	x1_prob = numerator / denominator;
 
 	// newprob_x0()
 	numerator = (beta + n_x0_kv(k, w)) *
-		(n_x0_k(k) + gamma_2);
+		(n_x0_k(k) + x_prior(k, 1));
 
 	denominator = ((double)num_vocab * beta + n_x0_k(k) ) *
-		(n_x1_k(k) + gamma_1 + n_x0_k(k) + gamma_2);
+		(n_x1_k(k) + x_prior(k, 0) + n_x0_k(k) + x_prior(k, 1));
 	x0_prob = numerator / denominator;
 
 	// Normalize

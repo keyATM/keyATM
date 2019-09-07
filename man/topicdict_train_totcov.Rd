@@ -7,5 +7,5 @@
 topicdict_train_totcov(...)
 }
 \description{
-`topicdict_train_totcov()` is deprecated. Use `keyATM_run()`
+`topicdict_train_totcov()` is deprecated. Use `keyATM_fit()`
 }
