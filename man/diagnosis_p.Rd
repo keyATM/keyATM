@@ -7,7 +7,7 @@
 diagnosis_p(x, topicvec = c())
 }
 \arguments{
-\item{x}{The posterior from a fitted model (see \code{posterior})}
+\item{x}{the output from a keyATM model (see \code{keyATM_output})}
 
 \item{topicvec}{A topic vector to reorder}
 }

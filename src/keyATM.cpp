@@ -65,6 +65,17 @@ void keyATMbase::initialize()
 
 void keyATMbase::initialize_common()
 {
+	// Parameters
+	eta_1 = 1.0;
+	eta_2 = 1.0;
+	eta_1_regular = 2.0;
+	eta_2_regular = 1.0;
+
+	// Slice sampling initialization
+	min_v = 1e-9;
+	max_v = 100.0;
+	max_shrink_time = 200;
+
 	// Vector that stores seed words (words in dictionary)
 	int wd_id;
 	IntegerVector wd_ids;

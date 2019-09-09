@@ -33,6 +33,10 @@ void keyATMtot::read_data_specific()
 
 void keyATMtot::initialize_specific()
 {
+	// Parameters
+	ts_g1 = 1.5;
+	ts_g2 = 2.0;
+
 	// Store parameters for time Beta
 	beta_params = MatrixXd::Constant(num_topics, 2, 0.5);
 

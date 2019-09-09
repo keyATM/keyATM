@@ -38,11 +38,11 @@ class IDEALPOINT
 		int total_words;
 		int iter;
 		int output_iter;
-		std::vector<int> mh_info{0,0};
+		// std::vector<int> mh_info{0,0};
 
 		// Ideal point related parameters
-		double sigma_lambda = 1.0;  // sigma_c
-		double sigma_psi = 1.0;  // sigma_p
+		double sigma_lambda;  // sigma_c
+		double sigma_psi;  // sigma_p
 
 		// Variables for the Model
 	  Eigen::VectorXd Psi;  // speakers' ideal point

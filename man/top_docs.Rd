@@ -7,7 +7,7 @@
 top_docs(x, n = 10, measure = c("probability", "lift"))
 }
 \arguments{
-\item{x}{The posterior from a fitted model (see \code{posterior})}
+\item{x}{the output from a keyATM model (see \code{keyATM_output})}
 
 \item{n}{How many documents to show. Default: 10}
 

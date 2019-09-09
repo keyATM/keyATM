@@ -31,8 +31,11 @@ void LDAweightTOT::read_data_specific()
 
 void LDAweightTOT::initialize_specific()
 {
-	// Initialization for LDA weights 
+	// Parameters
+	ts_g1 = 1.5;
+	ts_g2 = 2.0;
 
+	// Initialization for LDA weights 
   n_kv = MatrixXd::Zero(num_topics, num_vocab);
   n_dk = MatrixXd::Zero(num_doc, num_topics);
   n_k = VectorXd::Zero(num_topics);

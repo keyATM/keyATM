@@ -19,10 +19,6 @@ class LDAweight : public keyATMbase
 		//
 
 		// Slice Sampling
-		double min_v = 1e-9;
-		double max_v = 100.0;
-		int max_shrink_time = 1000;
-
 		double start, end, previous_p, new_p, newlikelihood, slice_;
 		std::vector<int> topic_ids;
 		VectorXd keep_current_param;

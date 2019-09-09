@@ -61,8 +61,8 @@ class LDAweightTOT : public keyATMbase
 		double beta_var;
 		double current_param;
 		double temp_beta_loglik;
-		double ts_g1 = 1.5;  // parameters for gamma
-		double ts_g2 = 2.0;  // parameters for gamma
+		double ts_g1;  // parameters for gamma
+		double ts_g2;  // parameters for gamma
 
 		// Sample Beta parameters
 		vector<vector<double>> store_t;  

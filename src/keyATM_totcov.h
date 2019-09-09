@@ -39,12 +39,12 @@ class keyATMtotcov : public keyATMbase
 			MatrixXd C;
 
 		// MH sampling
-		double mu = 0.0;
-		double sigma = 50.0;
-		double mh_sigma = 0.05;
+		double mu;
+		double sigma;
+		double mh_sigma;
 
 		// Sampling info
-		std::vector<int> mh_info{0,0};
+		std::vector<int> mh_info;
 
 		// During the sampling
 			// Sample Beta parameters
@@ -85,8 +85,8 @@ class keyATMtotcov : public keyATMbase
 			double beta_var;
 			double current_param;
 			double temp_beta_loglik;
-			double ts_g1 = 1.5;  // parameters for gamma
-			double ts_g2 = 2.0;  // parameters for gamma
+			double ts_g1;  // parameters for gamma
+			double ts_g2;  // parameters for gamma
 		
 		//
 		// Functions

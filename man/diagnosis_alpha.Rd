@@ -8,7 +8,7 @@ diagnosis_alpha(x, start = NULL, show_topic = NULL, true_vec = NULL,
   scale = "")
 }
 \arguments{
-\item{x}{The posterior from a fitted model (see \code{posterior})}
+\item{x}{the output from a keyATM model (see \code{keyATM_output})}
 
 \item{start}{Slice iteration}
 

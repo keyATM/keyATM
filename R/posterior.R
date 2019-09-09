@@ -172,10 +172,10 @@ check_arg_type <- function(arg, typename){
 
 #' Set topic names
 #'
-#' @param x Posterior from a keyATM model (see \code{keyATM_posterior})
+#' @param x the output from a keyATM model (see \code{keyATM_output})
 #' @param topic_names new names for topics
 #'
-#' @return a posterior object with new topic names in its components
+#' @return an output object with new topic names in its components
 #' @export
 #'
 set_topic_names <- function(x, topic_names){
@@ -188,10 +188,10 @@ set_topic_names <- function(x, topic_names){
 
 #' Set document names
 #'
-#' @param x Posterior from a keyATM model (see \code{keyATM_posterior})
+#' @param x the output from a keyATM model (see \code{keyATM_output})
 #' @param doc_names new names for documents
 #'
-#' @return a posterior object with new document names in its components
+#' @return an output object with new document names in its components
 #' @export
 #'
 set_doc_names <- function(x, doc_names){
@@ -207,7 +207,7 @@ set_doc_names <- function(x, doc_names){
 #' are suffixed with a check mark. Words from another seeded category
 #' are labeled with the name of that category.
 #'
-#' @param x The posterior from a fitted model (see \code{posterior})
+#' @param x the output from a keyATM model (see \code{keyATM_output})
 #' @param n How many terms to show. Default: NULL, which shows all
 #' @param measure How to sort the terms: 'probability' (default) or 'lift'
 #' @param show_seed Mark seeded vocabulary. See below for details (Default: TRUE)
@@ -248,7 +248,7 @@ top_terms <- function(x, n = 10, measure = c("probability", "lift"),
 
 #' Show the top topics for each document
 #'
-#' @param x The posterior from a fitted model (see \code{posterior})
+#' @param x the output from a keyATM model (see \code{keyATM_output})
 #' @param n How many topics to show. Default: 2
 #' @param measure How to sort the topics: 'probability' (default) or 'lift'
 #'
@@ -276,7 +276,7 @@ top_topics <- function(x, n = 2, measure = c("probability", "lift")){
 
 #' Show the top documents for each topic
 #'
-#' @param x The posterior from a fitted model (see \code{posterior})
+#' @param x the output from a keyATM model (see \code{keyATM_output})
 #' @param n How many documents to show. Default: 10
 #' @param measure How to sort the terms: 'probability' (default) or 'lift'
 #'
@@ -305,7 +305,7 @@ top_docs <- function(x, n = 10, measure = c("probability", "lift")){
 
 #' Show a diagnosis plot of alpha
 #'
-#' @param x The posterior from a fitted model (see \code{posterior})
+#' @param x the output from a keyATM model (see \code{keyATM_output})
 #' @param start Slice iteration
 #' @param show_topic a vector to specify topic indexes to show
 #' @param true_vec a vector to visualize true values of alpha
@@ -382,7 +382,7 @@ diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
 
 #' Show a diagnosis plot of log-likelihood and perplexity
 #'
-#' @param x The posterior from a fitted model (see \code{posterior})
+#' @param x the output from a keyATM model (see \code{keyATM_output})
 #' @param start Slice iteration
 #'
 #' @return ggplot2 object
@@ -423,7 +423,7 @@ diagnosis_model_fit <- function(x, start=NULL){
 
 #' Show a diagnosis plot of p
 #'
-#' @param x The posterior from a fitted model (see \code{posterior})
+#' @param x the output from a keyATM model (see \code{keyATM_output})
 #' @param topicvec A topic vector to reorder
 #'
 #' @return ggplot2 object

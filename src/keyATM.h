@@ -18,10 +18,10 @@ class keyATMbase
 		//
 		int iter;
 		int output_per;
-		double eta_1 = 1;
-		double eta_2 = 1;
-		double eta_1_regular = 2;
-		double eta_2_regular = 1;
+		double eta_1;
+		double eta_2;
+		double eta_1_regular;
+		double eta_2_regular;
 		int use_weight;
 		int store_theta;
 
@@ -90,9 +90,9 @@ class keyATMbase
 
 			// sample alpha
 			double alpha_sum_val;
-			double min_v = 1e-9;
-			double max_v = 100.0;
-			int max_shrink_time = 200;
+			double min_v;
+			double max_v;
+			int max_shrink_time;
 
 			// gammaln_sum
 			double gammaln_val;

@@ -7,12 +7,12 @@
 set_topic_names(x, topic_names)
 }
 \arguments{
-\item{x}{Posterior from a keyATM model (see \code{keyATM_posterior})}
+\item{x}{the output from a keyATM model (see \code{keyATM_output})}
 
 \item{topic_names}{new names for topics}
 }
 \value{
-a posterior object with new topic names in its components
+an output object with new topic names in its components
 }
 \description{
 Set topic names

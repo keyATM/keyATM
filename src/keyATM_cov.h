@@ -23,12 +23,12 @@ class keyATMcov : public keyATMbase
 		MatrixXd C;
 
 		// MH sampling
-		double mu = 0.0;
-		double sigma = 50.0;
-		double mh_sigma = 0.05;
+		double mu;
+		double sigma;
+		double mh_sigma;
 
 		// Sampling info
-		std::vector<int> mh_info{0,0};
+		std::vector<int> mh_info;
 
 		// During the sampling
 			// mh_single

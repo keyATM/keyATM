@@ -8,7 +8,7 @@ top_terms(x, n = 10, measure = c("probability", "lift"),
   show_seed = TRUE)
 }
 \arguments{
-\item{x}{The posterior from a fitted model (see \code{posterior})}
+\item{x}{the output from a keyATM model (see \code{keyATM_output})}
 
 \item{n}{How many terms to show. Default: NULL, which shows all}
 

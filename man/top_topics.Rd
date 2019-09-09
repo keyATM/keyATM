@@ -7,7 +7,7 @@
 top_topics(x, n = 2, measure = c("probability", "lift"))
 }
 \arguments{
-\item{x}{The posterior from a fitted model (see \code{posterior})}
+\item{x}{the output from a keyATM model (see \code{keyATM_output})}
 
 \item{n}{How many topics to show. Default: 2}
 

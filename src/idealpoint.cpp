@@ -61,6 +61,9 @@ IDEALPOINT::IDEALPOINT(List model_, List author_info_, const int iter_, const in
 
 void IDEALPOINT::initialize()
 {
+	sigma_lambda = 1.0;
+	sigma_psi = 1.0;
+
 	// Psi
 	Psi = VectorXd::Zero(num_authors);
 	for(int j=0; j<num_authors; j++){
