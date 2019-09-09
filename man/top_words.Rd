@@ -5,7 +5,7 @@
 \title{Show the top words for each topic}
 \usage{
 top_words(x, n = 10, measure = c("probability", "lift"),
-  show_seed = TRUE)
+  show_keyword = TRUE)
 }
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM_output})}

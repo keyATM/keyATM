@@ -224,7 +224,7 @@ top_terms <- function(...){
 #' @export
 #'
 top_words <- function(x, n = 10, measure = c("probability", "lift"),
-                      show_seed = TRUE){
+                      show_keyword = TRUE){
   check_arg_type(x, "keyATM_posterior")
   if (is.null(n))
     n <- nrow(x$theta)

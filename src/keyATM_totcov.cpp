@@ -17,7 +17,7 @@ keyATMtotcov::keyATMtotcov(List model_, const int iter_, const int output_per_) 
 	// Additional function
 	
 	// Add Sampling Info
-	mh_info.push_back(0); mh_info.push_back(0);  // same as {0, 0}
+	// mh_info.push_back(0); mh_info.push_back(0);  // same as {0, 0}
 	Rcpp::IntegerVector sampling_info = Rcpp::wrap(mh_info);
 	List sampling_info_list = model["sampling_info"];
 	sampling_info_list.push_back(sampling_info);

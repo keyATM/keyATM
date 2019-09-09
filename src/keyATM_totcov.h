@@ -44,7 +44,7 @@ class keyATMtotcov : public keyATMbase
 		double mh_sigma;
 
 		// Sampling info
-		std::vector<int> mh_info;
+		std::vector<int> mh_info {0,0};
 
 		// During the sampling
 			// Sample Beta parameters
