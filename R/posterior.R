@@ -3,7 +3,7 @@
 #' @export
 posterior <- function(...){
   message("Warning: `posterior` is deprecated, please use `keyATM_output` instead.")
-  return(keyATM_posterior(...))
+  return(keyATM_output(...))
 }
 
 
@@ -201,21 +201,29 @@ set_doc_names <- function(x, doc_names){
   x
 }
 
-#' Show the top terms for each topic
+
+#' Show the top terms for each topic (deprecated)
+top_terms <- function(...){
+  message("Warning: `top_terms` is deprecated, please use `top_words` instead.")
+  return(top_words(...))
+}
+
+
+#' Show the top words for each topic
 #'
-#' If \code{show_seed} is true then words in their seeded categories
+#' If \code{show_keyword} is true then words in their seeded categories
 #' are suffixed with a check mark. Words from another seeded category
 #' are labeled with the name of that category.
 #'
 #' @param x the output from a keyATM model (see \code{keyATM_output})
 #' @param n How many terms to show. Default: NULL, which shows all
 #' @param measure How to sort the terms: 'probability' (default) or 'lift'
-#' @param show_seed Mark seeded vocabulary. See below for details (Default: TRUE)
+#' @param show_keyword Mark keywords. (default: TRUE)
 #'
 #' @return An n x k table of the top n words in each topic
 #' @export
 #'
-top_terms <- function(x, n = 10, measure = c("probability", "lift"),
+top_words <- function(x, n = 10, measure = c("probability", "lift"),
                       show_seed = TRUE){
   check_arg_type(x, "keyATM_posterior")
   if (is.null(n))

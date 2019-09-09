@@ -5,10 +5,30 @@ output:
     toc: true
 ---
 
+First, we prepare a quanteda `dfm` object and a list of keywords. You can also pass `data.frame` (`tibble`) and a list of file paths to `keyATM`, but creating the quanteda `dfm` is the easiest way to conduct preprocessing.
 
-First, we read the corpus.
+Here, we show an example of preprocessing using `quanteda`.
 ```{r, eval = FALSE}
-model <- keyATM_read(texts = quanteda_dfm,
+library(quanteda)
+key_corpus <- corpus(doc_tbl, text_field="text")
+key_tokens <- tokens(key_corpus) %>%
+                tokens_tolower() %>%
+                tokens_remove(., pattern = stopwords('en'))
+
+key_dfm <- dfm(key_tokens,
+               remove_numbers = TRUE, remove_punct = TRUE,
+               remove_separators = TRUE) %>%
+           dfm_trim(., min_termfreq=5, min_docfreq=2)
+
+keywords_list <- list(
+                      c("election", "vote", "voter"),
+                      c("economy", "recession")
+                     )
+```
+
+Then read the `dfm` object.
+```{r, eval = FALSE}
+model <- keyATM_read(texts = key_dfm,
                      extra_k=3,
                      keywords=keywords_list,
                      mode="basic",
@@ -20,10 +40,16 @@ We visualize keywords before fitting the model,
 model$visualize_keywords
 ```
 
-We fit the model.
+We fit the model and get an output object.
 ```{r, eval=FALSE}
 fitted <- keyATM_fit(model, iteration=1000)
 post <- keyATM_output(fitted)
+```
+
+We use the output object to see the convergence and top words.
+```{r, eval=FALSE}
+diagnosis_model_fit(post, start=1)
+top_words(post)
 ```
 
 

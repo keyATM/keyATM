@@ -56,7 +56,7 @@ reference:
   - '`set_doc_names`'
   - '`set_topic_names`'
   - '`top_docs`'
-  - '`top_terms`'
+  - '`top_words`'
   - '`top_topics`'
 
 toc:

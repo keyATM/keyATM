@@ -2,25 +2,10 @@
 % Please edit documentation in R/posterior.R
 \name{top_terms}
 \alias{top_terms}
-\title{Show the top terms for each topic}
+\title{Show the top terms for each topic (deprecated)}
 \usage{
-top_terms(x, n = 10, measure = c("probability", "lift"),
-  show_seed = TRUE)
-}
-\arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM_output})}
-
-\item{n}{How many terms to show. Default: NULL, which shows all}
-
-\item{measure}{How to sort the terms: 'probability' (default) or 'lift'}
-
-\item{show_seed}{Mark seeded vocabulary. See below for details (Default: TRUE)}
-}
-\value{
-An n x k table of the top n words in each topic
+top_terms(...)
 }
 \description{
-If \code{show_seed} is true then words in their seeded categories
-are suffixed with a check mark. Words from another seeded category
-are labeled with the name of that category.
+Show the top terms for each topic (deprecated)
 }
