@@ -240,7 +240,7 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
      }
   }
   res <- apply(x$beta, 1, measuref)
-  if (show_seed) {
+  if (show_keyword) {
     for (i in 1:ncol(res)) {
       for (j in 1:length(x$dict)) {
          inds <- which(res[,i] %in% x$dict[[j]])
