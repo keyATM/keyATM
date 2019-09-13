@@ -21,7 +21,7 @@ keyATM_model(files = NULL, dict = NULL, text_df = NULL,
 
 \item{text_df}{directly passes a text in a data.frame}
 
-\item{mode}{"basic", "cov", "tot", or "hmm"}
+\item{mode}{"basic", "cov", "tot", "totcov", and "ldaweight"}
 
 \item{extra_k}{number of unseeded topics in addition to the topics seeded by
 \code{dict}}

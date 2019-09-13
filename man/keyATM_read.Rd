@@ -14,10 +14,12 @@ keyATM_read(texts, keywords, mode, extra_k, iteration = 1000,
 
 \item{keywords}{a quanteda dictionary or a list of character vectors}
 
-\item{mode}{number of iteration}
+\item{mode}{"basic", "cov", "tot", "totcov", and "ldaweight"}
 
 \item{extra_k}{number of regular topics in addition to the keyword topics by
 \code{keywords}}
+
+\item{iteration}{number of iteration}
 
 \item{covariates_data}{covariate}
 

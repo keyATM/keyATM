@@ -156,7 +156,7 @@ keyATM_output <- function(model){
              doc_lens = doc_lens, vocab = model$vocab,
              dict = dict,
              alpha=res_alpha, modelfit=modelfit, p=p_estimated, options=model$options)
-  class(ll) <- c("keyATM_posterior", class(ll))
+  class(ll) <- c("keyATM_output", class(ll))
   ll
 }
 
@@ -179,7 +179,7 @@ check_arg_type <- function(arg, typename){
 #' @export
 #'
 set_topic_names <- function(x, topic_names){
-  check_arg_type(x, "keyATM_posterior")
+  check_arg_type(x, "keyATM_output")
   colnames(x$theta) <- topic_names
   names(x$topic_counts) <- topic_names
   rownames(x$beta) <- topic_names
@@ -195,7 +195,7 @@ set_topic_names <- function(x, topic_names){
 #' @export
 #'
 set_doc_names <- function(x, doc_names){
-  check_arg_type(x, "keyATM_posterior")
+  check_arg_type(x, "keyATM_output")
   rownames(x$theta) <- doc_names
   names(x$doc_lens) <- doc_names
   x
@@ -225,7 +225,7 @@ top_terms <- function(...){
 #'
 top_words <- function(x, n = 10, measure = c("probability", "lift"),
                       show_keyword = TRUE){
-  check_arg_type(x, "keyATM_posterior")
+  check_arg_type(x, "keyATM_output")
   if (is.null(n))
     n <- nrow(x$theta)
   measure <- match.arg(measure)
@@ -264,7 +264,7 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
 #' @export
 #'
 top_topics <- function(x, n = 2, measure = c("probability", "lift")){
-  check_arg_type(x, "keyATM_posterior")
+  check_arg_type(x, "keyATM_output")
   if (is.null(n))
     n <- nrow(x$theta)
 
@@ -291,7 +291,7 @@ top_topics <- function(x, n = 2, measure = c("probability", "lift")){
 #' @return An n x k table of the top n documents for each topic
 #' @export
 top_docs <- function(x, n = 10, measure = c("probability", "lift")){
-  check_arg_type(x, "keyATM_posterior")
+  check_arg_type(x, "keyATM_output")
   if (is.null(n))
     n <- nrow(x$theta)
 
@@ -338,7 +338,7 @@ diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
       res_alpha$iter <- 1:nrow(res_alpha)
     }
     
-  }else if("keyATM_posterior" %in% class(x)){
+  }else if("keyATM_output" %in% class(x)){
     num_topic <-  x$seed_K + x$extra_k
     res_alpha <- x$alpha  
   }
@@ -399,7 +399,7 @@ diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
 #' @export
 diagnosis_model_fit <- function(x, start=NULL){
 
-  if("keyATM_posterior" %in% class(x)){
+  if("keyATM_output" %in% class(x)){
     modelfit <- x$modelfit
   }else if("keyATM" %in% class(x)){
     modelfit <- data.frame(x$model_fit)
