@@ -16,7 +16,8 @@ topicdict_model <- function(...){
 #'
 #' @param texts Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.
 #' @param keywords a quanteda dictionary or a list of character vectors
-#' @param mode number of iteration
+#' @param mode "basic", "cov", "tot", "totcov", and "ldaweight"
+#' @param iteration number of iteration
 #' @param extra_k number of regular topics in addition to the keyword topics by
 #'                \code{keywords}
 #' @param covariates_data covariate
@@ -189,7 +190,9 @@ keyATM_fit <- function(model, iteration=1000){
     res <- keyATM_train_tot(model, iter=iteration, output_per=model$options$output_per)
   }else if(mode == "totcov"){
     res <- keyATM_train_totcov(model, iter=iteration, output_per=model$options$output_per)
-  }else{
+  }else if(mode == "ldaweight"){
+		res <- LDA_weight(model, iter=iteration, output_per=model$options$output_per)	
+	}else{
     stop("Please check `mode`.")  
   }
 
@@ -270,7 +273,7 @@ topicdict_train_totcov <- function(...){
 #' @param dict a quanteda dictionary or named list of character vectors
 #' @param text_df directly passes a text in a data.frame 
 #' @param dtm Document-Term matrix from \code{quanteda} package
-#' @param mode "basic", "cov", "tot", or "hmm"
+#' @param mode "basic", "cov", "tot", "totcov", and "ldaweight"
 #' @param extra_k number of unseeded topics in addition to the topics seeded by
 #'                \code{dict}
 #' @param covariates_data a data.frame or a tibble that is a covariate matrix. Columns are covariates.
@@ -351,7 +354,7 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   ##
   ## Check format
   ##
-  if(mode %in% c("basic", "cov", "hmm", "tot", "totcov")){
+  if(mode %in% c("basic", "cov", "hmm", "tot", "totcov", "ldaweight")){
   }else{
     stop(paste0("Unknown model:", mode))  
   }

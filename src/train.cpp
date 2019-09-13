@@ -163,7 +163,6 @@ List keyATM_idealpoint(List model, List author_info, int iter=0, int output_iter
 // [[Rcpp::export]]
 List LDA_weight(List model, int iter = 0, int output_per = 10){
 
-
 	LDAweight LDAweight_model(model, iter, output_per);
 	model = LDAweight_model.return_model();
 	return model;
