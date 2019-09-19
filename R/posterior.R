@@ -61,7 +61,7 @@ keyATM_output <- function(model){
 
     theta <- do.call(rbind, lapply(1:length(model$Z), posterior_z))
 
-  }else if(model$mode %in% c("basic", "tot")){
+  }else if(model$mode %in% c("basic", "tot", "ldaweight")){
     alpha <- model$alpha_iter[[length(model$alpha_iter)]]  
 
     posterior_z <- function(zvec){
