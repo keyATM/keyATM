@@ -132,7 +132,7 @@ void keyATMtot::iteration_single(int &it)
 		Z[doc_id_] = doc_z;
 		X[doc_id_] = doc_x;
 	}
-	sample_parameters(it);
+	sample_parameters();
 
 }
 
@@ -315,12 +315,10 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
 
 
 
-void keyATMtot::sample_parameters(const int &it)
+void keyATMtot::sample_parameters()
 {
 	sample_alpha();
-
-	if(it > floor(iter/2))
-		sample_betaparam();
+	sample_betaparam();
 }
 
 

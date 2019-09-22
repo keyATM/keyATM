@@ -99,13 +99,8 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
   }
 
   # Reformat keywords
-  if(class(keywords) != "dictionary2"){
-    if(class(keywords) != "list"){
-      stop("`keywords` should be a quanteda dictionary or a list of character vectors")
-    }else{
-      names(keywords) <- 1:length(keywords)
-      keywords <- quanteda::dictionary(keywords)  
-    }
+	if(class(keywords) != "list"){
+      stop("`keywords` should be a list of character vectors")
   }
 
   # Initialize model
@@ -119,7 +114,8 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
                           timestamps=timestamps,
                           options=options,
                           # quanteda options
-                          lowercase=F, remove_numbers=F, remove_punct=F,
+                          # lowercase=F, 
+													remove_numbers=F, remove_punct=F,
                           remove_symbols=F, remove_twitter=F,
                           remove_hyphens=F, remove_url=F
                         )
@@ -338,7 +334,7 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
                          covariates_data=NULL, covariates_formula=NULL,
                          num_states=NULL, timestamps=NULL,
                          encoding = "UTF-8",
-                         lowercase = TRUE,
+                         # lowercase = TRUE,
                          remove_numbers = TRUE, remove_punct = TRUE,
                          remove_symbols = TRUE, remove_separators = TRUE,
                          remove_twitter = FALSE, remove_hyphens = FALSE,
@@ -481,13 +477,13 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
       text_df$text <- as.character(text_df$text)
     }
 
-  args <- list(remove_numbers = remove_numbers,
-               remove_punct = remove_punct,
-               remove_symbols = remove_symbols,
-               remove_separators = remove_separators,
-               remove_twitter = remove_twitter,
-               remove_hyphens = remove_hyphens,
-               remove_url = remove_url)
+  args <- list(remove_numbers = F,
+               remove_punct = F,
+               remove_symbols = F,
+               remove_separators = T,
+               remove_twitter = F,
+               remove_hyphens = F,
+               remove_url = T)
 
   if ("corpus" %in% class(files))
     args$x <- files
@@ -506,17 +502,17 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
     }
     
     text_df$doc_id <- paste0("text", 1:nrow(text_df))
-    args$x <- corpus(text_df)
+    args$x <- quanteda::corpus(text_df)
     ## debugging until here
   }
 
   # args$x <- corpus(readtext(file_pattern, encoding = encoding))
   # for new version quanteda, you need this
-  args$x$documents$doc_id <- paste0("text", 1:ndoc(args$x))
-  doc_names <- docvars(args$x, "doc_id") # docnames
-  toks <- do.call(tokens, args = args)
-  if (lowercase)
-    toks <- tokens_tolower(toks)
+  args$x$documents$doc_id <- paste0("text", 1:quanteda::ndoc(args$x))
+  doc_names <- quanteda::docvars(args$x, "doc_id") # docnames
+  toks <- do.call(quanteda::tokens, args = args)
+  # if (lowercase)
+    # toks <- tokens_tolower(toks)
   if (!is.null(stopwords))
     toks <- tokens_remove(toks, stopwords)
   if (!is.null(stem_language))
@@ -524,9 +520,9 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 
   ## apply the same preprocessing to the seed words
   args$x <- do.call(rbind, lapply(as.list(dict), paste0, collapse = " "))
-  dtoks <- do.call(tokens, args = args)
-  if (lowercase)
-    dtoks <- tokens_tolower(dtoks)
+  dtoks <- do.call(quanteda::tokens, args = args)
+  # if (lowercase)
+    # dtoks <- tokens_tolower(dtoks)
   if (!is.null(stopwords))
     dtoks <- tokens_remove(dtoks, stopwords)
   if (!is.null(stem_language))
@@ -597,7 +593,7 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 
   ## construct W and a vocab list (W elements are 0 based ids)
   wd_names <- attr(toks, "types") # vocab
-  wd_map <- hashmap(wd_names, as.integer(1:length(wd_names) - 1))
+  wd_map <- hashmap::hashmap(wd_names, as.integer(1:length(wd_names) - 1))
   W <- lapply(toks, function(x){ wd_map[[x]] })
 
   # zx_assigner maps seed words to category ids
