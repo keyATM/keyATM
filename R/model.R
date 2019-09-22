@@ -32,9 +32,9 @@ topicdict_model <- function(...){
 #'         \item{C}{a covariate matrix is there is an input}
 #'         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
 #'         \item{vocab}{a vector of vocabulary items}
-#'         \item{files}{a vector of document filenames}
-#'         \item{dict}{a tokenized version of the keyword dictionary}
-#'         \item{keywords}{a list of keywords in dict, named by dictionary category}
+#'         \item{mode}{keyATM model to fit}
+#'         \item{keywords}{a list of keywords in word_id}
+#'         \item{keywords_raw}{a list of keywords}
 #'         \item{extra_k}{how many extra non-seeded topics are required}
 #'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
@@ -157,11 +157,11 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
 #' @export
 keyATM_fit <- function(model, iteration=1000, keep_model=T){
 
-	if(keep_model){
-		model <- rlang::duplicate(model)
-	}else{
-		warning("`keep_model` option is FALSE. `keyATM_read` object will change by fitting the model.")
-	}
+  if(keep_model){
+    model <- rlang::duplicate(model)
+  }else{
+    warning("`keep_model` option is FALSE. `keyATM_read` object will change by fitting the model.")
+  }
 
   argname <- deparse(match.call()[['model']])
   if (!inherits(model, "keyATM"))
@@ -472,11 +472,55 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
   # zx_assigner maps seed words to category ids
   seed_wdids <- unlist(lapply(keywords, function(x){ wd_map$find(x) }))
   cat_ids <- rep(1:K - 1, unlist(lapply(keywords, length)))
-  zx_assigner <- hashmap::hashmap(as.integer(seed_wdids), as.integer(cat_ids))
+
+  if(length(seed_wdids) == length(unique(seed_wdids))){
+    #
+    # No keyword appears more than once
+    #
+    zx_assigner <- hashmap(as.integer(seed_wdids), as.integer(cat_ids))
+
+    # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
+    make_z <- function(x){
+      zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
+      zz[is.na(zz)] <- sample(1:(K + extra_k) - 1,
+                              sum(as.numeric(is.na(zz))),
+                              replace = TRUE)
+      zz
+    }
+    
+
+  }else{
+    #
+    # Some keywords appear multiple times
+    #
+    keys_df <- data.frame(wid = seed_wdids, cat=cat_ids)
+    keys_char <- sapply(unique(seed_wdids),
+                        function(x){
+                          paste(as.character(keys_df[keys_df$wid==x, "cat"]), collapse=",")
+                        })
+    zx_hashtable <- hashmap::hashmap(as.integer(unique(seed_wdids)), keys_char)
+
+    zx_assigner <- function(x){
+      topic <- zx_hashtable[[x]]
+			topic <- strsplit(topic, split=",")
+      topic <- lapply(topic, sample, 1)
+			topic <- as.integer(unlist(topic))
+      return(topic)
+    }
+
+    # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
+    make_z <- function(x){
+      zz <- zx_assigner(x) # if it is a seed word, we already know the topic
+      zz[is.na(zz)] <- sample(1:(K + extra_k) - 1,
+                              sum(as.numeric(is.na(zz))),
+                              replace = TRUE)
+      zz
+    }
+  }
 
   ## xx indicates whether the word comes from a seed topic-word distribution or not
   make_x <- function(x){
-    seeded <- as.numeric(zx_assigner$has_keys(x)) # 1 if they're a seed
+    seeded <- as.numeric(x %in% seed_wdids) # 1 if they're a seed
     # Use x structure
     x[seeded == 0] <- 0 # non-seeded words have x=0
     x[seeded == 1] <- sample(0:1, length(x[seeded == 1]), prob = c(0.3, 0.7), replace = TRUE)
@@ -485,15 +529,6 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
   }
 
   X <- lapply(W, make_x)
-
-  # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
-  make_z <- function(x){
-    zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
-    zz[is.na(zz)] <- sample(1:(K + extra_k) - 1,
-                            sum(as.numeric(is.na(zz))),
-                            replace = TRUE)
-    zz
-  }
   Z <- lapply(W, make_z)
 
   # dictionary category names -> vector of word_id.
@@ -515,7 +550,7 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
 
 
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names, mode=mode,
-             files = doc_names, keywords_raw = keywords_raw, keywords = keywords, extra_k = extra_k,
+             keywords = keywords, keywords_raw = keywords_raw, extra_k = extra_k,
              alpha = alpha,
              beta = beta, beta_s = beta_s,
              alpha_iter = list(), Lambda_iter = list(), S_iter = list(),

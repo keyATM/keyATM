@@ -37,9 +37,9 @@ keyATM object, which is a list containing \describe{
         \item{C}{a covariate matrix is there is an input}
         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
         \item{vocab}{a vector of vocabulary items}
-        \item{files}{a vector of document filenames}
-        \item{dict}{a tokenized version of the keyword dictionary}
-        \item{keywords}{a list of keywords in dict, named by dictionary category}
+        \item{mode}{keyATM model to fit}
+        \item{keywords}{a list of keywords in word_id}
+        \item{keywords_raw}{a list of keywords}
         \item{extra_k}{how many extra non-seeded topics are required}
         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
         \item{alpha_iter}{a list to store topic proportion hyperparameters}

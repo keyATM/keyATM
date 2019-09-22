@@ -4,7 +4,7 @@
 \alias{keyATM_fit}
 \title{Fit a keyATM model}
 \usage{
-keyATM_fit(model, iteration = 1000)
+keyATM_fit(model, iteration = 1000, keep_model = T)
 }
 \arguments{
 \item{model}{keyATM object (the output of \code{keyATM_read()})}

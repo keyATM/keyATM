@@ -73,7 +73,6 @@ keyATM_output <- function(model){
 
   }
 
-  rownames(theta) <- basename(model$files)
   colnames(theta) <- tnames # label seeded topics
 
 

@@ -30,7 +30,7 @@ class keyATMbase
 		// Data
 		List model;
 		List W, Z, X;
-		StringVector files, vocab;
+		StringVector vocab;
 		NumericVector nv_alpha;
 		// double gamma_1, gamma_2;
 		MatrixXd x_prior;

@@ -27,7 +27,7 @@ void keyATMbase::read_data_common()
 {
   // Read data
   W = model["W"]; Z = model["Z"]; X = model["X"];
-  files = model["files"]; vocab = model["vocab"];
+  vocab = model["vocab"];
   nv_alpha = model["alpha"];
  //  gamma_1 = model["gamma_1"];
   // gamma_2 = model["gamma_2"];
@@ -101,7 +101,7 @@ void keyATMbase::initialize_common()
 
   // document-related constants
   num_vocab = vocab.size();
-  num_doc = files.size();
+  num_doc = W.size();
 
   // storage for sufficient statistics and their margins
   // n_x0_kv.resize(num_topics, num_vocab);
