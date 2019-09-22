@@ -38,7 +38,7 @@ void keyATMtot::initialize_specific()
 	ts_g2 = 2.0;
 
 	// Store parameters for time Beta
-	beta_params = MatrixXd::Constant(num_topics, 2, 0.5);
+	beta_params = MatrixXd::Constant(num_topics, 2, 1.0);
 
 	beta_tg = VectorXd::Zero(num_topics);
 	beta_lg = VectorXd::Zero(num_topics);
@@ -132,7 +132,7 @@ void keyATMtot::iteration_single(int &it)
 		Z[doc_id_] = doc_z;
 		X[doc_id_] = doc_x;
 	}
-	sample_parameters();
+	sample_parameters(it);
 
 }
 
@@ -141,6 +141,8 @@ int keyATMtot::sample_z_log(VectorXd &alpha, int &z, int &x,
 																		 int &w, int &doc_id)
 {
   // removing data is already done in sample_z
+
+	cout <<   "Use log ";  // debug
 
   new_z = -1; // debug
   if (x == 0){
@@ -313,10 +315,12 @@ int keyATMtot::sample_z(VectorXd &alpha, int &z, int &x,
 
 
 
-void keyATMtot::sample_parameters()
+void keyATMtot::sample_parameters(const int &it)
 {
 	sample_alpha();
-	sample_betaparam();
+
+	if(it > floor(iter/2))
+		sample_betaparam();
 }
 
 
@@ -357,7 +361,7 @@ void keyATMtot::sample_betaparam(){
 				// end = 1.0;
 
 				start = min_v / (1.0 + min_v);
-				end = 15.0 / (1.0 + 15.0);
+				end = 20.0 / (1.0 + 20.0);
 
 				previous_p = current_param / (1.0 + current_param);
 
@@ -403,11 +407,11 @@ double keyATMtot::beta_loglik(const int &k, const int &i){
 		loglik += n_dk(d, k) * betapdfln(timestamps(d), beta_params(k,0), beta_params(k,1));
   }
 
-	if(loglik == 0)
-		return -1.0;
-
 	// Prior
 	loglik += gammapdfln(beta_params(k, i), ts_g1, ts_g2);
+
+	if(loglik == 0)
+		return -1.0;
 
 	return loglik;
 

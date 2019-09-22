@@ -71,7 +71,7 @@ void keyATMtotcov::initialize_specific()
 
 	// TOT
 	// Store parameters for time Beta
-	beta_params = MatrixXd::Constant(num_topics, 2, 0.5);
+	beta_params = MatrixXd::Constant(num_topics, 2, 1.0);
 
 	beta_tg = VectorXd::Zero(num_topics);
 	beta_lg = VectorXd::Zero(num_topics);
