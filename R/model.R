@@ -108,7 +108,7 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
   model <- keyATM_model(
                           files=files, text_df=text_df, text_dfm=text_dfm,
                           extra_k=extra_k,
-                          dict=keywords,
+                          keywords=keywords,
                           mode=mode,
                           covariates_data=covariates_data, covariates_formula=covariates_formula,
                           timestamps=timestamps,
@@ -233,13 +233,18 @@ topicdict_train_totcov <- function(...){
 }
 
 
-
-keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
+#' Initialize a keyATM model
+#'
+#' @importFrom hashmap hashmap
+#' @importFrom stats model.matrix
+#' @import ggplot2
+#' @import ggrepel
+keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
                          mode="",
                          extra_k = 1,
                          covariates_data=NULL, covariates_formula=NULL,
                          num_states=NULL, timestamps=NULL,
-                         alpha = 50/(length(dict) + extra_k),
+                         alpha = 50/(length(keywords) + extra_k),
                          beta = 0.01, beta_s = 0.1,
                          options = list()
                         )
@@ -267,7 +272,7 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
     if("text" %in% names(text_df)){
       text_df <- text_df["text"]
     }else{
-      stop("text_df should have a 'text' colum that has documents.")
+      stop("text_df should have a 'text' column that has documents.")
     }  
   }
 
@@ -284,7 +289,8 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   ## Check length
   ##
 
-  proper_len <- length(dict) + extra_k
+  K <- length(keywords)
+  proper_len <- K + extra_k
 
   if(mode == "cov" | mode == "totcov"){
     # make sure covariates are provided for all documents  
@@ -383,56 +389,35 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
                                                  })),
                             stringsAsFactors = FALSE)
     }
-    
-    text_df$doc_id <- paste0("text", 1:nrow(text_df))
   }
-
-  # args$x <- corpus(readtext(file_pattern, encoding = encoding))
-  # for new version quanteda, you need this
-  args$x$documents$doc_id <- paste0("text", 1:quanteda::ndoc(args$x))
-  doc_names <- quanteda::docvars(args$x, "doc_id") # docnames
-  toks <- do.call(quanteda::tokens, args = args)
-  # if (lowercase)
-    # toks <- tokens_tolower(toks)
-  if (!is.null(stopwords))
-    toks <- tokens_remove(toks, stopwords)
-  if (!is.null(stem_language))
-    toks <- tokens_wordstem(toks, language = stem_language)
-
-  ## apply the same preprocessing to the seed words
-  args$x <- do.call(rbind, lapply(as.list(dict), paste0, collapse = " "))
-  dtoks <- do.call(quanteda::tokens, args = args)
-  # if (lowercase)
-    # dtoks <- tokens_tolower(dtoks)
-  if (!is.null(stopwords))
-    dtoks <- tokens_remove(dtoks, stopwords)
-  if (!is.null(stem_language))
-    dtoks <- tokens_wordstem(dtoks, language = stem_language)
-  K <- length(dtoks) # number of seeded categories a.k.a. size of dictionary
+  text_df$doc_id <- paste0("text", 1:nrow(text_df))
+  text_df <- text_df %>% mutate(text_split = str_split(text, pattern=" "))
+  W_raw <- text_df %>% pull(text_split)
 
 
   ##
   ## Visualize keywords
   ##
-  if(options$visualize_keywords){
-    dfm_ <- quanteda::dfm(toks, tolower=F)  
-    data <- tidytext::tidy(dfm_)
-    totalwords <- sum(data$count)
+  text_df %>%
+    select(text_split) %>%
+    unnest(col=c(text_split)) -> unnested_data
 
-    data %>%
-      rename(Word=term) %>%
+  if(options$visualize_keywords){
+    totalwords <- nrow(unnested_data)
+
+    unnested_data %>%
+      rename(Word=text_split) %>%
       group_by(Word) %>%
-      summarize(WordCount = sum(count)) %>%
+      summarize(WordCount = n()) %>%
       ungroup() %>%
       mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
       arrange(desc(WordCount)) %>%
       mutate(Ranking = 1:n()) -> data
 
 
-    seed_list <- dict
-
-    names(seed_list) <- paste0("Topic", 1:length(seed_list))
-    seeds <- lapply(seed_list, function(x){unlist(strsplit(x," "))})
+    seeds <- keywords  # copy
+    names(seeds) <- paste0("Topic", 1:length(seeds))
+    seeds <- lapply(seeds, function(x){unlist(strsplit(x," "))})
     ext_k <- length(seeds)
     max_num_words <- max(unlist(lapply(seeds, function(x){length(x)})))
 
@@ -457,7 +442,8 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
         geom_point() +
         geom_label_repel(aes(label = Word), size=2.8,
                          box.padding = 0.20, label.padding = 0.12,
-                         arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
+                         arrow=arrow(angle=10, length = unit(0.10, "inches"),
+                                     ends = "last", type = "closed"),
                          show.legend = F) +
         scale_x_continuous(breaks=1:max_num_words) +
         ylab("Proportion (%)") +
@@ -473,14 +459,14 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   ##
 
   ## construct W and a vocab list (W elements are 0 based ids)
-  wd_names <- attr(toks, "types") # vocab
+  wd_names <- unique(unnested_data$text_split) # vocab
   wd_map <- hashmap::hashmap(wd_names, as.integer(1:length(wd_names) - 1))
-  W <- lapply(toks, function(x){ wd_map[[x]] })
+  W <- lapply(W_raw, function(x){ wd_map[[x]] })
 
   # zx_assigner maps seed words to category ids
-  seed_wdids <- unlist(lapply(dtoks, function(x){ wd_map$find(x) }))
-  cat_ids <- rep(1:K - 1, unlist(lapply(dtoks, length)))
-  zx_assigner <- hashmap(as.integer(seed_wdids), as.integer(cat_ids))
+  seed_wdids <- unlist(lapply(keywords, function(x){ wd_map$find(x) }))
+  cat_ids <- rep(1:K - 1, unlist(lapply(keywords, length)))
+  zx_assigner <- hashmap::hashmap(as.integer(seed_wdids), as.integer(cat_ids))
 
   ## xx indicates whether the word comes from a seed topic-word distribution or not
   make_x <- function(x){
@@ -506,8 +492,8 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 
   # dictionary category names -> vector of word_id.
   # (Later processes ignore names)
-  keywords <- lapply(dtoks, function(x){ wd_map$find(x) })
-  names(keywords) <- names(dict)
+  keywords_raw <- keywords  # keep raw keywords (not word_id)
+  keywords <- lapply(keywords, function(x){ wd_map$find(x) })
 
   # Covariate
   if(is.null(covariates_data) || is.null(covariates_formula)){
@@ -523,7 +509,7 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 
 
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names, mode=mode,
-             files = doc_names, dict = dtoks, keywords = keywords, extra_k = extra_k,
+             files = doc_names, keywords_raw = keywords_raw, keywords = keywords, extra_k = extra_k,
              alpha = alpha,
              beta = beta, beta_s = beta_s,
              alpha_iter = list(), Lambda_iter = list(), S_iter = list(),

@@ -38,7 +38,7 @@ keyATM_output <- function(model){
   message("Creating an output object. It may take time...")
 
   check_arg_type(model, "keyATM")
-  allK <- model$extra_k + length(model$dict)
+  allK <- model$extra_k + length(model$keywords)
   V <- length(model$vocab)
   N = length(model$W)
   doc_lens <- sapply(model$W, length)
@@ -132,11 +132,6 @@ keyATM_output <- function(model){
     ungroup() %>%
     mutate_(Proportion='round(sumx/count*100, 3)') -> p_estimated
 
-  ## TODO fix this naming nonsense
-  dict <- model$dict
-  names(dict) <- names(model$keywords)
-
-
   # theta by iteration
   if(model$options$store_theta){
     posterior_theta <- function(x){
@@ -148,13 +143,13 @@ keyATM_output <- function(model){
                                         posterior_theta)
   }
 
-  ll <- list(keyword_K = length(model$dict), extra_K = model$extra_k,
+  ll <- list(keyword_K = length(model$keywords), extra_K = model$extra_k,
              V = V, N = N,
              model=model$mode,
              theta = theta, beta = tZW, # as.matrix(as.data.frame.matrix(tZW)),
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = doc_lens, vocab = model$vocab,
-             dict = dict,
+             keywords_raw = model$keywords_raw,
              alpha=res_alpha, modelfit=modelfit, p=p_estimated, options=model$options)
   class(ll) <- c("keyATM_output", class(ll))
   ll
@@ -242,11 +237,11 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
   res <- apply(x$beta, 1, measuref)
   if (show_keyword) {
     for (i in 1:ncol(res)) {
-      for (j in 1:length(x$dict)) {
-         inds <- which(res[,i] %in% x$dict[[j]])
+      for (j in 1:length(x$keywords_raw)) {
+         inds <- which(res[,i] %in% x$keywords_raw[[j]])
          label <- ifelse(i == j,
                          paste0("[", "\U2713" ,"]"),
-                         paste0("[", names(x$dict)[j], "]"))
+                         paste0("[", names(x$keywords_raw)[j], "]"))
          res[inds, i] <- paste(res[inds, i], label)
       }
     }
@@ -328,7 +323,7 @@ diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
 
 
   if("keyATM" %in% class(x)){
-    num_topic <-  length(x$dict) + x$extra_k
+    num_topic <-  length(x$keywords_raw) + x$extra_k
 
     res_alpha <- data.frame(x$alpha_iter)
     colnames(res_alpha) <- NULL

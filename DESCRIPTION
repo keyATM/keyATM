@@ -2,9 +2,9 @@ Package: keyATM
 Title: Keyword-assisted Topic Model
 Version: 0.1.0
 Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", role = c("aut","cre")),
-		person("Tomoya", "Sasaki", email = "tomoyas@mit.edu", role = c("aut")),
-		person("William", "Lowe", email = "wlowe@princeton.edu", role = c("ctb")),
-		person("Kosuke", "Imai", email = "imai@harvard.edu", role = c("aut")))
+    person("Tomoya", "Sasaki", email = "tomoyas@mit.edu", role = c("aut")),
+    person("William", "Lowe", email = "wlowe@princeton.edu", role = c("ctb")),
+    person("Kosuke", "Imai", email = "imai@harvard.edu", role = c("aut")))
 Description: Fits a topic model using keywords.
 Maintainer: Shusei Eshima <shuseieshima@g.harvard.edu>
 BugReports: https://github.com/Shusei-E/keyATM/issues
@@ -17,13 +17,12 @@ LinkingTo: Rcpp,
   RcppEigen
 Imports: Rcpp,
   hashmap,
-  quanteda,
   ggplot2,
   ggrepel,
   dplyr,
   tidyr,
-  tidytext,
   methods,
+  stats,
   Matrix
 SystemRequirements: C++11
 Suggests: knitr,
