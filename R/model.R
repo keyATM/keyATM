@@ -155,7 +155,13 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
 #'         }.
 #'
 #' @export
-keyATM_fit <- function(model, iteration=1000){
+keyATM_fit <- function(model, iteration=1000, keep_model=T){
+
+	if(keep_model){
+		model <- rlang::duplicate(model)
+	}else{
+		warning("`keep_model` option is FALSE. `keyATM_read` object will change by fitting the model.")
+	}
 
   argname <- deparse(match.call()[['model']])
   if (!inherits(model, "keyATM"))

@@ -22,6 +22,7 @@ Imports: Rcpp,
   dplyr,
   tidyr,
   methods,
+  rlang,
   stats,
   Matrix
 SystemRequirements: C++11
