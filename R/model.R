@@ -502,9 +502,9 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
 
     zx_assigner <- function(x){
       topic <- zx_hashtable[[x]]
-			topic <- strsplit(topic, split=",")
+      topic <- strsplit(topic, split=",")
       topic <- lapply(topic, sample, 1)
-			topic <- as.integer(unlist(topic))
+      topic <- as.integer(unlist(topic))
       return(topic)
     }
 
