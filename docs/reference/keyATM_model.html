@@ -32,9 +32,7 @@
 
 <meta property="og:title" content="Initialize a keyATM model — keyATM_model" />
 
-<meta property="og:description" content="This function creates a list of word indexes W, topic indicators Z,
-seed indicators X, a vocabulary list vocab from inputs.
-We do not recommend to call this function directly. Please use keyATM_read()." />
+<meta property="og:description" content="Initialize a keyATM model" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -132,195 +130,22 @@ We do not recommend to call this function directly. Please use keyATM_read()." /
 
     <div class="ref-description">
     
-    <p>This function creates a list of word indexes W, topic indicators Z,
-seed indicators X, a vocabulary list <code>vocab</code> from inputs.
-We do not recommend to call this function directly. Please use <code><a href='keyATM_read.html'>keyATM_read()</a></code>.</p>
+    <p>Initialize a keyATM model</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>keyATM_model</span>(<span class='kw'>files</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dict</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>text_df</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+    <pre class="usage"><span class='fu'>keyATM_model</span>(<span class='kw'>files</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>text_df</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>text_dfm</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>mode</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>extra_k</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>covariates_formula</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timestamps</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>encoding</span> <span class='kw'>=</span> <span class='st'>"UTF-8"</span>, <span class='kw'>lowercase</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>remove_numbers</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>remove_punct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>remove_symbols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>remove_separators</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>remove_twitter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>remove_hyphens</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>remove_url</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>stem_language</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>stopwords</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>50</span>/(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>dict</span>) + <span class='no'>extra_k</span>), <span class='kw'>beta</span> <span class='kw'>=</span> <span class='fl'>0.01</span>,
-  <span class='kw'>beta_s</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>())</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>files</th>
-      <td><p>names of each file to read (or a quanteda corpus object)</p></td>
-    </tr>
-    <tr>
-      <th>dict</th>
-      <td><p>a quanteda dictionary or named list of character vectors</p></td>
-    </tr>
-    <tr>
-      <th>text_df</th>
-      <td><p>directly passes a text in a data.frame</p></td>
-    </tr>
-    <tr>
-      <th>mode</th>
-      <td><p>"basic", "cov", "hmm", "tot", "totcov", and "ldaweight"</p></td>
-    </tr>
-    <tr>
-      <th>extra_k</th>
-      <td><p>number of unseeded topics in addition to the topics seeded by
-<code>dict</code></p></td>
-    </tr>
-    <tr>
-      <th>covariates_data</th>
-      <td><p>a data.frame or a tibble that is a covariate matrix. Columns are covariates.</p></td>
-    </tr>
-    <tr>
-      <th>covariates_formula</th>
-      <td><p>formula for the covariates, for example, <code>~.</code> uses all variables</p></td>
-    </tr>
-    <tr>
-      <th>timestamps</th>
-      <td><p>time data</p></td>
-    </tr>
-    <tr>
-      <th>encoding</th>
-      <td><p>File encoding (Default: whatever <code>quanteda</code> guesses)</p></td>
-    </tr>
-    <tr>
-      <th>lowercase</th>
-      <td><p>whether to transform each token to lowercase letters</p></td>
-    </tr>
-    <tr>
-      <th>remove_numbers</th>
-      <td><p>whether to remove numbers</p></td>
-    </tr>
-    <tr>
-      <th>remove_punct</th>
-      <td><p>whether to remove punctuation</p></td>
-    </tr>
-    <tr>
-      <th>remove_symbols</th>
-      <td><p>whether to remove non-alphanumerical symbols</p></td>
-    </tr>
-    <tr>
-      <th>remove_separators</th>
-      <td><p>whether to remove tabs, spaces, newlines, etc.</p></td>
-    </tr>
-    <tr>
-      <th>remove_twitter</th>
-      <td><p>whether to remove Twitter detritus</p></td>
-    </tr>
-    <tr>
-      <th>remove_hyphens</th>
-      <td><p>whether to split hyphenated words</p></td>
-    </tr>
-    <tr>
-      <th>remove_url</th>
-      <td><p>whether to remove URLs</p></td>
-    </tr>
-    <tr>
-      <th>stem_language</th>
-      <td><p>if not NULL, the language to use for stemming</p></td>
-    </tr>
-    <tr>
-      <th>stopwords</th>
-      <td><p>if not NULL, a character vector of words to remove,
-e.g. <code><a href='https://quanteda.io/reference/reexports.html'>quanteda::stopwords("english")</a></code></p></td>
-    </tr>
-    <tr>
-      <th>alpha</th>
-      <td><p>Starting value for all the model's topic proportion hyperparameters. Default: 50 / number of topics)</p></td>
-    </tr>
-    <tr>
-      <th>beta</th>
-      <td><p>Hyperparameter for estimated word probabilities. Default: 0.01</p></td>
-    </tr>
-    <tr>
-      <th>beta_s</th>
-      <td><p>Hyperparameter for seeded word probabilities. Default: 0.1</p></td>
-    </tr>
-    <tr>
-      <th>dtm</th>
-      <td><p>Document-Term matrix from <code>quanteda</code> package</p></td>
-    </tr>
-    <tr>
-      <th>num_state</th>
-      <td><p>numer of state in HMM model</p></td>
-    </tr>
-    <tr>
-      <th>gamma_1</th>
-      <td><p>First Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0</p></td>
-    </tr>
-    <tr>
-      <th>gamma_2</th>
-      <td><p>Second Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0</p></td>
-    </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A list containing:</p><dl class='dl-horizontal'>
-        <dt>W</dt><dd><p>a list of vectors of word indexes</p></dd>
-        <dt>Z</dt><dd><p>a list of vectors of topic indicators isomorphic to W</p></dd>
-        <dt>C</dt><dd><p>a covariate matrix is there is an input</p></dd>
-        <dt>X</dt><dd><p>a list of vectors of seed indicators (0/1) isomorphic to W</p></dd>
-        <dt>vocab</dt><dd><p>a vector of vocabulary items</p></dd>
-        <dt>files</dt><dd><p>a vector of document filenames</p></dd>
-        <dt>dict</dt><dd><p>a tokenized version of the dictionary</p></dd>
-        <dt>seeds</dt><dd><p>a list of words for the seed words in dict, named by dictionary category</p></dd>
-        <dt>extra_k</dt><dd><p>how many extra non-seeded topics are required</p></dd>
-        <dt>alpha</dt><dd><p>a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.</p></dd>
-        <dt>alpha_iter</dt><dd><p>a list to store topic proportion hyperparameters</p></dd>
-        <dt>Lambda_iter</dt><dd><p>a list to store coefficients of the covariates</p></dd>
-        <dt>S_iter</dt><dd><p>a list to store states sampled in HMM</p></dd>
-        <dt>tot_beta</dt><dd><p>a list to store sampled beta parameters in topic-over-time</p></dd>
-        <dt>sampling_info</dt><dd><p>information related to sampling</p></dd>
-        <dt>model_fit</dt><dd><p>a list to store perplexity and log-likelihood</p></dd>
-        <dt>gamma1</dt><dd><p>First prior probability parameter for X (currently the same for all topics)</p></dd>
-        <dt>gamma2</dt><dd><p>Second prior probability parameter for X (currently the same for all topics)</p></dd>
-        <dt>beta</dt><dd><p>prior parameter for the non-seeded word generation probabilities</p></dd>
-        <dt>beta_s</dt><dd><p>prior parameter for the seeded word generation probabilities</p></dd>
-        <dt>use_cov</dt><dd><p>boolean, whether or not use the covariate</p></dd>
-        <dt>num_states</dt><dd><p>number of states in HMM</p></dd>
-        <dt>timestamps</dt><dd><p>time stamp for topic-over-time model</p></dd>
-        <dt>visualize_keywords</dt><dd><p>ggplot2 object</p></dd>
-        <dt>call</dt><dd><p>details of the function call</p></dd>
-        </dl>
-
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p><code>Z</code> represents which topic a word topken was generated by.
-It is initialized randomly
-from <code>length(dict) + extra_k</code> topics, except when <code>dict</code>
-assigns a word to a particular category, in which case this topic
-indicator is assigned.
-For example, if a word appears in the second category of <code>dict</code>
-it will always be initialized as 1.</p>
-<p><code>X</code> is 1 when a word is generated from one of the topics from
-the dictionary ('seeded') and 0 when it was generated from one of
-the <code>extra_k</code> normal topics. <code>X</code> is initialized randomly
-except when the word is contained in <code>dict</code>.</p>
-<p>Note that all indicators are zero-based for ease of later processing
-in C++, so <code>mod$vocab[mod$W + 1]</code> recovers the (tokenized) words
-of the i-th document from model <code>mod</code>.</p>
-<p>If <code>alpha</code> is a scalar this is the value given to all elements of
-alpha. If it is a vector of the correct length those values are used
-as the starting alphas.</p>
-    
+  <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>50</span>/(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>keywords</span>) + <span class='no'>extra_k</span>), <span class='kw'>beta</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>beta_s</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>())</pre>
+        
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>

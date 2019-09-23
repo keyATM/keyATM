@@ -154,12 +154,16 @@ Internally, <code>keyATM_read()</code> calls <code><a href='keyATM_model.html'>k
     </tr>
     <tr>
       <th>mode</th>
-      <td><p>number of iteration</p></td>
+      <td><p>"basic", "cov", "tot", "totcov", and "ldaweight"</p></td>
     </tr>
     <tr>
       <th>extra_k</th>
       <td><p>number of regular topics in addition to the keyword topics by
 <code>keywords</code></p></td>
+    </tr>
+    <tr>
+      <th>iteration</th>
+      <td><p>number of iteration</p></td>
     </tr>
     <tr>
       <th>covariates_data</th>
@@ -188,9 +192,9 @@ visualize_keywords, and output_per.</p></td>
         <dt>C</dt><dd><p>a covariate matrix is there is an input</p></dd>
         <dt>X</dt><dd><p>a list of vectors of seed indicators (0/1) isomorphic to W</p></dd>
         <dt>vocab</dt><dd><p>a vector of vocabulary items</p></dd>
-        <dt>files</dt><dd><p>a vector of document filenames</p></dd>
-        <dt>dict</dt><dd><p>a tokenized version of the keyword dictionary</p></dd>
-        <dt>keywords</dt><dd><p>a list of keywords in dict, named by dictionary category</p></dd>
+        <dt>mode</dt><dd><p>keyATM model to fit</p></dd>
+        <dt>keywords</dt><dd><p>a list of keywords in word_id</p></dd>
+        <dt>keywords_raw</dt><dd><p>a list of keywords</p></dd>
         <dt>extra_k</dt><dd><p>how many extra non-seeded topics are required</p></dd>
         <dt>alpha</dt><dd><p>a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.</p></dd>
         <dt>alpha_iter</dt><dd><p>a list to store topic proportion hyperparameters</p></dd>
