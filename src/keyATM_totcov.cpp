@@ -170,7 +170,7 @@ void keyATMtotcov::iteration_single(int &it)
     Z[doc_id_] = doc_z;
     X[doc_id_] = doc_x;
   }
-  sample_parameters();
+  sample_parameters(int &it);
 
 
 }
@@ -352,7 +352,7 @@ int keyATMtotcov::sample_z(VectorXd &alpha, int &z, int &x,
 }
 
 
-void keyATMtotcov::sample_parameters()
+void keyATMtotcov::sample_parameters(int &it)
 {
   sample_lambda();
   sample_betaparam();

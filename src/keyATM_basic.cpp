@@ -56,11 +56,11 @@ void keyATMbasic::iteration_single(int &it)
     Z[doc_id_] = doc_z;
     X[doc_id_] = doc_x;
   }
-  sample_parameters();
+  sample_parameters(it);
 
 }
 
-void keyATMbasic::sample_parameters()
+void keyATMbasic::sample_parameters(int &it)
 {
   sample_alpha();
 }

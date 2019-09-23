@@ -92,12 +92,12 @@ void keyATMcov::iteration_single(int &it)
     Z[doc_id_] = doc_z;
     X[doc_id_] = doc_x;
   }
-  sample_parameters();
+  sample_parameters(it);
 
 }
 
 
-void keyATMcov::sample_parameters()
+void keyATMcov::sample_parameters(int &it)
 {
   sample_lambda();
 }

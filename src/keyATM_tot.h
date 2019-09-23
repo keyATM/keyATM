@@ -81,7 +81,7 @@ class keyATMtot : public keyATMbase
 		void iteration_single(int &it);
 		int sample_z(VectorXd &alpha, int &z, int &x, int &w, int &doc_id);
 		int sample_z_log(VectorXd &alpha, int &z, int &x, int &w, int &doc_id);
-		void sample_parameters();
+		void sample_parameters(int &it);
 		void sample_betaparam();
 		void sample_alpha();
 		double alpha_loglik();

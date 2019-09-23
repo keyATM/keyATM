@@ -46,7 +46,7 @@ class keyATMbasic : public keyATMbase
 
     // Iteration
     void iteration_single(int &it);
-    void sample_parameters();
+    void sample_parameters(int &it);
     void sample_alpha();
     double alpha_loglik();
     double loglik_total();

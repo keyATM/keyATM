@@ -123,8 +123,7 @@ void keyATMhmm::iteration_single(int &it)
     X[doc_id_] = doc_x;
   }
 
-  if(floor(iter/2) < it)
-    sample_parameters();
+  sample_parameters(int &it);
 }
 
 void keyATMhmm::verbose_special(int &r_index){
@@ -136,8 +135,11 @@ void keyATMhmm::verbose_special(int &r_index){
   store_S_est();
 }
 
-void keyATMhmm::sample_parameters()
+void keyATMhmm::sample_parameters(int &it)
 {
+  if(floor(iter/2) < it)
+    return;
+
   // alpha
   sample_alpha();
   

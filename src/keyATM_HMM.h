@@ -63,7 +63,7 @@ class keyATMhmm : public keyATMbase
   
     // Iteration
     void iteration_single(int &it);
-    void sample_parameters();
+    void sample_parameters(int &it);
 
     void sample_alpha();
     void sample_alpha_state(int &state, int &state_start, int &state_end);
