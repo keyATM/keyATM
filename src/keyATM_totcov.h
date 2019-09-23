@@ -18,13 +18,14 @@ class keyATMtotcov : public keyATMbase
     // Settings
       // TOT
       int logsumexp_approx;
-      int use_mom;
 
     //
     // Parameters
     //
       // COV
       VectorXd timestamps;  // time stamps (document share the same time)
+      VectorXi time_topics;  // consider time trends only for topics in this vector
+      int num_topics_time;  // number of topics to sample beta
       MatrixXd beta_params;  // parameter for time Beta, K \times 2
 
       VectorXd beta_tg;  // apply tgamma 

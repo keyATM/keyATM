@@ -6,8 +6,9 @@
 \usage{
 keyATM_read(texts, keywords, mode, extra_k, iteration = 1000,
   covariates_data = NULL, covariates_formula = ~. + 0,
-  timestamps = NULL, options = list(seed = 225, output_per = 10,
-  use_weights = TRUE, visualize_keywords = TRUE, x_prior = NULL))
+  timestamps = NULL, time_topics = NULL, options = list(seed = 225,
+  output_per = 10, use_weights = TRUE, visualize_keywords = TRUE, x_prior =
+  NULL))
 }
 \arguments{
 \item{texts}{Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.}

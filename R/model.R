@@ -58,7 +58,7 @@ topicdict_model <- function(...){
 keyATM_read <- function(texts, keywords, mode, extra_k,
                         iteration=1000,
                         covariates_data=NULL, covariates_formula= ~.+0,
-                        timestamps=NULL,
+                        timestamps=NULL, time_topics=NULL,
                         options=list(
                                      seed=225,
                                      output_per=10,
@@ -111,7 +111,7 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
                           keywords=keywords,
                           mode=mode,
                           covariates_data=covariates_data, covariates_formula=covariates_formula,
-                          timestamps=timestamps,
+                          timestamps=timestamps, time_topics=time_topics,
                           options=options
                         )
 
@@ -249,13 +249,18 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
                          mode="",
                          extra_k = 1,
                          covariates_data=NULL, covariates_formula=NULL,
-                         num_states=NULL, timestamps=NULL,
+                         num_states=NULL,
+												 timestamps=NULL, time_topics=NULL,
                          alpha = 50/(length(keywords) + extra_k),
                          beta = 0.01, beta_s = 0.1,
                          options = list()
                         )
 {
   cl <- match.call()
+
+	## Get topic number
+  K <- length(keywords)
+  proper_len <- K + extra_k
 
   ##
   ## Check format
@@ -288,15 +293,21 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
     }else if(min(timestamps) < 0 | max(timestamps) >= 1){
       stop("Time stamps sholud be between 0 and 1. Please use `make_timestamps()` function to format time stamps.")  
     }
+
+		if(is.null(time_topics)){
+			message("`time_topics` is not specified. keyATM assumes time trends in all topics.")	
+			time_topics <- 1:proper_len
+		}else{
+			if((max(time_topics) >= proper_len) & (min(time_topics) < 1)){
+				stop("Invalid topics are in `time_topics`.")	
+			}
+		}
   }
 
 
   ##
   ## Check length
   ##
-
-  K <- length(keywords)
-  proper_len <- K + extra_k
 
   if(mode == "cov" | mode == "totcov"){
     # make sure covariates are provided for all documents  
@@ -330,10 +341,6 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
   if(is.null(options$slice_shape)){
     # parameter for slice sampling
     options$slice_shape <- 1.2
-  }
-  if(is.null(options$use_mom)){
-    # Method of Moments in TOT
-    options$use_mom <- 0
   }
   if(!is.null(options$alpha)){
     # If alpha value is overwritten
@@ -557,7 +564,7 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
              model_fit = list(), sampling_info = list(), tot_beta = list(),
              C=C, use_cov=use_cov,
              num_states=num_states,
-             timestamps=timestamps,
+             timestamps=timestamps, time_topics=time_topics,
              options=options,
              visualize_keywords=visualize_keywords,
              call = cl)
