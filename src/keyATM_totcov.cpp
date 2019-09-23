@@ -170,7 +170,7 @@ void keyATMtotcov::iteration_single(int &it)
     Z[doc_id_] = doc_z;
     X[doc_id_] = doc_x;
   }
-  sample_parameters(int &it);
+  sample_parameters(it);
 
 
 }

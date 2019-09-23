@@ -123,7 +123,7 @@ void keyATMhmm::iteration_single(int &it)
     X[doc_id_] = doc_x;
   }
 
-  sample_parameters(int &it);
+  sample_parameters(it);
 }
 
 void keyATMhmm::verbose_special(int &r_index){

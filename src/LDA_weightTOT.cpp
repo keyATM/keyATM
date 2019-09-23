@@ -156,7 +156,7 @@ void LDAweightTOT::iteration_single(int &it)
     
     Z[doc_id_] = doc_z;
   }
-  sample_parameters();
+  sample_parameters(it);
 
 }
 
@@ -251,7 +251,7 @@ int LDAweightTOT::sample_z_log(VectorXd &alpha, int &z, int &x,
 
 
 
-void LDAweightTOT::sample_parameters()
+void LDAweightTOT::sample_parameters(int &it)
 {
   sample_alpha();
   sample_betaparam();

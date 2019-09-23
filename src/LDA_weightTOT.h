@@ -84,7 +84,7 @@ class LDAweightTOT : public keyATMbase
 
     // Iteration
     void iteration_single(int &it);
-    void sample_parameters();
+    void sample_parameters(int &it);
     void sample_betaparam();
     void sample_alpha();
     int sample_z(VectorXd &alpha, int &z, int &x,
