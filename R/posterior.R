@@ -79,12 +79,12 @@ keyATM_output <- function(model){
   all_words <- model$vocab[as.integer(unlist(model$W)) + 1]
   all_topics <- as.integer(unlist(model$Z))
   
-  res_tibble <- tibble(
+  res_tibble <- data.frame(
                         Word = all_words,
                         Topic = all_topics
                        ) %>%
-                group_by(Topic, Word) %>%
-                summarize(Count = n())
+                dplyr::group_by(Topic, Word) %>%
+                dplyr::summarize(Count = n())
   
   res_tibble %>%
     tidyr::spread(key=Word, value=Count)  -> beta
@@ -117,19 +117,19 @@ keyATM_output <- function(model){
 
   # p
   collapse <- function(obj){
-  temp <- unlist(obj)
-  names(temp) <- NULL
-  return(temp)
+    temp <- unlist(obj)
+    names(temp) <- NULL
+    return(temp)
   }
 
   data <- data.frame(Z=collapse(model$Z), X=collapse(model$X))
   data %>%
-    mutate_(Topic='Z+1') %>%
-    select(-starts_with("Z")) %>%
-    group_by_('Topic') %>%
-    summarize_(count = 'n()', sumx='sum(X)') %>%
-    ungroup() %>%
-    mutate_(Proportion='round(sumx/count*100, 3)') -> p_estimated
+    dplyr::mutate_(Topic='Z+1') %>%
+    dplyr::select(-starts_with("Z")) %>%
+    dplyr::group_by_('Topic') %>%
+    dplyr::summarize_(count = 'n()', sumx='sum(X)') %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate_(Proportion='round(sumx/count*100, 3)') -> p_estimated
 
   # theta by iteration
   if(model$options$store_theta){

@@ -397,7 +397,7 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
     }
   }
   text_df$doc_id <- paste0("text", 1:nrow(text_df))
-  text_df <- text_df %>% mutate(text_split = str_split(text, pattern=" "))
+  text_df <- text_df %>% mutate(text_split = stringr::str_split(text, pattern=" "))
   W_raw <- text_df %>% pull(text_split)
 
 
@@ -405,20 +405,20 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
   ## Visualize keywords
   ##
   text_df %>%
-    select(text_split) %>%
-    unnest(col=c(text_split)) -> unnested_data
+    dplyr::select(text_split) %>%
+    tidyr::unnest(col=c(text_split)) -> unnested_data
 
   if(options$visualize_keywords){
     totalwords <- nrow(unnested_data)
 
     unnested_data %>%
-      rename(Word=text_split) %>%
-      group_by(Word) %>%
-      summarize(WordCount = n()) %>%
-      ungroup() %>%
-      mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
-      arrange(desc(WordCount)) %>%
-      mutate(Ranking = 1:n()) -> data
+      dplyr::rename(Word=text_split) %>%
+      dplyr::group_by(Word) %>%
+      dplyr::summarize(WordCount = n()) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
+      dplyr::arrange(desc(WordCount)) %>%
+      dplyr::mutate(Ranking = 1:n()) -> data
 
 
     seeds <- keywords  # copy
@@ -439,8 +439,8 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
     seeds_df <- seeds_df[2:nrow(seeds_df), ]
 
     dplyr::inner_join(data, seeds_df, by="Word") %>%
-      group_by(Topic) %>%
-      mutate(Ranking = 1:n()) -> temp
+      dplyr::group_by(Topic) %>%
+      dplyr::mutate(Ranking = 1:n()) -> temp
 
     visualize_keywords <- 
       ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=Topic)) +
