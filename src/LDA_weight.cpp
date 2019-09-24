@@ -189,9 +189,9 @@ double LDAweight::alpha_loglik()
   alpha_sum_val = alpha.sum();
 
 
-  fixed_part += lgamma(alpha_sum_val); // first term numerator
+  fixed_part += mylgamma(alpha_sum_val); // first term numerator
   for(int k = 0; k < num_topics; k++){
-    fixed_part -= lgamma(alpha(k)); // first term denominator
+    fixed_part -= mylgamma(alpha(k)); // first term denominator
     // Add prior
     loglik += gammapdfln(alpha(k), eta_1_regular, eta_2_regular);
 
@@ -201,10 +201,10 @@ double LDAweight::alpha_loglik()
     loglik += fixed_part;
     // second term numerator
     for(int k = 0; k < num_topics; k++){
-      loglik += lgamma(ndk_a(d,k));
+      loglik += mylgamma(ndk_a(d,k));
     }
     // second term denominator
-    loglik -= lgamma(doc_each_len[d] + alpha_sum_val);
+    loglik -= mylgamma(doc_each_len[d] + alpha_sum_val);
 
   }
   return loglik;

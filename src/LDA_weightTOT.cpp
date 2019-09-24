@@ -413,9 +413,9 @@ double LDAweightTOT::alpha_loglik()
   alpha_sum_val = alpha.sum();
 
 
-  fixed_part += lgamma(alpha_sum_val); // first term numerator
+  fixed_part += mylgamma(alpha_sum_val); // first term numerator
   for(int k = 0; k < num_topics; k++){
-    fixed_part -= lgamma(alpha(k)); // first term denominator
+    fixed_part -= mylgamma(alpha(k)); // first term denominator
     // Add prior
     loglik += gammapdfln(alpha(k), eta_1_regular, eta_2_regular);
 
