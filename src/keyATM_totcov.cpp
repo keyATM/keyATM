@@ -357,7 +357,23 @@ int keyATMtotcov::sample_z(VectorXd &alpha, int &z, int &x,
 void keyATMtotcov::sample_parameters(int &it)
 {
   sample_lambda();
-  sample_betaparam();
+
+  if(floor(iter/2) < it)
+    sample_betaparam();
+
+  // Store lambda and beta
+	int r_index = it + 1;
+  if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
+    Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
+    List Lambda_iter = model["Lambda_iter"];
+    Lambda_iter.push_back(Lambda_R);
+    model["Lambda_iter"] = Lambda_iter;
+
+    Rcpp::NumericMatrix tot_beta_R = Rcpp::wrap(beta_params);
+    List tot_beta = model["tot_beta"];
+    tot_beta.push_back(tot_beta_R);
+    model["tot_beta"] = tot_beta;
+  }
 }
 
 
@@ -584,12 +600,7 @@ void keyATMtotcov::sample_lambda_slice()
 
 
 void keyATMtotcov::verbose_special(int &r_index){
-  // Store beta param
 
-  Rcpp::NumericMatrix tot_beta_R = Rcpp::wrap(beta_params);
-  List tot_beta = model["tot_beta"];
-  tot_beta.push_back(tot_beta_R);
-  model["tot_beta"] = tot_beta;
 }
 
 

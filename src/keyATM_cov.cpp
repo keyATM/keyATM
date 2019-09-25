@@ -100,6 +100,15 @@ void keyATMcov::iteration_single(int &it)
 void keyATMcov::sample_parameters(int &it)
 {
   sample_lambda();
+
+  // Store lambda 
+  int r_index = it + 1;
+  if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
+    Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
+    List Lambda_iter = model["Lambda_iter"];
+    Lambda_iter.push_back(Lambda_R);
+    model["Lambda_iter"] = Lambda_iter;
+  }
 }
 
 
@@ -108,25 +117,12 @@ void keyATMcov::sample_lambda()
   // Sampling
   u = unif_rand(); // select sampling methods randomly
 
-  // if(u < 0.3){
-  //   sample_lambda_mh();
-  // }else if (u < 0.6){
-  //   sample_lambda_mh_single();
-  // }else{
-  //   sample_lambda_slice();  
-  // }
-
   if(u < 0.4){
     sample_lambda_mh_single();
   }else{
     sample_lambda_slice();
   }
 
-  // Store Lambda
-  Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
-  List Lambda_iter = model["Lambda_iter"];
-  Lambda_iter.push_back(Lambda_R);
-  model["Lambda_iter"] = Lambda_iter;
 }
 
 

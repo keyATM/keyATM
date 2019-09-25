@@ -61,7 +61,7 @@ keyATM_output <- function(model){
 
     theta <- do.call(rbind, lapply(1:length(model$Z), posterior_z))
 
-  }else if(model$mode %in% c("basic", "tot", "ldaweight")){
+  }else if(model$mode %in% c("basic", "hmm", "tot", "ldaweight")){
     alpha <- model$alpha_iter[[length(model$alpha_iter)]]  
 
     posterior_z <- function(zvec){
@@ -133,12 +133,29 @@ keyATM_output <- function(model){
 
   # theta by iteration
   if(model$options$store_theta){
-    posterior_theta <- function(x){
-      doc_length <- Matrix::rowSums(x)
-      return(sweep(x, 1, doc_length, "/"))
+
+    if(model$mode %in% c("cov", "totcov")){
+      posterior_theta <- function(x){
+        Z_table <- model$options$Z_tables[[x]]
+        lambda <- model$Lambda[[x]]
+        Alpha <- exp(model$C %*% t(lambda))
+
+        tt <- Z_table + Alpha
+        row.names(tt) <- NULL
+
+        return(tt / Matrix::rowSums(tt))
+      }
+    }else{
+      posterior_theta <- function(x){
+        Z_table <- model$options$Z_tables[[x]]
+        alpha <- model$alpha_iter[[x]]
+
+        return((sweep(Z_table, 2, alpha, "+")) / 
+                (Matrix::rowSums(Z_table) + sum(alpha)))
+      }
     }  
 
-    model$options$theta_iter <- lapply(model$options$Z_tables,
+    model$options$theta_iter <- lapply(1:length(model$options$Z_tables),
                                         posterior_theta)
   }
 

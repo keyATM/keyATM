@@ -137,16 +137,24 @@ void keyATMhmm::verbose_special(int &r_index){
 
 void keyATMhmm::sample_parameters(int &it)
 {
-  if(floor(iter/2) < it)
-    return;
-
   // alpha
   sample_alpha();
   
   // HMM
-  sample_forward();  // calculate Psk
-  sample_backward();  // sample S_est
-  sample_P();  // sample P_est
+  if(floor(iter/2) > it){
+    sample_forward();  // calculate Psk
+    sample_backward();  // sample S_est
+    sample_P();  // sample P_est  
+  }
+
+  // Store alpha
+  int r_index = it + 1;
+  if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
+    NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
+    List alpha_iter = model["alpha_iter"];
+    alpha_iter.push_back(alpha_rvec);
+    model["alpha_iter"] = alpha_iter;  
+  }
 }
 
 
@@ -171,12 +179,6 @@ void keyATMhmm::sample_alpha()
     sample_alpha_state(s, states_start(s),
                           states_end(s));  
   }
-  
-  // Store alphas
-  Rcpp::NumericMatrix alphas_R = Rcpp::wrap(alphas);
-  List alpha_iter = model["alpha_iter"];
-  alpha_iter.push_back(alphas_R);
-  model["alpha_iter"] = alpha_iter;
   
 }
 

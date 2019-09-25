@@ -127,6 +127,15 @@ int LDAweight::sample_z(VectorXd &alpha, int &z, int &x,
 void LDAweight::sample_parameters(int &it)
 {
   sample_alpha();
+
+  // Store alpha
+	int r_index = it + 1;
+  if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
+    NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
+    List alpha_iter = model["alpha_iter"];
+    alpha_iter.push_back(alpha_rvec);
+    model["alpha_iter"] = alpha_iter;  
+  }
 }
 
 
@@ -172,12 +181,6 @@ void LDAweight::sample_alpha()
   }
 
   model["alpha"] = alpha;
-
-  // Store alpha
-  NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
-  List alpha_iter = model["alpha_iter"];
-  alpha_iter.push_back(alpha_rvec);
-  model["alpha_iter"] = alpha_iter;
 }
 
 

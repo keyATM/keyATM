@@ -46,6 +46,7 @@ void keyATMbase::read_data_common()
   use_weight = options_list["use_weights"];
   slice_A = options_list["slice_shape"];
   store_theta = options_list["store_theta"];
+  thinning = options_list["thinning"];
 
   x_prior = MatrixXd::Zero(num_topics, 2);
   NumericMatrix RMatrix = options_list["x_prior"];
@@ -182,9 +183,13 @@ void keyATMbase::iteration()
     iteration_single(it);
 
     int r_index = it + 1;
-    if(r_index % output_per == 0 || r_index == 1 || r_index == iter ){
+    if(r_index % output_per == 0 || r_index == 1 || r_index == iter){
       sampling_store(r_index);
       verbose_special(r_index);
+    }
+    if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
+      if(store_theta)
+        store_theta_iter(r_index);
     }
 
     checkUserInterrupt();
@@ -195,8 +200,6 @@ void keyATMbase::iteration()
 
 void keyATMbase::sampling_store(int &r_index)
 {
-  if(store_theta)
-    store_theta_iter(r_index);
 
   double loglik = loglik_total();
   double perplexity = exp(-loglik / (double)total_words);

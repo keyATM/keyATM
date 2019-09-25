@@ -75,6 +75,9 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
   if(is.null(options$visualize_keywords))
     options$visualize_keywords <- TRUE
 
+  if(is.null(options$thinning))
+    options$thinning <- 1
+
   # Set random seed
   if(is.null(options$seed))
     options$seed <- 225
@@ -189,7 +192,9 @@ keyATM_fit <- function(model, iteration=1000, keep_model=T){
     res <- keyATM_train_totcov(model, iter=iteration, output_per=model$options$output_per)
   }else if(mode == "ldaweight"){
     res <- LDA_weight(model, iter=iteration, output_per=model$options$output_per)  
-  }else{
+  }else if(mode == "hmm"){
+    res <- keyATM_train_HMM(model, iter=iteration, output_per=model$options$output_per)  
+	}else{
     stop("Please check `mode`.")  
   }
 
