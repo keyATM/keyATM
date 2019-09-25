@@ -58,6 +58,7 @@ topicdict_model <- function(...){
 keyATM_read <- function(texts, keywords, mode, extra_k,
                         iteration=1000,
                         covariates_data=NULL, covariates_formula= ~.+0,
+                        num_states=NULL,
                         timestamps=NULL, time_topics=NULL,
                         options=list(
                                      seed=225,
@@ -114,6 +115,7 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
                           keywords=keywords,
                           mode=mode,
                           covariates_data=covariates_data, covariates_formula=covariates_formula,
+                          num_states=num_states,
                           timestamps=timestamps, time_topics=time_topics,
                           options=options
                         )
@@ -194,7 +196,7 @@ keyATM_fit <- function(model, iteration=1000, keep_model=T){
     res <- LDA_weight(model, iter=iteration, output_per=model$options$output_per)  
   }else if(mode == "hmm"){
     res <- keyATM_train_HMM(model, iter=iteration, output_per=model$options$output_per)  
-	}else{
+  }else{
     stop("Please check `mode`.")  
   }
 
@@ -255,7 +257,7 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
                          extra_k = 1,
                          covariates_data=NULL, covariates_formula=NULL,
                          num_states=NULL,
-												 timestamps=NULL, time_topics=NULL,
+                         timestamps=NULL, time_topics=NULL,
                          alpha = 50/(length(keywords) + extra_k),
                          beta = 0.01, beta_s = 0.1,
                          options = list()
@@ -263,7 +265,7 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
 {
   cl <- match.call()
 
-	## Get topic number
+  ## Get topic number
   K <- length(keywords)
   proper_len <- K + extra_k
 
@@ -299,14 +301,14 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
       stop("Time stamps sholud be between 0 and 1. Please use `make_timestamps()` function to format time stamps.")  
     }
 
-		if(is.null(time_topics)){
-			message("`time_topics` is not specified. keyATM assumes time trends in all topics.")	
-			time_topics <- 1:proper_len
-		}else{
-			if((max(time_topics) >= proper_len) & (min(time_topics) < 1)){
-				stop("Invalid topics are in `time_topics`.")	
-			}
-		}
+    if(is.null(time_topics)){
+      message("`time_topics` is not specified. keyATM assumes time trends in all topics.")  
+      time_topics <- 1:proper_len
+    }else{
+      if((max(time_topics) >= proper_len) & (min(time_topics) < 1)){
+        stop("Invalid topics are in `time_topics`.")  
+      }
+    }
   }
 
 
