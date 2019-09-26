@@ -82,7 +82,6 @@ keyATM_output <- function(model){
 
     tt <- Z_table + alphas
     theta <- tt / Matrix::rowSums(tt)
-    return(theta)
   }
 
   theta <- as.matrix(theta)
