@@ -128,11 +128,7 @@ void keyATMhmm::iteration_single(int &it)
 
 void keyATMhmm::verbose_special(int &r_index){
   // If there is anything special to show, write here.
-  if(floor(iter/2) < r_index-1)
-    cout << "  Sampled S: " << S_count.transpose() << endl;
-
-  // Store S
-  store_S_est();
+  // cout << "  Sampled S: " << S_count.transpose() << endl;
 }
 
 void keyATMhmm::sample_parameters(int &it)
@@ -141,20 +137,22 @@ void keyATMhmm::sample_parameters(int &it)
   sample_alpha();
   
   // HMM
-  if(floor(iter/2) > it){
-    sample_forward();  // calculate Psk
-    sample_backward();  // sample S_est
-    sample_P();  // sample P_est  
-  }
+  sample_forward();  // calculate Psk
+  sample_backward();  // sample S_est
+  sample_P();  // sample P_est  
 
-  // Store alpha
+  // Store alpha and S
   int r_index = it + 1;
   if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
-    NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
+    Rcpp::NumericMatrix alphas_R = Rcpp::wrap(alphas);
     List alpha_iter = model["alpha_iter"];
-    alpha_iter.push_back(alpha_rvec);
+    alpha_iter.push_back(alphas_R);
     model["alpha_iter"] = alpha_iter;  
+
+    // Store S
+    store_S_est();
   }
+
 }
 
 
@@ -228,7 +226,7 @@ void keyATMhmm::sample_alpha_state(int &state, int &state_start, int &state_end)
   }
 
   // Set new alpha
-  alphas.row(state) = alpha.transpose();           // Use this line!!
+  alphas.row(state) = alpha.transpose();
 
 }
 

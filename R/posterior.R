@@ -59,9 +59,9 @@ keyATM_output <- function(model){
       (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
     }
 
-    theta <- do.call(rbind, lapply(1:length(model$Z), posterior_z))
+    theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z))
 
-  }else if(model$mode %in% c("basic", "hmm", "tot", "ldaweight")){
+  }else if(model$mode %in% c("basic", "tot", "ldaweight")){
     alpha <- model$alpha_iter[[length(model$alpha_iter)]]  
 
     posterior_z <- function(zvec){
@@ -69,10 +69,23 @@ keyATM_output <- function(model){
       (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
     }  
 
-    theta <- do.call(rbind, lapply(model$Z, posterior_z))
+    theta <- do.call(dplyr::bind_rows, lapply(model$Z, posterior_z))
 
+  }else if(model$mode %in% c("hmm")){
+    S <- model$S_iter[[length(model$S_iter)]] + 1  # adjust index for R
+    alphas <- matrix(model$alpha_iter[[length(model$alpha_iter)]][S],
+                     nrow=length(model$W), ncol=allK)
+
+    Z_table <- do.call(dplyr::bind_rows, 
+                       lapply(model$Z, 
+                        function(zvec){table(factor(zvec, levels = 1:allK - 1))}))
+
+    tt <- Z_table + alphas
+    theta <- tt / Matrix::rowSums(tt)
+    return(theta)
   }
 
+  theta <- as.matrix(theta)
   colnames(theta) <- tnames # label seeded topics
 
 
@@ -144,6 +157,17 @@ keyATM_output <- function(model){
         row.names(tt) <- NULL
 
         return(tt / Matrix::rowSums(tt))
+      }
+    }else if(model$mode %in% c("hmm")){
+      posterior_theta <- function(x){
+        Z_table <- model$options$Z_tables[[x]]
+        S <- model$S_iter[[x]] + 1  # adjust index for R
+        alphas <- matrix(model$alpha_iter[[x]][S],
+                         nrow=length(model$W), ncol=allK)
+      
+        tt <- Z_table + alphas
+        theta <- tt / Matrix::rowSums(tt)
+        return(theta)
       }
     }else{
       posterior_theta <- function(x){
