@@ -101,7 +101,7 @@ keyATM_output <- function(model){
   res_tibble %>%
     tidyr::spread(key=Word, value=Count)  -> beta
   beta <- apply(beta, 2, function(x){ifelse(is.na(x), 0, x)})
-  beta <- beta[, 2:ncol(beta)]
+  beta <- beta[, 2:ncol(beta)] + model$beta
   beta <- beta[, model$vocab]
 
   topic_counts <- Matrix::rowSums(beta)
