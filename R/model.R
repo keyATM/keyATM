@@ -460,7 +460,7 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
       ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=Topic)) +
         geom_line() +
         geom_point() +
-        geom_label_repel(aes(label = Word), size=2.8,
+        ggrepel::geom_label_repel(aes(label = Word), size=2.8,
                          box.padding = 0.20, label.padding = 0.12,
                          arrow=arrow(angle=10, length = unit(0.10, "inches"),
                                      ends = "last", type = "closed"),
@@ -482,6 +482,10 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
   wd_names <- unique(unnested_data$text_split) # vocab
   wd_map <- hashmap::hashmap(wd_names, as.integer(1:length(wd_names) - 1))
   W <- lapply(W_raw, function(x){ wd_map[[x]] })
+
+	## Check keywords appear at least once
+	sapply(unlist(keywords), 
+				 function(x){if(! x %in% wd_names) stop(paste0('"', x, '"', " does not appear in texts. Please check keywords."))})
 
   # zx_assigner maps seed words to category ids
   seed_wdids <- unlist(lapply(keywords, function(x){ wd_map$find(x) }))

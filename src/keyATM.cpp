@@ -138,7 +138,7 @@ void keyATMbase::initialize_common()
   
 
   if(use_weight == 0){
-    cout << "Not using weights!! Check use_weight" << endl;
+    cout << "Not using weights!! Check `options$use_weight`." << endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
 
