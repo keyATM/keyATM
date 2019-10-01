@@ -420,7 +420,8 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
   ##
   text_df %>%
     dplyr::select(text_split) %>%
-    tidyr::unnest(col=c(text_split)) -> unnested_data
+    # tidyr::unnest(col=c(text_split)) -> unnested_data
+    tidyr::unnest_legacy(col=c(text_split)) -> unnested_data
 
   if(options$visualize_keywords){
     totalwords <- nrow(unnested_data)
