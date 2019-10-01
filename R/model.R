@@ -484,9 +484,9 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
   wd_map <- hashmap::hashmap(wd_names, as.integer(1:length(wd_names) - 1))
   W <- lapply(W_raw, function(x){ wd_map[[x]] })
 
-	## Check keywords appear at least once
-	sapply(unlist(keywords), 
-				 function(x){if(! x %in% wd_names) stop(paste0('"', x, '"', " does not appear in texts. Please check keywords."))})
+  ## Check keywords appear at least once
+  sapply(unlist(keywords), 
+         function(x){if(! x %in% wd_names) stop(paste0('"', x, '"', " does not appear in texts. Please check keywords."))})
 
   # zx_assigner maps seed words to category ids
   seed_wdids <- unlist(lapply(keywords, function(x){ wd_map$find(x) }))
