@@ -115,13 +115,13 @@ void keyATMcov::sample_parameters(int &it)
 void keyATMcov::sample_lambda()
 {
   // Sampling
-  u = unif_rand(); // select sampling methods randomly
+  // u = unif_rand(); // select sampling methods randomly
 
-  if(u < 0.4){
-    sample_lambda_mh_single();
-  }else{
-    sample_lambda_slice();
-  }
+  // if(u < 0.4){
+    // sample_lambda_mh_single();
+  // }else{
+  sample_lambda_slice();
+  // }
 
 }
 
