@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Initialize a keyATM model — keyATM_model • keyATM</title>
+<title>Run the Collapsed Gibbs sampler for the HMM model — keyATM_train_LDAHMM • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Initialize a keyATM model — keyATM_model" />
+<meta property="og:title" content="Run the Collapsed Gibbs sampler for the HMM model — keyATM_train_LDAHMM" />
 
-<meta property="og:description" content="Initialize a keyATM model" />
+<meta property="og:description" content="Run the Collapsed Gibbs sampler for the HMM model" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,28 +123,42 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Initialize a keyATM model</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/model.R'><code>R/model.R</code></a></small>
-    <div class="hidden name"><code>keyATM_model.Rd</code></div>
+    <h1>Run the Collapsed Gibbs sampler for the HMM model</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
+    <div class="hidden name"><code>keyATM_train_LDAHMM.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Initialize a keyATM model</p>
+    <p>Run the Collapsed Gibbs sampler for the HMM model</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>keyATM_model</span>(<span class='kw'>files</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>text_df</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>text_dfm</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>mode</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>extra_k</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>covariates_formula</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timestamps</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>time_topics</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>50</span>/(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>keywords</span>) + <span class='no'>extra_k</span>),
-  <span class='kw'>beta</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>beta_s</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>())</pre>
-        
+    <pre class="usage"><span class='fu'>keyATM_train_LDAHMM</span>(<span class='no'>model</span>, <span class='kw'>iter</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>output_per</span> <span class='kw'>=</span> <span class='fl'>10L</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>model</th>
+      <td><p>A initialized model</p></td>
+    </tr>
+    <tr>
+      <th>iter</th>
+      <td><p>Required number of iterations</p></td>
+    </tr>
+    <tr>
+      <th>output_per</th>
+      <td><p>Show log-likelihood and perplexity per this number during the iteration</p></td>
+    </tr>
+    </table>
+    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
                 </ul>
 
   </div>

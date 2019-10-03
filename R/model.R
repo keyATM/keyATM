@@ -56,7 +56,6 @@ topicdict_model <- function(...){
 #'
 #' @export
 keyATM_read <- function(texts, mode, extra_k, keywords=list(),
-                        iteration=1000,
                         covariates_data=NULL, covariates_formula= ~.+0,
                         num_states=NULL,
                         timestamps=NULL, time_topics=NULL,

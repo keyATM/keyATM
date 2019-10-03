@@ -136,10 +136,11 @@ Internally, <code>keyATM_read()</code> calls <code><a href='keyATM_model.html'>k
     
     </div>
 
-    <pre class="usage"><span class='fu'>keyATM_read</span>(<span class='no'>texts</span>, <span class='no'>keywords</span>, <span class='no'>mode</span>, <span class='no'>extra_k</span>, <span class='kw'>iteration</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+    <pre class="usage"><span class='fu'>keyATM_read</span>(<span class='no'>texts</span>, <span class='no'>mode</span>, <span class='no'>extra_k</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>iteration</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
   <span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~<span class='no'>.</span> + <span class='fl'>0</span>,
-  <span class='kw'>timestamps</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>225</span>, <span class='kw'>output_per</span> <span class='kw'>=</span> <span class='fl'>10</span>,
-  <span class='kw'>use_weights</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>visualize_keywords</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>x_prior</span> <span class='kw'>=</span> <span class='kw'>NULL</span>))</pre>
+  <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timestamps</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>time_topics</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>225</span>, <span class='kw'>output_per</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_weights</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>visualize_keywords</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>thinning</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>x_prior</span> <span class='kw'>=</span> <span class='kw'>NULL</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,17 +150,17 @@ Internally, <code>keyATM_read()</code> calls <code><a href='keyATM_model.html'>k
       <td><p>Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.</p></td>
     </tr>
     <tr>
-      <th>keywords</th>
-      <td><p>a quanteda dictionary or a list of character vectors</p></td>
-    </tr>
-    <tr>
       <th>mode</th>
-      <td><p>"basic", "cov", "tot", "totcov", and "ldaweight"</p></td>
+      <td><p>"basic", "cov", "hmm", "tot", "totcov", "lda" and "ldahmm"</p></td>
     </tr>
     <tr>
       <th>extra_k</th>
       <td><p>number of regular topics in addition to the keyword topics by
 <code>keywords</code></p></td>
+    </tr>
+    <tr>
+      <th>keywords</th>
+      <td><p>a quanteda dictionary or a list of character vectors</p></td>
     </tr>
     <tr>
       <th>iteration</th>
