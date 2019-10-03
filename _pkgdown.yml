@@ -28,10 +28,10 @@ navbar:
           href: articles/pkgdown_examples/keyATM_basic.html
         - text: "keyATM Covariate"
           href: articles/pkgdown_examples/keyATM_cov.html
-        - text: "keyATM Topics Over Time"
-          href: articles/pkgdown_examples/keyATM_tot.html
-        - text: "keyATM TOT with Covariates"
-          href: articles/pkgdown_examples/keyATM_totcov.html
+        - text: "keyATM HMM"
+          href: articles/pkgdown_examples/keyATM_HMM.html
+        - text: "Weighted LDA"
+          href: articles/pkgdown_examples/Weighted_LDA.html
         - text: "Guidline"
           href: articles/pkgdown_examples/guidline.html
     - text: "Reference"

@@ -4,7 +4,7 @@
 \alias{keyATM_read}
 \title{Initialize a keyATM model}
 \usage{
-keyATM_read(texts, mode, extra_k, keywords = list(), iteration = 1000,
+keyATM_read(texts, mode, extra_k, keywords = list(),
   covariates_data = NULL, covariates_formula = ~. + 0,
   num_states = NULL, timestamps = NULL, time_topics = NULL,
   options = list(seed = 225, output_per = 10, use_weights = TRUE,
@@ -20,8 +20,6 @@ keyATM_read(texts, mode, extra_k, keywords = list(), iteration = 1000,
 
 \item{keywords}{a quanteda dictionary or a list of character vectors}
 
-\item{iteration}{number of iteration}
-
 \item{covariates_data}{covariate}
 
 \item{covariates_formula}{formula applied to covariate data}
@@ -30,6 +28,8 @@ keyATM_read(texts, mode, extra_k, keywords = list(), iteration = 1000,
 
 \item{options}{options are seed, use_weights,
 visualize_keywords, and output_per.}
+
+\item{iteration}{number of iteration}
 }
 \value{
 keyATM object, which is a list containing \describe{

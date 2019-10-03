@@ -87,10 +87,10 @@ Internally, keyATM_read() calls keyATM_model() to initialize a model." />
       <a href="../articles/pkgdown_examples/keyATM_cov.html">keyATM Covariate</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_tot.html">keyATM Topics Over Time</a>
+      <a href="../articles/pkgdown_examples/keyATM_HMM.html">keyATM HMM</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_totcov.html">keyATM TOT with Covariates</a>
+      <a href="../articles/pkgdown_examples/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
       <a href="../articles/pkgdown_examples/guidline.html">Guidline</a>
@@ -136,7 +136,7 @@ Internally, <code>keyATM_read()</code> calls <code><a href='keyATM_model.html'>k
     
     </div>
 
-    <pre class="usage"><span class='fu'>keyATM_read</span>(<span class='no'>texts</span>, <span class='no'>mode</span>, <span class='no'>extra_k</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>iteration</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+    <pre class="usage"><span class='fu'>keyATM_read</span>(<span class='no'>texts</span>, <span class='no'>mode</span>, <span class='no'>extra_k</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
   <span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~<span class='no'>.</span> + <span class='fl'>0</span>,
   <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timestamps</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>time_topics</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>225</span>, <span class='kw'>output_per</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_weights</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
@@ -163,10 +163,6 @@ Internally, <code>keyATM_read()</code> calls <code><a href='keyATM_model.html'>k
       <td><p>a quanteda dictionary or a list of character vectors</p></td>
     </tr>
     <tr>
-      <th>iteration</th>
-      <td><p>number of iteration</p></td>
-    </tr>
-    <tr>
       <th>covariates_data</th>
       <td><p>covariate</p></td>
     </tr>
@@ -182,6 +178,10 @@ Internally, <code>keyATM_read()</code> calls <code><a href='keyATM_model.html'>k
       <th>options</th>
       <td><p>options are seed, use_weights,
 visualize_keywords, and output_per.</p></td>
+    </tr>
+    <tr>
+      <th>iteration</th>
+      <td><p>number of iteration</p></td>
     </tr>
     </table>
     
