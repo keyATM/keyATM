@@ -4,21 +4,21 @@
 \alias{keyATM_read}
 \title{Initialize a keyATM model}
 \usage{
-keyATM_read(texts, keywords, mode, extra_k, iteration = 1000,
+keyATM_read(texts, mode, extra_k, keywords = list(), iteration = 1000,
   covariates_data = NULL, covariates_formula = ~. + 0,
   num_states = NULL, timestamps = NULL, time_topics = NULL,
   options = list(seed = 225, output_per = 10, use_weights = TRUE,
-  visualize_keywords = TRUE, x_prior = NULL))
+  visualize_keywords = TRUE, thinning = 1, x_prior = NULL))
 }
 \arguments{
 \item{texts}{Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.}
-
-\item{keywords}{a quanteda dictionary or a list of character vectors}
 
 \item{mode}{"basic", "cov", "tot", "totcov", and "ldaweight"}
 
 \item{extra_k}{number of regular topics in addition to the keyword topics by
 \code{keywords}}
+
+\item{keywords}{a quanteda dictionary or a list of character vectors}
 
 \item{iteration}{number of iteration}
 

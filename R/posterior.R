@@ -71,7 +71,7 @@ keyATM_output <- function(model){
 
     theta <- do.call(dplyr::bind_rows, lapply(model$Z, posterior_z))
 
-  }else if(model$mode %in% c("hmm")){
+  }else if(model$mode %in% c("hmm", "ldahmm")){
     S <- model$S_iter[[length(model$S_iter)]] + 1  # adjust index for R
     alphas <- matrix(model$alpha_iter[[length(model$alpha_iter)]][S],
                      nrow=length(model$W), ncol=allK)
@@ -157,7 +157,7 @@ keyATM_output <- function(model){
 
         return(tt / Matrix::rowSums(tt))
       }
-    }else if(model$mode %in% c("hmm")){
+    }else if(model$mode %in% c("hmm", "ldahmm")){
       posterior_theta <- function(x){
         Z_table <- model$options$Z_tables[[x]]
         S <- model$S_iter[[x]] + 1  # adjust index for R

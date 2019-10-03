@@ -55,7 +55,7 @@ topicdict_model <- function(...){
 #'         }.
 #'
 #' @export
-keyATM_read <- function(texts, keywords, mode, extra_k,
+keyATM_read <- function(texts, mode, extra_k, keywords=list(),
                         iteration=1000,
                         covariates_data=NULL, covariates_formula= ~.+0,
                         num_states=NULL,
@@ -65,6 +65,7 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
                                      output_per=10,
                                      use_weights=TRUE,
                                      visualize_keywords=TRUE,
+                                     thinning = 1,
                                      x_prior=NULL
                                     )
                        )
@@ -196,6 +197,8 @@ keyATM_fit <- function(model, iteration=1000, keep_model=T){
     res <- LDA_weight(model, iter=iteration, output_per=model$options$output_per)  
   }else if(mode == "hmm"){
     res <- keyATM_train_HMM(model, iter=iteration, output_per=model$options$output_per)  
+  }else if(mode == "ldahmm"){
+    res <- keyATM_train_LDAHMM(model, iter=iteration, output_per=model$options$output_per)  
   }else{
     stop("Please check `mode`.")  
   }
@@ -252,7 +255,7 @@ topicdict_train_totcov <- function(...){
 #' @importFrom stats model.matrix
 #' @import ggplot2
 #' @import ggrepel
-keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
+keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NULL,
                          mode="",
                          extra_k = 1,
                          covariates_data=NULL, covariates_formula=NULL,
@@ -272,7 +275,7 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
   ##
   ## Check format
   ##
-  if(mode %in% c("basic", "cov", "hmm", "tot", "totcov", "ldaweight")){
+  if(mode %in% c("basic", "cov", "hmm", "tot", "totcov", "ldaweight", "ldahmm")){
   }else{
     stop(paste0("Unknown model:", mode))  
   }
@@ -282,8 +285,12 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
     stop("Covariates information provided, specify the model.")  
   }
 
-  if(is.null(num_states) & mode == "hmm"){
+  if(is.null(num_states) & (mode == "hmm" | mode=="ldahmm")){
     stop("Provide the number of states.")  
+  }
+
+  if(length(keywords) == 0 & mode %in% c("basic", "cov", "hmm", "tot")){
+    stop("Please provide keywords.")  
   }
 
   if(!is.null(text_df)){
@@ -310,6 +317,7 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
       }
     }
   }
+
 
 
   ##
@@ -425,7 +433,7 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
     tidyr::unnest_legacy(text_split=c(text_split)) -> unnested_data
     # tidyr::unnest(col=c(text_split)) -> unnested_data
 
-  if(options$visualize_keywords){
+  if(options$visualize_keywords & mode %in% c("basic", "cov", "tot", "hmm")){
     totalwords <- nrow(unnested_data)
 
     unnested_data %>%
@@ -490,67 +498,87 @@ keyATM_model <- function(files=NULL, keywords=NULL, text_df=NULL, text_dfm=NULL,
   sapply(unlist(keywords), 
          function(x){if(! x %in% wd_names) stop(paste0('"', x, '"', " does not appear in texts. Please check keywords."))})
 
-  # zx_assigner maps seed words to category ids
-  seed_wdids <- unlist(lapply(keywords, function(x){ wd_map$find(x) }))
-  cat_ids <- rep(1:K - 1, unlist(lapply(keywords, length)))
+  if(mode %in% c("basic", "cov", "tot", "hmm")){
+    # zx_assigner maps seed words to category ids
+    seed_wdids <- unlist(lapply(keywords, function(x){ wd_map$find(x) }))
+    cat_ids <- rep(1:K - 1, unlist(lapply(keywords, length)))
 
-  if(length(seed_wdids) == length(unique(seed_wdids))){
-    #
-    # No keyword appears more than once
-    #
-    zx_assigner <- hashmap(as.integer(seed_wdids), as.integer(cat_ids))
+    if(length(seed_wdids) == length(unique(seed_wdids))){
+      #
+      # No keyword appears more than once
+      #
+      zx_assigner <- hashmap(as.integer(seed_wdids), as.integer(cat_ids))
 
-    # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
-    make_z <- function(x){
-      zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
-      zz[is.na(zz)] <- sample(1:(K + extra_k) - 1,
-                              sum(as.numeric(is.na(zz))),
-                              replace = TRUE)
-      zz
+      # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
+      make_z <- function(x){
+        zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
+        zz[is.na(zz)] <- sample(1:(K + extra_k) - 1,
+                                sum(as.numeric(is.na(zz))),
+                                replace = TRUE)
+        zz
+      }
+      
+
+    }else{
+      #
+      # Some keywords appear multiple times
+      #
+      keys_df <- data.frame(wid = seed_wdids, cat=cat_ids)
+      keys_char <- sapply(unique(seed_wdids),
+                          function(x){
+                            paste(as.character(keys_df[keys_df$wid==x, "cat"]), collapse=",")
+                          })
+      zx_hashtable <- hashmap::hashmap(as.integer(unique(seed_wdids)), keys_char)
+
+      zx_assigner <- function(x){
+        topic <- zx_hashtable[[x]]
+        topic <- strsplit(topic, split=",")
+        topic <- lapply(topic, sample, 1)
+        topic <- as.integer(unlist(topic))
+        return(topic)
+      }
+
+      # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
+      make_z <- function(x){
+        zz <- zx_assigner(x) # if it is a seed word, we already know the topic
+        zz[is.na(zz)] <- sample(1:(K + extra_k) - 1,
+                                sum(as.numeric(is.na(zz))),
+                                replace = TRUE)
+        zz
+      }
     }
-    
 
+    ## xx indicates whether the word comes from a seed topic-word distribution or not
+    make_x <- function(x){
+      seeded <- as.numeric(x %in% seed_wdids) # 1 if they're a seed
+      # Use x structure
+      x[seeded == 0] <- 0 # non-keyword words have x=0
+      x[seeded == 1] <- sample(0:1, length(x[seeded == 1]), prob = c(0.3, 0.7), replace = TRUE)
+        # seeded words have x=1 probabilistically
+      x
+    }
+
+    X <- lapply(W, make_x)
+    Z <- lapply(W, make_z)
+  
   }else{
     #
-    # Some keywords appear multiple times
+    # LDA based models  
     #
-    keys_df <- data.frame(wid = seed_wdids, cat=cat_ids)
-    keys_char <- sapply(unique(seed_wdids),
-                        function(x){
-                          paste(as.character(keys_df[keys_df$wid==x, "cat"]), collapse=",")
-                        })
-    zx_hashtable <- hashmap::hashmap(as.integer(unique(seed_wdids)), keys_char)
-
-    zx_assigner <- function(x){
-      topic <- zx_hashtable[[x]]
-      topic <- strsplit(topic, split=",")
-      topic <- lapply(topic, sample, 1)
-      topic <- as.integer(unlist(topic))
-      return(topic)
-    }
-
-    # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
     make_z <- function(x){
-      zz <- zx_assigner(x) # if it is a seed word, we already know the topic
-      zz[is.na(zz)] <- sample(1:(K + extra_k) - 1,
-                              sum(as.numeric(is.na(zz))),
-                              replace = TRUE)
-      zz
+      zz <- sample(1:(K + extra_k) - 1,
+                   length(x),
+                   replace = TRUE)
+      return(zz)
+    }  
+
+    make_x <- function(x){
+      return(rep(0, length(x)))  
     }
-  }
 
-  ## xx indicates whether the word comes from a seed topic-word distribution or not
-  make_x <- function(x){
-    seeded <- as.numeric(x %in% seed_wdids) # 1 if they're a seed
-    # Use x structure
-    x[seeded == 0] <- 0 # non-seeded words have x=0
-    x[seeded == 1] <- sample(0:1, length(x[seeded == 1]), prob = c(0.3, 0.7), replace = TRUE)
-      # seeded words have x=1 probabilistically
-    x
+    X <- lapply(W, make_x)
+    Z <- lapply(W, make_z)
   }
-
-  X <- lapply(W, make_x)
-  Z <- lapply(W, make_z)
 
   # dictionary category names -> vector of word_id.
   # (Later processes ignore names)
