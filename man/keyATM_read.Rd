@@ -13,7 +13,7 @@ keyATM_read(texts, mode, extra_k, keywords = list(), iteration = 1000,
 \arguments{
 \item{texts}{Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.}
 
-\item{mode}{"basic", "cov", "tot", "totcov", and "ldaweight"}
+\item{mode}{"basic", "cov", "hmm", "tot", "totcov", "lda" and "ldahmm"}
 
 \item{extra_k}{number of regular topics in addition to the keyword topics by
 \code{keywords}}

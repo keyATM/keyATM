@@ -16,7 +16,7 @@ topicdict_model <- function(...){
 #'
 #' @param texts Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.
 #' @param keywords a quanteda dictionary or a list of character vectors
-#' @param mode "basic", "cov", "tot", "totcov", and "ldaweight"
+#' @param mode "basic", "cov", "hmm", "tot", "totcov", "lda" and "ldahmm"
 #' @param iteration number of iteration
 #' @param extra_k number of regular topics in addition to the keyword topics by
 #'                \code{keywords}
@@ -103,9 +103,15 @@ keyATM_read <- function(texts, mode, extra_k, keywords=list(),
          It can take quanteda dfm, data.frame, tibble, and a vector of characters.")  
   }
 
+
   # Reformat keywords
   if(class(keywords) != "list"){
       stop("`keywords` should be a list of character vectors")
+  }
+
+  if(mode %in% c("lda", "ldahmm") & length(keywords) != 0){
+    warning("Keywords will not be used in LDA models.")
+    keywords <- list()  
   }
 
   # Initialize model
@@ -178,8 +184,7 @@ keyATM_fit <- function(model, iteration=1000, keep_model=T){
   if(model$options$store_theta){
     # We need matrices to store theta  
     model$options$Z_tables <- list()
-  }  
-
+  }
 
   mode <- model$mode
   set.seed(model$options$seed)
@@ -193,7 +198,7 @@ keyATM_fit <- function(model, iteration=1000, keep_model=T){
     res <- keyATM_train_tot(model, iter=iteration, output_per=model$options$output_per)
   }else if(mode == "totcov"){
     res <- keyATM_train_totcov(model, iter=iteration, output_per=model$options$output_per)
-  }else if(mode == "ldaweight"){
+  }else if(mode == "lda"){
     res <- LDA_weight(model, iter=iteration, output_per=model$options$output_per)  
   }else if(mode == "hmm"){
     res <- keyATM_train_HMM(model, iter=iteration, output_per=model$options$output_per)  
@@ -275,7 +280,12 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
   ##
   ## Check format
   ##
-  if(mode %in% c("basic", "cov", "hmm", "tot", "totcov", "ldaweight", "ldahmm")){
+  if(mode == "ldaweight"){
+    warning("Please name `ldaweight` as `lda`.")
+    mode <- "lda"  
+  }
+
+  if(mode %in% c("basic", "cov", "hmm", "tot", "totcov", "lda", "ldahmm")){
   }else{
     stop(paste0("Unknown model:", mode))  
   }

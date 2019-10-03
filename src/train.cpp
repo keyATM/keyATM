@@ -13,6 +13,7 @@
 #include "keyATM_totcov.h"
 #include "keyATM_HMM.h"
 #include "LDA_weight.h"
+#include "LDA_weightHMM.h"
 #include "LDA_weightTOT.h"
 
 
@@ -38,9 +39,9 @@ using namespace std;
 // [[Rcpp::export]]
 List keyATM_train(List model, int iter = 0, int output_per = 10){
 
-	keyATMbasic keyATMbasic_model(model, iter, output_per);
-	model = keyATMbasic_model.return_model();
-	return model;
+  keyATMbasic keyATMbasic_model(model, iter, output_per);
+  model = keyATMbasic_model.return_model();
+  return model;
 
 }
 
@@ -55,9 +56,9 @@ List keyATM_train(List model, int iter = 0, int output_per = 10){
 // [[Rcpp::export]]
 List keyATM_train_cov(List model, int iter = 0, int output_per = 10){
 
-	keyATMcov keyATMcov_model(model, iter, output_per);
-	model = keyATMcov_model.return_model();
-	return model;
+  keyATMcov keyATMcov_model(model, iter, output_per);
+  model = keyATMcov_model.return_model();
+  return model;
 
 }
 
@@ -72,9 +73,9 @@ List keyATM_train_cov(List model, int iter = 0, int output_per = 10){
 // [[Rcpp::export]]
 List keyATM_train_HMM(List model, int iter = 0, int output_per = 10){
 
-	keyATMhmm hmm_model(model, iter, output_per);
-	model = hmm_model.return_model();
-	return model;
+  keyATMhmm hmm_model(model, iter, output_per);
+  model = hmm_model.return_model();
+  return model;
 
 }
 
@@ -90,9 +91,9 @@ List keyATM_train_HMM(List model, int iter = 0, int output_per = 10){
 // [[Rcpp::export]]
 List keyATM_train_tot(List model, int iter = 0, int output_per = 10){
 
-	keyATMtot tot_model(model, iter, output_per);
-	model = tot_model.return_model();
-	return model;
+  keyATMtot tot_model(model, iter, output_per);
+  model = tot_model.return_model();
+  return model;
 
 }
 
@@ -107,9 +108,9 @@ List keyATM_train_tot(List model, int iter = 0, int output_per = 10){
 // [[Rcpp::export]]
 List keyATM_train_totcov(List model, int iter = 0, int output_per = 10){
 
-	keyATMtotcov totcov_model(model, iter, output_per);
-	model = totcov_model.return_model();
-	return model;
+  keyATMtotcov totcov_model(model, iter, output_per);
+  model = totcov_model.return_model();
+  return model;
 
 }
 
@@ -129,9 +130,9 @@ List keyATM_train_totcov(List model, int iter = 0, int output_per = 10){
 List lda_cov(List model, int K, int iter=0, int output_iter=10)
 {
 
-	LDACOV ldacov(model, K, iter, output_iter);
+  LDACOV ldacov(model, K, iter, output_iter);
 
-	return model;
+  return model;
 }
 
 
@@ -147,9 +148,9 @@ List lda_cov(List model, int K, int iter=0, int output_iter=10)
 List keyATM_idealpoint(List model, List author_info, int iter=0, int output_iter=10)
 {
 
-	IDEALPOINT idealpoint(model, author_info, iter, output_iter);
+  IDEALPOINT idealpoint(model, author_info, iter, output_iter);
 
-	return model;
+  return model;
 }
 
 
@@ -163,11 +164,30 @@ List keyATM_idealpoint(List model, List author_info, int iter=0, int output_iter
 // [[Rcpp::export]]
 List LDA_weight(List model, int iter = 0, int output_per = 10){
 
-	LDAweight LDAweight_model(model, iter, output_per);
-	model = LDAweight_model.return_model();
-	return model;
+  LDAweight LDAweight_model(model, iter, output_per);
+  model = LDAweight_model.return_model();
+  return model;
 
 }
+
+
+//' Run the Collapsed Gibbs sampler for the HMM model
+//'
+//' @param model A initialized model
+//' @param iter Required number of iterations
+//' @param output_per Show log-likelihood and perplexity per this number during the iteration
+//'
+//' @export
+// [[Rcpp::export]]
+List keyATM_train_LDAHMM(List model, int iter = 0, int output_per = 10){
+
+  LDAhmm ldahmm_model(model, iter, output_per);
+  model = ldahmm_model.return_model();
+  return model;
+
+}
+
+
 
 
 //' Run the Collapsed Gibbs sampler for LDA topic-over-time with weights
@@ -180,9 +200,9 @@ List LDA_weight(List model, int iter = 0, int output_per = 10){
 // [[Rcpp::export]]
 List LDA_weight_tot(List model, int iter = 0, int output_per = 10){
 
-	LDAweightTOT LDAweightTOT_model(model, iter, output_per);
-	model = LDAweightTOT_model.return_model();
-	return model;
+  LDAweightTOT LDAweightTOT_model(model, iter, output_per);
+  model = LDAweightTOT_model.return_model();
+  return model;
 
 }
 

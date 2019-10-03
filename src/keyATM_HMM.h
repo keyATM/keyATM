@@ -24,7 +24,7 @@ class keyATMhmm : public keyATMbase
     MatrixXd alphas;  // (num_states, num_topics)
     double loglik;
     double fixed_part;
-  
+
     // Constructor
     keyATMhmm(List model_, const int iter_, const int output_per_);
 
