@@ -21,7 +21,7 @@ keyATM object, which is a list containing \describe{
         \item{files}{a vector of document filenames}
         \item{dict}{a tokenized version of the keyword dictionary}
         \item{keywords}{a list of keywords in dict, named by dictionary category}
-        \item{extra_k}{how many extra non-seeded topics are required}
+        \item{regular_k}{how many extra non-seeded topics are required}
         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
         \item{alpha_iter}{a list to store topic proportion hyperparameters}
         \item{Lambda_iter}{a list to store coefficients of the covariates}

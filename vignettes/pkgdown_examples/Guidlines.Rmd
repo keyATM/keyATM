@@ -1,0 +1,17 @@
+---
+title: "Guidlines"
+output: 
+  html_document:
+    toc: true
+---
+
+
+## Which model to use?
+
+## How to select keywords?
+
+
+
+
+
+

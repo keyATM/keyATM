@@ -4,9 +4,9 @@
 \alias{keyATM_read}
 \title{Initialize a keyATM model}
 \usage{
-keyATM_read(texts, mode, extra_k, keywords = list(),
-  covariates_data = NULL, covariates_formula = ~. + 0,
-  num_states = NULL, timestamps = NULL, time_topics = NULL,
+keyATM_read(texts, mode, regular_k = 0, extra_k = NULL,
+  keywords = list(), covariates_data = NULL, covariates_formula = ~.
+  + 0, num_states = NULL, timestamps = NULL, time_topics = NULL,
   options = list(seed = 225, output_per = 10, use_weights = TRUE,
   visualize_keywords = TRUE, thinning = 1, x_prior = NULL))
 }
@@ -15,7 +15,7 @@ keyATM_read(texts, mode, extra_k, keywords = list(),
 
 \item{mode}{"basic", "cov", "hmm", "tot", "totcov", "lda" and "ldahmm"}
 
-\item{extra_k}{number of regular topics in addition to the keyword topics by
+\item{regular_k}{number of regular topics in addition to the keyword topics by
 \code{keywords}}
 
 \item{keywords}{a quanteda dictionary or a list of character vectors}
@@ -41,7 +41,7 @@ keyATM object, which is a list containing \describe{
         \item{mode}{keyATM model to fit}
         \item{keywords}{a list of keywords in word_id}
         \item{keywords_raw}{a list of keywords}
-        \item{extra_k}{how many extra non-seeded topics are required}
+        \item{regular_k}{how many extra non-seeded topics are required}
         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
         \item{alpha_iter}{a list to store topic proportion hyperparameters}
         \item{Lambda_iter}{a list to store coefficients of the covariates}

@@ -13,11 +13,12 @@ output: github_document
 
 ## How to Use
 * [Installation](articles/pkgdown_examples/Installation.html)
+* [Read Texts](articles/pkgdown_examples/ReadTexts.html)
 * [keyATM Basic](articles/pkgdown_examples/keyATM_basic.html)
 * [keyATM Covariate](articles/pkgdown_examples/keyATM_cov.html)
 * [keyATM HMM](articles/pkgdown_examples/keyATM_HMM.html)
 * [Weighted LDA](articles/pkgdown_examples/Weighted_LDA.html)
-* [Guidline](articles/pkgdown_examples/guidline.html)
+* [Guidlines](articles/pkgdown_examples/Guidlines.html)
 
 ## How to report a bug
 We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/Shusei-E/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format. 

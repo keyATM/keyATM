@@ -18,7 +18,7 @@ topicdict_model <- function(...){
 #' @param keywords a quanteda dictionary or a list of character vectors
 #' @param mode "basic", "cov", "hmm", "tot", "totcov", "lda" and "ldahmm"
 #' @param iteration number of iteration
-#' @param extra_k number of regular topics in addition to the keyword topics by
+#' @param regular_k number of regular topics in addition to the keyword topics by
 #'                \code{keywords}
 #' @param covariates_data covariate
 #' @param covariates_formula formula applied to covariate data
@@ -35,7 +35,7 @@ topicdict_model <- function(...){
 #'         \item{mode}{keyATM model to fit}
 #'         \item{keywords}{a list of keywords in word_id}
 #'         \item{keywords_raw}{a list of keywords}
-#'         \item{extra_k}{how many extra non-seeded topics are required}
+#'         \item{regular_k}{how many extra non-seeded topics are required}
 #'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
 #'         \item{Lambda_iter}{a list to store coefficients of the covariates}
@@ -55,7 +55,7 @@ topicdict_model <- function(...){
 #'         }.
 #'
 #' @export
-keyATM_read <- function(texts, mode, extra_k, keywords=list(),
+keyATM_read <- function(texts, mode, regular_k=0, extra_k=NULL, keywords=list(),
                         covariates_data=NULL, covariates_formula= ~.+0,
                         num_states=NULL,
                         timestamps=NULL, time_topics=NULL,
@@ -113,11 +113,16 @@ keyATM_read <- function(texts, mode, extra_k, keywords=list(),
     keywords <- list()  
   }
 
+  if(!is.null(extra_k)){
+    warning("Please use `regular_k`.")  
+    regular_k <- extra_k
+  }
+
   # Initialize model
   message("Initializing keyATM...")
   model <- keyATM_model(
                           files=files, text_df=text_df, text_dfm=text_dfm,
-                          extra_k=extra_k,
+                          regular_k=regular_k,
                           keywords=keywords,
                           mode=mode,
                           covariates_data=covariates_data, covariates_formula=covariates_formula,
@@ -146,7 +151,7 @@ keyATM_read <- function(texts, mode, extra_k, keywords=list(),
 #'         \item{files}{a vector of document filenames}
 #'         \item{dict}{a tokenized version of the keyword dictionary}
 #'         \item{keywords}{a list of keywords in dict, named by dictionary category}
-#'         \item{extra_k}{how many extra non-seeded topics are required}
+#'         \item{regular_k}{how many extra non-seeded topics are required}
 #'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
 #'         \item{Lambda_iter}{a list to store coefficients of the covariates}
@@ -261,11 +266,11 @@ topicdict_train_totcov <- function(...){
 #' @import ggrepel
 keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NULL,
                          mode="",
-                         extra_k = 1,
+                         regular_k = 1,
                          covariates_data=NULL, covariates_formula=NULL,
                          num_states=NULL,
                          timestamps=NULL, time_topics=NULL,
-                         alpha = 50/(length(keywords) + extra_k),
+                         alpha = 50/(length(keywords) + regular_k),
                          beta = 0.01, beta_s = 0.1,
                          options = list()
                         )
@@ -274,7 +279,7 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
 
   ## Get topic number
   K <- length(keywords)
-  proper_len <- K + extra_k
+  proper_len <- K + regular_k
 
   ##
   ## Check format
@@ -521,7 +526,7 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
       # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
       make_z <- function(x){
         zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
-        zz[is.na(zz)] <- sample(1:(K + extra_k) - 1,
+        zz[is.na(zz)] <- sample(1:(K + regular_k) - 1,
                                 sum(as.numeric(is.na(zz))),
                                 replace = TRUE)
         zz
@@ -550,7 +555,7 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
       # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
       make_z <- function(x){
         zz <- zx_assigner(x) # if it is a seed word, we already know the topic
-        zz[is.na(zz)] <- sample(1:(K + extra_k) - 1,
+        zz[is.na(zz)] <- sample(1:(K + regular_k) - 1,
                                 sum(as.numeric(is.na(zz))),
                                 replace = TRUE)
         zz
@@ -575,7 +580,7 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
     # LDA based models  
     #
     make_z <- function(x){
-      zz <- sample(1:(K + extra_k) - 1,
+      zz <- sample(1:(K + regular_k) - 1,
                    length(x),
                    replace = TRUE)
       return(zz)
@@ -608,7 +613,8 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
 
 
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names, mode=mode,
-             keywords = keywords, keywords_raw = keywords_raw, extra_k = extra_k,
+             keywords = keywords, keywords_raw = keywords_raw, regular_k = regular_k,
+             extra_k = regular_k,
              alpha = alpha,
              beta = beta, beta_s = beta_s,
              alpha_iter = list(), Lambda_iter = list(), S_iter = list(),

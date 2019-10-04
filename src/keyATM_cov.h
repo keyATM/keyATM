@@ -22,16 +22,10 @@ class keyATMcov : public keyATMbase
     MatrixXd Lambda;
     MatrixXd C;
 
-    // MH sampling
     double mu;
     double sigma;
-    double mh_sigma;
-
-    // Sampling info
-    std::vector<int> mh_info {0,0};
 
     // During the sampling
-      // mh_single
       std::vector<int> topic_ids;
       std::vector<int> cov_ids;
 
@@ -66,8 +60,6 @@ class keyATMcov : public keyATMbase
     double alpha_loglik();
     double loglik_total();
 
-    void sample_lambda_mh_single();
-    void sample_lambda_mh();
     void sample_lambda_slice();
     double likelihood_lambda();
     void proposal_lambda(int& k);

@@ -24,6 +24,8 @@ navbar:
       menu:
         - text: "Installation"
           href: articles/pkgdown_examples/Installation.html
+        - text: "Read Texts"
+          href: articles/pkgdown_examples/ReadTexts.html
         - text: "keyATM Basic"
           href: articles/pkgdown_examples/keyATM_basic.html
         - text: "keyATM Covariate"
@@ -32,8 +34,8 @@ navbar:
           href: articles/pkgdown_examples/keyATM_HMM.html
         - text: "Weighted LDA"
           href: articles/pkgdown_examples/Weighted_LDA.html
-        - text: "Guidline"
-          href: articles/pkgdown_examples/guidline.html
+        - text: "Guidlines"
+          href: articles/pkgdown_examples/Guidlines.html
     - text: "Reference"
       href: reference/index.html
     - text: "Changelog"
