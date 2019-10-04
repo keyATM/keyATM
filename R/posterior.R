@@ -44,9 +44,9 @@ keyATM_output <- function(model){
   doc_lens <- sapply(model$W, length)
 
   if(model$extra_k > 0){
-    tnames <- c(names(model$keywords), paste0("T_", 1:model$extra_k))
+    tnames <- c(paste0("", 1:length(model$keywords)), paste0("T_", 1:model$extra_k))
   }else{
-    tnames <- c(names(model$keywords))
+    tnames <- c(paste0("", 1:length(model$keywords)))
   }
 
   if(model$mode %in% c("cov", "totcov")){
