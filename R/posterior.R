@@ -136,12 +136,12 @@ keyATM_output <- function(model){
 
   data <- data.frame(Z=collapse(model$Z), X=collapse(model$X))
   data %>%
-    dplyr::mutate_(Topic='Z+1') %>%
+    dplyr::mutate(Topic=Z+1) %>%
     dplyr::select(-starts_with("Z")) %>%
-    dplyr::group_by_('Topic') %>%
-    dplyr::summarize_(count = 'n()', sumx='sum(X)') %>%
+    dplyr::group_by(Topic) %>%
+    dplyr::summarize(count = n(), sumx=sum(X)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate_(Proportion='round(sumx/count*100, 3)') -> p_estimated
+    dplyr::mutate(Proportion=round(sumx/count*100, 3)) -> p_estimated
 
   # theta by iteration
   if(model$options$store_theta){
