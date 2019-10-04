@@ -33,19 +33,14 @@ class keyATMtotcov : public keyATMbase
       VectorXd beta_tg_base;  // apply tgamma 
       VectorXd beta_lg_base;  // apply lgamma 
 
+      double mu;
+      double sigma;
+
       // TOT
       MatrixXd Alpha;
       int num_cov;
       MatrixXd Lambda;
       MatrixXd C;
-
-    // MH sampling
-    double mu;
-    double sigma;
-    double mh_sigma;
-
-    // Sampling info
-    std::vector<int> mh_info {0,0};
 
     // During the sampling
       // Sample Beta parameters
@@ -53,7 +48,6 @@ class keyATMtotcov : public keyATMbase
         // store time stamp to estiamte Beta parameters
       VectorXd timestamps_k;  // time stamps for topic k
 
-      // mh_single
       std::vector<int> topic_ids;
       std::vector<int> cov_ids;
 
@@ -109,8 +103,6 @@ class keyATMtotcov : public keyATMbase
     double alpha_loglik();
     double loglik_total();
 
-    void sample_lambda_mh_single();
-    void sample_lambda_mh();
     void sample_lambda_slice();
     double likelihood_lambda();
     void proposal_lambda(int& k);

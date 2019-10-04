@@ -4,11 +4,12 @@
 \alias{keyATM_model}
 \title{Initialize a keyATM model}
 \usage{
-keyATM_model(files = NULL, keywords = NULL, text_df = NULL,
-  text_dfm = NULL, mode = "", extra_k = 1, covariates_data = NULL,
-  covariates_formula = NULL, num_states = NULL, timestamps = NULL,
-  time_topics = NULL, alpha = 50/(length(keywords) + extra_k),
-  beta = 0.01, beta_s = 0.1, options = list())
+keyATM_model(files = NULL, keywords = list(), text_df = NULL,
+  text_dfm = NULL, mode = "", regular_k = 1,
+  covariates_data = NULL, covariates_formula = NULL,
+  num_states = NULL, timestamps = NULL, time_topics = NULL,
+  alpha = 50/(length(keywords) + regular_k), beta = 0.01,
+  beta_s = 0.1, options = list())
 }
 \description{
 Initialize a keyATM model

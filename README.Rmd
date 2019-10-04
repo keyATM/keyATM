@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-# keyATM: Keyword-assisted Topic Model
+# keyATM: Keyword-assisted Topic Models
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/keyATM)](https://CRAN.R-project.org/package=keyATM)
@@ -13,11 +13,12 @@ output: github_document
 
 ## How to Use
 * [Installation](articles/pkgdown_examples/Installation.html)
+* [Read Texts](articles/pkgdown_examples/ReadTexts.html)
 * [keyATM Basic](articles/pkgdown_examples/keyATM_basic.html)
 * [keyATM Covariate](articles/pkgdown_examples/keyATM_cov.html)
-* [keyATM Topics Over Time](articles/pkgdown_examples/keyATM_tot.html)
-* [keyATM Topics Over Time with covariates](articles/pkgdown_examples/keyATM_totcov.html)
-* [Guidline](articles/pkgdown_examples/guidline.html)
+* [keyATM HMM](articles/pkgdown_examples/keyATM_HMM.html)
+* [Weighted LDA](articles/pkgdown_examples/Weighted_LDA.html)
+* [Guidlines](articles/pkgdown_examples/Guidlines.html)
 
 ## How to report a bug
 We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/Shusei-E/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format. 

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Set topic names — set_topic_names • keyATM</title>
+<title>Run the Collapsed Gibbs sampler for the HMM model — keyATM_train_LDAHMM • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Set topic names — set_topic_names" />
+<meta property="og:title" content="Run the Collapsed Gibbs sampler for the HMM model — keyATM_train_LDAHMM" />
 
-<meta property="og:description" content="Set topic names" />
+<meta property="og:description" content="Run the Collapsed Gibbs sampler for the HMM model" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,35 +126,35 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Set topic names</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/posterior.R'><code>R/posterior.R</code></a></small>
-    <div class="hidden name"><code>set_topic_names.Rd</code></div>
+    <h1>Run the Collapsed Gibbs sampler for the HMM model</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
+    <div class="hidden name"><code>keyATM_train_LDAHMM.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Set topic names</p>
+    <p>Run the Collapsed Gibbs sampler for the HMM model</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>set_topic_names</span>(<span class='no'>x</span>, <span class='no'>topic_names</span>)</pre>
+    <pre class="usage"><span class='fu'>keyATM_train_LDAHMM</span>(<span class='no'>model</span>, <span class='kw'>iter</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>output_per</span> <span class='kw'>=</span> <span class='fl'>10L</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>the output from a keyATM model (see <code>keyATM_output</code>)</p></td>
+      <th>model</th>
+      <td><p>A initialized model</p></td>
     </tr>
     <tr>
-      <th>topic_names</th>
-      <td><p>new names for topics</p></td>
+      <th>iter</th>
+      <td><p>Required number of iterations</p></td>
+    </tr>
+    <tr>
+      <th>output_per</th>
+      <td><p>Show log-likelihood and perplexity per this number during the iteration</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>an output object with new topic names in its components</p>
     
 
   </div>
@@ -162,9 +162,7 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>

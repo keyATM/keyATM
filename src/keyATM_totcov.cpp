@@ -13,15 +13,6 @@ keyATMtotcov::keyATMtotcov(List model_, const int iter_, const int output_per_) 
   read_data();
   initialize();
   iteration();
-  
-  // Additional function
-  
-  // Add Sampling Info
-  // mh_info.push_back(0); mh_info.push_back(0);  // same as {0, 0}
-  Rcpp::IntegerVector sampling_info = Rcpp::wrap(mh_info);
-  List sampling_info_list = model["sampling_info"];
-  sampling_info_list.push_back(sampling_info);
-  model["sampling_info"] = sampling_info_list;
 }
 
 
@@ -47,10 +38,8 @@ void keyATMtotcov::read_data_specific()
 
 void keyATMtotcov::initialize_specific()
 {
-  // MH sampling
   mu = 0.0;
   sigma = 50.0;
-  mh_sigma = 0.05;
 
   // Parameters
   ts_g1 = 1.5;
@@ -362,7 +351,7 @@ void keyATMtotcov::sample_parameters(int &it)
     sample_betaparam();
 
   // Store lambda and beta
-	int r_index = it + 1;
+  int r_index = it + 1;
   if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
     Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
     List Lambda_iter = model["Lambda_iter"];
@@ -381,116 +370,13 @@ void keyATMtotcov::sample_parameters(int &it)
 
 void keyATMtotcov::sample_lambda()
 {
-  // Sampling
-  u = unif_rand(); // select sampling methods randomly
-
-  // if(u < 0.3){
-  //   sample_lambda_mh();
-  // }else if (u < 0.6){
-  //   sample_lambda_mh_single();
-  // }else{
-  //   sample_lambda_slice();  
-  // }
-
-  if(u < 0.4){
-    sample_lambda_mh_single();
-  }else{
-    sample_lambda_slice();
-  }
+  sample_lambda_slice();
 
   // Store Lambda
   Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
   List Lambda_iter = model["Lambda_iter"];
   Lambda_iter.push_back(Lambda_R);
   model["Lambda_iter"] = Lambda_iter;
-}
-
-
-void keyATMtotcov::sample_lambda_mh_single()
-{
-  topic_ids = sampler::shuffled_indexes(num_topics);
-  cov_ids = sampler::shuffled_indexes(num_cov);
-  Lambda_current = 0.0;
-  llk_current = 0.0;
-  llk_proposal = 0.0;
-  diffllk = 0.0;
-  r = 0.0; u = 0.0;
-  int k, t;
-
-  for(int kk=0; kk<num_topics; kk++){
-    k = topic_ids[kk];
-    
-    for(int tt=0; tt<num_cov; tt++){
-      t = cov_ids[tt];
-    
-      mh_info[1] += 1; // how many times we run mh
-
-      Lambda_current = Lambda(k,t);
-      
-      // Current llk
-      llk_current = likelihood_lambda();
-      
-      // Proposal
-      Lambda(k, t) += R::rnorm(0.0, mh_sigma);
-      llk_proposal = likelihood_lambda();
-      
-      diffllk = llk_proposal - llk_current;
-      r = std::min(0.0, diffllk);
-      u = log(unif_rand());
-      
-      if (u < r){
-        mh_info[0] += 1; // number of times accepted  
-      }else{
-        // Put back original values
-        Lambda(k, t) = Lambda_current;
-        
-      }
-
-    }
-
-  }
-}
-
-
-void keyATMtotcov::sample_lambda_mh()
-{
-  
-  topic_ids = sampler::shuffled_indexes(num_topics);
-  VectorXd Lambda_current;
-  llk_current = 0.0;
-  llk_proposal = 0.0;
-  diffllk = 0.0;
-  r = 0.0; u =0.0;
-  int k;
-
-  for(int kk=0; kk<num_topics; kk++){
-    k = topic_ids[kk];
-    mh_info[1] += 1; // how many times we run mh
-
-    Lambda_current = Lambda.row(k).transpose();
-    
-    // Current llk
-    llk_current = likelihood_lambda();
-    
-    // Proposal
-    proposal_lambda(k);
-    llk_proposal = likelihood_lambda();
-    
-    diffllk = llk_proposal - llk_current;
-    r = std::min(0.0, diffllk);
-    u = log(unif_rand());
-    
-    if (u < r){
-      mh_info[0] += 1; // number of times accepted  
-    }else{
-      // Put back original values
-      for(int i=0; i<num_cov; i++){
-        Lambda.coeffRef(k, i) = Lambda_current(i);
-      }
-    }
-  
-  }
-
 }
 
 
@@ -526,16 +412,6 @@ double keyATMtotcov::likelihood_lambda()
   }
 
   return loglik;
-
-}
-
-
-
-void keyATMtotcov::proposal_lambda(int& k){
-
-  for(int i=0; i<num_cov; i++){
-    Lambda.coeffRef(k, i) += R::rnorm(0.0, mh_sigma);
-  }
 
 }
 

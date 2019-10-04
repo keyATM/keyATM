@@ -4,23 +4,21 @@
 \alias{keyATM_read}
 \title{Initialize a keyATM model}
 \usage{
-keyATM_read(texts, keywords, mode, extra_k, iteration = 1000,
-  covariates_data = NULL, covariates_formula = ~. + 0,
-  num_states = NULL, timestamps = NULL, time_topics = NULL,
+keyATM_read(texts, mode, regular_k = 0, extra_k = NULL,
+  keywords = list(), covariates_data = NULL, covariates_formula = ~.
+  + 0, num_states = NULL, timestamps = NULL, time_topics = NULL,
   options = list(seed = 225, output_per = 10, use_weights = TRUE,
-  visualize_keywords = TRUE, x_prior = NULL))
+  visualize_keywords = TRUE, thinning = 1, x_prior = NULL))
 }
 \arguments{
 \item{texts}{Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.}
 
-\item{keywords}{a quanteda dictionary or a list of character vectors}
+\item{mode}{"basic", "cov", "hmm", "tot", "totcov", "lda" and "ldahmm"}
 
-\item{mode}{"basic", "cov", "tot", "totcov", and "ldaweight"}
-
-\item{extra_k}{number of regular topics in addition to the keyword topics by
+\item{regular_k}{number of regular topics in addition to the keyword topics by
 \code{keywords}}
 
-\item{iteration}{number of iteration}
+\item{keywords}{a quanteda dictionary or a list of character vectors}
 
 \item{covariates_data}{covariate}
 
@@ -30,6 +28,8 @@ keyATM_read(texts, keywords, mode, extra_k, iteration = 1000,
 
 \item{options}{options are seed, use_weights,
 visualize_keywords, and output_per.}
+
+\item{iteration}{number of iteration}
 }
 \value{
 keyATM object, which is a list containing \describe{
@@ -41,7 +41,7 @@ keyATM object, which is a list containing \describe{
         \item{mode}{keyATM model to fit}
         \item{keywords}{a list of keywords in word_id}
         \item{keywords_raw}{a list of keywords}
-        \item{extra_k}{how many extra non-seeded topics are required}
+        \item{regular_k}{how many extra non-seeded topics are required}
         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
         \item{alpha_iter}{a list to store topic proportion hyperparameters}
         \item{Lambda_iter}{a list to store coefficients of the covariates}

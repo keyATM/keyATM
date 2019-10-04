@@ -19,7 +19,7 @@ posterior <- function(...){
 #' @return A list containing:
 #'   \describe{
 #'     \item{seed_K}{ Number of keyword topics}
-#'     \item{extra_K}{ Number of regular unseeded topics}
+#'     \item{regular_k}{ Number of regular unseeded topics}
 #'     \item{V}{ Number of word types}
 #'     \item{N}{ Number of documents}
 #'     \item{theta}{ Normalized tpoic proportions for each document}
@@ -38,15 +38,15 @@ keyATM_output <- function(model){
   message("Creating an output object. It may take time...")
 
   check_arg_type(model, "keyATM")
-  allK <- model$extra_k + length(model$keywords)
+  allK <- model$regular_k + length(model$keywords)
   V <- length(model$vocab)
   N = length(model$W)
   doc_lens <- sapply(model$W, length)
 
-  if(model$extra_k > 0){
-    tnames <- c(names(model$keywords), paste0("T_", 1:model$extra_k))
+  if(model$regular_k > 0){
+    tnames <- c(paste0("", 1:length(model$keywords)), paste0("T_", 1:model$regular_k))
   }else{
-    tnames <- c(names(model$keywords))
+    tnames <- c(paste0("", 1:length(model$keywords)))
   }
 
   if(model$mode %in% c("cov", "totcov")){
@@ -61,7 +61,7 @@ keyATM_output <- function(model){
 
     theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z))
 
-  }else if(model$mode %in% c("basic", "tot", "ldaweight")){
+  }else if(model$mode %in% c("basic", "tot", "lda")){
     alpha <- model$alpha_iter[[length(model$alpha_iter)]]  
 
     posterior_z <- function(zvec){
@@ -71,7 +71,7 @@ keyATM_output <- function(model){
 
     theta <- do.call(dplyr::bind_rows, lapply(model$Z, posterior_z))
 
-  }else if(model$mode %in% c("hmm")){
+  }else if(model$mode %in% c("hmm", "ldahmm")){
     S <- model$S_iter[[length(model$S_iter)]] + 1  # adjust index for R
     alphas <- matrix(model$alpha_iter[[length(model$alpha_iter)]][S],
                      nrow=length(model$W), ncol=allK)
@@ -136,12 +136,12 @@ keyATM_output <- function(model){
 
   data <- data.frame(Z=collapse(model$Z), X=collapse(model$X))
   data %>%
-    dplyr::mutate_(Topic='Z+1') %>%
+    dplyr::mutate(Topic=Z+1) %>%
     dplyr::select(-starts_with("Z")) %>%
-    dplyr::group_by_('Topic') %>%
-    dplyr::summarize_(count = 'n()', sumx='sum(X)') %>%
+    dplyr::group_by(Topic) %>%
+    dplyr::summarize(count = n(), sumx=sum(X)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate_(Proportion='round(sumx/count*100, 3)') -> p_estimated
+    dplyr::mutate(Proportion=round(sumx/count*100, 3)) -> p_estimated
 
   # theta by iteration
   if(model$options$store_theta){
@@ -157,7 +157,7 @@ keyATM_output <- function(model){
 
         return(tt / Matrix::rowSums(tt))
       }
-    }else if(model$mode %in% c("hmm")){
+    }else if(model$mode %in% c("hmm", "ldahmm")){
       posterior_theta <- function(x){
         Z_table <- model$options$Z_tables[[x]]
         S <- model$S_iter[[x]] + 1  # adjust index for R
@@ -182,7 +182,8 @@ keyATM_output <- function(model){
                                         posterior_theta)
   }
 
-  ll <- list(keyword_K = length(model$keywords), extra_K = model$extra_k,
+  ll <- list(keyword_K = length(model$keywords), regular_k = model$regular_k,
+             extra_k = model$regular_k,
              V = V, N = N,
              model=model$mode,
              theta = theta, beta = tZW, # as.matrix(as.data.frame.matrix(tZW)),
@@ -362,7 +363,7 @@ diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
 
 
   if("keyATM" %in% class(x)){
-    num_topic <-  length(x$keywords_raw) + x$extra_k
+    num_topic <-  length(x$keywords_raw) + x$regular_k
 
     res_alpha <- data.frame(x$alpha_iter)
     colnames(res_alpha) <- NULL
@@ -373,7 +374,7 @@ diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
     }
     
   }else if("keyATM_output" %in% class(x)){
-    num_topic <-  x$seed_K + x$extra_k
+    num_topic <-  x$seed_K + x$regular_k
     res_alpha <- x$alpha  
   }
 
