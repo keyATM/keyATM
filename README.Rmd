@@ -13,7 +13,7 @@ output: github_document
 
 ## How to Use
 * [Installation](articles/pkgdown_examples/Installation.html)
-* [Read Texts](articles/pkgdown_examples/ReadTexts.html)
+* [Preparation](articles/pkgdown_examples/Preparation.html)
 * [keyATM Basic](articles/pkgdown_examples/keyATM_basic.html)
 * [keyATM Covariate](articles/pkgdown_examples/keyATM_cov.html)
 * [keyATM HMM](articles/pkgdown_examples/keyATM_HMM.html)

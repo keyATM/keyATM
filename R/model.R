@@ -28,7 +28,7 @@ topicdict_model <- function(...){
 #' @return keyATM object, which is a list containing \describe{
 #'         \item{W}{a list of vectors of word indexes}
 #'         \item{Z}{a list of vectors of topic indicators isomorphic to W}
-#'         \item{C}{a covariate matrix is there is an input}
+#'         \item{C}{a covariate matrix if there is an input}
 #'         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
 #'         \item{vocab}{a vector of vocabulary items}
 #'         \item{mode}{keyATM model to fit}
@@ -323,7 +323,7 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
   }
   if(!is.null(options$alpha)){
     # If alpha value is overwritten
-    alpha = options$alpha
+    alpha <- options$alpha
   }
   if(is.null(options$store_theta)){
     options$store_theta <- 0

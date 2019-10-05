@@ -47,7 +47,7 @@
       <a href="../../articles/pkgdown_examples/Installation.html">Installation</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/ReadTexts.html">Read Texts</a>
+      <a href="../../articles/pkgdown_examples/Preparation.html">Preparation</a>
     </li>
     <li>
       <a href="../../articles/pkgdown_examples/keyATM_basic.html">keyATM Basic</a>
@@ -105,10 +105,128 @@
 <div id="which-model-to-use" class="section level2">
 <h2 class="hasAnchor">
 <a href="#which-model-to-use" class="anchor"></a>Which model to use?</h2>
+<p>The table below summarizes keyATM models and other popular models based on the inputs.</p>
+<table class="table">
+<thead><tr class="header">
+<th align="right"></th>
+<th align="center">Keywords</th>
+<th align="center">Covariate</th>
+<th align="center">Time Structure</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">keyATM Basic</td>
+<td align="center">○</td>
+<td align="center">×</td>
+<td align="center">×</td>
+</tr>
+<tr class="even">
+<td align="right">keyATM Covariate</td>
+<td align="center">○</td>
+<td align="center">○</td>
+<td align="center">△</td>
+</tr>
+<tr class="odd">
+<td align="right">keyATM HMM</td>
+<td align="center">○</td>
+<td align="center">×</td>
+<td align="center">○</td>
+</tr>
+<tr class="even">
+<td align="right">LDA Weighted</td>
+<td align="center">×</td>
+<td align="center">×</td>
+<td align="center">×</td>
+</tr>
+<tr class="odd">
+<td align="right">LDA Weighted Cov</td>
+<td align="center">×</td>
+<td align="center">○</td>
+<td align="center">×</td>
+</tr>
+<tr class="even">
+<td align="right">LDA Weighted HMM</td>
+<td align="center">×</td>
+<td align="center">×</td>
+<td align="center">○</td>
+</tr>
+<tr class="odd">
+<td align="right">Latent Dirichlet Allocation (LDA)</td>
+<td align="center">×</td>
+<td align="center">×</td>
+<td align="center">×</td>
+</tr>
+<tr class="even">
+<td align="right">Structural Topic Model (STM)</td>
+<td align="center">×</td>
+<td align="center">○</td>
+<td align="center">△</td>
+</tr>
+</tbody>
+</table>
+<p>The next table compares inference methods and speeds. CGS stands for Collapsed Gibbs Sampling and SS stands for Slice Sampling. Variational inference approximates the target distribution, while CGS and SS sample from the exact distribution.</p>
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="23%">
+<col width="40%">
+</colgroup>
+<thead><tr class="header">
+<th align="right"></th>
+<th align="left">Inference</th>
+<th align="left">Speed</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">keyATM Basic</td>
+<td align="left">CGS + SS</td>
+<td align="left">Fast</td>
+</tr>
+<tr class="even">
+<td align="right">keyATM Covariate</td>
+<td align="left">CGS + SS</td>
+<td align="left">Moderate (Depends on # of covariates)</td>
+</tr>
+<tr class="odd">
+<td align="right">keyATM HMM</td>
+<td align="left">CGS + SS</td>
+<td align="left">Fast</td>
+</tr>
+<tr class="even">
+<td align="right">LDA Weighted</td>
+<td align="left">CGS + SS</td>
+<td align="left">Fast</td>
+</tr>
+<tr class="odd">
+<td align="right">LDA Weighted Cov</td>
+<td align="left">CGS + SS</td>
+<td align="left">Moderate (Depends on # of covariates)</td>
+</tr>
+<tr class="even">
+<td align="right">LDA Weighted HMM</td>
+<td align="left">CGS + SS</td>
+<td align="left">Fast</td>
+</tr>
+<tr class="odd">
+<td align="right">Latent Dirichlet Allocation (LDA)</td>
+<td align="left">Variational EM / CGS</td>
+<td align="left">Depends on implementation</td>
+</tr>
+<tr class="even">
+<td align="right">Structural Topic Model (STM)</td>
+<td align="left">Variational EM</td>
+<td align="left">Very Fast</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="how-to-select-keywords" class="section level2">
 <h2 class="hasAnchor">
 <a href="#how-to-select-keywords" class="anchor"></a>How to select keywords?</h2>
+</div>
+<div id="how-to-select-the-number-of-regular-topics" class="section level2">
+<h2 class="hasAnchor">
+<a href="#how-to-select-the-number-of-regular-topics" class="anchor"></a>How to select the number of regular topics?</h2>
 </div>
   </div>
 
@@ -119,6 +237,7 @@
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#which-model-to-use">Which model to use?</a></li>
       <li><a href="#how-to-select-keywords">How to select keywords?</a></li>
+      <li><a href="#how-to-select-the-number-of-regular-topics">How to select the number of regular topics?</a></li>
       </ul>
 </div>
       </div>

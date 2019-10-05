@@ -6,14 +6,6 @@ using namespace std;
 
 # define PI_V   3.14159265358979323846  /* pi */
 
-// namespace sampler{
-//   inline int rand_wrapper(const int n) { return floor(unif_rand() * n); }
-//
-//   double slice_uniform(double& lower, double& upper){
-//     return lower + (upper - lower) * unif_rand();
-//   }
-// }
-
 LDACOV::LDACOV(List model_, const int K, const int iter_, const int output_iter_)
 {
   // Get Info from R

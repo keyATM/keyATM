@@ -33,7 +33,7 @@ visualize_keywords, and output_per.}
 keyATM object, which is a list containing \describe{
         \item{W}{a list of vectors of word indexes}
         \item{Z}{a list of vectors of topic indicators isomorphic to W}
-        \item{C}{a covariate matrix is there is an input}
+        \item{C}{a covariate matrix if there is an input}
         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
         \item{vocab}{a vector of vocabulary items}
         \item{mode}{keyATM model to fit}
