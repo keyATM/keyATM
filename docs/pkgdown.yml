@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   Guidlines: pkgdown_examples/Guidlines.html
   Installation: pkgdown_examples/Installation.html
-  ReadTexts: pkgdown_examples/ReadTexts.html
+  Preparation: pkgdown_examples/Preparation.html
   Weighted_LDA: pkgdown_examples/Weighted_LDA.html
   keyATM_HMM: pkgdown_examples/keyATM_HMM.html
   keyATM_basic: pkgdown_examples/keyATM_basic.html

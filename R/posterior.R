@@ -53,7 +53,7 @@ keyATM_output <- function(model){
     tnames <- c(paste0("", 1:length(model$keywords)))
   }
 
-  if(model$mode %in% c("cov", "totcov")){
+  if(model$mode %in% c("cov")){
     Alpha <- exp(model$C %*% t(model$Lambda[[length(model$Lambda)]]))
 
     posterior_z <- function(docid){
@@ -65,7 +65,7 @@ keyATM_output <- function(model){
 
     theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z))
 
-  }else if(model$mode %in% c("basic", "tot", "lda")){
+  }else if(model$mode %in% c("basic", "lda")){
     alpha <- model$alpha_iter[[length(model$alpha_iter)]]  
 
     posterior_z <- function(zvec){
@@ -150,7 +150,7 @@ keyATM_output <- function(model){
   # theta by iteration
   if(model$options$store_theta){
 
-    if(model$mode %in% c("cov", "totcov")){
+    if(model$mode %in% c("cov")){
       posterior_theta <- function(x){
         Z_table <- model$options$Z_tables[[x]]
         lambda <- model$Lambda[[x]]
@@ -265,6 +265,10 @@ top_terms <- function(...){
 top_words <- function(x, n = 10, measure = c("probability", "lift"),
                       show_keyword = TRUE){
   check_arg_type(x, "keyATM_output")
+
+  if(model$mode %in% c("lda", "ldacov", "ldahmm"))
+     show_keyword <- FALSE
+
   if (is.null(n))
     n <- nrow(x$theta)
   measure <- match.arg(measure)

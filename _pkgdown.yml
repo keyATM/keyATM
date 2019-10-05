@@ -24,8 +24,8 @@ navbar:
       menu:
         - text: "Installation"
           href: articles/pkgdown_examples/Installation.html
-        - text: "Read Texts"
-          href: articles/pkgdown_examples/ReadTexts.html
+        - text: "Preparation"
+          href: articles/pkgdown_examples/Preparation.html
         - text: "keyATM Basic"
           href: articles/pkgdown_examples/keyATM_basic.html
         - text: "keyATM Covariate"

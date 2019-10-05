@@ -6,14 +6,14 @@
 \usage{
 keyATM_read(texts, mode, regular_k = 0, extra_k = NULL,
   keywords = list(), covariates_data = NULL, covariates_formula = ~.
-  + 0, num_states = NULL, timestamps = NULL, time_topics = NULL,
-  options = list(seed = 225, output_per = 10, use_weights = TRUE,
-  visualize_keywords = TRUE, thinning = 1, x_prior = NULL))
+  + 0, num_states = NULL, options = list(seed = 225, output_per = 10,
+  use_weights = TRUE, visualize_keywords = TRUE, thinning = 1, x_prior =
+  NULL))
 }
 \arguments{
 \item{texts}{Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.}
 
-\item{mode}{"basic", "cov", "hmm", "tot", "totcov", "lda" and "ldahmm"}
+\item{mode}{"basic", "cov", "hmm", "lda" and "ldahmm"}
 
 \item{regular_k}{number of regular topics in addition to the keyword topics by
 \code{keywords}}
@@ -24,8 +24,6 @@ keyATM_read(texts, mode, regular_k = 0, extra_k = NULL,
 
 \item{covariates_formula}{formula applied to covariate data}
 
-\item{timestamps}{timestamps}
-
 \item{options}{options are seed, use_weights,
 visualize_keywords, and output_per.}
 
@@ -35,7 +33,7 @@ visualize_keywords, and output_per.}
 keyATM object, which is a list containing \describe{
         \item{W}{a list of vectors of word indexes}
         \item{Z}{a list of vectors of topic indicators isomorphic to W}
-        \item{C}{a covariate matrix is there is an input}
+        \item{C}{a covariate matrix if there is an input}
         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
         \item{vocab}{a vector of vocabulary items}
         \item{mode}{keyATM model to fit}
@@ -46,8 +44,6 @@ keyATM object, which is a list containing \describe{
         \item{alpha_iter}{a list to store topic proportion hyperparameters}
         \item{Lambda_iter}{a list to store coefficients of the covariates}
         \item{S_iter}{a list to store states sampled in HMM}
-        \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
-        \item{sampling_info}{information related to sampling}
         \item{model_fit}{a list to store perplexity and log-likelihood}
         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
@@ -55,7 +51,6 @@ keyATM object, which is a list containing \describe{
         \item{beta_s}{prior parameter for the seeded word generation probabilities}
         \item{use_cov}{boolean, whether or not use the covariate}
         \item{num_states}{number of states in HMM}
-        \item{timestamps}{time stamp for topics-over-time model}
         \item{visualize_keywords}{ggplot2 object}
         \item{call}{details of the function call}
         }.

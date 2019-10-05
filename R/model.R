@@ -16,20 +16,19 @@ topicdict_model <- function(...){
 #'
 #' @param texts Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.
 #' @param keywords a quanteda dictionary or a list of character vectors
-#' @param mode "basic", "cov", "hmm", "tot", "totcov", "lda" and "ldahmm"
+#' @param mode "basic", "cov", "hmm", "lda" and "ldahmm"
 #' @param iteration number of iteration
 #' @param regular_k number of regular topics in addition to the keyword topics by
 #'                \code{keywords}
 #' @param covariates_data covariate
 #' @param covariates_formula formula applied to covariate data
-#' @param timestamps timestamps
 #' @param options options are seed, use_weights,
 #'           visualize_keywords, and output_per.
 #'
 #' @return keyATM object, which is a list containing \describe{
 #'         \item{W}{a list of vectors of word indexes}
 #'         \item{Z}{a list of vectors of topic indicators isomorphic to W}
-#'         \item{C}{a covariate matrix is there is an input}
+#'         \item{C}{a covariate matrix if there is an input}
 #'         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
 #'         \item{vocab}{a vector of vocabulary items}
 #'         \item{mode}{keyATM model to fit}
@@ -40,8 +39,6 @@ topicdict_model <- function(...){
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
 #'         \item{Lambda_iter}{a list to store coefficients of the covariates}
 #'         \item{S_iter}{a list to store states sampled in HMM}
-#'         \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
-#'         \item{sampling_info}{information related to sampling}
 #'         \item{model_fit}{a list to store perplexity and log-likelihood}
 #'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
 #'         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
@@ -49,7 +46,6 @@ topicdict_model <- function(...){
 #'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
 #'         \item{use_cov}{boolean, whether or not use the covariate}
 #'         \item{num_states}{number of states in HMM}
-#'         \item{timestamps}{time stamp for topics-over-time model}
 #'         \item{visualize_keywords}{ggplot2 object}
 #'         \item{call}{details of the function call}
 #'         }.
@@ -58,7 +54,6 @@ topicdict_model <- function(...){
 keyATM_read <- function(texts, mode, regular_k=0, extra_k=NULL, keywords=list(),
                         covariates_data=NULL, covariates_formula= ~.+0,
                         num_states=NULL,
-                        timestamps=NULL, time_topics=NULL,
                         options=list(
                                      seed=225,
                                      output_per=10,
@@ -114,7 +109,7 @@ keyATM_read <- function(texts, mode, regular_k=0, extra_k=NULL, keywords=list(),
   }
 
   if(!is.null(extra_k)){
-    warning("Please use `regular_k`.")  
+    warning("`extra_k` option will be deprecated. Please use `regular_k`.")  
     regular_k <- extra_k
   }
 
@@ -127,7 +122,6 @@ keyATM_read <- function(texts, mode, regular_k=0, extra_k=NULL, keywords=list(),
                           mode=mode,
                           covariates_data=covariates_data, covariates_formula=covariates_formula,
                           num_states=num_states,
-                          timestamps=timestamps, time_topics=time_topics,
                           options=options
                         )
 
@@ -156,7 +150,6 @@ keyATM_read <- function(texts, mode, regular_k=0, extra_k=NULL, keywords=list(),
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
 #'         \item{Lambda_iter}{a list to store coefficients of the covariates}
 #'         \item{S_iter}{a list to store states sampled in HMM}
-#'         \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
 #'         \item{sampling_info}{information related to sampling}
 #'         \item{model_fit}{a list to store perplexity and log-likelihood}
 #'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
@@ -198,10 +191,6 @@ keyATM_fit <- function(model, iteration=1000, keep_model=T){
     res <- keyATM_train(model, iter=iteration, output_per=model$options$output_per)
   }else if(mode == "cov"){
     res <- keyATM_train_cov(model, iter=iteration, output_per=model$options$output_per)
-  }else if(mode == "tot"){
-    res <- keyATM_train_tot(model, iter=iteration, output_per=model$options$output_per)
-  }else if(mode == "totcov"){
-    res <- keyATM_train_totcov(model, iter=iteration, output_per=model$options$output_per)
   }else if(mode == "lda"){
     res <- LDA_weight(model, iter=iteration, output_per=model$options$output_per)  
   }else if(mode == "hmm"){
@@ -237,26 +226,6 @@ topicdict_train_cov <- function(...){
   return(keyATM_train_cov(...))
 }
 
-#' Fit topic model (deprecated)
-#'
-#' `topicdict_train_tot()` is deprecated. Use `keyATM_fit()`
-#'
-#' @export
-topicdict_train_tot <- function(...){
-  message("Warning: `topicdict_train_tot` is deprecated, please use `keyATM_fit` instead.")
-  return(keyATM_train_tot(...))
-}
-
-#' Fit topic model (deprecated)
-#'
-#' `topicdict_train_totcov()` is deprecated. Use `keyATM_fit()`
-#'
-#' @export
-topicdict_train_totcov <- function(...){
-  message("Warning: `topicdict_train_totcov` is deprecated, please use `keyATM_fit` instead.")
-  return(keyATM_train_totcov(...))
-}
-
 
 #' Initialize a keyATM model
 #'
@@ -269,7 +238,6 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
                          regular_k = 1,
                          covariates_data=NULL, covariates_formula=NULL,
                          num_states=NULL,
-                         timestamps=NULL, time_topics=NULL,
                          alpha = 50/(length(keywords) + regular_k),
                          beta = 0.01, beta_s = 0.1,
                          options = list()
@@ -289,13 +257,13 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
     mode <- "lda"  
   }
 
-  if(mode %in% c("basic", "cov", "hmm", "tot", "totcov", "lda", "ldahmm")){
+  if(mode %in% c("basic", "cov", "hmm", "lda", "ldahmm")){
   }else{
     stop(paste0("Unknown model:", mode))  
   }
 
 
-  if(!is.null(covariates_data) & !is.null(covariates_formula) & (mode != "cov" & mode != "totcov")){
+  if(!is.null(covariates_data) & !is.null(covariates_formula) & (mode != "cov")){
     stop("Covariates information provided, specify the model.")  
   }
 
@@ -303,7 +271,7 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
     stop("Provide the number of states.")  
   }
 
-  if(length(keywords) == 0 & mode %in% c("basic", "cov", "hmm", "tot")){
+  if(length(keywords) == 0 & mode %in% c("basic", "cov", "hmm")){
     stop("Please provide keywords.")  
   }
 
@@ -315,30 +283,12 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
     }  
   }
 
-  if(mode == "tot" | mode == "totcov"){
-    if(is.null(timestamps)){
-      stop("Please provide time stamps.")  
-    }else if(min(timestamps) < 0 | max(timestamps) >= 1){
-      stop("Time stamps sholud be between 0 and 1. Please use `make_timestamps()` function to format time stamps.")  
-    }
-
-    if(is.null(time_topics)){
-      message("`time_topics` is not specified. keyATM assumes time trends in all topics.")  
-      time_topics <- 1:proper_len
-    }else{
-      if((max(time_topics) >= proper_len) & (min(time_topics) < 1)){
-        stop("Invalid topics are in `time_topics`.")  
-      }
-    }
-  }
-
-
 
   ##
   ## Check length
   ##
 
-  if(mode == "cov" | mode == "totcov"){
+  if(mode == "cov"){
     # make sure covariates are provided for all documents  
     doc_num <- ifelse(!is.null(files), length(files),
                       ifelse(!is.null(text_df), nrow(text_df),
@@ -373,7 +323,7 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
   }
   if(!is.null(options$alpha)){
     # If alpha value is overwritten
-    alpha = options$alpha
+    alpha <- options$alpha
   }
   if(is.null(options$store_theta)){
     options$store_theta <- 0
@@ -447,7 +397,7 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
     tidyr::unnest_legacy(text_split=c(text_split)) -> unnested_data
     # tidyr::unnest(col=c(text_split)) -> unnested_data
 
-  if(options$visualize_keywords & mode %in% c("basic", "cov", "tot", "hmm")){
+  if(options$visualize_keywords & mode %in% c("basic", "cov", "hmm")){
     totalwords <- nrow(unnested_data)
 
     unnested_data %>%
@@ -517,7 +467,7 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
   sapply(unlist(keywords), 
          function(x){if(! x %in% wd_names) stop(paste0('"', x, '"', " does not appear in texts. Please check keywords."))})
 
-  if(mode %in% c("basic", "cov", "tot", "hmm")){
+  if(mode %in% c("basic", "cov", "hmm")){
     # zx_assigner maps seed words to category ids
     seed_wdids <- unlist(lapply(keywords, function(x){ wd_map$find(x) }))
     cat_ids <- rep(1:K - 1, unlist(lapply(keywords, length)))
@@ -623,10 +573,9 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
              alpha = alpha,
              beta = beta, beta_s = beta_s,
              alpha_iter = list(), Lambda_iter = list(), S_iter = list(),
-             model_fit = list(), sampling_info = list(), tot_beta = list(),
+             model_fit = list(), sampling_info = list(),
              C=C, use_cov=use_cov,
              num_states=num_states,
-             timestamps=timestamps, time_topics=time_topics,
              options=options,
              visualize_keywords=visualize_keywords,
              call = cl)

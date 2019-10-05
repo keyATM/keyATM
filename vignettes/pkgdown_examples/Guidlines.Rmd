@@ -8,9 +8,38 @@ output:
 
 ## Which model to use?
 
+The table below summarizes keyATM models and other popular models based on the inputs.
+
+|                                   | Keywords  | Covariate  | Time Structure |   
+|----------------------------------:|:---------:|:----------:|:--------------:|
+|            keyATM Basic           |     ○    |     ×     |        ×      |
+|          keyATM Covariate         |     ○    |     ○     |        △      |
+|             keyATM HMM            |     ○    |     ×     |        ○      |
+|            LDA Weighted           |     ×    |     ×     |        ×      |
+|          LDA Weighted Cov         |     ×    |     ○     |        ×      |
+|          LDA Weighted HMM         |     ×    |     ×     |        ○      |
+| Latent Dirichlet Allocation (LDA) |     ×    |     ×     |        ×      |
+|    Structural Topic Model (STM)   |     ×    |     ○     |        △      |
+
+
+The next table compares inference methods and speeds. CGS stands for Collapsed Gibbs Sampling and SS stands for Slice Sampling. Variational inference approximates the target distribution, while CGS and SS sample from the exact distribution.
+
+|                                   |        Inference      |                  Speed                 |
+|----------------------------------:|:----------------------|:---------------------------------------|
+|            keyATM Basic           |        CGS + SS       |                  Fast                  |
+|          keyATM Covariate         |        CGS + SS       | Moderate  (Depends on # of covariates) |
+|             keyATM HMM            |        CGS + SS       |                  Fast                  |
+|            LDA Weighted           |        CGS + SS       |                  Fast                  |
+|          LDA Weighted Cov         |        CGS + SS       |  Moderate (Depends on # of covariates) |
+|          LDA Weighted HMM         |        CGS + SS       |                  Fast                  |
+| Latent Dirichlet Allocation (LDA) |  Variational EM / CGS |        Depends on implementation       |
+|    Structural Topic Model (STM)   |     Variational EM    |               Very Fast                |
+
+
 ## How to select keywords?
 
 
+## How to select the number of regular topics?
 
 
 
