@@ -23,8 +23,10 @@ output: github_document
 ## How to report a bug
 We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/Shusei-E/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format. 
 
+Please check [an example issue](https://github.com/Shusei-E/keyATM/issues/46).
+
 ```
-## Problem sumary (required):
+## Problem summary (required):
 
 ## Environment information (required):
 * Your OS
@@ -32,13 +34,13 @@ We recommend you to post bug reports and wish lists on [GitHub Issue](https://gi
 * keyATM version
 
 ## Actual output (required):
-Plese wrap output with triple backticks.
+Please wrap output with triple backticks.
 
 ## Expected output (it helps us a lot):
-Plese wrap output with triple backticks.
+Please wrap output with triple backticks.
 
 ## Minimal and reproducible example with less than 50 lines (it helps us a lot):
-Plese wrap your code with triple backticks.
+Please wrap your code with triple backticks.
 
 ```
 
