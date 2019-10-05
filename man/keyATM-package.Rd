@@ -4,9 +4,9 @@
 \name{keyATM-package}
 \alias{keyATM}
 \alias{keyATM-package}
-\title{keyATM: Keyword-assisted Topic Model}
+\title{keyATM: Keyword Assisted Topic Models}
 \description{
-Fits a topic model using keywords.
+Fits topic models with keywords.
 }
 \seealso{
 Useful links:
