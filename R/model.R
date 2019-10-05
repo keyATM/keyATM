@@ -505,6 +505,11 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
 
   ## construct W and a vocab list (W elements are 0 based ids)
   wd_names <- unique(unnested_data$text_split) # vocab
+  if(" " %in% wd_names){
+    stop("A space is recognized as a vocabulary.
+          Please remove an empty document or consider using quanteda::dfm.")  
+  }
+
   wd_map <- hashmap::hashmap(wd_names, as.integer(1:length(wd_names) - 1))
   W <- lapply(W_raw, function(x){ wd_map[[x]] })
 
