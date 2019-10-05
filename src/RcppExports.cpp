@@ -45,32 +45,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// keyATM_train_tot
-List keyATM_train_tot(List model, int iter, int output_per);
-RcppExport SEXP _keyATM_keyATM_train_tot(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_train_tot(model, iter, output_per));
-    return rcpp_result_gen;
-END_RCPP
-}
-// keyATM_train_totcov
-List keyATM_train_totcov(List model, int iter, int output_per);
-RcppExport SEXP _keyATM_keyATM_train_totcov(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_train_totcov(model, iter, output_per));
-    return rcpp_result_gen;
-END_RCPP
-}
 // lda_cov
 List lda_cov(List model, int K, int iter, int output_iter);
 RcppExport SEXP _keyATM_lda_cov(SEXP modelSEXP, SEXP KSEXP, SEXP iterSEXP, SEXP output_iterSEXP) {
@@ -82,20 +56,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type output_iter(output_iterSEXP);
     rcpp_result_gen = Rcpp::wrap(lda_cov(model, K, iter, output_iter));
-    return rcpp_result_gen;
-END_RCPP
-}
-// keyATM_idealpoint
-List keyATM_idealpoint(List model, List author_info, int iter, int output_iter);
-RcppExport SEXP _keyATM_keyATM_idealpoint(SEXP modelSEXP, SEXP author_infoSEXP, SEXP iterSEXP, SEXP output_iterSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< List >::type author_info(author_infoSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    Rcpp::traits::input_parameter< int >::type output_iter(output_iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_idealpoint(model, author_info, iter, output_iter));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -125,31 +85,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// LDA_weight_tot
-List LDA_weight_tot(List model, int iter, int output_per);
-RcppExport SEXP _keyATM_LDA_weight_tot(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    rcpp_result_gen = Rcpp::wrap(LDA_weight_tot(model, iter, output_per));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_keyATM_keyATM_train", (DL_FUNC) &_keyATM_keyATM_train, 3},
     {"_keyATM_keyATM_train_cov", (DL_FUNC) &_keyATM_keyATM_train_cov, 3},
     {"_keyATM_keyATM_train_HMM", (DL_FUNC) &_keyATM_keyATM_train_HMM, 3},
-    {"_keyATM_keyATM_train_tot", (DL_FUNC) &_keyATM_keyATM_train_tot, 3},
-    {"_keyATM_keyATM_train_totcov", (DL_FUNC) &_keyATM_keyATM_train_totcov, 3},
     {"_keyATM_lda_cov", (DL_FUNC) &_keyATM_lda_cov, 4},
-    {"_keyATM_keyATM_idealpoint", (DL_FUNC) &_keyATM_keyATM_idealpoint, 4},
     {"_keyATM_LDA_weight", (DL_FUNC) &_keyATM_LDA_weight, 3},
     {"_keyATM_keyATM_train_LDAHMM", (DL_FUNC) &_keyATM_keyATM_train_LDAHMM, 3},
-    {"_keyATM_LDA_weight_tot", (DL_FUNC) &_keyATM_LDA_weight_tot, 3},
     {NULL, NULL, 0}
 };
 
