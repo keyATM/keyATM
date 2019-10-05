@@ -43,9 +43,13 @@ keyATM_output <- function(model){
   N = length(model$W)
   doc_lens <- sapply(model$W, length)
 
-  if(model$regular_k > 0){
+  if(model$regular_k > 0 & length(model$keywords) != 0){
     tnames <- c(paste0("", 1:length(model$keywords)), paste0("T_", 1:model$regular_k))
+  }else if(model$regular_k > 0 & length(model$keywords) == 0) {
+    # No keywords (= lda models)
+    tnames <- paste0("T_", 1:model$regular_k)
   }else{
+    # Keywords only
     tnames <- c(paste0("", 1:length(model$keywords)))
   }
 
