@@ -20,6 +20,32 @@ void keyATMhmm::read_data_specific()
 {
   num_states = model["num_states"];
   index_states = num_states - 1;
+
+  IntegerVector time_index_R = model["time_index"];
+  time_index = Rcpp::as<Eigen::VectorXi>(time_idnex_R);
+	time_num = time_index.maxCoefff();
+  time_index = time_index.array() - 1;  // adjust index
+	time_doc_start = VectorXi::Zero(time_num);
+	time_doc_end = VectorXi::Zero(time_num);
+
+  // Prepare start and end of time
+	int index_prev = -1;
+	int index;
+	int store_index = 0;
+  for(int d=0; d<num_doc; d++){
+ 		index = time_index[d]; 
+		if(index != index_prev){
+			time_doc_start[store_index] = d;
+			index_prev = index;
+			store_index += 1;
+		}
+  }
+	
+	for(int s=0; s<time_num-1; s++){
+		time_doc_end(s) = time_doc_start(s+1) - 1;	
+	}
+	time_doc_end(time_num-1) = num_doc-1;
+
 }
 
 

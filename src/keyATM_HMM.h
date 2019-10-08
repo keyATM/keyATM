@@ -14,6 +14,12 @@ using namespace std;
 class keyATMhmm : public keyATMbase
 {
   public:
+    // Data
+    VectorXi time_index;
+		int time_num;
+    VectorXi time_doc_start;
+    VectorXi time_doc_end;
+
     // Parameters
     int num_states;
     int index_states;  // num_states - 1
