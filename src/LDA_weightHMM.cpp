@@ -16,7 +16,7 @@ LDAhmm::LDAhmm(List model_, const int iter_, const int output_per_) :
 void LDAhmm::initialize_specific()
 {
   // Initialize Psk
-  Psk = MatrixXd::Zero(num_doc, num_states);
+  Psk = MatrixXd::Zero(num_time, num_states);
 
   // Initialize S_est
   // Use multinomial distribution (with flat probability)
@@ -31,7 +31,7 @@ void LDAhmm::initialize_specific()
     S_est_temp(i) = cumulative * (i+1);
   }
 
-  for(int j=0; j<num_doc; j++){
+  for(int j=0; j<num_time; j++){
     u = R::runif(0, 1);
     for(int i=0; i<num_states; i++){
       if(u < S_est_temp(i)){
@@ -43,7 +43,7 @@ void LDAhmm::initialize_specific()
   }
 
 
-  S_est = VectorXi::Zero(num_doc);
+  S_est = VectorXi::Zero(num_time);
   S_count = S_est_num;
   int count;
   index = 0;
