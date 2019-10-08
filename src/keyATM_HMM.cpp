@@ -23,10 +23,10 @@ void keyATMhmm::read_data_specific()
 
   IntegerVector time_index_R = model["time_index"];
   time_index = Rcpp::as<Eigen::VectorXi>(time_idnex_R);
-	time_num = time_index.maxCoefff();
+	num_time = time_index.maxCoefff();
   time_index = time_index.array() - 1;  // adjust index
-	time_doc_start = VectorXi::Zero(time_num);
-	time_doc_end = VectorXi::Zero(time_num);
+	time_doc_start = VectorXi::Zero(num_time);
+	time_doc_end = VectorXi::Zero(num_time);
 
   // Prepare start and end of time
 	int index_prev = -1;
@@ -41,10 +41,10 @@ void keyATMhmm::read_data_specific()
 		}
   }
 	
-	for(int s=0; s<time_num-1; s++){
+	for(int s=0; s<num_time-1; s++){
 		time_doc_end(s) = time_doc_start(s+1) - 1;	
 	}
-	time_doc_end(time_num-1) = num_doc-1;
+	time_doc_end(num_time-1) = num_doc-1;
 
 }
 
@@ -52,7 +52,7 @@ void keyATMhmm::read_data_specific()
 void keyATMhmm::initialize_specific()
 {
   // Initialize Psk
-  Psk = MatrixXd::Zero(num_doc, num_states);
+  Psk = MatrixXd::Zero(num_time, num_states);
 
   // Initialize S_est
   // Use multinomial distribution (with flat probability)
@@ -67,7 +67,7 @@ void keyATMhmm::initialize_specific()
     S_est_temp(i) = cumulative * (i+1);
   }
 
-  for(int j=0; j<num_doc; j++){
+  for(int j=0; j<num_time; j++){
     u = R::runif(0, 1);
     for(int i=0; i<num_states; i++){
       if(u < S_est_temp(i)){
@@ -79,7 +79,7 @@ void keyATMhmm::initialize_specific()
   }
 
 
-  S_est = VectorXi::Zero(num_doc);
+  S_est = VectorXi::Zero(num_time);
   S_count = S_est_num;
   int count;
   index = 0;
