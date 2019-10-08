@@ -16,24 +16,24 @@ class keyATMhmm : public keyATMbase
   public:
     // Data
     VectorXi time_index;
-		int num_time;
+    int num_time;  // number of time segment
     VectorXi time_doc_start;
     VectorXi time_doc_end;
 
     // Parameters
-		// In this implementation, we should consider
-		// Y_n in Chib (1998) as a 'block' of documents that
-		// share the same time index.
-		// 'Time-Blocked' Change Point
+    // In this implementation, we should consider
+    // Y_n in Chib (1998) as a 'block' of documents that
+    // share the same time index.
+    // 'Time-Blocked' Change Point
     int num_states;
     int index_states;  // num_states - 1
-    MatrixXd Psk;    // (num_doc, num_states)
-    VectorXi S_est;  // stores state index, (num_doc)
+    MatrixXd Psk;    // (num_time, num_states)
+    VectorXi S_est;  // stores state index, (num_time)
     VectorXi S_count;  // stores the count of each state
-			// Sec 2.3 in Chib (1998)
-			// "the elements of p_ij of P may be simulated from P|S_n
-			// without regard to the sampling model for the data"
-			// so we just store the count of each state
+      // Sec 2.3 in Chib (1998)
+      // "the elements of p_ij of P may be simulated from P|S_n
+      // without regard to the sampling model for the data"
+      // so we just store the count of each state
     MatrixXd P_est;  // (num_states, num_states)
     MatrixXd alphas;  // (num_states, num_topics)
     double loglik;
@@ -70,6 +70,8 @@ class keyATMhmm : public keyATMbase
     // 
     // Functions
     //
+    // Utilities
+    int get_state_index(const int &doc_id);
   
     // Read data and Initialize
     void read_data_specific();
@@ -88,7 +90,7 @@ class keyATMhmm : public keyATMbase
     void sample_P();  // sample P_est
     void store_S_est();
 
-    double polyapdfln(int &doc_id, VectorXd &alpha);
+    double polyapdfln(int &t, VectorXd &alpha);
     double loglik_total();
     void verbose_special(int &r_index);
 };
