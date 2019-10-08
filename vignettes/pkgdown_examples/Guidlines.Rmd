@@ -12,9 +12,9 @@ The table below summarizes keyATM models and other popular models based on the i
 
 |                                   | Keywords  | Covariate  | Time Structure |   
 |----------------------------------:|:---------:|:----------:|:--------------:|
-|            keyATM Basic           |     ○    |     ×     |        ×      |
-|          keyATM Covariate         |     ○    |     ○     |        △      |
-|             keyATM HMM            |     ○    |     ×     |        ○      |
+|[keyATM Basic](keyATM_basic.html)  |     ○    |     ×     |        ×      |
+|[keyATM Covariate](keyATM_cov.html)|     ○    |     ○     |        △      |
+|    [keyATM HMM](keyATM_hmm.html)  |     ○    |     ×     |        ○      |
 |            LDA Weighted           |     ×    |     ×     |        ×      |
 |          LDA Weighted Cov         |     ×    |     ○     |        ×      |
 |          LDA Weighted HMM         |     ×    |     ×     |        ○      |
@@ -26,14 +26,22 @@ The next table compares inference methods and speeds. CGS stands for Collapsed G
 
 |                                   |        Inference      |                  Speed                 |
 |----------------------------------:|:----------------------|:---------------------------------------|
-|            keyATM Basic           |        CGS + SS       |                  Fast                  |
-|          keyATM Covariate         |        CGS + SS       | Moderate  (Depends on # of covariates) |
-|             keyATM HMM            |        CGS + SS       |                  Fast                  |
+|[keyATM Basic](keyATM_basic.html)  |        CGS + SS       |                  Fast                  |
+|[keyATM Covariate](keyATM_cov.html)|        CGS + SS       | Moderate  (Depends on # of covariates) |
+|[keyATM HMM](keyATM_hmm.html)      |        CGS + SS       |                  Fast                  |
 |            LDA Weighted           |        CGS + SS       |                  Fast                  |
 |          LDA Weighted Cov         |        CGS + SS       |  Moderate (Depends on # of covariates) |
 |          LDA Weighted HMM         |        CGS + SS       |                  Fast                  |
 | Latent Dirichlet Allocation (LDA) |  Variational EM / CGS |        Depends on implementation       |
 |    Structural Topic Model (STM)   |     Variational EM    |               Very Fast                |
+
+
+## It takes time to fit the model. What should I do?
+Please note that the number of unique words, the total lenght of documents, and the number of topics affect the speed. If you use `cov` model, the number of covariates matters as well, because we need to estimate coefficieitns for covariates.
+
+If you want to speed up fitting, the first thing you can do is to review preprocessing processes. Usually, documents include a lot of low frequency words that do not help interpretation. **quanteda** provides various functions to trim those words.
+
+
 
 
 ## How to select keywords?
@@ -43,4 +51,33 @@ The next table compares inference methods and speeds. CGS stands for Collapsed G
 
 
 
+## What is the `options` argument?
+
+`keyATM_read()` takes various options.
+
+#### `seed`
+This is a seed used to generate random numbers. The same seed is used for initialization and fitting the model (`set.seed()` is executed before both initialization and fitting). If you do not provide `seed`, **keyATM** randomly selects a seed for you.
+
+#### `output_per`
+
+
+
+#### `use_weights`
+$$
+\begin{align}
+ a &=   1\\
+ b &= 3
+\end{align}
+$$
+
+#### `visualize_keywords`
+
+
+#### `thinning`
+
+
+#### `store_theta`
+
+
+#### `x_prior`
 

@@ -115,19 +115,19 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">keyATM Basic</td>
+<td align="right"><a href="keyATM_basic.html">keyATM Basic</a></td>
 <td align="center">○</td>
 <td align="center">×</td>
 <td align="center">×</td>
 </tr>
 <tr class="even">
-<td align="right">keyATM Covariate</td>
+<td align="right"><a href="keyATM_cov.html">keyATM Covariate</a></td>
 <td align="center">○</td>
 <td align="center">○</td>
 <td align="center">△</td>
 </tr>
 <tr class="odd">
-<td align="right">keyATM HMM</td>
+<td align="right"><a href="keyATM_hmm.html">keyATM HMM</a></td>
 <td align="center">○</td>
 <td align="center">×</td>
 <td align="center">○</td>
@@ -178,17 +178,17 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">keyATM Basic</td>
+<td align="right"><a href="keyATM_basic.html">keyATM Basic</a></td>
 <td align="left">CGS + SS</td>
 <td align="left">Fast</td>
 </tr>
 <tr class="even">
-<td align="right">keyATM Covariate</td>
+<td align="right"><a href="keyATM_cov.html">keyATM Covariate</a></td>
 <td align="left">CGS + SS</td>
 <td align="left">Moderate (Depends on # of covariates)</td>
 </tr>
 <tr class="odd">
-<td align="right">keyATM HMM</td>
+<td align="right"><a href="keyATM_hmm.html">keyATM HMM</a></td>
 <td align="left">CGS + SS</td>
 <td align="left">Fast</td>
 </tr>
@@ -220,6 +220,12 @@
 </tbody>
 </table>
 </div>
+<div id="it-takes-time-to-fit-the-model--what-should-i-do" class="section level2">
+<h2 class="hasAnchor">
+<a href="#it-takes-time-to-fit-the-model--what-should-i-do" class="anchor"></a>It takes time to fit the model. What should I do?</h2>
+<p>Please note that the number of unique words, the total lenght of documents, and the number of topics affect the speed. If you use <code>cov</code> model, the number of covariates matters as well, because we need to estimate coefficieitns for covariates.</p>
+<p>If you want to speed up fitting, the first thing you can do is to review preprocessing processes. Usually, documents include a lot of low frequency words that do not help interpretation. <strong>quanteda</strong> provides various functions to trim those words.</p>
+</div>
 <div id="how-to-select-keywords" class="section level2">
 <h2 class="hasAnchor">
 <a href="#how-to-select-keywords" class="anchor"></a>How to select keywords?</h2>
@@ -227,6 +233,53 @@
 <div id="how-to-select-the-number-of-regular-topics" class="section level2">
 <h2 class="hasAnchor">
 <a href="#how-to-select-the-number-of-regular-topics" class="anchor"></a>How to select the number of regular topics?</h2>
+</div>
+<div id="what-is-the-options-argument" class="section level2">
+<h2 class="hasAnchor">
+<a href="#what-is-the-options-argument" class="anchor"></a>What is the <code>options</code> argument?</h2>
+<p><code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code> takes various options.</p>
+<div id="seed" class="section level4">
+<h4 class="hasAnchor">
+<a href="#seed" class="anchor"></a><code>seed</code>
+</h4>
+<p>This is a seed used to generate random numbers. The same seed is used for initialization and fitting the model (<code><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed()</a></code> is executed before both initialization and fitting). If you do not provide <code>seed</code>, <strong>keyATM</strong> randomly selects a seed for you.</p>
+</div>
+<div id="output_per" class="section level4">
+<h4 class="hasAnchor">
+<a href="#output_per" class="anchor"></a><code>output_per</code>
+</h4>
+</div>
+<div id="use_weights" class="section level4">
+<h4 class="hasAnchor">
+<a href="#use_weights" class="anchor"></a><code>use_weights</code>
+</h4>
+<p><span class="math display">\[
+\begin{align}
+ a &amp;=   1\\
+ b &amp;= 3
+\end{align}
+\]</span></p>
+</div>
+<div id="visualize_keywords" class="section level4">
+<h4 class="hasAnchor">
+<a href="#visualize_keywords" class="anchor"></a><code>visualize_keywords</code>
+</h4>
+</div>
+<div id="thinning" class="section level4">
+<h4 class="hasAnchor">
+<a href="#thinning" class="anchor"></a><code>thinning</code>
+</h4>
+</div>
+<div id="store_theta" class="section level4">
+<h4 class="hasAnchor">
+<a href="#store_theta" class="anchor"></a><code>store_theta</code>
+</h4>
+</div>
+<div id="x_prior" class="section level4">
+<h4 class="hasAnchor">
+<a href="#x_prior" class="anchor"></a><code>x_prior</code>
+</h4>
+</div>
 </div>
   </div>
 
@@ -236,8 +289,10 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#which-model-to-use">Which model to use?</a></li>
+      <li><a href="#it-takes-time-to-fit-the-model--what-should-i-do">It takes time to fit the model. What should I do?</a></li>
       <li><a href="#how-to-select-keywords">How to select keywords?</a></li>
       <li><a href="#how-to-select-the-number-of-regular-topics">How to select the number of regular topics?</a></li>
+      <li><a href="#what-is-the-options-argument">What is the <code>options</code> argument?</a></li>
       </ul>
 </div>
       </div>

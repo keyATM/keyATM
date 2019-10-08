@@ -76,7 +76,7 @@ keyATM_read <- function(texts, mode, regular_k=0, extra_k=NULL, keywords=list(),
 
   # Set random seed
   if(is.null(options$seed))
-    options$seed <- 225
+    options$seed <- floor(runif(1)*1e5)
   set.seed(options$seed)
 
   # Detect input
