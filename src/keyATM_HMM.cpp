@@ -22,8 +22,8 @@ void keyATMhmm::read_data_specific()
   index_states = num_states - 1;
 
   IntegerVector time_index_R = model["time_index"];
-  time_index = Rcpp::as<Eigen::VectorXi>(time_idnex_R);
-  num_time = time_index.maxCoefff();
+  time_index = Rcpp::as<Eigen::VectorXi>(time_index_R);
+  num_time = time_index.maxCoeff();
   time_index = time_index.array() - 1;  // adjust index
   time_doc_start = VectorXi::Zero(num_time);
   time_doc_end = VectorXi::Zero(num_time);
@@ -121,7 +121,7 @@ int keyATMhmm::get_state_index(const int &doc_id)
   // Which time segment the document belongs to
   int t;
   for(t=0; t<num_time; t++){
-    if(time_doc_start(t) <= d && d <= time_doc_end(t)){
+    if(time_doc_start(t) <= doc_id && doc_id <= time_doc_end(t)){
       break;  
     }
   }
