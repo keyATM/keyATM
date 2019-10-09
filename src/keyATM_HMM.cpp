@@ -20,19 +20,45 @@ void keyATMhmm::read_data_specific()
 {
   num_states = model["num_states"];
   index_states = num_states - 1;
+
+  IntegerVector time_index_R = model["time_index"];
+  time_index = Rcpp::as<Eigen::VectorXi>(time_index_R);
+  num_time = time_index.maxCoeff();
+  time_index = time_index.array() - 1;  // adjust index
+  time_doc_start = VectorXi::Zero(num_time);
+  time_doc_end = VectorXi::Zero(num_time);
+
+  // Prepare start and end of time
+  int index_prev = -1;
+  int index;
+  int store_index = 0;
+  for(int d=0; d<num_doc; d++){
+     index = time_index[d]; 
+    if(index != index_prev){
+      time_doc_start[store_index] = d;
+      index_prev = index;
+      store_index += 1;
+    }
+  }
+
+  for(int s=0; s<num_time-1; s++){
+    time_doc_end(s) = time_doc_start(s+1) - 1;  
+  }
+  time_doc_end(num_time-1) = num_doc-1;
+
 }
 
 
 void keyATMhmm::initialize_specific()
 {
   // Initialize Psk
-  Psk = MatrixXd::Zero(num_doc, num_states);
+  Psk = MatrixXd::Zero(num_time, num_states);
 
   // Initialize S_est
   // Use multinomial distribution (with flat probability)
   // to decide the number of each state
   // and push it into S_est.
-  VectorXi S_est_num = VectorXi::Zero(num_states);
+  VectorXi S_est_num = VectorXi::Constant(num_states, 1);
   VectorXd S_est_temp = VectorXd::Zero(num_states);
   double cumulative = 1.0 / num_states;
   double u;
@@ -41,7 +67,7 @@ void keyATMhmm::initialize_specific()
     S_est_temp(i) = cumulative * (i+1);
   }
 
-  for(int j=0; j<num_doc; j++){
+  for(int j=0; j<num_time-num_states; j++){
     u = R::runif(0, 1);
     for(int i=0; i<num_states; i++){
       if(u < S_est_temp(i)){
@@ -53,7 +79,7 @@ void keyATMhmm::initialize_specific()
   }
 
 
-  S_est = VectorXi::Zero(num_doc);
+  S_est = VectorXi::Zero(num_time);
   S_count = S_est_num;
   int count;
   index = 0;
@@ -75,6 +101,9 @@ void keyATMhmm::initialize_specific()
   }
   P_est(index_states, index_states) = 1;
 
+  // cout << S_est_num.transpose() << endl;  //debug
+  // cout << S_est.transpose() << endl;  //debug
+  // cout << P_est << endl;  //debug
 
   // Initialize alphas;
   alphas = MatrixXd::Constant(num_states, num_topics, 50.0/num_topics);
@@ -87,8 +116,19 @@ void keyATMhmm::initialize_specific()
   
   states_start = VectorXi::Zero(num_states);
   states_end = VectorXi::Zero(num_states);
+}
 
 
+int keyATMhmm::get_state_index(const int &doc_id)
+{
+  // Which time segment the document belongs to
+  int t;
+  for(t=0; t<num_time; t++){
+    if(time_doc_start(t) <= doc_id && doc_id <= time_doc_end(t)){
+      break;  
+    }
+  }
+  return(S_est(t));
 }
 
 
@@ -101,7 +141,7 @@ void keyATMhmm::iteration_single(int &it)
     doc_x = X[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
 
-    alpha = alphas.row(S_est(doc_id_)).transpose(); // select alpha for this document
+    alpha = alphas.row(get_state_index(doc_id_)).transpose(); // select alpha for this document
     
     token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
     
@@ -126,9 +166,9 @@ void keyATMhmm::iteration_single(int &it)
   sample_parameters(it);
 }
 
-void keyATMhmm::verbose_special(int &r_index){
+void keyATMhmm::verbose_special(int &r_index)
+{
   // If there is anything special to show, write here.
-  // cout << "  Sampled S: " << S_count.transpose() << endl;
 }
 
 void keyATMhmm::sample_parameters(int &it)
@@ -160,19 +200,26 @@ void keyATMhmm::sample_alpha()
 {
 
   // Retrieve start and end indexes of states in documents
+  int index_start, index_end;
   for(int s=0; s<num_states; s++){
     if(s == 0){
       // First state
-      states_start(s) = 0;
-      states_end(s) = S_count(s) - 1;
+      // Which time segment correspond to s=0
+      index_start = 0;
+      index_end = S_count(s) - 1;
+
+      // Index of documents that belong to s=0
+      states_start(s) = time_doc_start(index_start);
+      states_end(s) = time_doc_end(index_end);
       continue;
     }  
     
-    states_start(s) = states_end(s-1) + 1;
-    states_end(s) = states_start(s) + S_count(s) - 1;
+    index_start = index_end + 1;
+    index_end = index_start + S_count(s) - 1;
+    states_start(s) = time_doc_start(index_start);
+    states_end(s) = time_doc_end(index_end);
   }
 
-  
   for(int s=0; s<num_states; s++){
     sample_alpha_state(s, states_start(s),
                           states_end(s));  
@@ -271,9 +318,9 @@ void keyATMhmm::sample_forward()
 
   // Psk = MatrixXd::Zero(num_doc, num_states);
 
-  for(int d=0; d<num_doc; d++){
-    if(d == 0){
-      // First document should be the first state
+  for(int t=0; t<num_time; t++){
+    if(t == 0){
+      // First time segment should be the first state
       Psk(0, 0) = 1.0;
       continue;
     }  
@@ -281,11 +328,11 @@ void keyATMhmm::sample_forward()
     // Prepare f in Eq.(6) of Chib (1998)
     for(int s=0; s<num_states; s++){
       alpha = alphas.row(s).transpose();
-      logfy(s) = polyapdfln(d, alpha);
+      logfy(s) = polyapdfln(t, alpha);
     }  
 
     // Prepare Pst
-    st_1l = Psk.row(d-1);  // previous observation
+    st_1l = Psk.row(t-1);  // previous observation
     st_k = (st_1l.transpose() * P_est);
 
     // Format numerator and calculate denominator at the same time
@@ -304,9 +351,9 @@ void keyATMhmm::sample_forward()
 
     for(int s=0; s<num_states; s++){
       if(st_k(s) != 0.0){
-        Psk(d, s) = exp( logst_k(s) - logsum );  
+        Psk(t, s) = exp( logst_k(s) - logsum );  
       }else{
-        Psk(d, s) = 0.0;  
+        Psk(t, s) = 0.0;  
       }  
     }
 
@@ -314,13 +361,20 @@ void keyATMhmm::sample_forward()
 
 }
 
-double keyATMhmm::polyapdfln(int &d, VectorXd &alpha)
+
+double keyATMhmm::polyapdfln(int &t, VectorXd &alpha)
 { // Polya distribution log-likelihood
   loglik = 0.0;
 
-  loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
-  for (int k = 0; k < num_topics; k++){
-    loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+  int doc_start, doc_end;
+  doc_start = time_doc_start(t);  // starting doc index of time segment t
+  doc_end = time_doc_end(t);
+
+  for(int d=doc_start; d<= doc_end; d++){
+    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
+    for (int k = 0; k < num_topics; k++){
+      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+    }  
   }
 
   return loglik;
@@ -330,23 +384,23 @@ double keyATMhmm::polyapdfln(int &d, VectorXd &alpha)
 void keyATMhmm::sample_backward()
 {
   // sample S_est
-  // num_doc - 2, because doc_index is (num_doc - 1)
-  // and we want to start from (doc_index - 1)
+  // num_time - 2, because time segment index is (num_time - 1)
+  // and we want to start from (time_index - 1)
 
   S_count = VectorXi::Zero(num_states); // reset counter
 
   // Last document
-  S_est(num_doc-1) = index_states;
+  S_est(num_time-1) = index_states;
   S_count(index_states) += 1;  // last document
 
-  for(int d=(num_doc-2); 0<= d; --d){
-    state_id = S_est(d+1);
+  for(int t=(num_time-2); 0<= t; --t){
+    state_id = S_est(t+1);
 
-    state_prob_vec.array() = Psk.row(d).transpose().array() * P_est.col(state_id).array(); 
+    state_prob_vec.array() = Psk.row(t).transpose().array() * P_est.col(state_id).array(); 
     state_prob_vec.array() = state_prob_vec.array() / state_prob_vec.sum();
 
     state_id = sampler::rcat(state_prob_vec, num_states); // new state id
-    S_est(d) = state_id;
+    S_est(t) = state_id;
     S_count(state_id) += 1;
   }
 
@@ -404,18 +458,20 @@ double keyATMhmm::loglik_total()
 
   for (int d = 0; d < num_doc; d++){
     // z
-    alpha = alphas.row(S_est(doc_id_)).transpose(); // Doc alpha, column vector  
+    alpha = alphas.row(get_state_index(doc_id_)).transpose(); // Doc alpha, column vector  
     
     loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
     }
 
-    // HMM part
-    state_id = S_est(d);
-    loglik += log( P_est(state_id, state_id) );
   }
 
+  // HMM part
+  for(int t=0; t<num_time; t++){
+    state_id = S_est(t);
+    loglik += log( P_est(state_id, state_id) );
+  }
 
   return loglik;
 }
