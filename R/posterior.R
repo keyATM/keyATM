@@ -19,7 +19,7 @@ posterior <- function(...){
 #' @return A list containing:
 #'   \describe{
 #'     \item{seed_K}{ Number of keyword topics}
-#'     \item{extra_K}{ Number of regular unseeded topics}
+#'     \item{regular_k}{ Number of regular unseeded topics}
 #'     \item{V}{ Number of word types}
 #'     \item{N}{ Number of documents}
 #'     \item{theta}{ Normalized tpoic proportions for each document}
@@ -38,18 +38,22 @@ keyATM_output <- function(model){
   message("Creating an output object. It may take time...")
 
   check_arg_type(model, "keyATM")
-  allK <- model$extra_k + length(model$dict)
+  allK <- model$regular_k + length(model$keywords)
   V <- length(model$vocab)
   N = length(model$W)
   doc_lens <- sapply(model$W, length)
 
-  if(model$extra_k > 0){
-    tnames <- c(names(model$keywords), paste0("T_", 1:model$extra_k))
+  if(model$regular_k > 0 & length(model$keywords) != 0){
+    tnames <- c(paste0("", 1:length(model$keywords)), paste0("T_", 1:model$regular_k))
+  }else if(model$regular_k > 0 & length(model$keywords) == 0) {
+    # No keywords (= lda models)
+    tnames <- paste0("T_", 1:model$regular_k)
   }else{
-    tnames <- c(names(model$keywords))
+    # Keywords only
+    tnames <- c(paste0("", 1:length(model$keywords)))
   }
 
-  if(model$mode %in% c("cov", "totcov")){
+  if(model$mode %in% c("cov")){
     Alpha <- exp(model$C %*% t(model$Lambda[[length(model$Lambda)]]))
 
     posterior_z <- function(docid){
@@ -59,9 +63,9 @@ keyATM_output <- function(model){
       (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
     }
 
-    theta <- do.call(rbind, lapply(1:length(model$Z), posterior_z))
+    theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z))
 
-  }else if(model$mode %in% c("basic", "tot", "ldaweight")){
+  }else if(model$mode %in% c("basic", "lda")){
     alpha <- model$alpha_iter[[length(model$alpha_iter)]]  
 
     posterior_z <- function(zvec){
@@ -69,28 +73,39 @@ keyATM_output <- function(model){
       (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
     }  
 
-    theta <- do.call(rbind, lapply(model$Z, posterior_z))
+    theta <- do.call(dplyr::bind_rows, lapply(model$Z, posterior_z))
 
+  }else if(model$mode %in% c("hmm", "ldahmm")){
+    S <- model$S_iter[[length(model$S_iter)]] + 1  # adjust index for R
+    alphas <- matrix(model$alpha_iter[[length(model$alpha_iter)]][S],
+                     nrow=length(model$W), ncol=allK)
+
+    Z_table <- do.call(dplyr::bind_rows, 
+                       lapply(model$Z, 
+                        function(zvec){table(factor(zvec, levels = 1:allK - 1))}))
+
+    tt <- Z_table + alphas
+    theta <- tt / Matrix::rowSums(tt)
   }
 
-  rownames(theta) <- basename(model$files)
+  theta <- as.matrix(theta)
   colnames(theta) <- tnames # label seeded topics
 
 
   all_words <- model$vocab[as.integer(unlist(model$W)) + 1]
   all_topics <- as.integer(unlist(model$Z))
   
-  res_tibble <- tibble(
+  res_tibble <- data.frame(
                         Word = all_words,
                         Topic = all_topics
                        ) %>%
-                group_by(Topic, Word) %>%
-                summarize(Count = n())
+                dplyr::group_by(Topic, Word) %>%
+                dplyr::summarize(Count = n())
   
   res_tibble %>%
     tidyr::spread(key=Word, value=Count)  -> beta
   beta <- apply(beta, 2, function(x){ifelse(is.na(x), 0, x)})
-  beta <- beta[, 2:ncol(beta)]
+  beta <- beta[, 2:ncol(beta)] + model$beta
   beta <- beta[, model$vocab]
 
   topic_counts <- Matrix::rowSums(beta)
@@ -118,43 +133,67 @@ keyATM_output <- function(model){
 
   # p
   collapse <- function(obj){
-  temp <- unlist(obj)
-  names(temp) <- NULL
-  return(temp)
+    temp <- unlist(obj)
+    names(temp) <- NULL
+    return(temp)
   }
 
   data <- data.frame(Z=collapse(model$Z), X=collapse(model$X))
   data %>%
-    mutate_(Topic='Z+1') %>%
-    select(-starts_with("Z")) %>%
-    group_by_('Topic') %>%
-    summarize_(count = 'n()', sumx='sum(X)') %>%
-    ungroup() %>%
-    mutate_(Proportion='round(sumx/count*100, 3)') -> p_estimated
-
-  ## TODO fix this naming nonsense
-  dict <- model$dict
-  names(dict) <- names(model$keywords)
-
+    dplyr::mutate(Topic=Z+1) %>%
+    dplyr::select(-starts_with("Z")) %>%
+    dplyr::group_by(Topic) %>%
+    dplyr::summarize(count = n(), sumx=sum(X)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(Proportion=round(sumx/count*100, 3)) -> p_estimated
 
   # theta by iteration
   if(model$options$store_theta){
-    posterior_theta <- function(x){
-      doc_length <- Matrix::rowSums(x)
-      return(sweep(x, 1, doc_length, "/"))
+
+    if(model$mode %in% c("cov")){
+      posterior_theta <- function(x){
+        Z_table <- model$options$Z_tables[[x]]
+        lambda <- model$Lambda[[x]]
+        Alpha <- exp(model$C %*% t(lambda))
+
+        tt <- Z_table + Alpha
+        row.names(tt) <- NULL
+
+        return(tt / Matrix::rowSums(tt))
+      }
+    }else if(model$mode %in% c("hmm", "ldahmm")){
+      posterior_theta <- function(x){
+        Z_table <- model$options$Z_tables[[x]]
+        S <- model$S_iter[[x]] + 1  # adjust index for R
+        alphas <- matrix(model$alpha_iter[[x]][S],
+                         nrow=length(model$W), ncol=allK)
+      
+        tt <- Z_table + alphas
+        theta <- tt / Matrix::rowSums(tt)
+        return(theta)
+      }
+    }else{
+      posterior_theta <- function(x){
+        Z_table <- model$options$Z_tables[[x]]
+        alpha <- model$alpha_iter[[x]]
+
+        return((sweep(Z_table, 2, alpha, "+")) / 
+                (Matrix::rowSums(Z_table) + sum(alpha)))
+      }
     }  
 
-    model$options$theta_iter <- lapply(model$options$Z_tables,
+    model$options$theta_iter <- lapply(1:length(model$options$Z_tables),
                                         posterior_theta)
   }
 
-  ll <- list(keyword_K = length(model$dict), extra_K = model$extra_k,
+  ll <- list(keyword_K = length(model$keywords), regular_k = model$regular_k,
+             extra_k = model$regular_k,
              V = V, N = N,
              model=model$mode,
              theta = theta, beta = tZW, # as.matrix(as.data.frame.matrix(tZW)),
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = doc_lens, vocab = model$vocab,
-             dict = dict,
+             keywords_raw = model$keywords_raw,
              alpha=res_alpha, modelfit=modelfit, p=p_estimated, options=model$options)
   class(ll) <- c("keyATM_output", class(ll))
   ll
@@ -226,6 +265,10 @@ top_terms <- function(...){
 top_words <- function(x, n = 10, measure = c("probability", "lift"),
                       show_keyword = TRUE){
   check_arg_type(x, "keyATM_output")
+
+  if(model$mode %in% c("lda", "ldacov", "ldahmm"))
+     show_keyword <- FALSE
+
   if (is.null(n))
     n <- nrow(x$theta)
   measure <- match.arg(measure)
@@ -242,11 +285,11 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
   res <- apply(x$beta, 1, measuref)
   if (show_keyword) {
     for (i in 1:ncol(res)) {
-      for (j in 1:length(x$dict)) {
-         inds <- which(res[,i] %in% x$dict[[j]])
+      for (j in 1:length(x$keywords_raw)) {
+         inds <- which(res[,i] %in% x$keywords_raw[[j]])
          label <- ifelse(i == j,
                          paste0("[", "\U2713" ,"]"),
-                         paste0("[", names(x$dict)[j], "]"))
+                         paste0("[", names(x$keywords_raw)[j], "]"))
          res[inds, i] <- paste(res[inds, i], label)
       }
     }
@@ -328,7 +371,7 @@ diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
 
 
   if("keyATM" %in% class(x)){
-    num_topic <-  length(x$dict) + x$extra_k
+    num_topic <-  length(x$keywords_raw) + x$regular_k
 
     res_alpha <- data.frame(x$alpha_iter)
     colnames(res_alpha) <- NULL
@@ -339,7 +382,7 @@ diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
     }
     
   }else if("keyATM_output" %in% class(x)){
-    num_topic <-  x$seed_K + x$extra_k
+    num_topic <-  x$seed_K + x$regular_k
     res_alpha <- x$alpha  
   }
 

@@ -81,19 +81,22 @@ Internally, keyATM_read() calls keyATM_model() to initialize a model." />
       <a href="../articles/pkgdown_examples/Installation.html">Installation</a>
     </li>
     <li>
+      <a href="../articles/pkgdown_examples/Preparation.html">Preparation</a>
+    </li>
+    <li>
       <a href="../articles/pkgdown_examples/keyATM_basic.html">keyATM Basic</a>
     </li>
     <li>
       <a href="../articles/pkgdown_examples/keyATM_cov.html">keyATM Covariate</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_tot.html">keyATM Topics Over Time</a>
+      <a href="../articles/pkgdown_examples/keyATM_HMM.html">keyATM HMM</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_totcov.html">keyATM TOT with Covariates</a>
+      <a href="../articles/pkgdown_examples/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/guidline.html">Guidline</a>
+      <a href="../articles/pkgdown_examples/Guidlines.html">Guidlines</a>
     </li>
   </ul>
 </li>
@@ -136,10 +139,11 @@ Internally, <code>keyATM_read()</code> calls <code><a href='keyATM_model.html'>k
     
     </div>
 
-    <pre class="usage"><span class='fu'>keyATM_read</span>(<span class='no'>texts</span>, <span class='no'>keywords</span>, <span class='no'>mode</span>, <span class='no'>extra_k</span>, <span class='kw'>iteration</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-  <span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~<span class='no'>.</span> + <span class='fl'>0</span>,
-  <span class='kw'>timestamps</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>225</span>, <span class='kw'>output_per</span> <span class='kw'>=</span> <span class='fl'>10</span>,
-  <span class='kw'>use_weights</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>visualize_keywords</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>x_prior</span> <span class='kw'>=</span> <span class='kw'>NULL</span>))</pre>
+    <pre class="usage"><span class='fu'>keyATM_read</span>(<span class='no'>texts</span>, <span class='no'>mode</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>extra_k</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~<span class='no'>.</span>
+  + <span class='fl'>0</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>225</span>, <span class='kw'>output_per</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>use_weights</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>visualize_keywords</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>thinning</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>x_prior</span> <span class='kw'>=</span>
+  <span class='kw'>NULL</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,17 +153,17 @@ Internally, <code>keyATM_read()</code> calls <code><a href='keyATM_model.html'>k
       <td><p>Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.</p></td>
     </tr>
     <tr>
-      <th>keywords</th>
-      <td><p>a quanteda dictionary or a list of character vectors</p></td>
-    </tr>
-    <tr>
       <th>mode</th>
-      <td><p>number of iteration</p></td>
+      <td><p>"basic", "cov", "hmm", "lda" and "ldahmm"</p></td>
     </tr>
     <tr>
-      <th>extra_k</th>
+      <th>regular_k</th>
       <td><p>number of regular topics in addition to the keyword topics by
 <code>keywords</code></p></td>
+    </tr>
+    <tr>
+      <th>keywords</th>
+      <td><p>a quanteda dictionary or a list of character vectors</p></td>
     </tr>
     <tr>
       <th>covariates_data</th>
@@ -170,13 +174,13 @@ Internally, <code>keyATM_read()</code> calls <code><a href='keyATM_model.html'>k
       <td><p>formula applied to covariate data</p></td>
     </tr>
     <tr>
-      <th>timestamps</th>
-      <td><p>timestamps</p></td>
-    </tr>
-    <tr>
       <th>options</th>
       <td><p>options are seed, use_weights,
 visualize_keywords, and output_per.</p></td>
+    </tr>
+    <tr>
+      <th>iteration</th>
+      <td><p>number of iteration</p></td>
     </tr>
     </table>
     
@@ -185,19 +189,17 @@ visualize_keywords, and output_per.</p></td>
     <p>keyATM object, which is a list containing</p><dl class='dl-horizontal'>
         <dt>W</dt><dd><p>a list of vectors of word indexes</p></dd>
         <dt>Z</dt><dd><p>a list of vectors of topic indicators isomorphic to W</p></dd>
-        <dt>C</dt><dd><p>a covariate matrix is there is an input</p></dd>
+        <dt>C</dt><dd><p>a covariate matrix if there is an input</p></dd>
         <dt>X</dt><dd><p>a list of vectors of seed indicators (0/1) isomorphic to W</p></dd>
         <dt>vocab</dt><dd><p>a vector of vocabulary items</p></dd>
-        <dt>files</dt><dd><p>a vector of document filenames</p></dd>
-        <dt>dict</dt><dd><p>a tokenized version of the keyword dictionary</p></dd>
-        <dt>keywords</dt><dd><p>a list of keywords in dict, named by dictionary category</p></dd>
-        <dt>extra_k</dt><dd><p>how many extra non-seeded topics are required</p></dd>
+        <dt>mode</dt><dd><p>keyATM model to fit</p></dd>
+        <dt>keywords</dt><dd><p>a list of keywords in word_id</p></dd>
+        <dt>keywords_raw</dt><dd><p>a list of keywords</p></dd>
+        <dt>regular_k</dt><dd><p>how many extra non-seeded topics are required</p></dd>
         <dt>alpha</dt><dd><p>a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.</p></dd>
         <dt>alpha_iter</dt><dd><p>a list to store topic proportion hyperparameters</p></dd>
         <dt>Lambda_iter</dt><dd><p>a list to store coefficients of the covariates</p></dd>
         <dt>S_iter</dt><dd><p>a list to store states sampled in HMM</p></dd>
-        <dt>tot_beta</dt><dd><p>a list to store sampled beta parameters in topic-over-time</p></dd>
-        <dt>sampling_info</dt><dd><p>information related to sampling</p></dd>
         <dt>model_fit</dt><dd><p>a list to store perplexity and log-likelihood</p></dd>
         <dt>gamma1</dt><dd><p>First prior probability parameter for X (currently the same for all topics)</p></dd>
         <dt>gamma2</dt><dd><p>Second prior probability parameter for X (currently the same for all topics)</p></dd>
@@ -205,7 +207,6 @@ visualize_keywords, and output_per.</p></td>
         <dt>beta_s</dt><dd><p>prior parameter for the seeded word generation probabilities</p></dd>
         <dt>use_cov</dt><dd><p>boolean, whether or not use the covariate</p></dd>
         <dt>num_states</dt><dd><p>number of states in HMM</p></dd>
-        <dt>timestamps</dt><dd><p>time stamp for topics-over-time model</p></dd>
         <dt>visualize_keywords</dt><dd><p>ggplot2 object</p></dd>
         <dt>call</dt><dd><p>details of the function call</p></dd>
         </dl><p>.</p>

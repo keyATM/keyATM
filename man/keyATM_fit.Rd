@@ -4,7 +4,7 @@
 \alias{keyATM_fit}
 \title{Fit a keyATM model}
 \usage{
-keyATM_fit(model, iteration = 1000)
+keyATM_fit(model, iteration = 1000, keep_model = T)
 }
 \arguments{
 \item{model}{keyATM object (the output of \code{keyATM_read()})}
@@ -21,12 +21,11 @@ keyATM object, which is a list containing \describe{
         \item{files}{a vector of document filenames}
         \item{dict}{a tokenized version of the keyword dictionary}
         \item{keywords}{a list of keywords in dict, named by dictionary category}
-        \item{extra_k}{how many extra non-seeded topics are required}
+        \item{regular_k}{how many extra non-seeded topics are required}
         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
         \item{alpha_iter}{a list to store topic proportion hyperparameters}
         \item{Lambda_iter}{a list to store coefficients of the covariates}
         \item{S_iter}{a list to store states sampled in HMM}
-        \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
         \item{sampling_info}{information related to sampling}
         \item{model_fit}{a list to store perplexity and log-likelihood}
         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}

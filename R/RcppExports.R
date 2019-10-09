@@ -34,28 +34,6 @@ keyATM_train_HMM <- function(model, iter = 0L, output_per = 10L) {
     .Call('_keyATM_keyATM_train_HMM', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
-#' Run the Collapsed Gibbs sampler for the topics-over-time model
-#'
-#' @param model A initialized model
-#' @param iter Required number of iterations
-#' @param output_per Show log-likelihood and perplexity per this number during the iteration
-#'
-#' @export
-keyATM_train_tot <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_keyATM_keyATM_train_tot', PACKAGE = 'keyATM', model, iter, output_per)
-}
-
-#' Run the Collapsed Gibbs sampler for the topics-over-time model with covariate
-#'
-#' @param model A initialized model
-#' @param iter Required number of iterations
-#' @param output_per Show log-likelihood and perplexity per this number during the iteration
-#'
-#' @export
-keyATM_train_totcov <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_keyATM_keyATM_train_totcov', PACKAGE = 'keyATM', model, iter, output_per)
-}
-
 #' Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)
 #'
 #' @param model A initialized model
@@ -65,18 +43,6 @@ keyATM_train_totcov <- function(model, iter = 0L, output_per = 10L) {
 #' @export
 lda_cov <- function(model, K, iter = 0L, output_iter = 10L) {
     .Call('_keyATM_lda_cov', PACKAGE = 'keyATM', model, K, iter, output_iter)
-}
-
-#' Run the Collapsed Gibbs sampler for Ideal Point Estimation Model
-#'
-#' @param model A initialized model
-#' @param author_info author information
-#' @param iter Required number of iterations
-#' @param output_per Show log-likelihood and perplexity per this number during the iteration
-#'
-#' @export
-keyATM_idealpoint <- function(model, author_info, iter = 0L, output_iter = 10L) {
-    .Call('_keyATM_keyATM_idealpoint', PACKAGE = 'keyATM', model, author_info, iter, output_iter)
 }
 
 #' Run the Collapsed Gibbs sampler for LDA with weights
@@ -90,14 +56,14 @@ LDA_weight <- function(model, iter = 0L, output_per = 10L) {
     .Call('_keyATM_LDA_weight', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
-#' Run the Collapsed Gibbs sampler for LDA topic-over-time with weights
+#' Run the Collapsed Gibbs sampler for the HMM model
 #'
 #' @param model A initialized model
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-LDA_weight_tot <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_keyATM_LDA_weight_tot', PACKAGE = 'keyATM', model, iter, output_per)
+keyATM_train_LDAHMM <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_train_LDAHMM', PACKAGE = 'keyATM', model, iter, output_per)
 }
 

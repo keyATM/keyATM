@@ -4,49 +4,46 @@
 \alias{keyATM_read}
 \title{Initialize a keyATM model}
 \usage{
-keyATM_read(texts, keywords, mode, extra_k, iteration = 1000,
-  covariates_data = NULL, covariates_formula = ~. + 0,
-  timestamps = NULL, options = list(seed = 225, output_per = 10,
-  use_weights = TRUE, visualize_keywords = TRUE, x_prior = NULL))
+keyATM_read(texts, mode, regular_k = 0, extra_k = NULL,
+  keywords = list(), covariates_data = NULL, covariates_formula = ~.
+  + 0, num_states = NULL, options = list(seed = 225, output_per = 10,
+  use_weights = TRUE, visualize_keywords = TRUE, thinning = 1, x_prior =
+  NULL))
 }
 \arguments{
 \item{texts}{Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.}
 
-\item{keywords}{a quanteda dictionary or a list of character vectors}
+\item{mode}{"basic", "cov", "hmm", "lda" and "ldahmm"}
 
-\item{mode}{"basic", "cov", "tot", "totcov", and "ldaweight"}
-
-\item{extra_k}{number of regular topics in addition to the keyword topics by
+\item{regular_k}{number of regular topics in addition to the keyword topics by
 \code{keywords}}
 
-\item{iteration}{number of iteration}
+\item{keywords}{a quanteda dictionary or a list of character vectors}
 
 \item{covariates_data}{covariate}
 
 \item{covariates_formula}{formula applied to covariate data}
 
-\item{timestamps}{timestamps}
-
 \item{options}{options are seed, use_weights,
 visualize_keywords, and output_per.}
+
+\item{iteration}{number of iteration}
 }
 \value{
 keyATM object, which is a list containing \describe{
         \item{W}{a list of vectors of word indexes}
         \item{Z}{a list of vectors of topic indicators isomorphic to W}
-        \item{C}{a covariate matrix is there is an input}
+        \item{C}{a covariate matrix if there is an input}
         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
         \item{vocab}{a vector of vocabulary items}
-        \item{files}{a vector of document filenames}
-        \item{dict}{a tokenized version of the keyword dictionary}
-        \item{keywords}{a list of keywords in dict, named by dictionary category}
-        \item{extra_k}{how many extra non-seeded topics are required}
+        \item{mode}{keyATM model to fit}
+        \item{keywords}{a list of keywords in word_id}
+        \item{keywords_raw}{a list of keywords}
+        \item{regular_k}{how many extra non-seeded topics are required}
         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
         \item{alpha_iter}{a list to store topic proportion hyperparameters}
         \item{Lambda_iter}{a list to store coefficients of the covariates}
         \item{S_iter}{a list to store states sampled in HMM}
-        \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
-        \item{sampling_info}{information related to sampling}
         \item{model_fit}{a list to store perplexity and log-likelihood}
         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
@@ -54,7 +51,6 @@ keyATM object, which is a list containing \describe{
         \item{beta_s}{prior parameter for the seeded word generation probabilities}
         \item{use_cov}{boolean, whether or not use the covariate}
         \item{num_states}{number of states in HMM}
-        \item{timestamps}{time stamp for topics-over-time model}
         \item{visualize_keywords}{ggplot2 object}
         \item{call}{details of the function call}
         }.

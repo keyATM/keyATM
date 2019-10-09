@@ -24,16 +24,18 @@ navbar:
       menu:
         - text: "Installation"
           href: articles/pkgdown_examples/Installation.html
+        - text: "Preparation"
+          href: articles/pkgdown_examples/Preparation.html
         - text: "keyATM Basic"
           href: articles/pkgdown_examples/keyATM_basic.html
         - text: "keyATM Covariate"
           href: articles/pkgdown_examples/keyATM_cov.html
-        - text: "keyATM Topics Over Time"
-          href: articles/pkgdown_examples/keyATM_tot.html
-        - text: "keyATM TOT with Covariates"
-          href: articles/pkgdown_examples/keyATM_totcov.html
-        - text: "Guidline"
-          href: articles/pkgdown_examples/guidline.html
+        - text: "keyATM HMM"
+          href: articles/pkgdown_examples/keyATM_HMM.html
+        - text: "Weighted LDA"
+          href: articles/pkgdown_examples/Weighted_LDA.html
+        - text: "Guidlines"
+          href: articles/pkgdown_examples/Guidlines.html
     - text: "Reference"
       href: reference/index.html
     - text: "Changelog"

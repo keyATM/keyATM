@@ -4,7 +4,7 @@
 #'
 #' @export
 topicdict_model <- function(...){
-  message("Warning: `topicdict_model` is deprecated, please use `keyATM_read` instead.")
+  message("Warning: `topicdict_model` is deprecated, please use `keyATM_read` instead. keyATM does not take `quanteda` options.")
   return(keyATM_model(...))
 }
 
@@ -16,32 +16,29 @@ topicdict_model <- function(...){
 #'
 #' @param texts Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.
 #' @param keywords a quanteda dictionary or a list of character vectors
-#' @param mode "basic", "cov", "tot", "totcov", and "ldaweight"
+#' @param mode "basic", "cov", "hmm", "lda" and "ldahmm"
 #' @param iteration number of iteration
-#' @param extra_k number of regular topics in addition to the keyword topics by
+#' @param regular_k number of regular topics in addition to the keyword topics by
 #'                \code{keywords}
 #' @param covariates_data covariate
 #' @param covariates_formula formula applied to covariate data
-#' @param timestamps timestamps
 #' @param options options are seed, use_weights,
 #'           visualize_keywords, and output_per.
 #'
 #' @return keyATM object, which is a list containing \describe{
 #'         \item{W}{a list of vectors of word indexes}
 #'         \item{Z}{a list of vectors of topic indicators isomorphic to W}
-#'         \item{C}{a covariate matrix is there is an input}
+#'         \item{C}{a covariate matrix if there is an input}
 #'         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
 #'         \item{vocab}{a vector of vocabulary items}
-#'         \item{files}{a vector of document filenames}
-#'         \item{dict}{a tokenized version of the keyword dictionary}
-#'         \item{keywords}{a list of keywords in dict, named by dictionary category}
-#'         \item{extra_k}{how many extra non-seeded topics are required}
+#'         \item{mode}{keyATM model to fit}
+#'         \item{keywords}{a list of keywords in word_id}
+#'         \item{keywords_raw}{a list of keywords}
+#'         \item{regular_k}{how many extra non-seeded topics are required}
 #'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
 #'         \item{Lambda_iter}{a list to store coefficients of the covariates}
 #'         \item{S_iter}{a list to store states sampled in HMM}
-#'         \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
-#'         \item{sampling_info}{information related to sampling}
 #'         \item{model_fit}{a list to store perplexity and log-likelihood}
 #'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
 #'         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
@@ -49,21 +46,20 @@ topicdict_model <- function(...){
 #'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
 #'         \item{use_cov}{boolean, whether or not use the covariate}
 #'         \item{num_states}{number of states in HMM}
-#'         \item{timestamps}{time stamp for topics-over-time model}
 #'         \item{visualize_keywords}{ggplot2 object}
 #'         \item{call}{details of the function call}
 #'         }.
 #'
 #' @export
-keyATM_read <- function(texts, keywords, mode, extra_k,
-                        iteration=1000,
+keyATM_read <- function(texts, mode, regular_k=0, extra_k=NULL, keywords=list(),
                         covariates_data=NULL, covariates_formula= ~.+0,
-                        timestamps=NULL,
+                        num_states=NULL,
                         options=list(
                                      seed=225,
                                      output_per=10,
                                      use_weights=TRUE,
                                      visualize_keywords=TRUE,
+                                     thinning = 1,
                                      x_prior=NULL
                                     )
                        )
@@ -75,9 +71,12 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
   if(is.null(options$visualize_keywords))
     options$visualize_keywords <- TRUE
 
+  if(is.null(options$thinning))
+    options$thinning <- 1
+
   # Set random seed
   if(is.null(options$seed))
-    options$seed <- 225
+    options$seed <- floor(runif(1)*1e5)
   set.seed(options$seed)
 
   # Detect input
@@ -98,30 +97,32 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
          It can take quanteda dfm, data.frame, tibble, and a vector of characters.")  
   }
 
+
   # Reformat keywords
-  if(class(keywords) != "dictionary2"){
-    if(class(keywords) != "list"){
-      stop("`keywords` should be a quanteda dictionary or a list of character vectors")
-    }else{
-      names(keywords) <- 1:length(keywords)
-      keywords <- quanteda::dictionary(keywords)  
-    }
+  if(class(keywords) != "list"){
+      stop("`keywords` should be a list of character vectors")
+  }
+
+  if(mode %in% c("lda", "ldahmm") & length(keywords) != 0){
+    warning("Keywords will not be used in LDA models.")
+    keywords <- list()  
+  }
+
+  if(!is.null(extra_k)){
+    warning("`extra_k` option will be deprecated. Please use `regular_k`.")  
+    regular_k <- extra_k
   }
 
   # Initialize model
   message("Initializing keyATM...")
   model <- keyATM_model(
                           files=files, text_df=text_df, text_dfm=text_dfm,
-                          extra_k=extra_k,
-                          dict=keywords,
+                          regular_k=regular_k,
+                          keywords=keywords,
                           mode=mode,
                           covariates_data=covariates_data, covariates_formula=covariates_formula,
-                          timestamps=timestamps,
-                          options=options,
-                          # quanteda options
-                          lowercase=F, remove_numbers=F, remove_punct=F,
-                          remove_symbols=F, remove_twitter=F,
-                          remove_hyphens=F, remove_url=F
+                          num_states=num_states,
+                          options=options
                         )
 
   return(model)
@@ -144,12 +145,11 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
 #'         \item{files}{a vector of document filenames}
 #'         \item{dict}{a tokenized version of the keyword dictionary}
 #'         \item{keywords}{a list of keywords in dict, named by dictionary category}
-#'         \item{extra_k}{how many extra non-seeded topics are required}
+#'         \item{regular_k}{how many extra non-seeded topics are required}
 #'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
 #'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
 #'         \item{Lambda_iter}{a list to store coefficients of the covariates}
 #'         \item{S_iter}{a list to store states sampled in HMM}
-#'         \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
 #'         \item{sampling_info}{information related to sampling}
 #'         \item{model_fit}{a list to store perplexity and log-likelihood}
 #'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
@@ -164,7 +164,13 @@ keyATM_read <- function(texts, keywords, mode, extra_k,
 #'         }.
 #'
 #' @export
-keyATM_fit <- function(model, iteration=1000){
+keyATM_fit <- function(model, iteration=1000, keep_model=T){
+
+  if(keep_model){
+    model <- rlang::duplicate(model)
+  }else{
+    warning("`keep_model` option is FALSE. `keyATM_read` object will change by fitting the model.")
+  }
 
   argname <- deparse(match.call()[['model']])
   if (!inherits(model, "keyATM"))
@@ -175,8 +181,7 @@ keyATM_fit <- function(model, iteration=1000){
   if(model$options$store_theta){
     # We need matrices to store theta  
     model$options$Z_tables <- list()
-  }  
-
+  }
 
   mode <- model$mode
   set.seed(model$options$seed)
@@ -186,13 +191,13 @@ keyATM_fit <- function(model, iteration=1000){
     res <- keyATM_train(model, iter=iteration, output_per=model$options$output_per)
   }else if(mode == "cov"){
     res <- keyATM_train_cov(model, iter=iteration, output_per=model$options$output_per)
-  }else if(mode == "tot"){
-    res <- keyATM_train_tot(model, iter=iteration, output_per=model$options$output_per)
-  }else if(mode == "totcov"){
-    res <- keyATM_train_totcov(model, iter=iteration, output_per=model$options$output_per)
-  }else if(mode == "ldaweight"){
-		res <- LDA_weight(model, iter=iteration, output_per=model$options$output_per)	
-	}else{
+  }else if(mode == "lda"){
+    res <- LDA_weight(model, iter=iteration, output_per=model$options$output_per)  
+  }else if(mode == "hmm"){
+    res <- keyATM_train_HMM(model, iter=iteration, output_per=model$options$output_per)  
+  }else if(mode == "ldahmm"){
+    res <- keyATM_train_LDAHMM(model, iter=iteration, output_per=model$options$output_per)  
+  }else{
     stop("Please check `mode`.")  
   }
 
@@ -221,167 +226,61 @@ topicdict_train_cov <- function(...){
   return(keyATM_train_cov(...))
 }
 
-#' Fit topic model (deprecated)
-#'
-#' `topicdict_train_tot()` is deprecated. Use `keyATM_fit()`
-#'
-#' @export
-topicdict_train_tot <- function(...){
-  message("Warning: `topicdict_train_tot` is deprecated, please use `keyATM_fit` instead.")
-  return(keyATM_train_tot(...))
-}
-
-#' Fit topic model (deprecated)
-#'
-#' `topicdict_train_totcov()` is deprecated. Use `keyATM_fit()`
-#'
-#' @export
-topicdict_train_totcov <- function(...){
-  message("Warning: `topicdict_train_totcov` is deprecated, please use `keyATM_fit` instead.")
-  return(keyATM_train_totcov(...))
-}
-
 
 #' Initialize a keyATM model
 #'
-#' This function creates a list of word indexes W, topic indicators Z,
-#' seed indicators X, a vocabulary list \code{vocab} from inputs.
-#' We do not recommend to call this function directly. Please use \code{keyATM_read()}.
-#'
-#' \code{Z} represents which topic a word topken was generated by.
-#' It is initialized randomly
-#' from \code{length(dict) + extra_k} topics, except when \code{dict}
-#' assigns a word to a particular category, in which case this topic
-#' indicator is assigned.
-#' For example, if a word appears in the second category of \code{dict}
-#' it will always be initialized as 1.
-#'
-#' \code{X} is 1 when a word is generated from one of the topics from
-#' the dictionary ('seeded') and 0 when it was generated from one of
-#' the \code{extra_k} normal topics. \code{X} is initialized randomly
-#' except when the word is contained in \code{dict}.
-#'
-#' Note that all indicators are zero-based for ease of later processing
-#' in C++, so \code{mod$vocab[mod$W + 1]} recovers the (tokenized) words
-#' of the i-th document from model \code{mod}.
-#'
-#' If \code{alpha} is a scalar this is the value given to all elements of
-#' alpha. If it is a vector of the correct length those values are used
-#' as the starting alphas.
-#'
-#' @param files names of each file to read (or a quanteda corpus object)
-#' @param dict a quanteda dictionary or named list of character vectors
-#' @param text_df directly passes a text in a data.frame 
-#' @param dtm Document-Term matrix from \code{quanteda} package
-#' @param mode "basic", "cov", "tot", "totcov", and "ldaweight"
-#' @param extra_k number of unseeded topics in addition to the topics seeded by
-#'                \code{dict}
-#' @param covariates_data a data.frame or a tibble that is a covariate matrix. Columns are covariates.
-#' @param covariates_formula formula for the covariates, for example, \code{~.} uses all variables
-#' @param num_state numer of state in HMM model
-#' @param timestamps time data
-#' @param encoding File encoding (Default: whatever \code{quanteda} guesses)
-#' @param lowercase whether to transform each token to lowercase letters
-#' @param remove_numbers whether to remove numbers
-#' @param remove_punct whether to remove punctuation
-#' @param remove_symbols whether to remove non-alphanumerical symbols
-#' @param remove_separators whether to remove tabs, spaces, newlines, etc.
-#' @param remove_twitter whether to remove Twitter detritus
-#' @param remove_hyphens whether to split hyphenated words
-#' @param remove_url whether to remove URLs
-#' @param stem_language if not NULL, the language to use for stemming
-#' @param stopwords if not NULL, a character vector of words to remove,
-#'                  e.g. \code{quanteda::stopwords("english")}
-#' @param alpha Starting value for all the model's topic proportion hyperparameters. Default: 50 / number of topics)
-#' @param beta Hyperparameter for estimated word probabilities. Default: 0.01
-#' @param beta_s Hyperparameter for seeded word probabilities. Default: 0.1
-#' @param gamma_1 First Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0
-#' @param gamma_2 Second Beta hyperparameter for probability of being drawn from a seeded topic. Default: 1.0
-#'
-#' @return A list containing: \describe{
-#'         \item{W}{a list of vectors of word indexes}
-#'         \item{Z}{a list of vectors of topic indicators isomorphic to W}
-#'         \item{C}{a covariate matrix is there is an input}
-#'         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
-#'         \item{vocab}{a vector of vocabulary items}
-#'         \item{files}{a vector of document filenames}
-#'         \item{dict}{a tokenized version of the dictionary}
-#'         \item{seeds}{a list of words for the seed words in dict, named by dictionary category}
-#'         \item{extra_k}{how many extra non-seeded topics are required}
-#'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
-#'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
-#'         \item{Lambda_iter}{a list to store coefficients of the covariates}
-#'         \item{S_iter}{a list to store states sampled in HMM}
-#'         \item{tot_beta}{a list to store sampled beta parameters in topic-over-time}
-#'         \item{sampling_info}{information related to sampling}
-#'         \item{model_fit}{a list to store perplexity and log-likelihood}
-#'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
-#'         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
-#'         \item{beta}{prior parameter for the non-seeded word generation probabilities}
-#'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
-#'         \item{use_cov}{boolean, whether or not use the covariate}
-#'         \item{num_states}{number of states in HMM}
-#'         \item{timestamps}{time stamp for topic-over-time model}
-#'         \item{visualize_keywords}{ggplot2 object}
-#'         \item{call}{details of the function call}
-#'         }
-#' @importFrom quanteda corpus is.corpus ndoc docvars tokens tokens_tolower tokens_remove tokens_wordstem dictionary
 #' @importFrom hashmap hashmap
-#' @importFrom tidytext tidy
 #' @importFrom stats model.matrix
 #' @import ggplot2
 #' @import ggrepel
-#' @export
-keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
+keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NULL,
                          mode="",
-                         extra_k = 1,
+                         regular_k = 1,
                          covariates_data=NULL, covariates_formula=NULL,
-                         num_states=NULL, timestamps=NULL,
-                         encoding = "UTF-8",
-                         lowercase = TRUE,
-                         remove_numbers = TRUE, remove_punct = TRUE,
-                         remove_symbols = TRUE, remove_separators = TRUE,
-                         remove_twitter = FALSE, remove_hyphens = FALSE,
-                         remove_url = TRUE, stem_language = NULL,
-                         stopwords = NULL,
-                         alpha = 50/(length(dict) + extra_k),
+                         num_states=NULL,
+                         alpha = 50/(length(keywords) + regular_k),
                          beta = 0.01, beta_s = 0.1,
                          options = list()
                         )
 {
   cl <- match.call()
 
+  ## Get topic number
+  K <- length(keywords)
+  proper_len <- K + regular_k
+
   ##
   ## Check format
   ##
-  if(mode %in% c("basic", "cov", "hmm", "tot", "totcov", "ldaweight")){
+  if(mode == "ldaweight"){
+    warning("Please name `ldaweight` as `lda`.")
+    mode <- "lda"  
+  }
+
+  if(mode %in% c("basic", "cov", "hmm", "lda", "ldahmm")){
   }else{
     stop(paste0("Unknown model:", mode))  
   }
 
 
-  if(!is.null(covariates_data) & !is.null(covariates_formula) & (mode != "cov" & mode != "totcov")){
+  if(!is.null(covariates_data) & !is.null(covariates_formula) & (mode != "cov")){
     stop("Covariates information provided, specify the model.")  
   }
 
-  if(is.null(num_states) & mode == "hmm"){
+  if(is.null(num_states) & (mode == "hmm" | mode=="ldahmm")){
     stop("Provide the number of states.")  
+  }
+
+  if(length(keywords) == 0 & mode %in% c("basic", "cov", "hmm")){
+    stop("Please provide keywords.")  
   }
 
   if(!is.null(text_df)){
     if("text" %in% names(text_df)){
       text_df <- text_df["text"]
     }else{
-      stop("text_df should have a 'text' colum that has documents.")
+      stop("text_df should have a 'text' column that has documents.")
     }  
-  }
-
-  if(mode == "tot" | mode == "totcov"){
-    if(is.null(timestamps)){
-      stop("Please provide time stamps.")  
-    }else if(min(timestamps) < 0 | max(timestamps) >= 1){
-      stop("Time stamps sholud be between 0 and 1. Please use `make_timestamps()` function to format time stamps.")  
-    }
   }
 
 
@@ -389,9 +288,7 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   ## Check length
   ##
 
-  proper_len <- length(dict) + extra_k
-
-  if(mode == "cov" | mode == "totcov"){
+  if(mode == "cov"){
     # make sure covariates are provided for all documents  
     doc_num <- ifelse(!is.null(files), length(files),
                       ifelse(!is.null(text_df), nrow(text_df),
@@ -424,13 +321,9 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
     # parameter for slice sampling
     options$slice_shape <- 1.2
   }
-  if(is.null(options$use_mom)){
-    # Method of Moments in TOT
-    options$use_mom <- 0
-  }
   if(!is.null(options$alpha)){
     # If alpha value is overwritten
-    alpha = options$alpha
+    alpha <- options$alpha
   }
   if(is.null(options$store_theta)){
     options$store_theta <- 0
@@ -463,37 +356,21 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   ## Text preprocessing
   ##
 
-    # If you have quanteda object
-    if(!is.null(text_dfm)){
-      message("Use quanteda dfm.")  
-      remove_numbers = F ; remove_punct = F; remove_symbols = F;
-      remove_separators = T ; remove_twitter = F; remove_hyphens = F; remove_url = F
+  # If you have quanteda object
+  if(!is.null(text_dfm)){
+    message("Use quanteda dfm.")  
 
-      vocabulary <- colnames(text_dfm)
-      
-      texts <- apply(text_dfm, 1,
-                     function(x){
-                         single_text <- paste(rep(vocabulary, x), collapse=" ")
-                         return(single_text)
-                     })
+    vocabulary <- colnames(text_dfm)
+    texts <- apply(text_dfm, 1,
+                   function(x){
+                       single_text <- paste(rep(vocabulary, x), collapse=" ")
+                       return(single_text)
+                   })
 
-      text_df <- data.frame(text = texts)
-      text_df$text <- as.character(text_df$text)
-    }
-
-  args <- list(remove_numbers = remove_numbers,
-               remove_punct = remove_punct,
-               remove_symbols = remove_symbols,
-               remove_separators = remove_separators,
-               remove_twitter = remove_twitter,
-               remove_hyphens = remove_hyphens,
-               remove_url = remove_url)
-
-  if ("corpus" %in% class(files))
-    args$x <- files
-  else {
+    text_df <- data.frame(text = texts)
+    text_df$text <- as.character(text_df$text)
+  }else{
     ## preprocess each text
-    ## for debugging
     # Use files <- list.files(doc_folder, pattern="txt", full.names=T) when you pass
     if(is.null(text_df)){
       text_df <- data.frame(text = unlist(lapply(files, 
@@ -504,58 +381,38 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
                                                  })),
                             stringsAsFactors = FALSE)
     }
-    
-    text_df$doc_id <- paste0("text", 1:nrow(text_df))
-    args$x <- corpus(text_df)
-    ## debugging until here
   }
-
-  # args$x <- corpus(readtext(file_pattern, encoding = encoding))
-  # for new version quanteda, you need this
-  args$x$documents$doc_id <- paste0("text", 1:ndoc(args$x))
-  doc_names <- docvars(args$x, "doc_id") # docnames
-  toks <- do.call(tokens, args = args)
-  if (lowercase)
-    toks <- tokens_tolower(toks)
-  if (!is.null(stopwords))
-    toks <- tokens_remove(toks, stopwords)
-  if (!is.null(stem_language))
-    toks <- tokens_wordstem(toks, language = stem_language)
-
-  ## apply the same preprocessing to the seed words
-  args$x <- do.call(rbind, lapply(as.list(dict), paste0, collapse = " "))
-  dtoks <- do.call(tokens, args = args)
-  if (lowercase)
-    dtoks <- tokens_tolower(dtoks)
-  if (!is.null(stopwords))
-    dtoks <- tokens_remove(dtoks, stopwords)
-  if (!is.null(stem_language))
-    dtoks <- tokens_wordstem(dtoks, language = stem_language)
-  K <- length(dtoks) # number of seeded categories a.k.a. size of dictionary
+  text_df$doc_id <- paste0("text", 1:nrow(text_df))
+  text_df <- text_df %>% mutate(text_split = stringr::str_split(text, pattern=" "))
+  W_raw <- text_df %>% pull(text_split)
 
 
   ##
   ## Visualize keywords
   ##
-  if(options$visualize_keywords){
-    dfm_ <- quanteda::dfm(toks)  
-    data <- tidy(dfm_)
-    totalwords <- sum(data$count)
 
-    data %>%
-      rename(Word=term) %>%
-      group_by(Word) %>%
-      summarize(WordCount = sum(count)) %>%
-      ungroup() %>%
-      mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
-      arrange(desc(WordCount)) %>%
-      mutate(Ranking = 1:n()) -> data
+  # We need to wait `tidyr` update
+  text_df %>%
+    dplyr::select(text_split) %>%
+    tidyr::unnest_legacy(text_split=c(text_split)) -> unnested_data
+    # tidyr::unnest(col=c(text_split)) -> unnested_data
+
+  if(options$visualize_keywords & mode %in% c("basic", "cov", "hmm")){
+    totalwords <- nrow(unnested_data)
+
+    unnested_data %>%
+      dplyr::rename(Word=text_split) %>%
+      dplyr::group_by(Word) %>%
+      dplyr::summarize(WordCount = n()) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
+      dplyr::arrange(desc(WordCount)) %>%
+      dplyr::mutate(Ranking = 1:n()) -> data
 
 
-    seed_list <- dict
-
-    names(seed_list) <- paste0("Topic", 1:length(seed_list))
-    seeds <- lapply(seed_list, function(x){unlist(strsplit(x," "))})
+    seeds <- keywords  # copy
+    names(seeds) <- paste0("Topic", 1:length(seeds))
+    seeds <- lapply(seeds, function(x){unlist(strsplit(x," "))})
     ext_k <- length(seeds)
     max_num_words <- max(unlist(lapply(seeds, function(x){length(x)})))
 
@@ -571,16 +428,17 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
     seeds_df <- seeds_df[2:nrow(seeds_df), ]
 
     dplyr::inner_join(data, seeds_df, by="Word") %>%
-      group_by(Topic) %>%
-      mutate(Ranking = 1:n()) -> temp
+      dplyr::group_by(Topic) %>%
+      dplyr::mutate(Ranking = 1:n()) -> temp
 
     visualize_keywords <- 
       ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=Topic)) +
         geom_line() +
         geom_point() +
-        geom_label_repel(aes(label = Word), size=2.8,
+        ggrepel::geom_label_repel(aes(label = Word), size=2.8,
                          box.padding = 0.20, label.padding = 0.12,
-                         arrow=arrow(angle=10, length = unit(0.10, "inches"), ends = "last", type = "closed"),
+                         arrow=arrow(angle=10, length = unit(0.10, "inches"),
+                                     ends = "last", type = "closed"),
                          show.legend = F) +
         scale_x_continuous(breaks=1:max_num_words) +
         ylab("Proportion (%)") +
@@ -596,41 +454,105 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
   ##
 
   ## construct W and a vocab list (W elements are 0 based ids)
-  wd_names <- attr(toks, "types") # vocab
-  wd_map <- hashmap(wd_names, as.integer(1:length(wd_names) - 1))
-  W <- lapply(toks, function(x){ wd_map[[x]] })
-
-  # zx_assigner maps seed words to category ids
-  seed_wdids <- unlist(lapply(dtoks, function(x){ wd_map$find(x) }))
-  cat_ids <- rep(1:K - 1, unlist(lapply(dtoks, length)))
-  zx_assigner <- hashmap(as.integer(seed_wdids), as.integer(cat_ids))
-
-  ## xx indicates whether the word comes from a seed topic-word distribution or not
-  make_x <- function(x){
-    seeded <- as.numeric(zx_assigner$has_keys(x)) # 1 if they're a seed
-    # Use x structure
-    x[seeded == 0] <- 0 # non-seeded words have x=0
-    x[seeded == 1] <- sample(0:1, length(x[seeded == 1]), prob = c(0.3, 0.7), replace = TRUE)
-      # seeded words have x=1 probabilistically
-    x
+  wd_names <- unique(unnested_data$text_split) # vocab
+  if(" " %in% wd_names){
+    stop("A space is recognized as a vocabulary.
+          Please remove an empty document or consider using quanteda::dfm.")  
   }
 
-  X <- lapply(W, make_x)
+  wd_map <- hashmap::hashmap(wd_names, as.integer(1:length(wd_names) - 1))
+  W <- lapply(W_raw, function(x){ wd_map[[x]] })
 
-  # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
-  make_z <- function(x){
-    zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
-    zz[is.na(zz)] <- sample(1:(K + extra_k) - 1,
-                            sum(as.numeric(is.na(zz))),
-                            replace = TRUE)
-    zz
+  ## Check keywords appear at least once
+  sapply(unlist(keywords), 
+         function(x){if(! x %in% wd_names) stop(paste0('"', x, '"', " does not appear in texts. Please check keywords."))})
+
+  if(mode %in% c("basic", "cov", "hmm")){
+    # zx_assigner maps seed words to category ids
+    seed_wdids <- unlist(lapply(keywords, function(x){ wd_map$find(x) }))
+    cat_ids <- rep(1:K - 1, unlist(lapply(keywords, length)))
+
+    if(length(seed_wdids) == length(unique(seed_wdids))){
+      #
+      # No keyword appears more than once
+      #
+      zx_assigner <- hashmap(as.integer(seed_wdids), as.integer(cat_ids))
+
+      # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
+      make_z <- function(x){
+        zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
+        zz[is.na(zz)] <- sample(1:(K + regular_k) - 1,
+                                sum(as.numeric(is.na(zz))),
+                                replace = TRUE)
+        zz
+      }
+      
+
+    }else{
+      #
+      # Some keywords appear multiple times
+      #
+      keys_df <- data.frame(wid = seed_wdids, cat=cat_ids)
+      keys_char <- sapply(unique(seed_wdids),
+                          function(x){
+                            paste(as.character(keys_df[keys_df$wid==x, "cat"]), collapse=",")
+                          })
+      zx_hashtable <- hashmap::hashmap(as.integer(unique(seed_wdids)), keys_char)
+
+      zx_assigner <- function(x){
+        topic <- zx_hashtable[[x]]
+        topic <- strsplit(topic, split=",")
+        topic <- lapply(topic, sample, 1)
+        topic <- as.integer(unlist(topic))
+        return(topic)
+      }
+
+      # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
+      make_z <- function(x){
+        zz <- zx_assigner(x) # if it is a seed word, we already know the topic
+        zz[is.na(zz)] <- sample(1:(K + regular_k) - 1,
+                                sum(as.numeric(is.na(zz))),
+                                replace = TRUE)
+        zz
+      }
+    }
+
+    ## xx indicates whether the word comes from a seed topic-word distribution or not
+    make_x <- function(x){
+      seeded <- as.numeric(x %in% seed_wdids) # 1 if they're a seed
+      # Use x structure
+      x[seeded == 0] <- 0 # non-keyword words have x=0
+      x[seeded == 1] <- sample(0:1, length(x[seeded == 1]), prob = c(0.3, 0.7), replace = TRUE)
+        # seeded words have x=1 probabilistically
+      x
+    }
+
+    X <- lapply(W, make_x)
+    Z <- lapply(W, make_z)
+  
+  }else{
+    #
+    # LDA based models  
+    #
+    make_z <- function(x){
+      zz <- sample(1:(K + regular_k) - 1,
+                   length(x),
+                   replace = TRUE)
+      return(zz)
+    }  
+
+    make_x <- function(x){
+      return(rep(0, length(x)))  
+    }
+
+    X <- lapply(W, make_x)
+    Z <- lapply(W, make_z)
   }
-  Z <- lapply(W, make_z)
 
   # dictionary category names -> vector of word_id.
   # (Later processes ignore names)
-  keywords <- lapply(dtoks, function(x){ wd_map$find(x) })
-  names(keywords) <- names(dict)
+  keywords_raw <- keywords  # keep raw keywords (not word_id)
+  keywords <- lapply(keywords, function(x){ wd_map$find(x) })
 
   # Covariate
   if(is.null(covariates_data) || is.null(covariates_formula)){
@@ -646,14 +568,14 @@ keyATM_model <- function(files=NULL, dict=NULL, text_df=NULL, text_dfm=NULL,
 
 
   ll <- list(W = W, Z = Z, X = X, vocab = wd_names, mode=mode,
-             files = doc_names, dict = dtoks, keywords = keywords, extra_k = extra_k,
+             keywords = keywords, keywords_raw = keywords_raw, regular_k = regular_k,
+             extra_k = regular_k,
              alpha = alpha,
              beta = beta, beta_s = beta_s,
              alpha_iter = list(), Lambda_iter = list(), S_iter = list(),
-             model_fit = list(), sampling_info = list(), tot_beta = list(),
+             model_fit = list(), sampling_info = list(),
              C=C, use_cov=use_cov,
              num_states=num_states,
-             timestamps=timestamps,
              options=options,
              visualize_keywords=visualize_keywords,
              call = cl)

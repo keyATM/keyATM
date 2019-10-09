@@ -1,0 +1,71 @@
+---
+title: "Preparation"
+output: 
+  html_document:
+    toc: false
+---
+
+
+## Prepare Texts
+To fit topic models with **keyATM**, uesrs need to prepare texts for `keyATM_read()`. `keyATM_read()` has three ways to input texts.
+
+### Use quanteda dfm (recommended)
+
+**keyATM** can read a `dfm` object created by **quanteda** package. Since **keyATM** does not provide preprocessing functions, we recommend users to preprocess documents with **quanteda**. Please visit [quanteda Quick Start: Creating a Corpus](https://quanteda.io/articles/quickstart.html#creating-a-corpus) to see how to create a `corpus` object.
+
+By making a `token` object from a `corpus` object, **quanteda** can perform various preprocessing methods ([quanteda Quick Start: Tokenizing texts](https://quanteda.io/articles/quickstart.html#tokenizing-texts)).
+
+Lastly, you can make a `dfm` object with a function `dfm()` in **quanteda**.
+
+
+### Use data.frame or tibble
+`keyATM_read()` can read `data.frame` and `tibble` if you preprocess texts without **quanteda**. Please store texts in a column named `text`.
+
+```
+> head(docs)  # `doc` stores preprocessed texts
+# A tibble: 6 x 1
+  text                                                                      
+  <chr>                                                                     
+1 h.r h.r one hundred first congress congress congress united u...
+2 first congress one congress congress united united state stae...
+3 one one one one one one one one one one one one one one one o...
+4 h.r h.r one one one hundred hundred first first congress cong...
+5 congress congress one united united united united united unit...
+6 h.r h.r one one one one one hundred hundred first congress co...
+```
+
+### Read directly from files
+If you have preprocessed text files, you can pass a list of files to `keyATM_read()`.
+
+```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+textfiles <- list.files(PATH_TO_THE_FOLDER, pattern = "*.txt", full.names = TRUE)
+```
+
+## Prepare keywords
+
+Keywords should be in a list. For example, let's prepare two keyword-topics. The number of keywords can vary between topics. Please also check [Guidelines](Guidlines.html) to see how to select keywords that help models.
+
+```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+keywords_list <- list(
+                      c("election", "vote", "voter"),
+                      c("economy", "recession")
+                     )
+```
+
+
+## Next Step
+Now you have texts and keywords! The next step is to prepare a model object with `keyATM_read()`. **keyATM** has three models:
+
+* [keyATM Basic](keyATM_basic.html)
+  * This is an extension of the most famous topic model, Latent Dirichlet Allocation.
+  * If you do not have covariates, this model is your first option.
+* [keyATM Covariate](keyATM_cov.html)
+  * If you have covariates, please use this model.
+  * This model uses covariates to model topic prevalence (the prior of document-topic distribution).
+* [keyATM HMM](keyATM_HMM.html)
+  * If you want to explicitly consider time structure, please use this model.
+
+
+You can find details in [Guidelines](Guidlines.html#which-model-to-use).
+
+

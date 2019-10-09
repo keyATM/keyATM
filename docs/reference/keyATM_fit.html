@@ -80,19 +80,22 @@
       <a href="../articles/pkgdown_examples/Installation.html">Installation</a>
     </li>
     <li>
+      <a href="../articles/pkgdown_examples/Preparation.html">Preparation</a>
+    </li>
+    <li>
       <a href="../articles/pkgdown_examples/keyATM_basic.html">keyATM Basic</a>
     </li>
     <li>
       <a href="../articles/pkgdown_examples/keyATM_cov.html">keyATM Covariate</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_tot.html">keyATM Topics Over Time</a>
+      <a href="../articles/pkgdown_examples/keyATM_HMM.html">keyATM HMM</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_totcov.html">keyATM TOT with Covariates</a>
+      <a href="../articles/pkgdown_examples/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/guidline.html">Guidline</a>
+      <a href="../articles/pkgdown_examples/Guidlines.html">Guidlines</a>
     </li>
   </ul>
 </li>
@@ -134,7 +137,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>keyATM_fit</span>(<span class='no'>model</span>, <span class='kw'>iteration</span> <span class='kw'>=</span> <span class='fl'>1000</span>)</pre>
+    <pre class="usage"><span class='fu'>keyATM_fit</span>(<span class='no'>model</span>, <span class='kw'>iteration</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>keep_model</span> <span class='kw'>=</span> <span class='no'>T</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -160,12 +163,11 @@
         <dt>files</dt><dd><p>a vector of document filenames</p></dd>
         <dt>dict</dt><dd><p>a tokenized version of the keyword dictionary</p></dd>
         <dt>keywords</dt><dd><p>a list of keywords in dict, named by dictionary category</p></dd>
-        <dt>extra_k</dt><dd><p>how many extra non-seeded topics are required</p></dd>
+        <dt>regular_k</dt><dd><p>how many extra non-seeded topics are required</p></dd>
         <dt>alpha</dt><dd><p>a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.</p></dd>
         <dt>alpha_iter</dt><dd><p>a list to store topic proportion hyperparameters</p></dd>
         <dt>Lambda_iter</dt><dd><p>a list to store coefficients of the covariates</p></dd>
         <dt>S_iter</dt><dd><p>a list to store states sampled in HMM</p></dd>
-        <dt>tot_beta</dt><dd><p>a list to store sampled beta parameters in topic-over-time</p></dd>
         <dt>sampling_info</dt><dd><p>information related to sampling</p></dd>
         <dt>model_fit</dt><dd><p>a list to store perplexity and log-likelihood</p></dd>
         <dt>gamma1</dt><dd><p>First prior probability parameter for X (currently the same for all topics)</p></dd>
