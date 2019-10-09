@@ -398,6 +398,9 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
     stop("`time_index` should start from 1 and not exceed the number of documents.")
   }
 
+  if(max(time_index) < num_states)
+    stop("`num_states` should not exceed the maximum of `time_index`.")
+
 
   ##
   ## Visualize keywords

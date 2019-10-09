@@ -40,7 +40,7 @@ void keyATMhmm::read_data_specific()
       store_index += 1;
     }
   }
-  
+
   for(int s=0; s<num_time-1; s++){
     time_doc_end(s) = time_doc_start(s+1) - 1;  
   }
@@ -58,7 +58,7 @@ void keyATMhmm::initialize_specific()
   // Use multinomial distribution (with flat probability)
   // to decide the number of each state
   // and push it into S_est.
-  VectorXi S_est_num = VectorXi::Zero(num_states);
+  VectorXi S_est_num = VectorXi::Constant(num_states, 1);
   VectorXd S_est_temp = VectorXd::Zero(num_states);
   double cumulative = 1.0 / num_states;
   double u;
@@ -67,7 +67,7 @@ void keyATMhmm::initialize_specific()
     S_est_temp(i) = cumulative * (i+1);
   }
 
-  for(int j=0; j<num_time; j++){
+  for(int j=0; j<num_time-num_states; j++){
     u = R::runif(0, 1);
     for(int i=0; i<num_states; i++){
       if(u < S_est_temp(i)){
@@ -101,6 +101,9 @@ void keyATMhmm::initialize_specific()
   }
   P_est(index_states, index_states) = 1;
 
+  // cout << S_est_num.transpose() << endl;  //debug
+  // cout << S_est.transpose() << endl;  //debug
+  // cout << P_est << endl;  //debug
 
   // Initialize alphas;
   alphas = MatrixXd::Constant(num_states, num_topics, 50.0/num_topics);
@@ -217,10 +220,6 @@ void keyATMhmm::sample_alpha()
     states_end(s) = time_doc_end(index_end);
   }
 
-  // Debug
-  if(states_end(num_states) != num_doc-1)
-    cout << "Check sample_alpha" << endl;
-  
   for(int s=0; s<num_states; s++){
     sample_alpha_state(s, states_start(s),
                           states_end(s));  
