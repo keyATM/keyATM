@@ -16,7 +16,7 @@ LDAhmm::LDAhmm(List model_, const int iter_, const int output_per_) :
 void LDAhmm::initialize_specific()
 {
   // Initialize Psk
-  Psk = MatrixXd::Zero(num_doc, num_states);
+  Psk = MatrixXd::Zero(num_time, num_states);
 
   // Initialize S_est
   // Use multinomial distribution (with flat probability)
@@ -31,7 +31,7 @@ void LDAhmm::initialize_specific()
     S_est_temp(i) = cumulative * (i+1);
   }
 
-  for(int j=0; j<num_doc; j++){
+  for(int j=0; j<num_time; j++){
     u = R::runif(0, 1);
     for(int i=0; i<num_states; i++){
       if(u < S_est_temp(i)){
@@ -43,7 +43,7 @@ void LDAhmm::initialize_specific()
   }
 
 
-  S_est = VectorXi::Zero(num_doc);
+  S_est = VectorXi::Zero(num_time);
   S_count = S_est_num;
   int count;
   index = 0;
@@ -124,7 +124,7 @@ void LDAhmm::iteration_single(int &it)
     doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
 
-    alpha = alphas.row(S_est(doc_id_)).transpose(); // select alpha for this document
+    alpha = alphas.row(get_state_index(doc_id_)).transpose(); // select alpha for this document
     
     token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
     
@@ -194,18 +194,20 @@ double LDAhmm::loglik_total()
 
   for (int d = 0; d < num_doc; d++){
     // z
-    alpha = alphas.row(S_est(doc_id_)).transpose(); // Doc alpha, column vector  
+    alpha = alphas.row(get_state_index(doc_id_)).transpose(); // Doc alpha, column vector  
     
     loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
     }
 
-    // HMM part
-    state_id = S_est(d);
-    loglik += log( P_est(state_id, state_id) );
   }
 
+  // HMM part
+  for(int t=0; t<num_time; t++){
+    state_id = S_est(t);
+    loglik += log( P_est(state_id, state_id) );
+  }
 
   return loglik;
 }

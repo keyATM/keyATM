@@ -39,6 +39,10 @@ void keyATMbase::read_data_common()
   model_fit = model["model_fit"];
 
   num_topics = k_seeded + k_free;
+
+  // document-related constants
+  num_vocab = vocab.size();
+  num_doc = W.size();
   // alpha -> specific function  
   
   // Options
@@ -99,10 +103,6 @@ void keyATMbase::initialize_common()
     seed_num.push_back(0);
     keywords.push_back(keywords_set);
   }
-
-  // document-related constants
-  num_vocab = vocab.size();
-  num_doc = W.size();
 
   // storage for sufficient statistics and their margins
   // n_x0_kv.resize(num_topics, num_vocab);

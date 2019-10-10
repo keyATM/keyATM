@@ -53,7 +53,7 @@ topicdict_model <- function(...){
 #' @export
 keyATM_read <- function(texts, mode, regular_k=0, extra_k=NULL, keywords=list(),
                         covariates_data=NULL, covariates_formula= ~.+0,
-                        num_states=NULL,
+                        num_states=NULL, time_index=NULL,
                         options=list(
                                      seed=225,
                                      output_per=10,
@@ -121,7 +121,7 @@ keyATM_read <- function(texts, mode, regular_k=0, extra_k=NULL, keywords=list(),
                           keywords=keywords,
                           mode=mode,
                           covariates_data=covariates_data, covariates_formula=covariates_formula,
-                          num_states=num_states,
+                          num_states=num_states, time_index=time_index,
                           options=options
                         )
 
@@ -237,7 +237,7 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
                          mode="",
                          regular_k = 1,
                          covariates_data=NULL, covariates_formula=NULL,
-                         num_states=NULL,
+                         num_states=NULL, time_index=NULL,
                          alpha = 50/(length(keywords) + regular_k),
                          beta = 0.01, beta_s = 0.1,
                          options = list()
@@ -270,6 +270,11 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
   if(is.null(num_states) & (mode == "hmm" | mode=="ldahmm")){
     stop("Provide the number of states.")  
   }
+
+  if(is.null(time_index) & (mode == "hmm" | mode=="ldahmm")){
+    stop("`time_index` is not provided.")
+  }
+
 
   if(length(keywords) == 0 & mode %in% c("basic", "cov", "hmm")){
     stop("Please provide keywords.")  
@@ -345,8 +350,8 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
   if(is.null(covariates_data) || is.null(covariates_formula)){
     # If it doesn't use covariates, make alpha inside
     if (length(alpha) == 1){
-      message("All ", proper_len, " values for alpha starting as ", alpha)
-      alpha = rep(alpha, proper_len)
+      # message("All ", proper_len, " values for alpha starting as ", alpha)
+      alpha <- rep(alpha, proper_len)
     } else if (length(alpha) != proper_len)
       stop("Starting alpha must be a scalar or a vector of length ", proper_len)
   }
@@ -385,6 +390,21 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
   text_df$doc_id <- paste0("text", 1:nrow(text_df))
   text_df <- text_df %>% mutate(text_split = stringr::str_split(text, pattern=" "))
   W_raw <- text_df %>% pull(text_split)
+
+
+  # Check time index
+  num_doc <- nrow(text_df)
+
+  if(length(time_index) != num_doc & (mode == "hmm" | mode=="ldahmm")){
+    stop("The length of the `time_index` does not match with the number of documents.")  
+  }
+  
+  if((min(time_index) < 1 | max(time_index) > num_doc) & (mode == "hmm" | mode=="ldahmm")){
+    stop("`time_index` should start from 1 and not exceed the number of documents.")
+  }
+
+  if(max(time_index) < num_states & (mode == "hmm" | mode=="ldahmm"))
+    stop("`num_states` should not exceed the maximum of `time_index`.")
 
 
   ##
@@ -575,7 +595,7 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
              alpha_iter = list(), Lambda_iter = list(), S_iter = list(),
              model_fit = list(), sampling_info = list(),
              C=C, use_cov=use_cov,
-             num_states=num_states,
+             num_states=num_states, time_index=time_index,
              options=options,
              visualize_keywords=visualize_keywords,
              call = cl)

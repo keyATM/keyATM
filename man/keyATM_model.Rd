@@ -7,8 +7,8 @@
 keyATM_model(files = NULL, keywords = list(), text_df = NULL,
   text_dfm = NULL, mode = "", regular_k = 1,
   covariates_data = NULL, covariates_formula = NULL,
-  num_states = NULL, alpha = 50/(length(keywords) + regular_k),
-  beta = 0.01, beta_s = 0.1, options = list())
+  num_states = NULL, time_index = NULL, alpha = 50/(length(keywords)
+  + regular_k), beta = 0.01, beta_s = 0.1, options = list())
 }
 \description{
 Initialize a keyATM model
