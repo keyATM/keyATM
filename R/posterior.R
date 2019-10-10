@@ -268,7 +268,7 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
                       show_keyword = TRUE){
   check_arg_type(x, "keyATM_output")
 
-  if(model$mode %in% c("lda", "ldacov", "ldahmm"))
+  if(x$mode %in% c("lda", "ldacov", "ldahmm"))
      show_keyword <- FALSE
 
   if (is.null(n))
