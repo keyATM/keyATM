@@ -394,11 +394,16 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
 
   # Check time index
   num_doc <- nrow(text_df)
+
+  if(length(time_index) != num_doc & (mode == "hmm" | mode=="ldahmm")){
+    stop("The length of the `time_index` does not match with the number of documents.")  
+  }
+  
   if((min(time_index) < 1 | max(time_index) > num_doc) & (mode == "hmm" | mode=="ldahmm")){
     stop("`time_index` should start from 1 and not exceed the number of documents.")
   }
 
-  if(max(time_index) < num_states)
+  if(max(time_index) < num_states & (mode == "hmm" | mode=="ldahmm"))
     stop("`num_states` should not exceed the maximum of `time_index`.")
 
 

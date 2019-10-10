@@ -77,6 +77,7 @@ keyATM_output <- function(model){
 
   }else if(model$mode %in% c("hmm", "ldahmm")){
     S <- model$S_iter[[length(model$S_iter)]] + 1  # adjust index for R
+    S <- S[model$time_index]  # retrieve doc level state info
     alphas <- matrix(model$alpha_iter[[length(model$alpha_iter)]][S],
                      nrow=length(model$W), ncol=allK)
 
@@ -165,6 +166,7 @@ keyATM_output <- function(model){
       posterior_theta <- function(x){
         Z_table <- model$options$Z_tables[[x]]
         S <- model$S_iter[[x]] + 1  # adjust index for R
+        S <- S[model$time_index]  # retrieve doc level state info
         alphas <- matrix(model$alpha_iter[[x]][S],
                          nrow=length(model$W), ncol=allK)
       

@@ -220,6 +220,12 @@ void keyATMhmm::sample_alpha()
     states_end(s) = time_doc_end(index_end);
   }
 
+  // // Debug
+  // cout << S_est.transpose() << endl;
+  // cout << S_count.transpose() << endl;
+  // cout << states_start.transpose() << endl;
+  // cout << states_end.transpose() << endl;
+
   for(int s=0; s<num_states; s++){
     sample_alpha_state(s, states_start(s),
                           states_end(s));  
