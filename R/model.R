@@ -350,8 +350,8 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
   if(is.null(covariates_data) || is.null(covariates_formula)){
     # If it doesn't use covariates, make alpha inside
     if (length(alpha) == 1){
-      message("All ", proper_len, " values for alpha starting as ", alpha)
-      alpha = rep(alpha, proper_len)
+      # message("All ", proper_len, " values for alpha starting as ", alpha)
+      alpha <- rep(alpha, proper_len)
     } else if (length(alpha) != proper_len)
       stop("Starting alpha must be a scalar or a vector of length ", proper_len)
   }
