@@ -20,7 +20,7 @@ news:
 navbar:
   title: "keyATM"
   left:
-    - text: "Quick Start"
+    - text: "User's Guide"
       menu:
         - text: "Installation"
           href: articles/pkgdown_examples/Installation.html
