@@ -5,51 +5,69 @@ output:
     toc: true
 ---
 
-First, we prepare a quanteda `dfm` object and a list of keywords. You can also pass `data.frame` (`tibble`) and a list of file paths to `keyATM`, but creating the quanteda `dfm` is the easiest way to conduct preprocessing.
+## Preparing documents
+Please read [Preparation](Preparation.html) for the three data types that **keyATM** can read.
 
-Here, we show an example of preprocessing using `quanteda`.
-```{r, eval = FALSE}
-library(quanteda)
-key_corpus <- corpus(doc_tbl, text_field="text")
-key_tokens <- tokens(key_corpus) %>%
-                tokens_tolower() %>%
-                tokens_remove(., pattern = stopwords('en'))
+## Keywords
 
-key_dfm <- dfm(key_tokens,
-               remove_numbers = TRUE, remove_punct = TRUE,
-               remove_separators = TRUE) %>%
-           dfm_trim(., min_termfreq=5, min_docfreq=2)
-
-keywords_list <- list(
-                      c("election", "vote", "voter"),
-                      c("economy", "recession")
-                     )
+We set four keyword-topics. Keywrods should be stored in a list. Each element in the list is a character vector, which corresponds to a single keyword-topic.
+```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+keywords_ext <- list(
+                      c("education", "child", "student"),  # Education
+                      c("court", "law", "attorney"),  # Law
+                      c("public", "health", "program"),  # Health
+                      c("drug", "treatment")  # Drug
+                    )
 ```
 
-Then read the `dfm` object.
-```{r, eval = FALSE}
-model <- keyATM_read(texts = key_dfm,
-                     extra_k=3,
-                     keywords=keywords_list,
-                     mode="basic",
-                     options=list(seed=225))
+
+## Creating a model object
+Before fitting the model, we need to read texts and keywords into **keyATM**. Here we use **quanteda**'s `dfm`.
+
+
+```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+library(keyATM)
+model <- keyATM_read(texts = bills_dfm,  # text input
+                     regular_k=3,  # number of regular topics
+                     keywords=bills_keywords,  # keywords
+                     mode="basic",  # select the model
+                     options=list(seed=100))
 ```
 
-We visualize keywords before fitting the model,
-```{r, eval=FALSE}
+If you want to know more about `options`, please read [Guidelines](Guidlines.html#what-is-the-options-argument).
+
+
+## Checking keywords
+**WE WILL MAKE A `visualize_keywords()` FUNCION LATER**
+
+Before you fit the model, please make sure your keywords appear enough in your corpus. [Guidelines](Guidlines.html#how-to-select-keywords) explains what could be good keywords.
+```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 model$visualize_keywords
 ```
 
-We fit the model and get an output object.
-```{r, eval=FALSE}
+
+
+## Fit the model
+```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
 fitted <- keyATM_fit(model, iteration=1000)
-post <- keyATM_output(fitted)
+out <- keyATM_output(fitted)
 ```
 
-We use the output object to see the convergence and top words.
-```{r, eval=FALSE}
-diagnosis_model_fit(post, start=1)
-top_words(post)
+## Save the model
+
+Once you fit the model, you can save the model with `saveRDS()` for replication.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+
+```
+
+To load the model, you can use `readRDS()` function.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+
+```
+
+## Check top words
+```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+top_words(out)
 ```
 
 

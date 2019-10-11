@@ -38,7 +38,7 @@
       <ul class="nav navbar-nav">
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Quick Start
+    User's Guide
      
     <span class="caret"></span>
   </a>
@@ -102,40 +102,74 @@
 
     
     
-<p>First, we prepare a quanteda <code>dfm</code> object and a list of keywords. You can also pass <code>data.frame</code> (<code>tibble</code>) and a list of file paths to <code>keyATM</code>, but creating the quanteda <code>dfm</code> is the easiest way to conduct preprocessing.</p>
-<p>Here, we show an example of preprocessing using <code>quanteda</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(quanteda)</span>
-<span id="cb1-2"><a href="#cb1-2"></a>key_corpus &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(doc_tbl, <span class="dt">text_field=</span><span class="st">"text"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3"></a>key_tokens &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(key_corpus) <span class="op">%&gt;%</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_tolower.html">tokens_tolower</a></span>() <span class="op">%&gt;%</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_select.html">tokens_remove</a></span>(., <span class="dt">pattern =</span> <span class="kw"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">'en'</span>))</span>
-<span id="cb1-6"><a href="#cb1-6"></a></span>
-<span id="cb1-7"><a href="#cb1-7"></a>key_dfm &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(key_tokens,</span>
-<span id="cb1-8"><a href="#cb1-8"></a>               <span class="dt">remove_numbers =</span> <span class="ot">TRUE</span>, <span class="dt">remove_punct =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb1-9"><a href="#cb1-9"></a>               <span class="dt">remove_separators =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="st">           </span><span class="kw"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(., <span class="dt">min_termfreq=</span><span class="dv">5</span>, <span class="dt">min_docfreq=</span><span class="dv">2</span>)</span>
-<span id="cb1-11"><a href="#cb1-11"></a></span>
-<span id="cb1-12"><a href="#cb1-12"></a>keywords_list &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</span>
-<span id="cb1-13"><a href="#cb1-13"></a>                      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"election"</span>, <span class="st">"vote"</span>, <span class="st">"voter"</span>),</span>
-<span id="cb1-14"><a href="#cb1-14"></a>                      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"economy"</span>, <span class="st">"recession"</span>)</span>
-<span id="cb1-15"><a href="#cb1-15"></a>                     )</span></code></pre></div>
-<p>Then read the <code>dfm</code> object.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>model &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(<span class="dt">texts =</span> key_dfm,</span>
-<span id="cb2-2"><a href="#cb2-2"></a>                     <span class="dt">extra_k=</span><span class="dv">3</span>,</span>
-<span id="cb2-3"><a href="#cb2-3"></a>                     <span class="dt">keywords=</span>keywords_list,</span>
-<span id="cb2-4"><a href="#cb2-4"></a>                     <span class="dt">mode=</span><span class="st">"basic"</span>,</span>
-<span id="cb2-5"><a href="#cb2-5"></a>                     <span class="dt">options=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed=</span><span class="dv">225</span>))</span></code></pre></div>
-<p>We visualize keywords before fitting the model,</p>
+<div id="preparing-documents" class="section level2">
+<h2 class="hasAnchor">
+<a href="#preparing-documents" class="anchor"></a>Preparing documents</h2>
+<p>Please read <a href="Preparation.html">Preparation</a> for the three data types that <strong>keyATM</strong> can read.</p>
+</div>
+<div id="keywords" class="section level2">
+<h2 class="hasAnchor">
+<a href="#keywords" class="anchor"></a>Keywords</h2>
+<p>We set four keyword-topics. Keywrods should be stored in a list. Each element in the list is a character vector, which corresponds to a single keyword-topic.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>keywords_ext &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</span>
+<span id="cb1-2"><a href="#cb1-2"></a>                      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"education"</span>, <span class="st">"child"</span>, <span class="st">"student"</span>),  <span class="co"># Education</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>                      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"court"</span>, <span class="st">"law"</span>, <span class="st">"attorney"</span>),  <span class="co"># Law</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>                      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"public"</span>, <span class="st">"health"</span>, <span class="st">"program"</span>),  <span class="co"># Health</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>                      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"drug"</span>, <span class="st">"treatment"</span>)  <span class="co"># Drug</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>                    )</span></code></pre></div>
+</div>
+<div id="creating-a-model-object" class="section level2">
+<h2 class="hasAnchor">
+<a href="#creating-a-model-object" class="anchor"></a>Creating a model object</h2>
+<p>Before fitting the model, we need to read texts and keywords into <strong>keyATM</strong>. Here we use <strong>quanteda</strong>’s <code>dfm</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(keyATM)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>model &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(<span class="dt">texts =</span> bills_dfm,  <span class="co"># text input</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>                     <span class="dt">regular_k=</span><span class="dv">3</span>,  <span class="co"># number of regular topics</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>                     <span class="dt">keywords=</span>bills_keywords,  <span class="co"># keywords</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>                     <span class="dt">mode=</span><span class="st">"basic"</span>,  <span class="co"># select the model</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>                     <span class="dt">options=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed=</span><span class="dv">100</span>))</span></code></pre></div>
+<p>If you want to know more about <code>options</code>, please read <a href="Guidlines.html#what-is-the-options-argument">Guidelines</a>.</p>
+</div>
+<div id="checking-keywords" class="section level2">
+<h2 class="hasAnchor">
+<a href="#checking-keywords" class="anchor"></a>Checking keywords</h2>
+<p><strong>WE WILL MAKE A <code>visualize_keywords()</code> FUNCION LATER</strong></p>
+<p>Before you fit the model, please make sure your keywords appear enough in your corpus. <a href="Guidlines.html#how-to-select-keywords">Guidelines</a> explains what could be good keywords.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>model<span class="op">$</span>visualize_keywords</span></code></pre></div>
-<p>We fit the model and get an output object.</p>
+</div>
+<div id="fit-the-model" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fit-the-model" class="anchor"></a>Fit the model</h2>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>fitted &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_fit.html">keyATM_fit</a></span>(model, <span class="dt">iteration=</span><span class="dv">1000</span>)</span>
-<span id="cb4-2"><a href="#cb4-2"></a>post &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_output.html">keyATM_output</a></span>(fitted)</span></code></pre></div>
-<p>We use the output object to see the convergence and top words.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/diagnosis_model_fit.html">diagnosis_model_fit</a></span>(post, <span class="dt">start=</span><span class="dv">1</span>)</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(post)</span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_output.html">keyATM_output</a></span>(fitted)</span></code></pre></div>
+</div>
+<div id="save-the-model" class="section level2">
+<h2 class="hasAnchor">
+<a href="#save-the-model" class="anchor"></a>Save the model</h2>
+<p>Once you fit the model, you can save the model with <code><a href="https://www.rdocumentation.org/packages/base/topics/readRDS">saveRDS()</a></code> for replication.</p>
+<p>To load the model, you can use <code><a href="https://www.rdocumentation.org/packages/base/topics/readRDS">readRDS()</a></code> function.</p>
+</div>
+<div id="check-top-words" class="section level2">
+<h2 class="hasAnchor">
+<a href="#check-top-words" class="anchor"></a>Check top words</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+        <div id="tocnav">
+      <h2 class="hasAnchor">
+<a href="#tocnav" class="anchor"></a>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+<li><a href="#preparing-documents">Preparing documents</a></li>
+      <li><a href="#keywords">Keywords</a></li>
+      <li><a href="#creating-a-model-object">Creating a model object</a></li>
+      <li><a href="#checking-keywords">Checking keywords</a></li>
+      <li><a href="#fit-the-model">Fit the model</a></li>
+      <li><a href="#save-the-model">Save the model</a></li>
+      <li><a href="#check-top-words">Check top words</a></li>
+      </ul>
+</div>
       </div>
 
 </div>
