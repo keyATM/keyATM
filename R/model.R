@@ -378,16 +378,20 @@ keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NUL
     ## preprocess each text
     # Use files <- list.files(doc_folder, pattern="txt", full.names=T) when you pass
     if(is.null(text_df)){
-      text_df <- data.frame(text = unlist(lapply(files, 
+      if(is.null(options$encoding)){
+        options$encoding <- "UTF-8"  
+      }
+      encoding <- options$encoding
+
+      text_df <- tibble::tibble(text = unlist(lapply(files,
                                                  function(x)
                                                  { 
                                                      paste0(readLines(x, encoding = encoding),
                                                            collapse = "\n") 
-                                                 })),
-                            stringsAsFactors = FALSE)
+                                                 })))
     }
   }
-  text_df$doc_id <- paste0("text", 1:nrow(text_df))
+  # text_df$doc_id <- paste0("text", 1:nrow(text_df))
   text_df <- text_df %>% mutate(text_split = stringr::str_split(text, pattern=" "))
   W_raw <- text_df %>% pull(text_split)
 
