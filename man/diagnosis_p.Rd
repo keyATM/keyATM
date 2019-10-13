@@ -4,12 +4,12 @@
 \alias{diagnosis_p}
 \title{Show a diagnosis plot of p}
 \usage{
-diagnosis_p(x, shoe_topic = c())
+diagnosis_p(x, show_topic = NULL)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM_output})}
+\item{x}{the output from a keyATM model (see \code{keyATM_output()})}
 
-\item{show_topic}{A topic vector to reorder}
+\item{show_topic}{A vector to indicate topics to visualize}
 }
 \value{
 ggplot2 object

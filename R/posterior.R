@@ -1,11 +1,8 @@
 #' Get posterior quantities from model output
 #'
-#' Constructs a (N x K) matrix \code{theta} and (K x V) matrix \code{beta}
-#' plus their margins from the sample of Z and W in \code{model}.
-#' \code{model} is an output of \code{keyATM_run()}.
-#' These statistics implicitly marginalize over X.
+#' \code{keyATM_output()} makes various quantities that help interpret the model.
 #'
-#' @param model a fitted keyATM model
+#' @param model a fitted keyATM model (an output of \code{keyATM_fit()})
 #'
 #' @return A list containing:
 #'   \describe{
@@ -13,16 +10,15 @@
 #'     \item{regular_k}{Number of regular unseeded topics}
 #'     \item{V}{Number of word types}
 #'     \item{N}{Number of documents}
-#'     \item{theta}{Normalized tpoic proportions for each document}
+#'     \item{theta}{Normalized topic proportions for each document}
 #'     \item{phi}{Normalized topic specific word generation probabilities}
 #'     \item{topic_counts}{Number of tokens assigned to each topic}
 #'     \item{word_counts}{Number of times each word type appears}
 #'     \item{doc_lens}{Length of each document in tokens}
 #'     \item{vocab}{Words in the vocabulary}
-#'     \item{modelfit}{Perplexity and log-likelihood}
-#'     \item{values_iter}{Organized values stored during iterations}
+#'     \item{model_fit}{Perplexity and log-likelihood}
 #'     \item{p}{Estimated p}
-#'     \item{options}{Options used in the \code{model}}
+#'     \item{values_iter}{Organized values stored during iterations}
 #'   }
 #' @export
 keyATM_output <- function(model){
@@ -90,8 +86,8 @@ keyATM_output <- function(model){
   }
 
   if((model$model %in% c("basic", "lda"))){
-		if(model$options$estimate_alpha)
-			values_iter$alpha_iter <- keyATM_output_alpha_iter_basic(model, info)  
+    if(model$options$estimate_alpha)
+      values_iter$alpha_iter <- keyATM_output_alpha_iter_basic(model, info)  
   }
 
   # model fit
@@ -113,7 +109,8 @@ keyATM_output <- function(model){
     dplyr::group_by(Topic) %>%
     dplyr::summarize(count = (dplyr::n()), sumx=sum(X)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(Proportion=round(sumx/count*100, 3)) -> p_estimated
+    dplyr::mutate(Proportion=round(sumx/count*100, 3)) %>%
+    dplyr::select(-sumx) -> p_estimated
 
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), regular_k = model$regular_k,
@@ -330,7 +327,7 @@ check_arg_type <- function(arg, typename, message=NULL){
 #' are suffixed with a check mark. Words from another seeded category
 #' are labeled with the name of that category.
 #'
-#' @param x the output from a keyATM model (see \code{keyATM_output})
+#' @param x the output from a keyATM model (see \code{keyATM_output()})
 #' @param n How many terms to show. Default: NULL, which shows all
 #' @param measure How to sort the terms: 'probability' (default) or 'lift'
 #' @param show_keyword Mark keywords. (default: TRUE)
@@ -377,67 +374,58 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
 
 #' Show the top topics for each document
 #'
-#' @param x the output from a keyATM model (see \code{keyATM_output})
+#' @param x the output from a keyATM model (see \code{keyATM_output()})
 #' @param n How many topics to show. Default: 2
-#' @param measure How to sort the topics: 'probability' (default) or 'lift'
 #'
 #' @return An n x k table of the top n topics in each document
+#' @import magrittr
 #' @export
 #'
-top_topics <- function(x, n = 2, measure = c("probability", "lift")){
+top_topics <- function(x, n = 2){
   check_arg_type(x, "keyATM_output")
-  if (is.null(n))
-    n <- nrow(x$theta)
+  check_arg_type(n, "numeric")
 
-  measure <- match.arg(measure)
-  if (measure == "probability") {
-    measuref <- function(xrow){
-      colnames(x$theta)[order(xrow, decreasing = TRUE)[1:n]]
-    }
-  } else if (measure == "lift"){
-    wfreq <- x$topic_counts / sum(x$topic_counts)
-    measuref <- function(xrow){
-      colnames(x$theta)[order(xrow / wfreq, decreasing = TRUE)[1:n]]
-    }
+  if (n > ncol(x$theta))
+    n <- ncol(x$theta)
+
+  measuref <- function(xrow){
+    colnames(x$theta)[order(xrow, decreasing = TRUE)[1:n]]
   }
-  t(apply(x$theta, 1, measuref))
+
+  res <- t(apply(x$theta, 1, measuref)) %>%
+          tibble::as_tibble(., .name_repair = ~paste0("Rank", 1:n))
+  return(res)
 }
 
 
 
 #' Show the top documents for each topic
 #'
-#' @param x the output from a keyATM model (see \code{keyATM_output})
+#' @param x the output from a keyATM model (see \code{keyATM_output()})
 #' @param n How many documents to show. Default: 10
-#' @param measure How to sort the terms: 'probability' (default) or 'lift'
 #'
-#' @return An n x k table of the top n documents for each topic
+#' @return An n x k table of the top n documents for each topic, each number is a document index
+#' @import magrittr
 #' @export
-top_docs <- function(x, n = 10, measure = c("probability", "lift")){
+top_docs <- function(x, n = 10){
   check_arg_type(x, "keyATM_output")
   if (is.null(n))
     n <- nrow(x$theta)
 
-  measure <- match.arg(measure)
-  if (measure == "probability"){
-    measuref <- function(xcol){
-      rownames(x$theta)[order(xcol, decreasing = TRUE)[1:n]]
-    }
-    apply(x$theta, 2, measuref)
-  } else if (measure == "lift"){
-    tfreq <- x$topic_counts / sum(x$topic_counts)
-    measuref <- function(xcol){
-      rownames(x$theta)[order(xcol, decreasing = TRUE)[1:n]]
-    }
-    apply(x$theta / outer(1:x$N, tfreq), 2, measuref)
+  measuref <- function(xcol){
+    order(xcol, decreasing = TRUE)[1:n]
   }
+  
+  res <- apply(x$theta, 2, measuref) %>%
+          tibble::as_tibble(.)
+  return(res) 
 }
 
 
 
 #' Show a diagnosis plot of alpha
 #'
-#' @param x the output from a keyATM model (see \code{keyATM_output})
+#' @param x the output from a keyATM model (see \code{keyATM_output()})
 #' @param start Slice iteration
 #' @param show_topic a vector to specify topic indexes to show
 #' @param thinning a integer for thinning
@@ -448,7 +436,7 @@ top_docs <- function(x, n = 10, measure = c("probability", "lift")){
 #' @import ggplot2
 #' @export
 diagnosis_alpha <- function(x, start = 0, show_topic = NULL,
-                            thinning = 10,
+                            thinning = 5,
                             scales = "fixed"){
 
   check_arg_type(x, "keyATM_output")
@@ -503,18 +491,23 @@ diagnosis_alpha <- function(x, start = 0, show_topic = NULL,
 
 #' Show a diagnosis plot of log-likelihood and perplexity
 #'
-#' @param x the output from a keyATM model (see \code{keyATM_output})
-#' @param start Slice iteration
+#' @param x the output from a keyATM model (see \code{keyATM_output()})
+#' @param start 
 #'
 #' @return ggplot2 object
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @export
-diagnosis_model_fit <- function(x, start=NULL){
+diagnosis_model_fit <- function(x, start=1){
 
   check_arg_type(x, "keyATM_output")
 
   modelfit <- x$model_fit
+
+  if(!is.numeric(start) | length(start) != 0){
+    message("`start` argument is invalid. Using the default (=1)")  
+    start <- 1
+  }
 
   if(!is.null(start)){
     modelfit <- modelfit[ modelfit$Iteration >= start, ]
@@ -538,25 +531,27 @@ diagnosis_model_fit <- function(x, start=NULL){
 
 #' Show a diagnosis plot of p
 #'
-#' @param x the output from a keyATM model (see \code{keyATM_output})
-#' @param show_topic A topic vector to reorder
+#' @param x the output from a keyATM model (see \code{keyATM_output()})
+#' @param show_topic A vector to indicate topics to visualize
 #'
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import dplyr
 #' @export
-diagnosis_p <- function(x, shoe_topic=c()){
+diagnosis_p <- function(x, show_topic=NULL){
 
   num <- length(unique(x$p$Topic))
   if(is.null(show_topic)){
     shoe_topic <- 1:num
-  }else if(length(show_topic) != num){
-    message("Topicvec length does not match with the topic number")
-    show_topic <- 1:num
   }
 
-  temp <- x$p
-  temp$Topic <- paste0("Topic", temp$Topic)
+  check_arg_type(show_topic, "numeric")
+  enq_show_topic <- enquo(show_topic)
+
+  x$p %>%
+    dplyr::filter(Topic %in% (!!show_topic)) %>%
+    dplyr::mutate(Topic = paste0("Topic", Topic)) -> temp
+
   g  <- ggplot(temp, aes_string(x='Topic', y='Proportion')) +
       geom_bar(stat="identity") +
       theme_bw() +

@@ -4,11 +4,11 @@
 \alias{diagnosis_alpha}
 \title{Show a diagnosis plot of alpha}
 \usage{
-diagnosis_alpha(x, start = 0, show_topic = NULL, thinning = 10,
+diagnosis_alpha(x, start = 0, show_topic = NULL, thinning = 5,
   scales = "fixed")
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM_output})}
+\item{x}{the output from a keyATM model (see \code{keyATM_output()})}
 
 \item{start}{Slice iteration}
 

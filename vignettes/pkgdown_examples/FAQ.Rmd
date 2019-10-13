@@ -1,5 +1,5 @@
 ---
-title: "Guidlines"
+title: "FAQ"
 output: 
   html_document:
     toc: true
@@ -49,8 +49,6 @@ If you want to speed up fitting, the first thing you can do is to review preproc
 
 ## How to select the number of regular topics?
 
-
-## How can I save memory?
 
 
 ## What is the `options` argument?
