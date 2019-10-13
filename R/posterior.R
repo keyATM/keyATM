@@ -37,7 +37,7 @@ posterior <- function(...){
 keyATM_output <- function(model){
   message("Creating an output object. It may take time...")
 
-  check_arg_type(model, "keyATM")
+  check_arg_type(model, "keyATM_fitted")
   allK <- model$regular_k + length(model$keywords)
   V <- length(model$vocab)
   N = length(model$W)
@@ -59,7 +59,7 @@ keyATM_output <- function(model){
     posterior_z <- function(docid){
       zvec <- model$Z[[docid]]
       alpha <- Alpha[docid, ]
-      tt <- table(factor(zvec, levels = 1:allK - 1))
+      tt <- table(factor(zvec, levels = 1:allK - 1L))
       (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
     }
 
@@ -69,7 +69,7 @@ keyATM_output <- function(model){
     alpha <- model$alpha_iter[[length(model$alpha_iter)]]  
 
     posterior_z <- function(zvec){
-      tt <- table(factor(zvec, levels = 1:allK - 1))
+      tt <- table(factor(zvec, levels = 1:allK - 1L))
       (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
     }  
 
@@ -83,7 +83,7 @@ keyATM_output <- function(model){
 
     Z_table <- do.call(dplyr::bind_rows, 
                        lapply(model$Z, 
-                        function(zvec){table(factor(zvec, levels = 1:allK - 1))}))
+                        function(zvec){table(factor(zvec, levels = 1:allK - 1L))}))
 
     tt <- Z_table + alphas
     theta <- tt / Matrix::rowSums(tt)
@@ -203,10 +203,14 @@ keyATM_output <- function(model){
 
 # a more than usually informative error message for handing in the
 # wrong type to a function
-check_arg_type <- function(arg, typename){
+check_arg_type <- function(arg, typename, message=NULL){
   argname <- deparse(match.call()[['arg']])
-  if (!inherits(arg, typename))
-    stop(paste("'", argname, '" is not a ', typename))
+  if (!inherits(arg, typename)){
+		if(is.null(message))
+			stop(paste('"', argname, '" is not a ', typename))
+		else
+			stop(message)
+	}
 }
 
 

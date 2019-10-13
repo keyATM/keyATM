@@ -8,7 +8,6 @@ using namespace std;
 keyATMbasic::keyATMbasic(List model_, const int iter_, const int output_per_) :
   keyATMbase(model_, iter_, output_per_) // pass to parent!
 {
-
   // Constructor
   read_data();
   initialize();
@@ -18,7 +17,15 @@ keyATMbasic::keyATMbasic(List model_, const int iter_, const int output_per_) :
 
 void keyATMbasic::read_data_specific()
 {
+  nv_alpha = priors_list["alpha"];
   alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
+
+  estimate_alpha = options_list["estimate_alpha"];
+  if(estimate_alpha == 0){
+    store_alpha = 0;
+  }else{
+    store_alpha = 1;
+  }
 }
 
 
@@ -62,15 +69,18 @@ void keyATMbasic::iteration_single(int &it)
 
 void keyATMbasic::sample_parameters(int &it)
 {
-  sample_alpha();
+  if(estimate_alpha)
+    sample_alpha();
 
   // Store alpha
-  int r_index = it + 1;
-  if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
-    NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
-    List alpha_iter = model["alpha_iter"];
-    alpha_iter.push_back(alpha_rvec);
-    model["alpha_iter"] = alpha_iter;  
+  if(store_alpha){
+    int r_index = it + 1;
+    if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
+      NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
+      List alpha_iter = stored_values["alpha_iter"];
+      alpha_iter.push_back(alpha_rvec);
+      stored_values["alpha_iter"] = alpha_iter;  
+    }
   }
 }
 
@@ -115,9 +125,6 @@ void keyATMbasic::sample_alpha()
       }
     }
   }
-
-  model["alpha"] = alpha;
-
 }
 
 
@@ -125,29 +132,6 @@ double keyATMbasic::alpha_loglik()
 {
   loglik = 0.0;
   
-  // alpha_sum_val = alpha.sum();
-  // fixed_part = lgamma(alpha_sum_val);
-  //
-  // for(int d=0; d<num_doc; d++){
-  //   loglik += fixed_part - lgamma(doc_each_len[d] + alpha_sum_val);  // you need to reverse log calculation
-  //
-  //   for(int k=0; k<num_topics; k++){
-  //     loglik += gammaln_frac(alpha(k), n_dk(d,k));
-  //   }
-  //
-  // }
-  //
-  // // Prior
- //  for(int k = 0; k < num_topics; k++){
-  //   if(k < k_seeded){
-  //     loglik += gammapdfln(alpha(k), eta_1, eta_2);
-  //   }else{
-  //     loglik += gammapdfln(alpha(k), eta_1_regular, eta_2_regular);
-  //   }
-  // }
-  //
-  // return loglik;
-
   fixed_part = 0.0;
   ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
   alpha_sum_val = alpha.sum();
@@ -157,7 +141,7 @@ double keyATMbasic::alpha_loglik()
   for(int k = 0; k < num_topics; k++){
     fixed_part -= mylgamma(alpha(k)); // first term denominator
     // Add prior
-    if(k < k_seeded){
+    if(k < keyword_k){
       loglik += gammapdfln(alpha(k), eta_1, eta_2);
     }else{
       loglik += gammapdfln(alpha(k), eta_1_regular, eta_2_regular);
@@ -199,13 +183,13 @@ double keyATMbasic::loglik_total()
     loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
     loglik += mylgamma( beta_s * (double)num_vocab ) - mylgamma(beta_s * (double)num_vocab + n_x1_k_noWeight(k) );
     // x
-    loglik += mylgamma( n_x0_k_noWeight(k) + x_prior(k, 1) ) - mylgamma(n_x1_k_noWeight(k) + x_prior(k, 0) + n_x0_k_noWeight(k) + x_prior(k, 1))
-      + mylgamma( n_x1_k_noWeight(k) + x_prior(k, 0) ) ;
+    loglik += mylgamma( n_x0_k_noWeight(k) + gamma(k, 1) ) - mylgamma(n_x1_k_noWeight(k) + gamma(k, 0) + n_x0_k_noWeight(k) + gamma(k, 1))
+      + mylgamma( n_x1_k_noWeight(k) + gamma(k, 0) ) ;
 
     // Rcout << (double)n_x0_k(k) << " / " << (double)n_x1_k(k) << std::endl; // debug
 
     // x normalization
-    loglik += mylgamma(x_prior(k, 0) + x_prior(k, 1)) - mylgamma(x_prior(k, 0)) - mylgamma(x_prior(k, 1));
+    loglik += mylgamma(gamma(k, 0) + gamma(k, 1)) - mylgamma(gamma(k, 0)) - mylgamma(gamma(k, 1));
   }
   // z
   fixed_part = alpha.sum();

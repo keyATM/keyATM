@@ -17,8 +17,15 @@ LDAweight::LDAweight(List model_, const int iter_, const int output_per_) :
 
 void LDAweight::read_data_specific()
 {
+  nv_alpha = priors_list["alpha"];
   alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
 
+  estimate_alpha = options_list["estimate_alpha"];
+  if(estimate_alpha == 0){
+    store_alpha = 0;
+  }else{
+    store_alpha = 1;
+  }
 }
 
 
@@ -126,10 +133,11 @@ int LDAweight::sample_z(VectorXd &alpha, int &z, int &x,
 
 void LDAweight::sample_parameters(int &it)
 {
-  sample_alpha();
+  if(estimate_alpha)
+    sample_alpha();
 
   // Store alpha
-	int r_index = it + 1;
+  int r_index = it + 1;
   if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
     NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
     List alpha_iter = model["alpha_iter"];

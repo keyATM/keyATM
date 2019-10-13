@@ -19,7 +19,8 @@ keyATMcov::keyATMcov(List model_, const int iter_, const int output_per_) :
 void keyATMcov::read_data_specific()
 {
   // Covariate
-  NumericMatrix C_r = model["C"];
+	model_settings = model["model_settings"];
+  NumericMatrix C_r = model_settings["covariates_data"];
   C = Rcpp::as<Eigen::MatrixXd>(C_r);
   num_cov = C.cols();
 
@@ -94,9 +95,9 @@ void keyATMcov::sample_parameters(int &it)
   int r_index = it + 1;
   if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
     Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
-    List Lambda_iter = model["Lambda_iter"];
+    List Lambda_iter = stored_values["Lambda_iter"];
     Lambda_iter.push_back(Lambda_R);
-    model["Lambda_iter"] = Lambda_iter;
+    stored_values["Lambda_iter"] = Lambda_iter;
   }
 }
 
@@ -223,11 +224,11 @@ double keyATMcov::loglik_total()
     loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
     loglik += mylgamma( beta_s * (double)num_vocab ) - mylgamma(beta_s * (double)num_vocab + n_x1_k_noWeight(k) );
     // x
-    loglik += mylgamma( n_x0_k_noWeight(k) + x_prior(k, 1) ) - mylgamma(n_x1_k_noWeight(k) + x_prior(k, 0) + n_x0_k_noWeight(k) + x_prior(k, 1))
-      + mylgamma( n_x1_k_noWeight(k) + x_prior(k, 0) ) ;
+    loglik += mylgamma( n_x0_k_noWeight(k) + gamma(k, 1) ) - mylgamma(n_x1_k_noWeight(k) + gamma(k, 0) + n_x0_k_noWeight(k) + gamma(k, 1))
+      + mylgamma( n_x1_k_noWeight(k) + gamma(k, 0) ) ;
     
     // x normalization
-    loglik += mylgamma(x_prior(k, 0) + x_prior(k, 1)) - mylgamma(x_prior(k, 0)) - mylgamma(x_prior(k, 1));
+    loglik += mylgamma(gamma(k, 0) + gamma(k, 1)) - mylgamma(gamma(k, 0)) - mylgamma(gamma(k, 1));
   }
 
 

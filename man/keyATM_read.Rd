@@ -2,60 +2,31 @@
 % Please edit documentation in R/model.R
 \name{keyATM_read}
 \alias{keyATM_read}
-\title{Initialize a keyATM model}
+\title{Read Texts}
 \usage{
-keyATM_read(texts, mode, regular_k = 0, extra_k = NULL,
-  keywords = list(), covariates_data = NULL, covariates_formula = ~.
-  + 0, num_states = NULL, time_index = NULL, options = list(seed =
-  225, output_per = 10, use_weights = TRUE, visualize_keywords = TRUE,
-  thinning = 1, x_prior = NULL))
+keyATM_read(texts, encoding = "UTF-8")
 }
 \arguments{
-\item{texts}{Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.}
-
-\item{mode}{"basic", "cov", "hmm", "lda" and "ldahmm"}
-
-\item{regular_k}{number of regular topics in addition to the keyword topics by
-\code{keywords}}
-
-\item{keywords}{a quanteda dictionary or a list of character vectors}
-
-\item{covariates_data}{covariate}
-
-\item{covariates_formula}{formula applied to covariate data}
-
-\item{options}{options are seed, use_weights,
-visualize_keywords, and output_per.}
-
-\item{iteration}{number of iteration}
+\item{texts}{Input. keyATM takes dfm, data.frame, tibble, and a vector of file paths.}
 }
 \value{
-keyATM object, which is a list containing \describe{
-        \item{W}{a list of vectors of word indexes}
-        \item{Z}{a list of vectors of topic indicators isomorphic to W}
-        \item{C}{a covariate matrix if there is an input}
-        \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
-        \item{vocab}{a vector of vocabulary items}
-        \item{mode}{keyATM model to fit}
-        \item{keywords}{a list of keywords in word_id}
-        \item{keywords_raw}{a list of keywords}
-        \item{regular_k}{how many extra non-seeded topics are required}
-        \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
-        \item{alpha_iter}{a list to store topic proportion hyperparameters}
-        \item{Lambda_iter}{a list to store coefficients of the covariates}
-        \item{S_iter}{a list to store states sampled in HMM}
-        \item{model_fit}{a list to store perplexity and log-likelihood}
-        \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
-        \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
-        \item{beta}{prior parameter for the non-seeded word generation probabilities}
-        \item{beta_s}{prior parameter for the seeded word generation probabilities}
-        \item{use_cov}{boolean, whether or not use the covariate}
-        \item{num_states}{number of states in HMM}
-        \item{visualize_keywords}{ggplot2 object}
-        \item{call}{details of the function call}
-        }.
+A list whose elements are splitted texts.
 }
 \description{
-This function reads a text input and initialize a keyATM model.
-Internally, \code{keyATM_read()} calls \code{keyATM_model()} to initialize a model.
+This function read texts and creates a tibble.
+}
+\examples{
+\dontrun{
+ # Use quanteda dfm 
+ keyATM_docs <- keyATM_read(quanteda_dfm) 
+  
+ # Use data.frame or tibble (texts should be stored in a column named `text`)
+ keyATM_docs <- keyATM_read(data_frame_object) 
+ keyATM_docs <- keyATM_read(tibble_object) 
+
+ # Use a vector that stores full paths to the files  
+ files <- list.files(doc_folder, pattern="*.txt", full.names=T) 
+ keyATM_docs <- keyATM_read(files) 
+}
+
 }

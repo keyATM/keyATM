@@ -27,6 +27,7 @@ class keyATMhmm : public keyATMbase
     // 'Time-Blocked' Change Point
     int num_states;
     int index_states;  // num_states - 1
+    int store_transition_matrix;
     MatrixXd Psk;    // (num_time, num_states)
     VectorXi S_est;  // stores state index, (num_time)
     VectorXi S_count;  // stores the count of each state
@@ -89,6 +90,7 @@ class keyATMhmm : public keyATMbase
     void sample_backward();  // sample S_est
     void sample_P();  // sample P_est
     void store_S_est();
+    void store_P_est();
 
     double polyapdfln(int &t, VectorXd &alpha);
     double loglik_total();
