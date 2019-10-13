@@ -106,7 +106,7 @@ summary.keyATM_docs <- function(x){
   cat(paste0("keyATM_docs object of: ",
               length(x), " documents",
               ".\n",
-              "Information on documents:",
+              "Length of documents:",
               "\n  Avg: ", round(mean(doc_len),3),
               "\n  Min: ", round(min(doc_len),3),
               "\n  Max: ", round(max(doc_len),3),
@@ -326,17 +326,17 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   ## Check
   ##
 
-  # Check model name
+  # Check type
+  check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
+  check_arg_type(regular_k, "numeric")
+
   if(!model %in% c("basic", "cov", "hmm", "lda", "ldacov", "ldahmm")){
     stop("Please select a correct model.")  
   }
 
-  # Check type
-  check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
   check_arg(keywords, "keywords", model)
 
   check_arg_type(keywords, "list")
-  check_arg_type(regular_k, "numeric")
   c <- lapply(keywords, function(x){check_arg_type(x, "character")})
 
   # Get Info
