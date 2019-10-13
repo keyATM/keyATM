@@ -60,6 +60,7 @@ reference:
   - '`top_docs`'
   - '`top_words`'
   - '`top_topics`'
+  - '`visualize_keywords`'
 
 toc:
   depth: 2

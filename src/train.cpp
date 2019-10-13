@@ -35,6 +35,7 @@ using namespace std;
 List keyATM_train(List model, int iter = 0, int output_per = 10){
 
   keyATMbasic keyATMbasic_model(model, iter, output_per);
+  keyATMbasic_model.fit();
   model = keyATMbasic_model.return_model();
   return model;
 
@@ -52,6 +53,7 @@ List keyATM_train(List model, int iter = 0, int output_per = 10){
 List keyATM_train_cov(List model, int iter = 0, int output_per = 10){
 
   keyATMcov keyATMcov_model(model, iter, output_per);
+  keyATMcov_model.fit();
   model = keyATMcov_model.return_model();
   return model;
 
@@ -69,6 +71,7 @@ List keyATM_train_cov(List model, int iter = 0, int output_per = 10){
 List keyATM_train_HMM(List model, int iter = 0, int output_per = 10){
 
   keyATMhmm hmm_model(model, iter, output_per);
+  hmm_model.fit();
   model = hmm_model.return_model();
   return model;
 
@@ -87,6 +90,7 @@ List lda_cov(List model, int K, int iter=0, int output_iter=10)
 {
 
   LDACOV ldacov(model, K, iter, output_iter);
+  // ldacov.fit();
 
   return model;
 }
@@ -103,6 +107,7 @@ List lda_cov(List model, int K, int iter=0, int output_iter=10)
 List LDA_weight(List model, int iter = 0, int output_per = 10){
 
   LDAweight LDAweight_model(model, iter, output_per);
+  LDAweight_model.fit();
   model = LDAweight_model.return_model();
   return model;
 
@@ -120,6 +125,7 @@ List LDA_weight(List model, int iter = 0, int output_per = 10){
 List keyATM_train_LDAHMM(List model, int iter = 0, int output_per = 10){
 
   LDAhmm ldahmm_model(model, iter, output_per);
+  ldahmm_model.fit();
   model = ldahmm_model.return_model();
   return model;
 

@@ -23,6 +23,7 @@ class LDAhmm : public keyATMhmm
     VectorXd n_k_noWeight;
 
     // Functions
+		void read_data_specific();
     void initialize_specific();
     int sample_z(VectorXd &alpha, int &z, int &x,
                  int &w, int &doc_id);

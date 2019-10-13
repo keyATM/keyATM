@@ -1,12 +1,3 @@
-#' Get posterior (deprecated)
-#'
-#' @export
-posterior <- function(...){
-  message("Warning: `posterior` is deprecated, please use `keyATM_output` instead.")
-  return(keyATM_output(...))
-}
-
-
 #' Get posterior quantities from model output
 #'
 #' Constructs a (N x K) matrix \code{theta} and (K x V) matrix \code{beta}
@@ -53,8 +44,8 @@ keyATM_output <- function(model){
     tnames <- c(paste0("", 1:length(model$keywords)))
   }
 
-  if(model$mode %in% c("cov")){
-    Alpha <- exp(model$C %*% t(model$Lambda[[length(model$Lambda)]]))
+  if(model$model %in% c("cov")){
+    Alpha <- exp(model$model_settings$covariates_data %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
 
     posterior_z <- function(docid){
       zvec <- model$Z[[docid]]
@@ -65,8 +56,8 @@ keyATM_output <- function(model){
 
     theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z))
 
-  }else if(model$mode %in% c("basic", "lda")){
-    alpha <- model$alpha_iter[[length(model$alpha_iter)]]  
+  }else if(model$model %in% c("basic", "lda")){
+    alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]  
 
     posterior_z <- function(zvec){
       tt <- table(factor(zvec, levels = 1:allK - 1L))
@@ -75,10 +66,10 @@ keyATM_output <- function(model){
 
     theta <- do.call(dplyr::bind_rows, lapply(model$Z, posterior_z))
 
-  }else if(model$mode %in% c("hmm", "ldahmm")){
-    S <- model$S_iter[[length(model$S_iter)]] + 1  # adjust index for R
-    S <- S[model$time_index]  # retrieve doc level state info
-    alphas <- matrix(model$alpha_iter[[length(model$alpha_iter)]][S],
+  }else if(model$model %in% c("hmm", "ldahmm")){
+    S <- model$stored_values$S_iter[[length(model$stored_values$S_iter)]] + 1  # adjust index for R
+    S <- S[model$model_settings$time_index]  # retrieve doc level state info
+    alphas <- matrix(model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]][S],
                      nrow=length(model$W), ncol=allK)
 
     Z_table <- do.call(dplyr::bind_rows, 
@@ -93,7 +84,7 @@ keyATM_output <- function(model){
   colnames(theta) <- tnames # label seeded topics
 
 
-  all_words <- model$vocab[as.integer(unlist(model$W)) + 1]
+  all_words <- model$vocab[as.integer(unlist(model$W)) + 1L]
   all_topics <- as.integer(unlist(model$Z))
   
   res_tibble <- data.frame(
@@ -101,12 +92,12 @@ keyATM_output <- function(model){
                         Topic = all_topics
                        ) %>%
                 dplyr::group_by(Topic, Word) %>%
-                dplyr::summarize(Count = n())
+                dplyr::summarize(Count = dplyr::n())
   
   res_tibble %>%
     tidyr::spread(key=Word, value=Count)  -> beta
   beta <- apply(beta, 2, function(x){ifelse(is.na(x), 0, x)})
-  beta <- beta[, 2:ncol(beta)] + model$beta
+  beta <- beta[, 2:ncol(beta)] + model$priors$beta
   beta <- beta[, model$vocab]
 
   topic_counts <- Matrix::rowSums(beta)
@@ -116,17 +107,17 @@ keyATM_output <- function(model){
   rownames(tZW) <- tnames
 
   # alpha
-  if(model$mode %in% c("hmm", "ldahmm")){
+  if(model$model %in% c("hmm", "ldahmm")){
     res_alpha <- list()
 
-    for (i in 1:model$num_states) {
-      res_alpha[[i]] <- do.call(rbind, lapply(model$alpha_iter, function(x){ x[i, ] }))
+    for (i in 1:model$model_settings$num_states) {
+      res_alpha[[i]] <- do.call(rbind, lapply(model$stored_values$alpha_iter, function(x){ x[i, ] }))
     }
     res_alpha <- lapply(res_alpha, 
       function(x){colnames(x) <- paste0("EstTopic", 1:ncol(x)); y <- data.frame(x); y$iter <- 1:nrow(x); return(y)})
 
     } else {
-        res_alpha <- data.frame(model$alpha_iter)
+        res_alpha <- data.frame(model$stored_values$alpha_iter)
         colnames(res_alpha) <- NULL
         res_alpha <- data.frame(t(res_alpha))
         if(nrow(res_alpha) > 0){
@@ -162,22 +153,23 @@ keyATM_output <- function(model){
   # theta by iteration
   if(model$options$store_theta){
 
-    if(model$mode %in% c("cov")){
+    if(model$model %in% c("cov")){
       posterior_theta <- function(x){
-        Z_table <- model$options$Z_tables[[x]]
-        lambda <- model$Lambda[[x]]
-        Alpha <- exp(model$C %*% t(lambda))
+        Z_table <- model$stored_values$Z_tables[[x]]
+        lambda <- model$stored_values$Lambda_iter[[x]]
+        Alpha <- exp(model$model_settings$covariates_data %*% t(lambda))
 
         tt <- Z_table + Alpha
         row.names(tt) <- NULL
 
         return(tt / Matrix::rowSums(tt))
       }
-    }else if(model$mode %in% c("hmm", "ldahmm")){
+    }else if(model$model %in% c("hmm", "ldahmm")){
       posterior_theta <- function(x){
-        Z_table <- model$options$Z_tables[[x]]
-        S <- model$S_iter[[x]] + 1  # adjust index for R
-        S <- S[model$time_index]  # retrieve doc level state info
+        Z_table <- model$stored_values$Z_tables[[x]]
+        S <- model$stored_values$S_iter[[x]] + 1L  # adjust index for R
+        S <- S[model$model_settings$time_index]  # retrieve doc level state info
+
         alphas <- matrix(model$alpha_iter[[x]][S],
                          nrow=length(model$W), ncol=allK)
       
@@ -187,22 +179,21 @@ keyATM_output <- function(model){
       }
     }else{
       posterior_theta <- function(x){
-        Z_table <- model$options$Z_tables[[x]]
-        alpha <- model$alpha_iter[[x]]
+        Z_table <- model$stored_values$Z_tables[[x]]
+        alpha <- model$stored_values$alpha_iter[[x]]
 
         return((sweep(Z_table, 2, alpha, "+")) / 
                 (Matrix::rowSums(Z_table) + sum(alpha)))
       }
     }  
 
-    model$options$theta_iter <- lapply(1:length(model$options$Z_tables),
+    model$options$theta_iter <- lapply(1:length(model$stored_values$Z_tables),
                                         posterior_theta)
   }
 
   ll <- list(keyword_K = length(model$keywords), regular_k = model$regular_k,
-             extra_k = model$regular_k,
              V = V, N = N,
-             model=model$mode,
+             model=model$model,
              theta = theta, beta = tZW, # as.matrix(as.data.frame.matrix(tZW)),
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = doc_lens, vocab = model$vocab,
@@ -217,11 +208,11 @@ keyATM_output <- function(model){
 check_arg_type <- function(arg, typename, message=NULL){
   argname <- deparse(match.call()[['arg']])
   if (!inherits(arg, typename)){
-		if(is.null(message))
-			stop(paste('"', argname, '" is not a ', typename))
-		else
-			stop(message)
-	}
+    if(is.null(message))
+      stop(paste('"', argname, '" is not a ', typename))
+    else
+      stop(message)
+  }
 }
 
 

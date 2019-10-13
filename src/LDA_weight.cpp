@@ -8,10 +8,7 @@ using namespace std;
 LDAweight::LDAweight(List model_, const int iter_, const int output_per_) :
   keyATMbase(model_, iter_, output_per_) // pass to parent!
 {
-  // Constructor
-  read_data();
-  initialize();
-  iteration();
+
 }
 
 
@@ -137,12 +134,14 @@ void LDAweight::sample_parameters(int &it)
     sample_alpha();
 
   // Store alpha
-  int r_index = it + 1;
-  if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
-    NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
-    List alpha_iter = model["alpha_iter"];
-    alpha_iter.push_back(alpha_rvec);
-    model["alpha_iter"] = alpha_iter;  
+  if(store_alpha){
+    int r_index = it + 1;
+    if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
+      NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
+      List alpha_iter = stored_values["alpha_iter"];
+      alpha_iter.push_back(alpha_rvec);
+      stored_values["alpha_iter"] = alpha_iter;  
+    }
   }
 }
 
@@ -188,7 +187,6 @@ void LDAweight::sample_alpha()
     }
   }
 
-  model["alpha"] = alpha;
 }
 
 

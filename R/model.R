@@ -197,6 +197,7 @@ visualize_keywords <- function(keyATM_docs, keywords)
 
   dplyr::right_join(data, keywords_df, by="Word") %>%
     dplyr::group_by(Topic) %>%
+    dplyr::arrange(desc(`Proportion(%)`)) %>%
     dplyr::mutate(Ranking = 1:(dplyr::n())) %>%
     dplyr::arrange(Topic, Ranking) -> temp
 
@@ -378,26 +379,31 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   # Organize
   stored_values <- list()
 
-	if(model %in% c("basic", "ldabasic")){
-		if(options$estimate_alpha)
-			stored_values$alpha_iter <- list()	
-	}
+  if(model %in% c("basic", "lda")){
+    if(options$estimate_alpha)
+      stored_values$alpha_iter <- list()  
+  }
+
+  if(model %in% c("hmm", "ldahmm")){
+    options$estimate_alpha <- 1
+    stored_values$alpha_iter <- list()  
+  }
 
 
   if(model %in% c("cov", "ldacov")){
     stored_values$Lambda_iter <- list()
-	}
+  }
 
   if(model %in% c("hmm", "ldahmm")){
     stored_values$S_iter <- list()
 
-		if(options$store_transition_matrix){
-			stored_values$P_iter <- list()	
-		}
-	}
+    if(options$store_transition_matrix){
+      stored_values$P_iter <- list()  
+    }
+  }
 
-	if(options$store_theta)
-		stored_values$Z_tables <- list()
+  if(options$store_theta)
+    stored_values$Z_tables <- list()
 
   key_model <- list(
                     W=W, Z=Z, X=X,
@@ -530,8 +536,10 @@ check_arg_model_settings <- function(obj, model, info)
 
   if(model %in% c("cov", "ldacov")){
      if(is.null(obj$covariates_data)){
-      stop("Please provide covariates data.")  
+      stop("Please provide `obj$covariates_data`.")  
     }
+
+    check_arg_type(obj$covariates_data, "matrix")
 
     if(nrow(obj$covariates_data) != info$num_doc){
       stop("The row of `model_settings$covariates_data` should be the same as the number of documents.")  
@@ -588,7 +596,7 @@ check_arg_priors <- function(obj, model, info)
 {
   check_arg_type(obj, "list")
   # Base arguments
-  allowed_arguments <- c("beta", "beta_s")
+  allowed_arguments <- c("beta")
 
   # prior of pi
   if(model %in% c("basic", "cov", "hmm")){
@@ -615,12 +623,17 @@ check_arg_priors <- function(obj, model, info)
     allowed_arguments <- c(allowed_arguments, "gamma")
   }
 
+
   # beta
   if(is.null(obj$beta)){
     obj$beta <- 0.01  
   }
-  if(is.null(obj$beta_s)){
-    obj$beta_s <- 0.1  
+
+  if(model %in% c("basic", "cov", "hmm")){
+    if(is.null(obj$beta_s)){
+      obj$beta_s <- 0.1  
+    }  
+    allowed_arguments <- c(allowed_arguments, "beta_s")
   }
 
 
@@ -688,18 +701,18 @@ check_arg_options <- function(obj, model, info)
   }
 
   # Estimate alpha
-	if(model %in% c("basic", "ldabasic")){
-		if(is.null(obj$estimate_alpha)){
-			obj$estimate_alpha <- 1L
-		}else{
-			obj$estimate_alpha <- as.integer(obj$estimate_alpha)  
-			if(!obj$estimate_alpha %in% c(0, 1)){
-				stop("An invalid value in `options$estimate_alpha`")  
-			}
+  if(model %in% c("basic", "lda")){
+    if(is.null(obj$estimate_alpha)){
+      obj$estimate_alpha <- 1L
+    }else{
+      obj$estimate_alpha <- as.integer(obj$estimate_alpha)  
+      if(!obj$estimate_alpha %in% c(0, 1)){
+        stop("An invalid value in `options$estimate_alpha`")  
+      }
 
-		}
-		allowed_arguments <- c(allowed_arguments, "estimate_alpha")
-	}
+    }
+    allowed_arguments <- c(allowed_arguments, "estimate_alpha")
+  }
   
   # Slice shape
   if(is.null(obj$slice_shape)){
@@ -720,15 +733,15 @@ check_arg_options <- function(obj, model, info)
     }
   }
 
-	if(model %in% c("hmm", "ldahmm")){
-		if(is.null(obj$store_transition_matrix)){
-			obj$store_transition_matrix <- 0L	
-		}
+  if(model %in% c("hmm", "ldahmm")){
+    if(is.null(obj$store_transition_matrix)){
+      obj$store_transition_matrix <- 0L  
+    }
     if(!obj$store_transition_matrix %in% c(0, 1)){
       stop("An invalid value in `options$store_transition_matrix`")  
     }
-		allowed_arguments <- c(allowed_arguments, "store_transition_matrix")
-	}
+    allowed_arguments <- c(allowed_arguments, "store_transition_matrix")
+  }
 
   # Check unused arguments
   show_unused_arguments(obj, "`options`", allowed_arguments)
@@ -749,7 +762,7 @@ make_xz_key <- function(W, keywords, info)
     zx_assigner <- hashmap::hashmap(as.integer(key_wdids), as.integer(cat_ids))
 
     # if the word is a keyword, assign the appropriate (0 start) Z, else a random Z
-		topicvec <- 1:(info$total_K) - 1L
+    topicvec <- 1:(info$total_K) - 1L
     make_z <- function(x, topicvec){
       zz <- zx_assigner[[x]] # if it is a keyword word, we already know the topic
       zz[is.na(zz)] <- sample(topicvec,
@@ -778,7 +791,7 @@ make_xz_key <- function(W, keywords, info)
     }
 
     # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
-		topicvec <- 1:(info$total_K) - 1L
+    topicvec <- 1:(info$total_K) - 1L
     make_z <- function(x, topicvec){
       zz <- zx_assigner(x) # if it is a seed word, we already know the topic
       zz[is.na(zz)] <- sample(topicvec,
@@ -808,7 +821,7 @@ make_xz_key <- function(W, keywords, info)
 
 make_xz_lda <- function(W, info)
 {
-	topicvec <- 1:(info$total_K) - 1L
+  topicvec <- 1:(info$total_K) - 1L
   make_z <- function(x, topicvec){
     zz <- sample(topicvec,
                  length(x),

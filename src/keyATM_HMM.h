@@ -75,11 +75,11 @@ class keyATMhmm : public keyATMbase
     int get_state_index(const int &doc_id);
   
     // Read data and Initialize
-    void read_data_specific();
-    void initialize_specific();
+    virtual void read_data_specific();
+    virtual void initialize_specific();
   
     // Iteration
-    void iteration_single(int &it);
+    virtual void iteration_single(int &it);
     void sample_parameters(int &it);
 
     void sample_alpha();
@@ -93,7 +93,7 @@ class keyATMhmm : public keyATMbase
     void store_P_est();
 
     double polyapdfln(int &t, VectorXd &alpha);
-    double loglik_total();
+    virtual double loglik_total();
     void verbose_special(int &r_index);
 };
 

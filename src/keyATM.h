@@ -33,7 +33,7 @@ class keyATMbase
     List W, Z, X;
     StringVector vocab;
     NumericVector nv_alpha;
-    MatrixXd gamma;
+    MatrixXd prior_gamma;
     double beta, beta_s;
     int regular_k, keyword_k;
     List keywords_list;
@@ -110,6 +110,7 @@ class keyATMbase
     //
     keyATMbase(List model_, const int iter_, const int output_per_);
     ~keyATMbase();
+    void fit();
 
     // Reading and Initialization
     void read_data();
