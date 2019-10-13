@@ -9,29 +9,29 @@ Description: Fits topic models with keywords.
 Maintainer: Shusei Eshima <shuseieshima@g.harvard.edu>
 BugReports: https://github.com/Shusei-E/keyATM/issues
 URL: https://github.com/Shusei-E/keyATM/
-Depends: R (>= 3.4.2)
+Depends: R (>= 3.6.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 LinkingTo: Rcpp,
   RcppEigen
 Imports: Rcpp,
-  hashmap,
+  dplyr,
   ggplot2,
   ggrepel,
-  dplyr,
-  tidyr,
-  tibble,
+  hashmap,
   magrittr,
-  stringr,
+  Matrix,
   methods,
+  purrr,
   rlang,
   stats,
-  Matrix
+  stringr,
+  tidyr,
+  tibble
 SystemRequirements: C++11
 Suggests: knitr,
   rmarkdown,
-  readtext,
-  purrr
+  readtext
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1

@@ -207,8 +207,14 @@ visualize_keywords <- function(keyATM_docs, keywords)
     dplyr::filter(is.na(WordCount)) %>%
     dplyr::pull(Word) -> non_appearence
 
-  if(length(non_appearence) != 0)
-    stop("Not found in texts: ", paste(non_appearence, collapse=", "))
+  if(length(non_appearence) != 0){
+    if(length(non_appearence) == 1){
+      stop("A keyword not found in texts: ", paste(non_appearence, collapse=", "))
+    }else{
+      stop("Keywords not found in texts: ", paste(non_appearence, collapse=", "))
+    }
+  }
+
 
   visualize_keywords <- 
     ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=Topic)) +
@@ -235,6 +241,13 @@ visualize_keywords <- function(keyATM_docs, keywords)
 #' @export
 print.keyATM_viz <- function(x){
   print(x$figure)  
+}
+
+
+#' @noRd
+#' @export
+summary.keyATM_viz <- function(x){
+  return(x$values)  
 }
 
 
@@ -406,17 +419,17 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
     stored_values$Z_tables <- list()
 
   key_model <- list(
-                    W=W, Z=Z, X=X,
-                    model=model,
-                    keywords=keywords_id, keywords_raw=keywords_raw,
-                    regular_k=regular_k,
-                    vocab=info$wd_names,
-                    model_settings=model_settings,
-                    priors=priors,
-                    options=options,
-                    stored_values=stored_values,
-                    model_fit=list(),
-                    call=match.call()
+                    W = W, Z = Z, X = X,
+                    model = model,
+                    keywords = keywords_id, keywords_raw = keywords_raw,
+                    regular_k = regular_k,
+                    vocab = info$wd_names,
+                    model_settings = model_settings,
+                    priors = priors,
+                    options = options,
+                    stored_values = stored_values,
+                    model_fit = list(),
+                    call = match.call()
                    )
 
   rm(info)
@@ -450,7 +463,6 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
 
   class(key_model) <- c("keyATM_fitted", class(key_model))
   return(key_model)
-
 }
 
 
@@ -470,7 +482,38 @@ print.keyATM_model <- function(x){
 
 #' @noRd
 #' @export
+summary.keyATM_model <- function(x){
+  cat(
+      paste0(
+             "keyATM_model object for the ",
+             x$model,
+             " model.",
+             "\n"
+      )
+     )
+}
+
+
+#' @noRd
+#' @export
 print.keyATM_fitted <- function(x){
+  cat(
+      paste0(
+             "keyATM_model object for the ",
+             x$model,
+             " model. ",
+             x$options$iterations, " iterations.\n",
+             length(x$W), " documents | ",
+             length(x$keywords), " keyword topics",
+             "\n"
+      )
+     )
+}
+
+
+#' @noRd
+#' @export
+summary.keyATM_fitted <- function(x){
   cat(
       paste0(
              "keyATM_model object for the ",
