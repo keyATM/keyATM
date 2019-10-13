@@ -9,20 +9,20 @@
 #'
 #' @return A list containing:
 #'   \describe{
-#'     \item{seed_K}{ Number of keyword topics}
-#'     \item{regular_k}{ Number of regular unseeded topics}
-#'     \item{V}{ Number of word types}
-#'     \item{N}{ Number of documents}
-#'     \item{theta}{ Normalized tpoic proportions for each document}
-#'     \item{phi}{ Normalized topic specific word generation probabilities}
-#'     \item{topic_counts}{ Number of tokens assigned to each topic}
-#'     \item{word_counts}{ Number of times each word type appears}
-#'     \item{doc_lens}{ Length of each document in tokens}
-#'     \item{vocab}{ Words in the vocabulary}
-#'     \item{alpha}{ \code{alpha} during the iteration}
-#'     \item{modelfit}{ Perplexity and log-likelihood}
-#'     \item{p}{ Estimated p}
-#'     \item{options}{ Options used in the \code{model}}
+#'     \item{keyword_k}{Number of keyword topics}
+#'     \item{regular_k}{Number of regular unseeded topics}
+#'     \item{V}{Number of word types}
+#'     \item{N}{Number of documents}
+#'     \item{theta}{Normalized tpoic proportions for each document}
+#'     \item{phi}{Normalized topic specific word generation probabilities}
+#'     \item{topic_counts}{Number of tokens assigned to each topic}
+#'     \item{word_counts}{Number of times each word type appears}
+#'     \item{doc_lens}{Length of each document in tokens}
+#'     \item{vocab}{Words in the vocabulary}
+#'     \item{modelfit}{Perplexity and log-likelihood}
+#'     \item{values_iter}{Organized values stored during iterations}
+#'     \item{p}{Estimated p}
+#'     \item{options}{Options used in the \code{model}}
 #'   }
 #' @export
 keyATM_output <- function(model){
@@ -58,7 +58,10 @@ keyATM_output <- function(model){
   }
 
   # Phi (topic-word distribution)
-  phi <- keyATM_output_phi(model, info)
+  res <- keyATM_output_phi(model, info)
+  phi <- res$phi
+  topic_counts <- res$topic_counts
+  word_counts <- res$word_counts
   
 
   # alpha
@@ -81,14 +84,24 @@ keyATM_output <- function(model){
         }
   }
 
+  # alpha_iter
+  if(model$model %in% c("hmm", "ldahmm")){
+    values_iter$alpha_iter <- keyATM_output_alpha_iter_hmm(model, info)
+  }
+
+  if((model$model %in% c("basic", "lda"))){
+		if(model$options$estimate_alpha)
+			values_iter$alpha_iter <- keyATM_output_alpha_iter_basic(model, info)  
+  }
+
   # model fit
   modelfit <- NULL
-  if(length(modelfit) > 0){
+  if(length(model$model_fit) > 0){
     model$model_fit %>%
       purrr::set_names(1:length(.)) %>%
       dplyr::bind_rows() %>%
       t() %>%
-      as_tibble(., .name_repair = ~c("Iteration", "Log Likelihood", "Perplexity")) -> modelfit
+      tibble::as_tibble(., .name_repair = ~c("Iteration", "Log Likelihood", "Perplexity")) -> modelfit
   }
 
   # p
@@ -98,22 +111,22 @@ keyATM_output <- function(model){
     dplyr::mutate(Topic=Z+1L) %>%
     dplyr::select(-starts_with("Z")) %>%
     dplyr::group_by(Topic) %>%
-    dplyr::summarize(count = n(), sumx=sum(X)) %>%
+    dplyr::summarize(count = (dplyr::n()), sumx=sum(X)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(Proportion=round(sumx/count*100, 3)) -> p_estimated
 
   # Make an object to return
-  ll <- list(keyword_K = length(model$keywords), regular_k = model$regular_k,
-             V = V, N = N,
+  ll <- list(keyword_k = length(model$keywords), regular_k = model$regular_k,
+             V = length(model$vocab), N = length(model$W),
              model=model$model,
              theta = theta, phi = phi,
              topic_counts = topic_counts, word_counts = word_counts,
-             doc_lens = doc_lens, vocab = model$vocab,
+             doc_lens = info$doc_lens, vocab = model$vocab,
              keywords_raw = model$keywords_raw,
-             alpha=res_alpha, modelfit=modelfit, p=p_estimated,
+             alpha=res_alpha, model_fit=modelfit, p=p_estimated,
              values_iter=values_iter)
   class(ll) <- c("keyATM_output", class(ll))
-  ll
+  return(ll)
 }
 
 
@@ -133,7 +146,11 @@ keyATM_output_theta <- function(model, info)
     theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z))
 
   }else if(model$model %in% c("basic", "lda")){
-    alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]  
+    if(model$options$estimate_alpha){
+      alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]  
+    }else{
+      alpha <- model$priors$alpha  
+    }
 
     posterior_z <- function(zvec){
       tt <- table(factor(zvec, levels = 1:(info$allK) - 1L))
@@ -143,7 +160,7 @@ keyATM_output_theta <- function(model, info)
     theta <- do.call(dplyr::bind_rows, lapply(model$Z, posterior_z))
 
   }else if(model$model %in% c("hmm", "ldahmm")){
-    S <- model$stored_values$S_iter[[length(model$stored_values$S_iter)]] + 1  # adjust index for R
+    S <- model$stored_values$S_iter[[length(model$stored_values$S_iter)]] + 1L  # adjust index for R
     S <- S[model$model_settings$time_index]  # retrieve doc level state info
     alphas <- matrix(model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]][S],
                      nrow=length(model$W), ncol=info$allK)
@@ -165,8 +182,8 @@ keyATM_output_theta <- function(model, info)
 
 keyATM_output_phi <- function(model, info)
 {
-  all_words <- model$vocab[as.integer(unlist(model$W)) + 1L]
-  all_topics <- as.integer(unlist(model$Z))
+  all_words <- model$vocab[as.integer(unlist(model$W, use.names=F)) + 1L]
+  all_topics <- as.integer(unlist(model$Z, use.names=F))
   
   res_tibble <- data.frame(
                         Word = all_words,
@@ -185,9 +202,9 @@ keyATM_output_phi <- function(model, info)
   word_counts <- Matrix::colSums(beta)
 
   phi <- beta / topic_counts
-  rownames(phi) <- tnames
+  rownames(phi) <- info$tnames
 
-  return(phi)
+  return(list(phi=phi, topic_counts=topic_counts, word_counts=word_counts))
 }
 
 
@@ -230,6 +247,38 @@ keyATM_output_theta_iter <- function(model, info)
   theta_iter <- lapply(1:length(model$stored_values$Z_tables),
                         posterior_theta)
   return(theta_iter)
+}
+
+
+keyATM_output_alpha_iter_basic <- function(model, info)
+{
+  topics <- paste0(1:(info$allK))
+  model$stored_values$alpha_iter %>%
+    purrr::set_names(1:length(.))   %>%
+    dplyr::bind_rows() %>%
+    t() %>%
+    tibble::as_tibble(., .name_repair = ~topics) %>%
+    dplyr::mutate(Iteration = 1:(dplyr::n())) %>%
+    tidyr::gather(key=Topic, value=alpha, -Iteration) %>%
+    dplyr::mutate(Topic = as.integer(Topic)) -> alpha_iter
+  return(alpha_iter)
+}
+
+
+keyATM_output_alpha_iter_hmm <- function(model, info)
+{
+  topics <- paste0(1:(info$allK))
+  model$stored_values$alpha_iter %>%
+    purrr::imap_dfr(., function(x, i){
+                          x %>%
+                            tibble::as_tibble(.,
+                                              .name_repair = ~topics) %>%
+                            dplyr::mutate(State = 1:(dplyr::n()),
+                                          Iteration = i) %>%
+                            tidyr::gather(key=Topic, value=alpha, -State, -Iteration)
+                        }) %>%
+     dplyr::mutate(Topic = as.integer(Topic)) -> alpha_iter
+  return(alpha_iter)
 }
 
 #' @noRd
@@ -275,39 +324,6 @@ check_arg_type <- function(arg, typename, message=NULL){
 
 
 
-#' Set topic names
-#'
-#' @param x the output from a keyATM model (see \code{keyATM_output})
-#' @param topic_names new names for topics
-#'
-#' @return an output object with new topic names in its components
-#' @export
-#'
-set_topic_names <- function(x, topic_names){
-  check_arg_type(x, "keyATM_output")
-  colnames(x$theta) <- topic_names
-  names(x$topic_counts) <- topic_names
-  rownames(x$beta) <- topic_names
-  x
-}
-
-#' Set document names
-#'
-#' @param x the output from a keyATM model (see \code{keyATM_output})
-#' @param doc_names new names for documents
-#'
-#' @return an output object with new document names in its components
-#' @export
-#'
-set_doc_names <- function(x, doc_names){
-  check_arg_type(x, "keyATM_output")
-  rownames(x$theta) <- doc_names
-  names(x$doc_lens) <- doc_names
-  x
-}
-
-
-
 #' Show the top words for each topic
 #'
 #' If \code{show_keyword} is true then words in their seeded categories
@@ -334,15 +350,15 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
   measure <- match.arg(measure)
   if (measure == "probability") {
      measuref <- function(xrow){
-       colnames(x$beta)[order(xrow, decreasing = TRUE)[1:n]]
+       colnames(x$phi)[order(xrow, decreasing = TRUE)[1:n]]
      }
   } else if (measure == "lift") {
      wfreq <- x$word_counts / sum(x$word_counts)
      measuref <- function(xrow){
-       colnames(x$beta)[order(xrow / wfreq, decreasing = TRUE)[1:n]]
+       colnames(x$phi)[order(xrow / wfreq, decreasing = TRUE)[1:n]]
      }
   }
-  res <- apply(x$beta, 1, measuref)
+  res <- apply(x$phi, 1, measuref)
   if (show_keyword) {
     for (i in 1:ncol(res)) {
       for (j in 1:length(x$keywords_raw)) {
@@ -356,6 +372,8 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
   }
   res
 }
+
+
 
 #' Show the top topics for each document
 #'
@@ -384,6 +402,8 @@ top_topics <- function(x, n = 2, measure = c("probability", "lift")){
   }
   t(apply(x$theta, 1, measuref))
 }
+
+
 
 #' Show the top documents for each topic
 #'
@@ -414,82 +434,72 @@ top_docs <- function(x, n = 10, measure = c("probability", "lift")){
 }
 
 
+
 #' Show a diagnosis plot of alpha
 #'
 #' @param x the output from a keyATM model (see \code{keyATM_output})
 #' @param start Slice iteration
 #' @param show_topic a vector to specify topic indexes to show
-#' @param true_vec a vector to visualize true values of alpha
+#' @param thinning a integer for thinning
 #' @param scale a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters
 #'
 #' @return ggplot2 object
 #' @importFrom stats as.formula
 #' @import ggplot2
 #' @export
-diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
-                            scale = ""){
+diagnosis_alpha <- function(x, start = 0, show_topic = NULL,
+                            thinning = 10,
+                            scales = "fixed"){
 
   check_arg_type(x, "keyATM_output")
-  if("keyATM" %in% class(x)){
-    num_topic <-  length(x$keywords_raw) + x$regular_k
 
-    res_alpha <- data.frame(x$alpha_iter)
-    colnames(res_alpha) <- NULL
-    res_alpha <- data.frame(t(res_alpha))
-    if(nrow(res_alpha) > 0){
-      colnames(res_alpha) <- paste0("EstTopic", 1:ncol(res_alpha))
-      res_alpha$iter <- 1:nrow(res_alpha)
-    }
-    
-  }else if("keyATM_output" %in% class(x)){
-    num_topic <-  x$seed_K + x$regular_k
-    res_alpha <- x$alpha  
+  if(!"alpha_iter" %in% names(x$values_iter)){
+    stop("`alpha` is not stored. Please check the settings of the model.")  
   }
 
-  if(!is.null(show_topic)){
-    # show topic is a vector of column index e.g., c(1,3,5)
-    res_alpha <- res_alpha[, show_topic]
+  thinning <- as.integer(thinning)
+  enq_thinning <- enquo(thinning)
+
+  if(is.null(show_topic)){
+    show_topic <- 1:(x$keyword_k + x$regular_k)  
   }
-  res_alpha$iter <- 1:nrow(res_alpha)
+  check_arg_type(show_topic, "numeric")
+  enq_show_topic <- enquo(show_topic)
 
-  if(!is.null(start)){
-    res_alpha <- res_alpha[start:nrow(res_alpha), ]
-  }
+  x$values_iter$alpha_iter %>%
+    dplyr::filter(Iteration %% (!!enq_thinning) == 0) %>%
+    dplyr::filter(Iteration >= start) %>%
+    dplyr::filter(Topic %in% (!!show_topic)) %>%
+    dplyr::mutate(Topic = paste0("Topic", Topic)) -> res_alpha
 
-
-  parameters <- tidyr::gather(res_alpha, key = "parameter", value = "value",
-                              -"iter")
-
-  p <- ggplot(data=parameters, aes_string(x = 'iter', y = 'value',
-                                          group = 'parameter', color = 'parameter')) +
-     geom_line() +
-     geom_point(size = 0.3)
-
-  if(scale == ""){
-    p <- p + facet_wrap(as.formula(paste("~", "parameter")), ncol = 2)
-  } else if(scale == "free"){
-    p <- p + facet_wrap(as.formula(paste("~", "parameter")), ncol = 2,
-                        scales = "free")
+  if(nrow(res_alpha) == 0){
+    stop("Nothing left to plot. Please check arguments.")  
   }
 
-  if(!is.null(true_vec)){
-    true <- data.frame(
-       parameter = paste0("EstTopic", 1:length(true_vec)),
-       value = true_vec
-       )
-    if (!is.null(show_topic)){
-      true <- true[show_topic,]
-    }
-
-    p <- p + geom_hline(data = true, aes_string(yintercept = 'value'), color="black")
+  if(x$model %in% c("basic", "lda")){
+    p <- ggplot(res_alpha, aes(x=Iteration, y=alpha, group=Topic)) +
+          geom_line() +
+          geom_point(size=0.3) +
+          facet_wrap(~ Topic, ncol = 2, scales = scales) +
+          ylab("Value") +
+          ggtitle("Estimated alpha") + theme_bw() +
+          theme(plot.title = element_text(hjust = 0.5))
+  }else if(x$model %in% c("hmm", "ldahmm")){
+    res_alpha %>% mutate(State = as.character(State)) -> res_alpha
+    p <- ggplot(res_alpha, aes(x=Iteration, y=alpha, group=State, colour=State)) +
+          geom_line() +
+          geom_point(size=0.3) +
+          facet_wrap(~ Topic, ncol = 2, scales = scales) +
+          ylab("Value") +
+          ggtitle("Estimated alpha") + theme_bw() +
+          theme(plot.title = element_text(hjust = 0.5))  
   }
-
-  p <- p + ylab("Value") +
-    ggtitle("Estimated Alpha") + theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
-
   return(p)
 }
+
+
+
+
 
 #' Show a diagnosis plot of log-likelihood and perplexity
 #'
@@ -502,22 +512,15 @@ diagnosis_alpha <- function(x, start = NULL, show_topic = NULL, true_vec = NULL,
 #' @export
 diagnosis_model_fit <- function(x, start=NULL){
 
-  if("keyATM_output" %in% class(x)){
-    modelfit <- x$modelfit
-  }else if("keyATM" %in% class(x)){
-    modelfit <- data.frame(x$model_fit)
-    colnames(modelfit) <- NULL
-    if(nrow(modelfit) > 0){
-      modelfit <- data.frame(t(modelfit))
-      colnames(modelfit) <-  c("Iteration", "Log Likelihood", "Perplexity")
-    }  
-  }
+  check_arg_type(x, "keyATM_output")
+
+  modelfit <- x$model_fit
 
   if(!is.null(start)){
     modelfit <- modelfit[ modelfit$Iteration >= start, ]
   }
 
-  modelfit <- tidyr::gather(modelfit, key="Measures", value="value", -"Iteration")
+  modelfit <- tidyr::gather(modelfit, key=Measures, value=value, -Iteration)
 
   p <- ggplot(data=modelfit, aes_string(x='Iteration', y='value',
                                         group='Measures', color='Measures')) +
@@ -532,34 +535,35 @@ diagnosis_model_fit <- function(x, start=NULL){
 }
 
 
+
 #' Show a diagnosis plot of p
 #'
 #' @param x the output from a keyATM model (see \code{keyATM_output})
-#' @param topicvec A topic vector to reorder
+#' @param show_topic A topic vector to reorder
 #'
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import dplyr
 #' @export
-diagnosis_p <- function(x, topicvec=c()){
+diagnosis_p <- function(x, shoe_topic=c()){
 
   num <- length(unique(x$p$Topic))
-  if(is.null(topicvec)){
-    topicvec <- 1:num
-  }else if(length(topicvec) != num){
+  if(is.null(show_topic)){
+    shoe_topic <- 1:num
+  }else if(length(show_topic) != num){
     message("Topicvec length does not match with the topic number")
-    topicvec <- 1:num
+    show_topic <- 1:num
   }
 
   temp <- x$p
-  temp$Topic <- paste0("EstTopic", temp$Topic)
+  temp$Topic <- paste0("Topic", temp$Topic)
   g  <- ggplot(temp, aes_string(x='Topic', y='Proportion')) +
       geom_bar(stat="identity") +
       theme_bw() +
-      scale_x_discrete(limits = paste0("EstTopic", get("topicvec"))) +
+      scale_x_discrete(limits = paste0("Topic", get("show_topic"))) +
       ylab("Proportion (%)") +
       xlab("Topic") +
-      ggtitle("Proportion of words drawn from seed topic-word distribution") +
+      ggtitle("Proportion of words drawn from topic-word distribution") +
       theme(plot.title = element_text(hjust = 0.5))
 
   return(g)

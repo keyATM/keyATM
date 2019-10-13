@@ -12,20 +12,20 @@ keyATM_output(model)
 \value{
 A list containing:
   \describe{
-    \item{seed_K}{ Number of keyword topics}
-    \item{regular_k}{ Number of regular unseeded topics}
-    \item{V}{ Number of word types}
-    \item{N}{ Number of documents}
-    \item{theta}{ Normalized tpoic proportions for each document}
-    \item{beta}{ Normalized topic specific word generation probabilities}
-    \item{topic_counts}{ Number of tokens assigned to each topic}
-    \item{word_counts}{ Number of times each word type appears}
-    \item{doc_lens}{ Length of each document in tokens}
-    \item{vocab}{ Words in the vocabulary}
-    \item{alpha}{ \code{alpha} during the iteration}
-    \item{modelfit}{ Perplexity and log-likelihood}
-    \item{p}{ Estimated p}
-    \item{options}{ Options used in the \code{model}}
+    \item{keyword_k}{Number of keyword topics}
+    \item{regular_k}{Number of regular unseeded topics}
+    \item{V}{Number of word types}
+    \item{N}{Number of documents}
+    \item{theta}{Normalized tpoic proportions for each document}
+    \item{phi}{Normalized topic specific word generation probabilities}
+    \item{topic_counts}{Number of tokens assigned to each topic}
+    \item{word_counts}{Number of times each word type appears}
+    \item{doc_lens}{Length of each document in tokens}
+    \item{vocab}{Words in the vocabulary}
+    \item{modelfit}{Perplexity and log-likelihood}
+    \item{values_iter}{Organized values stored during iterations}
+    \item{p}{Estimated p}
+    \item{options}{Options used in the \code{model}}
   }
 }
 \description{

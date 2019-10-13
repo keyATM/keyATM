@@ -137,8 +137,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>diagnosis_alpha</span>(<span class='no'>x</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>show_topic</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>true_vec</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+    <pre class="usage"><span class='fu'>diagnosis_alpha</span>(<span class='no'>x</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>show_topic</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>thinning</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>scales</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -156,8 +156,8 @@
       <td><p>a vector to specify topic indexes to show</p></td>
     </tr>
     <tr>
-      <th>true_vec</th>
-      <td><p>a vector to visualize true values of alpha</p></td>
+      <th>thinning</th>
+      <td><p>a integer for thinning</p></td>
     </tr>
     <tr>
       <th>scale</th>

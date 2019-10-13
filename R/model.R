@@ -625,6 +625,8 @@ check_arg_model_settings <- function(obj, model, info)
     if(max(obj$time_index) < obj$num_states)
       stop("`model_settings$num_states` should not exceed the maximum of `model_settings$time_index`.")
 
+    obj$time_index <- as.integer(obj$time_index)
+
     allowed_arguments <- c(allowed_arguments, "num_states", "time_index")
     
   }
