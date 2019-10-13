@@ -60,26 +60,6 @@ keyATM_output <- function(model){
   word_counts <- res$word_counts
   
 
-  # alpha
-  if(model$model %in% c("hmm", "ldahmm")){
-    res_alpha <- list()
-
-    for (i in 1:model$model_settings$num_states) {
-      res_alpha[[i]] <- do.call(rbind, lapply(model$stored_values$alpha_iter, function(x){ x[i, ] }))
-    }
-    res_alpha <- lapply(res_alpha, 
-      function(x){colnames(x) <- paste0("EstTopic", 1:ncol(x)); y <- data.frame(x); y$iter <- 1:nrow(x); return(y)})
-
-  }else{
-        res_alpha <- data.frame(model$stored_values$alpha_iter)
-        colnames(res_alpha) <- NULL
-        res_alpha <- data.frame(t(res_alpha))
-        if(nrow(res_alpha) > 0){
-          colnames(res_alpha) <- paste0("EstTopic", 1:ncol(res_alpha))
-          res_alpha$iter <- 1:nrow(res_alpha)
-        }
-  }
-
   # alpha_iter
   if(model$model %in% c("hmm", "ldahmm")){
     values_iter$alpha_iter <- keyATM_output_alpha_iter_hmm(model, info)
@@ -120,7 +100,7 @@ keyATM_output <- function(model){
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = info$doc_lens, vocab = model$vocab,
              keywords_raw = model$keywords_raw,
-             alpha=res_alpha, model_fit=modelfit, p=p_estimated,
+             model_fit=modelfit, p=p_estimated,
              values_iter=values_iter)
   class(ll) <- c("keyATM_output", class(ll))
   return(ll)
