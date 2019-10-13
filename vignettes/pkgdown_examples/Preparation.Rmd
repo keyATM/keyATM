@@ -43,7 +43,7 @@ textfiles <- list.files(PATH_TO_THE_FOLDER, pattern = "*.txt", full.names = TRUE
 
 ## Prepare keywords
 
-Keywords should be in a list. For example, let's prepare two keyword-topics. The number of keywords can vary between topics. Please also check [Guidelines](Guidlines.html) to see how to select keywords that help models.
+Keywords should be in a list. For example, let's prepare two keyword-topics. The number of keywords can vary between topics. Please also check [FAQ](FAQ.html) to see how to select keywords that help models.
 
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 keywords_list <- list(
@@ -66,6 +66,6 @@ Now you have texts and keywords! The next step is to prepare a model object with
   * If you want to explicitly consider time structure, please use this model.
 
 
-You can find details in [Guidelines](Guidlines.html#which-model-to-use).
+You can find details in [FAQ](FAQ.html#which-model-to-use).
 
 

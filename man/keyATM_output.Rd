@@ -7,7 +7,7 @@
 keyATM_output(model)
 }
 \arguments{
-\item{model}{a fitted keyATM model}
+\item{model}{a fitted keyATM model (an output of \code{keyATM_fit()})}
 }
 \value{
 A list containing:
@@ -16,21 +16,17 @@ A list containing:
     \item{regular_k}{Number of regular unseeded topics}
     \item{V}{Number of word types}
     \item{N}{Number of documents}
-    \item{theta}{Normalized tpoic proportions for each document}
+    \item{theta}{Normalized topic proportions for each document}
     \item{phi}{Normalized topic specific word generation probabilities}
     \item{topic_counts}{Number of tokens assigned to each topic}
     \item{word_counts}{Number of times each word type appears}
     \item{doc_lens}{Length of each document in tokens}
     \item{vocab}{Words in the vocabulary}
-    \item{modelfit}{Perplexity and log-likelihood}
-    \item{values_iter}{Organized values stored during iterations}
+    \item{model_fit}{Perplexity and log-likelihood}
     \item{p}{Estimated p}
-    \item{options}{Options used in the \code{model}}
+    \item{values_iter}{Organized values stored during iterations}
   }
 }
 \description{
-Constructs a (N x K) matrix \code{theta} and (K x V) matrix \code{beta}
-plus their margins from the sample of Z and W in \code{model}.
-\code{model} is an output of \code{keyATM_run()}.
-These statistics implicitly marginalize over X.
+\code{keyATM_output()} makes various quantities that help interpret the model.
 }

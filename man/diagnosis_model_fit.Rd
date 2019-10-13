@@ -4,12 +4,12 @@
 \alias{diagnosis_model_fit}
 \title{Show a diagnosis plot of log-likelihood and perplexity}
 \usage{
-diagnosis_model_fit(x, start = NULL)
+diagnosis_model_fit(x, start = 1)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM_output})}
+\item{x}{the output from a keyATM model (see \code{keyATM_output()})}
 
-\item{start}{Slice iteration}
+\item{start}{}
 }
 \value{
 ggplot2 object

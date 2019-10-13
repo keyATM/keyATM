@@ -18,7 +18,7 @@ output: github_document
 * [keyATM Covariate](articles/pkgdown_examples/keyATM_cov.html)
 * [keyATM HMM](articles/pkgdown_examples/keyATM_HMM.html)
 * [Weighted LDA](articles/pkgdown_examples/Weighted_LDA.html)
-* [Guidlines](articles/pkgdown_examples/Guidlines.html)
+* [FAQ](articles/pkgdown_examples/FAQ.html)
 
 ## How to report a bug
 We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/Shusei-E/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format. 

@@ -34,8 +34,8 @@ navbar:
           href: articles/pkgdown_examples/keyATM_HMM.html
         - text: "Weighted LDA"
           href: articles/pkgdown_examples/Weighted_LDA.html
-        - text: "Guidlines"
-          href: articles/pkgdown_examples/Guidlines.html
+        - text: "FAQ"
+          href: articles/pkgdown_examples/FAQ.html
     - text: "Reference"
       href: reference/index.html
     - text: "Changelog"
@@ -55,8 +55,6 @@ reference:
   - '`keyATM_fit`'
   - '`keyATM_output`'
   - '`keyATM_read`'
-  - '`set_doc_names`'
-  - '`set_topic_names`'
   - '`top_docs`'
   - '`top_words`'
   - '`top_topics`'
