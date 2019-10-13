@@ -82,14 +82,14 @@ keyATM_output <- function(model){
   }
 
   # model fit
-	modelfit <- NULL
-	if(length(modelfit) > 0){
-		model$model_fit %>%
-			purrr::set_names(1:length(.)) %>%
-			dplyr::bind_rows() %>%
-			t() %>%
-			as_tibble(., .name_repair = ~c("Iteration", "Log Likelihood", "Perplexity")) -> modelfit
-	}
+  modelfit <- NULL
+  if(length(modelfit) > 0){
+    model$model_fit %>%
+      purrr::set_names(1:length(.)) %>%
+      dplyr::bind_rows() %>%
+      t() %>%
+      as_tibble(., .name_repair = ~c("Iteration", "Log Likelihood", "Perplexity")) -> modelfit
+  }
 
   # p
   data <- tibble::tibble(Z=unlist(model$Z, use.names=F),
