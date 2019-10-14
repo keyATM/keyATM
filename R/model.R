@@ -336,6 +336,7 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   # Check type
   check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
   check_arg_type(regular_k, "numeric")
+  regular_k <- as.integer(regular_k)
 
   if(!model %in% c("basic", "cov", "hmm", "lda", "ldacov", "ldahmm")){
     stop("Please select a correct model.")  
