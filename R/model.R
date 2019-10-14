@@ -251,6 +251,13 @@ summary.keyATM_viz <- function(x){
 }
 
 
+#' @noRd
+#' @export
+save.keyATM_viz <- function(x, file = stop("'file' must be specified")){
+  save(x, file=file, compress="xz", compression_level=3)
+}
+
+
 
 #' Fit keyATM model
 #'
@@ -496,6 +503,13 @@ summary.keyATM_model <- function(x){
 
 #' @noRd
 #' @export
+save.keyATM_model <- function(x, file = stop("'file' must be specified")){
+  save(x, file=file, compress="xz", compression_level=3)
+}
+
+
+#' @noRd
+#' @export
 print.keyATM_fitted <- function(x){
   cat(
       paste0(
@@ -525,6 +539,13 @@ summary.keyATM_fitted <- function(x){
              "\n"
       )
      )
+}
+
+
+#' @noRd
+#' @export
+save.keyATM_fitted <- function(x, file = stop("'file' must be specified")){
+  save(x, file=file, compress="xz", compression_level=3)
 }
 
 

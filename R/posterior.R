@@ -31,8 +31,8 @@ keyATM_output <- function(model){
   info <- list()
   info$allK <- model$regular_k + length(model$keywords)
   info$V <- length(model$vocab)
-  info$N <- length(model$W)
-  info$doc_lens <- sapply(model$W, length)
+  info$N <- length(model$Z)
+  info$doc_lens <- sapply(model$Z, length)
 
   if(model$regular_k > 0 & length(model$keywords) != 0){
     info$tnames <- c(paste0("", 1:length(model$keywords)), paste0("T_", 1:model$regular_k))
@@ -94,7 +94,7 @@ keyATM_output <- function(model){
 
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), regular_k = model$regular_k,
-             V = length(model$vocab), N = length(model$W),
+             V = length(model$vocab), N = length(model$Z),
              model=model$model,
              theta = theta, phi = phi,
              topic_counts = topic_counts, word_counts = word_counts,
@@ -140,7 +140,7 @@ keyATM_output_theta <- function(model, info)
     S <- model$stored_values$S_iter[[length(model$stored_values$S_iter)]] + 1L  # adjust index for R
     S <- S[model$model_settings$time_index]  # retrieve doc level state info
     alphas <- matrix(model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]][S],
-                     nrow=length(model$W), ncol=info$allK)
+                     nrow=length(model$Z), ncol=info$allK)
 
     Z_table <- do.call(dplyr::bind_rows, 
                        lapply(model$Z, 
@@ -205,7 +205,7 @@ keyATM_output_theta_iter <- function(model, info)
       S <- S[model$model_settings$time_index]  # retrieve doc level state info
 
       alphas <- matrix(model$stored_values$alpha_iter[[x]][S],
-                       nrow=length(model$W), ncol=info$allK)
+                       nrow=length(model$Z), ncol=info$allK)
     
       tt <- Z_table + alphas
       theta <- tt / Matrix::rowSums(tt)
@@ -285,6 +285,12 @@ summary.keyATM_output <- function(x){
      )
 }
 
+
+#' @noRd
+#' @export
+save.keyATM_output <- function(x, file = stop("'file' must be specified")){
+  save(x, file=file, compress="xz", compression_level=3)
+}
 
 
 # a more than usually informative error message for handing in the
