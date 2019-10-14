@@ -5,11 +5,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Installation • keyATM</title>
+<title>keyATM Topics Over Time • keyATM</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
-<script src="../../pkgdown.js"></script><meta property="og:title" content="Installation">
+<script src="../../pkgdown.js"></script><meta property="og:title" content="keyATM Topics Over Time">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -44,27 +44,33 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../../articles/pkgdown_examples/Installation.html">Installation</a>
+      <a href="../../articles/pkgdown_files/Installation.html">Installation</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/Preparation.html">Preparation</a>
+      <a href="../../articles/pkgdown_files/Preparation.html">Preparation</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/keyATM_basic.html">keyATM Basic</a>
+      <a href="../../articles/pkgdown_files/keyATM_basic.html">keyATM Basic</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/keyATM_cov.html">keyATM Covariate</a>
+      <a href="../../articles/pkgdown_files/keyATM_cov.html">keyATM Covariate</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/keyATM_HMM.html">keyATM HMM</a>
+      <a href="../../articles/pkgdown_files/keyATM_HMM.html">keyATM HMM</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/Weighted_LDA.html">Weighted LDA</a>
+      <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/FAQ.html">FAQ</a>
+      <a href="../../articles/pkgdown_files/Priors.html">Priors</a>
+    </li>
+    <li>
+      <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../../articles/pkgdown_files/FAQ.html">FAQ</a>
 </li>
 <li>
   <a href="../../reference/index.html">Reference</a>
@@ -92,17 +98,16 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Installation</h1>
+      <h1>keyATM Topics Over Time</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Shusei-E/keyATM/blob/master/vignettes/pkgdown_examples/Installation.Rmd"><code>vignettes/pkgdown_examples/Installation.Rmd</code></a></small>
-      <div class="hidden name"><code>Installation.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/Shusei-E/keyATM/blob/master/vignettes/pkgdown_files/keyATM_HMM.Rmd"><code>vignettes/pkgdown_files/keyATM_HMM.Rmd</code></a></small>
+      <div class="hidden name"><code>keyATM_HMM.Rmd</code></div>
 
     </div>
 
     
     
-<p>You can install <strong>keyATM</strong> from either CRAN or GitHub. CRAN has a stable version while GitHub stores the latest version and developing version.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Install release version from CRAN</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"keyATM"</span>)</span>
 <span id="cb1-3"><a href="#cb1-3"></a></span>

@@ -51,37 +51,6 @@ If you want to speed up fitting, the first thing you can do is to review preproc
 
 
 
-## What is the `options` argument?
-
-`keyATM_read()` takes various options.
-
-#### `seed`
-This is a seed used to generate random numbers. The same seed is used for initialization and fitting the model (`set.seed()` is executed before both initialization and fitting). If you do not provide `seed`, **keyATM** randomly selects a seed for you.
-
-#### `output_per`
-
-
-
-#### `use_weights`
-$$
-\begin{align}
- a &=   1\\
- b &= 3
-\end{align}
-$$
-
-#### `visualize_keywords`
-
-
-#### `thinning`
-
-
-#### `store_theta`
-
-
-#### `x_prior`
-
-
 
 ## Can I run keyATM on cloud computing services?
 Yes! For example, [Professor Louis Aslett](http://www.louisaslett.com/) provides an easy to use Amazon Machine Image of RStudio [here](http://www.louisaslett.com/RStudio_AMI/). When you select an instance, please note that **keyATM** does not need multiple cores (one or two cores would be enough because we cannot parallelize Collapsed Gibbs Sampling), but make sure the memory can handle your data.

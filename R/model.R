@@ -639,12 +639,16 @@ check_arg_model_settings <- function(obj, model, info)
       stop("The length of the `model_settings$time_index` does not match with the number of documents.")  
     }
     
-    if(min(obj$time_index) < 1 | max(obj$time_index) > info$num_doc){
+    if(min(obj$time_index) != 1 | max(obj$time_index) > info$num_doc){
       stop("`model_settings$time_index` should start from 1 and not exceed the number of documents.")
     }
 
     if(max(obj$time_index) < obj$num_states)
       stop("`model_settings$num_states` should not exceed the maximum of `model_settings$time_index`.")
+
+    check <- unique(time_index[2:length(time_index)] - lag(time_index)[2:length(time_index)])
+    if(sum(!unique(check) %in% c(0,1)) != 0)
+      stop("`model_settings$num_states` does not increment by 1.")
 
     obj$time_index <- as.integer(obj$time_index)
 
