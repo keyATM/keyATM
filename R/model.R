@@ -335,7 +335,7 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
 
   # Check type
   check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
-  if(!is.integer(regular_k) | !is.numeric(regular_k))
+  if(!is.integer(regular_k) & !is.numeric(regular_k))
     stop("`regular_k` is neigher numeric nor integer.")
 
   regular_k <- as.integer(regular_k)
