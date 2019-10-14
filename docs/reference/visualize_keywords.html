@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Articles • keyATM</title>
+<title>Visualize texts — visualize_keywords • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,10 @@
 
 
 
-<meta property="og:title" content="Articles" />
+<meta property="og:title" content="Visualize texts — visualize_keywords" />
+
+<meta property="og:description" content="This function visualizes the proportion of keywords in the documents." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -47,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-article-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -129,25 +132,75 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Articles</h1>
+    <h1>Visualize texts</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/model.R'><code>R/model.R</code></a></small>
+    <div class="hidden name"><code>visualize_keywords.Rd</code></div>
     </div>
 
-    <div class="section ">
-      <h3>All vignettes</h3>
-      <p class="section-desc"></p>
-
-      <ul>
-        <li><a href="pkgdown_files/FAQ.html">FAQ</a></li>
-        <li><a href="pkgdown_files/Installation.html">Installation</a></li>
-        <li><a href="pkgdown_files/Options.html">Options</a></li>
-        <li><a href="pkgdown_files/Preparation.html">Preparation</a></li>
-        <li><a href="pkgdown_files/Priors.html">Priors</a></li>
-        <li><a href="pkgdown_files/Weighted_LDA.html">keyATM Topics Over Time with covariates</a></li>
-        <li><a href="pkgdown_files/keyATM_HMM.html">keyATM Topics Over Time</a></li>
-        <li><a href="pkgdown_files/keyATM_basic.html">keyATM Basic</a></li>
-        <li><a href="pkgdown_files/keyATM_cov.html">keyATM Covariate</a></li>
-      </ul>
+    <div class="ref-description">
+    
+    <p>This function visualizes the proportion of keywords in the documents.</p>
+    
     </div>
+
+    <pre class="usage"><span class='fu'>visualize_keywords</span>(<span class='no'>keyATM_docs</span>, <span class='no'>keywords</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>keyATM_docs</th>
+      <td><p>A list of texts read via <code><a href='keyATM_read.html'>keyATM_read()</a></code> function</p></td>
+    </tr>
+    <tr>
+      <th>keywords</th>
+      <td><p>A list of keywords</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A list containing</p><dl class='dl-horizontal'>
+   <dt>figure</dt><dd><p>a ggplot2 object</p></dd>
+   <dt>values</dt><dd><p>a tibble object that stores values</p></dd>
+</dl>
+
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+ <span class='co'># Prepare a keyATM_docs object</span>
+ <span class='no'>keyATM_docs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='keyATM_read.html'>keyATM_read</a></span>(<span class='no'>input</span>)
+
+ <span class='co'># Keywords are in a list  </span>
+ <span class='no'>keywords</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
+                   <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"education"</span>, <span class='st'>"child"</span>, <span class='st'>"student"</span>),  <span class='co'># Education</span>
+                   <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"public"</span>, <span class='st'>"health"</span>, <span class='st'>"program"</span>),  <span class='co'># Health</span>
+                 )
+
+ <span class='co'># Visualize keywords</span>
+ <span class='no'>keyATM_viz</span> <span class='kw'>&lt;-</span> <span class='fu'>visualize_keywords</span>(<span class='no'>keyATM_docs</span>, <span class='no'>keywords</span>)
+
+ <span class='co'># View a figure</span>
+ <span class='no'>keyATM_viz</span>
+   <span class='co'># Or: `keyATM_viz$figure`</span>
+
+ <span class='co'># Save a figure </span>
+ <span class='fu'>ggsave</span>(<span class='no'>filename</span>, <span class='no'>keyATM_viz</span>$<span class='no'>figure</span>)
+
+<span class='co'># }</span><div class='input'>
+</div></pre>
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+    <h2>Contents</h2>
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
+
   </div>
 </div>
 

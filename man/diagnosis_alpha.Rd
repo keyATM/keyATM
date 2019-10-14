@@ -4,17 +4,17 @@
 \alias{diagnosis_alpha}
 \title{Show a diagnosis plot of alpha}
 \usage{
-diagnosis_alpha(x, start = NULL, show_topic = NULL, true_vec = NULL,
-  scale = "")
+diagnosis_alpha(x, start = 0, show_topic = NULL, thinning = 5,
+  scales = "fixed")
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM_output})}
+\item{x}{the output from a keyATM model (see \code{keyATM_output()})}
 
 \item{start}{Slice iteration}
 
 \item{show_topic}{a vector to specify topic indexes to show}
 
-\item{true_vec}{a vector to visualize true values of alpha}
+\item{thinning}{a integer for thinning}
 
 \item{scale}{a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters}
 }

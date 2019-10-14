@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit a keyATM model — keyATM_fit • keyATM</title>
+<title>Fit keyATM model — keyATM_fit • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Fit a keyATM model — keyATM_fit" />
+<meta property="og:title" content="Fit keyATM model — keyATM_fit" />
 
-<meta property="og:description" content="Fit keyATM model." />
+<meta property="og:description" content="Select and specify one of the keyATM models and fit the model." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -77,27 +77,33 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/pkgdown_examples/Installation.html">Installation</a>
+      <a href="../articles/pkgdown_files/Installation.html">Installation</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Preparation.html">Preparation</a>
+      <a href="../articles/pkgdown_files/Preparation.html">Preparation</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_basic.html">keyATM Basic</a>
+      <a href="../articles/pkgdown_files/keyATM_basic.html">keyATM Basic</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_cov.html">keyATM Covariate</a>
+      <a href="../articles/pkgdown_files/keyATM_cov.html">keyATM Covariate</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_HMM.html">keyATM HMM</a>
+      <a href="../articles/pkgdown_files/keyATM_HMM.html">keyATM HMM</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Weighted_LDA.html">Weighted LDA</a>
+      <a href="../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Guidlines.html">Guidlines</a>
+      <a href="../articles/pkgdown_files/Priors.html">Priors</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../articles/pkgdown_files/FAQ.html">FAQ</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
@@ -126,62 +132,109 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fit a keyATM model</h1>
+    <h1>Fit keyATM model</h1>
     <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/model.R'><code>R/model.R</code></a></small>
     <div class="hidden name"><code>keyATM_fit.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Fit keyATM model.</p>
+    <p>Select and specify one of the keyATM models and fit the model.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>keyATM_fit</span>(<span class='no'>model</span>, <span class='kw'>iteration</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>keep_model</span> <span class='kw'>=</span> <span class='no'>T</span>)</pre>
+    <pre class="usage"><span class='fu'>keyATM_fit</span>(<span class='no'>keyATM_docs</span>, <span class='no'>model</span>, <span class='no'>regular_k</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
+  <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>priors</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>model</th>
-      <td><p>keyATM object (the output of <code><a href='keyATM_read.html'>keyATM_read()</a></code>)</p></td>
+      <th>keyATM_docs</th>
+      <td><p>texts read via <code><a href='keyATM_read.html'>keyATM_read()</a></code></p></td>
     </tr>
     <tr>
-      <th>iteration</th>
-      <td><p>number of iteration</p></td>
+      <th>model</th>
+      <td><p>keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"</p></td>
+    </tr>
+    <tr>
+      <th>regular_k</th>
+      <td><p>the number of regular topics</p></td>
+    </tr>
+    <tr>
+      <th>keywords</th>
+      <td><p>a list of keywords</p></td>
+    </tr>
+    <tr>
+      <th>model_settings</th>
+      <td><p>a list of model specific settings</p></td>
+    </tr>
+    <tr>
+      <th>priors</th>
+      <td><p>a list of priors of parameters</p></td>
+    </tr>
+    <tr>
+      <th>options</th>
+      <td><p>a list of options</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>keyATM object, which is a list containing</p><dl class='dl-horizontal'>
-        <dt>W</dt><dd><p>a list of vectors of word indexes</p></dd>
-        <dt>Z</dt><dd><p>a list of vectors of topic indicators isomorphic to W</p></dd>
-        <dt>C</dt><dd><p>a covariate matrix is there is an input</p></dd>
-        <dt>X</dt><dd><p>a list of vectors of seed indicators (0/1) isomorphic to W</p></dd>
-        <dt>vocab</dt><dd><p>a vector of vocabulary items</p></dd>
-        <dt>files</dt><dd><p>a vector of document filenames</p></dd>
-        <dt>dict</dt><dd><p>a tokenized version of the keyword dictionary</p></dd>
-        <dt>keywords</dt><dd><p>a list of keywords in dict, named by dictionary category</p></dd>
-        <dt>regular_k</dt><dd><p>how many extra non-seeded topics are required</p></dd>
-        <dt>alpha</dt><dd><p>a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.</p></dd>
-        <dt>alpha_iter</dt><dd><p>a list to store topic proportion hyperparameters</p></dd>
-        <dt>Lambda_iter</dt><dd><p>a list to store coefficients of the covariates</p></dd>
-        <dt>S_iter</dt><dd><p>a list to store states sampled in HMM</p></dd>
-        <dt>sampling_info</dt><dd><p>information related to sampling</p></dd>
-        <dt>model_fit</dt><dd><p>a list to store perplexity and log-likelihood</p></dd>
-        <dt>gamma1</dt><dd><p>First prior probability parameter for X (currently the same for all topics)</p></dd>
-        <dt>gamma2</dt><dd><p>Second prior probability parameter for X (currently the same for all topics)</p></dd>
-        <dt>beta</dt><dd><p>prior parameter for the non-seeded word generation probabilities</p></dd>
-        <dt>beta_s</dt><dd><p>prior parameter for the seeded word generation probabilities</p></dd>
-        <dt>use_cov</dt><dd><p>boolean, whether or not use the covariate</p></dd>
-        <dt>num_states</dt><dd><p>number of states in HMM</p></dd>
-        <dt>timestamps</dt><dd><p>time stamp for topics-over-time model</p></dd>
-        <dt>visualize_keywords</dt><dd><p>ggplot2 object</p></dd>
-        <dt>call</dt><dd><p>details of the function call</p></dd>
-        </dl><p>.</p>
+    <p>keyATM_model object, which is a list containing</p><dl class='dl-horizontal'>
+  <dt>W</dt><dd><p>a list of vectors of word indexes</p></dd>
+  <dt>Z</dt><dd><p>a list of vectors of topic indicators isomorphic to W</p></dd>
+  <dt>X</dt><dd><p>a list</p></dd>
+  <dt>model</dt><dd><p>the name of the model</p></dd>
+  <dt>keywords</dt><dd><p></p></dd>
+  <dt>keywords_raw</dt><dd><p></p></dd>
+  <dt>regular_k</dt><dd><p>the number of regular topics</p></dd>
+  <dt>model_settings</dt><dd><p>a list of settings</p></dd>
+  <dt>priors</dt><dd><p>a list of priors</p></dd>
+  <dt>options</dt><dd><p>a list of options</p></dd>
+  <dt>stored_values</dt><dd><p>a list of stored_values</p></dd>
+  <dt>call</dt><dd><p>details of the function call</p></dd>
+</dl>
+
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+  <span class='co'># keyATM Basic</span>
+  <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"basic"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>keywords</span><span class='kw'>=</span><span class='no'>keywords_list</span>
+                      )
+
+  <span class='co'># keyATM Cov</span>
+  <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"cov"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>keywords</span><span class='kw'>=</span><span class='no'>keywords_list</span>,
+                       <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span><span class='kw'>=</span><span class='no'>cov</span>)
+                      )
+
+  <span class='co'># keyATM HMM</span>
+  <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"hmm"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>keywords</span><span class='kw'>=</span><span class='no'>keywords_list</span>,
+                       <span class='fu'>model_settings</span>(<span class='kw'>time_index</span><span class='kw'>=</span><span class='no'>time_index_vec</span>, <span class='kw'>num_states</span><span class='kw'>=</span><span class='fl'>5</span>)
+                      )
+
+  <span class='co'># Weighted LDA</span>
+  <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"lda"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>
+                      )
+
+  <span class='co'># Weighted LDA Cov</span>
+  <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"ldacov"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>,
+                       <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span><span class='kw'>=</span><span class='no'>cov</span>)
+                      )
+  <span class='co'># Weighted LDA HMM</span>
+  <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"ldahmm"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>,
+                       <span class='fu'>model_settings</span>(<span class='kw'>time_index</span><span class='kw'>=</span><span class='no'>time_index_vec</span>, <span class='kw'>num_states</span><span class='kw'>=</span><span class='fl'>5</span>)
+                      )
+
+<span class='co'># }</span><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -189,7 +242,9 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

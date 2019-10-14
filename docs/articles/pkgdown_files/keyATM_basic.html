@@ -44,27 +44,33 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../../articles/pkgdown_examples/Installation.html">Installation</a>
+      <a href="../../articles/pkgdown_files/Installation.html">Installation</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/Preparation.html">Preparation</a>
+      <a href="../../articles/pkgdown_files/Preparation.html">Preparation</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/keyATM_basic.html">keyATM Basic</a>
+      <a href="../../articles/pkgdown_files/keyATM_basic.html">keyATM Basic</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/keyATM_cov.html">keyATM Covariate</a>
+      <a href="../../articles/pkgdown_files/keyATM_cov.html">keyATM Covariate</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/keyATM_HMM.html">keyATM HMM</a>
+      <a href="../../articles/pkgdown_files/keyATM_HMM.html">keyATM HMM</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/Weighted_LDA.html">Weighted LDA</a>
+      <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_examples/Guidlines.html">Guidlines</a>
+      <a href="../../articles/pkgdown_files/Priors.html">Priors</a>
+    </li>
+    <li>
+      <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../../articles/pkgdown_files/FAQ.html">FAQ</a>
 </li>
 <li>
   <a href="../../reference/index.html">Reference</a>
@@ -95,7 +101,7 @@
       <h1>keyATM Basic</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Shusei-E/keyATM/blob/master/vignettes/pkgdown_examples/keyATM_basic.Rmd"><code>vignettes/pkgdown_examples/keyATM_basic.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Shusei-E/keyATM/blob/master/vignettes/pkgdown_files/keyATM_basic.Rmd"><code>vignettes/pkgdown_files/keyATM_basic.Rmd</code></a></small>
       <div class="hidden name"><code>keyATM_basic.Rmd</code></div>
 
     </div>
@@ -128,13 +134,13 @@
 <span id="cb2-4"><a href="#cb2-4"></a>                     <span class="dt">keywords=</span>bills_keywords,  <span class="co"># keywords</span></span>
 <span id="cb2-5"><a href="#cb2-5"></a>                     <span class="dt">mode=</span><span class="st">"basic"</span>,  <span class="co"># select the model</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a>                     <span class="dt">options=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed=</span><span class="dv">100</span>))</span></code></pre></div>
-<p>If you want to know more about <code>options</code>, please read <a href="Guidlines.html#what-is-the-options-argument">Guidelines</a>.</p>
+<p>If you want to know more about <code>options</code>, please read <a href="FAQ.html#what-is-the-options-argument">FAQ</a>.</p>
 </div>
 <div id="checking-keywords" class="section level2">
 <h2 class="hasAnchor">
 <a href="#checking-keywords" class="anchor"></a>Checking keywords</h2>
-<p><strong>WE WILL MAKE A <code>visualize_keywords()</code> FUNCION LATER</strong></p>
-<p>Before you fit the model, please make sure your keywords appear enough in your corpus. <a href="Guidlines.html#how-to-select-keywords">Guidelines</a> explains what could be good keywords.</p>
+<p><strong>WE WILL MAKE A <code><a href="../../reference/visualize_keywords.html">visualize_keywords()</a></code> FUNCION LATER</strong></p>
+<p>Before you fit the model, please make sure your keywords appear enough in your corpus. <a href="FAQ.html#how-to-select-keywords">FAQ</a> explains what could be good keywords.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>model<span class="op">$</span>visualize_keywords</span></code></pre></div>
 </div>
 <div id="fit-the-model" class="section level2">

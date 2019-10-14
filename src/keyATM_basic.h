@@ -17,7 +17,8 @@ class keyATMbasic : public keyATMbase
     //
     // Parameters
     //
-
+    int estimate_alpha;
+    int store_alpha;
 
     double start, end, previous_p, new_p, newlikelihood, slice_;
     std::vector<int> topic_ids;

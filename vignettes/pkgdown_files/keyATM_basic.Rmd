@@ -34,13 +34,13 @@ model <- keyATM_read(texts = bills_dfm,  # text input
                      options=list(seed=100))
 ```
 
-If you want to know more about `options`, please read [Guidelines](Guidlines.html#what-is-the-options-argument).
+If you want to know more about `options`, please read [FAQ](FAQ.html#what-is-the-options-argument).
 
 
 ## Checking keywords
 **WE WILL MAKE A `visualize_keywords()` FUNCION LATER**
 
-Before you fit the model, please make sure your keywords appear enough in your corpus. [Guidelines](Guidlines.html#how-to-select-keywords) explains what could be good keywords.
+Before you fit the model, please make sure your keywords appear enough in your corpus. [FAQ](FAQ.html#how-to-select-keywords) explains what could be good keywords.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 model$visualize_keywords
 ```

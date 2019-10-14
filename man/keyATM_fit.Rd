@@ -2,43 +2,80 @@
 % Please edit documentation in R/model.R
 \name{keyATM_fit}
 \alias{keyATM_fit}
-\title{Fit a keyATM model}
+\title{Fit keyATM model}
 \usage{
-keyATM_fit(model, iteration = 1000, keep_model = T)
+keyATM_fit(keyATM_docs, model, regular_k, keywords = list(),
+  model_settings = list(), priors = list(), options = list())
 }
 \arguments{
-\item{model}{keyATM object (the output of \code{keyATM_read()})}
+\item{keyATM_docs}{texts read via \code{keyATM_read()}}
 
-\item{iteration}{number of iteration}
+\item{model}{keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"}
+
+\item{regular_k}{the number of regular topics}
+
+\item{keywords}{a list of keywords}
+
+\item{model_settings}{a list of model specific settings}
+
+\item{priors}{a list of priors of parameters}
+
+\item{options}{a list of options}
 }
 \value{
-keyATM object, which is a list containing \describe{
-        \item{W}{a list of vectors of word indexes}
-        \item{Z}{a list of vectors of topic indicators isomorphic to W}
-        \item{C}{a covariate matrix is there is an input}
-        \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
-        \item{vocab}{a vector of vocabulary items}
-        \item{files}{a vector of document filenames}
-        \item{dict}{a tokenized version of the keyword dictionary}
-        \item{keywords}{a list of keywords in dict, named by dictionary category}
-        \item{regular_k}{how many extra non-seeded topics are required}
-        \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
-        \item{alpha_iter}{a list to store topic proportion hyperparameters}
-        \item{Lambda_iter}{a list to store coefficients of the covariates}
-        \item{S_iter}{a list to store states sampled in HMM}
-        \item{sampling_info}{information related to sampling}
-        \item{model_fit}{a list to store perplexity and log-likelihood}
-        \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
-        \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
-        \item{beta}{prior parameter for the non-seeded word generation probabilities}
-        \item{beta_s}{prior parameter for the seeded word generation probabilities}
-        \item{use_cov}{boolean, whether or not use the covariate}
-        \item{num_states}{number of states in HMM}
-        \item{timestamps}{time stamp for topics-over-time model}
-        \item{visualize_keywords}{ggplot2 object}
-        \item{call}{details of the function call}
-        }.
+keyATM_model object, which is a list containing \describe{
+  \item{W}{a list of vectors of word indexes}
+  \item{Z}{a list of vectors of topic indicators isomorphic to W}
+  \item{X}{a list}
+  \item{model}{the name of the model}
+  \item{keywords}{}
+  \item{keywords_raw}{}
+  \item{regular_k}{the number of regular topics}
+  \item{model_settings}{a list of settings}
+  \item{priors}{a list of priors}
+  \item{options}{a list of options}
+  \item{stored_values}{a list of stored_values}
+  \item{call}{details of the function call}
+}
 }
 \description{
-Fit keyATM model.
+Select and specify one of the keyATM models and fit the model.
+}
+\examples{
+\dontrun{
+  # keyATM Basic
+  fitted <- keyATM_fit(
+                       keyATM_docs, model="basic", regular_k=5, keywords=keywords_list
+                      )
+
+  # keyATM Cov
+  fitted <- keyATM_fit(
+                       keyATM_docs, model="cov", regular_k=5, keywords=keywords_list,
+                       model_settings(covariates_data=cov)
+                      )
+
+  # keyATM HMM
+  fitted <- keyATM_fit(
+                       keyATM_docs, model="hmm", regular_k=5, keywords=keywords_list,
+                       model_settings(time_index=time_index_vec, num_states=5)
+                      )
+
+  # Weighted LDA
+  fitted <- keyATM_fit(
+                       keyATM_docs, model="lda", regular_k=5
+                      )
+
+  # Weighted LDA Cov
+  fitted <- keyATM_fit(
+                       keyATM_docs, model="ldacov", regular_k=5,
+                       model_settings(covariates_data=cov)
+                      )                   
+  # Weighted LDA HMM
+  fitted <- keyATM_fit(
+                       keyATM_docs, model="ldahmm", regular_k=5,
+                       model_settings(time_index=time_index_vec, num_states=5)
+                      )
+
+}
+
 }

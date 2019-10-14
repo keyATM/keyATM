@@ -32,10 +32,7 @@
 
 <meta property="og:title" content="Get posterior quantities from model output — keyATM_output" />
 
-<meta property="og:description" content="Constructs a (N x K) matrix theta and (K x V) matrix beta
-plus their margins from the sample of Z and W in model.
-model is an output of keyATM_run().
-These statistics implicitly marginalize over X." />
+<meta property="og:description" content="keyATM_output() makes various quantities that help interpret the model." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -80,27 +77,33 @@ These statistics implicitly marginalize over X." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/pkgdown_examples/Installation.html">Installation</a>
+      <a href="../articles/pkgdown_files/Installation.html">Installation</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Preparation.html">Preparation</a>
+      <a href="../articles/pkgdown_files/Preparation.html">Preparation</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_basic.html">keyATM Basic</a>
+      <a href="../articles/pkgdown_files/keyATM_basic.html">keyATM Basic</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_cov.html">keyATM Covariate</a>
+      <a href="../articles/pkgdown_files/keyATM_cov.html">keyATM Covariate</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_HMM.html">keyATM HMM</a>
+      <a href="../articles/pkgdown_files/keyATM_HMM.html">keyATM HMM</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Weighted_LDA.html">Weighted LDA</a>
+      <a href="../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Guidlines.html">Guidlines</a>
+      <a href="../articles/pkgdown_files/Priors.html">Priors</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../articles/pkgdown_files/FAQ.html">FAQ</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
@@ -136,10 +139,7 @@ These statistics implicitly marginalize over X." />
 
     <div class="ref-description">
     
-    <p>Constructs a (N x K) matrix <code>theta</code> and (K x V) matrix <code>beta</code>
-plus their margins from the sample of Z and W in <code>model</code>.
-<code>model</code> is an output of <code>keyATM_run()</code>.
-These statistics implicitly marginalize over X.</p>
+    <p><code>keyATM_output()</code> makes various quantities that help interpret the model.</p>
     
     </div>
 
@@ -150,27 +150,26 @@ These statistics implicitly marginalize over X.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>model</th>
-      <td><p>a fitted keyATM model</p></td>
+      <td><p>a fitted keyATM model (an output of <code><a href='keyATM_fit.html'>keyATM_fit()</a></code>)</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A list containing:</p><dl class='dl-horizontal'>
-    <dt>seed_K</dt><dd><p>Number of keyword topics</p></dd>
+    <dt>keyword_k</dt><dd><p>Number of keyword topics</p></dd>
     <dt>regular_k</dt><dd><p>Number of regular unseeded topics</p></dd>
     <dt>V</dt><dd><p>Number of word types</p></dd>
     <dt>N</dt><dd><p>Number of documents</p></dd>
-    <dt>theta</dt><dd><p>Normalized tpoic proportions for each document</p></dd>
-    <dt>beta</dt><dd><p>Normalized topic specific word generation probabilities</p></dd>
+    <dt>theta</dt><dd><p>Normalized topic proportions for each document</p></dd>
+    <dt>phi</dt><dd><p>Normalized topic specific word generation probabilities</p></dd>
     <dt>topic_counts</dt><dd><p>Number of tokens assigned to each topic</p></dd>
     <dt>word_counts</dt><dd><p>Number of times each word type appears</p></dd>
     <dt>doc_lens</dt><dd><p>Length of each document in tokens</p></dd>
     <dt>vocab</dt><dd><p>Words in the vocabulary</p></dd>
-    <dt>alpha</dt><dd><p><code>alpha</code> during the iteration</p></dd>
-    <dt>modelfit</dt><dd><p>Perplexity and log-likelihood</p></dd>
+    <dt>model_fit</dt><dd><p>Perplexity and log-likelihood</p></dd>
     <dt>p</dt><dd><p>Estimated p</p></dd>
-    <dt>options</dt><dd><p>Options used in the <code>model</code></p></dd>
+    <dt>values_iter</dt><dd><p>Organized values stored during iterations</p></dd>
   </dl>
 
     

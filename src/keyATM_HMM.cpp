@@ -9,19 +9,22 @@ using namespace std;
 keyATMhmm::keyATMhmm(List model_, const int iter_, const int output_per_) :
   keyATMbase(model_, iter_, output_per_) // pass to parent!
 {
-  // Constructor
-  read_data();
-  initialize();
-  iteration();
+
 }
 
 
 void keyATMhmm::read_data_specific()
 {
-  num_states = model["num_states"];
+  model_settings = model["model_settings"];
+  num_states = model_settings["num_states"];
   index_states = num_states - 1;
 
-  IntegerVector time_index_R = model["time_index"];
+  prior_gamma = MatrixXd::Zero(num_topics, 2);
+  NumericMatrix RMatrix = priors_list["gamma"];
+  prior_gamma = Rcpp::as<Eigen::MatrixXd>(RMatrix);
+  beta_s = priors_list["beta_s"];
+
+  IntegerVector time_index_R = model_settings["time_index"];
   time_index = Rcpp::as<Eigen::VectorXi>(time_index_R);
   num_time = time_index.maxCoeff();
   time_index = time_index.array() - 1;  // adjust index
@@ -46,6 +49,7 @@ void keyATMhmm::read_data_specific()
   }
   time_doc_end(num_time-1) = num_doc-1;
 
+  store_transition_matrix = options_list["store_transition_matrix"];
 }
 
 
@@ -185,12 +189,16 @@ void keyATMhmm::sample_parameters(int &it)
   int r_index = it + 1;
   if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
     Rcpp::NumericMatrix alphas_R = Rcpp::wrap(alphas);
-    List alpha_iter = model["alpha_iter"];
+    List alpha_iter = stored_values["alpha_iter"];
     alpha_iter.push_back(alphas_R);
-    model["alpha_iter"] = alpha_iter;  
+    stored_values["alpha_iter"] = alpha_iter;  
 
     // Store S
     store_S_est();
+
+    // Store transition matrix
+    if(store_transition_matrix)
+      store_P_est();
   }
 
 }
@@ -297,7 +305,7 @@ double keyATMhmm::alpha_loglik(int &state_start, int &state_end)
   for(int k = 0; k < num_topics; k++){
     fixed_part -= mylgamma(alpha(k)); // first term denominator
     // Add prior
-    if(k < k_seeded){
+    if(k < keyword_k){
       loglik += gammapdfln(alpha(k), eta_1, eta_2);
     }else{
       loglik += gammapdfln(alpha(k), eta_1_regular, eta_2_regular);
@@ -430,9 +438,19 @@ void keyATMhmm::store_S_est()
 {
   // Store state
   Rcpp::NumericVector state_R = Rcpp::wrap(S_est);
-  List S_iter = model["S_iter"];
+  List S_iter = stored_values["S_iter"];
   S_iter.push_back(state_R);
-  model["S_iter"] = S_iter;
+  stored_values["S_iter"] = S_iter;
+}
+
+
+void keyATMhmm::store_P_est()
+{
+  // Store state
+  Rcpp::NumericMatrix mat_R = Rcpp::wrap(P_est);
+  List P_iter = stored_values["P_iter"];
+  P_iter.push_back(mat_R);
+  stored_values["P_iter"] = P_iter;
 }
 
 
@@ -453,12 +471,16 @@ double keyATMhmm::loglik_total()
     // word normalization
     loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
     loglik += mylgamma( beta_s * (double)num_vocab ) - mylgamma(beta_s * (double)num_vocab + n_x1_k_noWeight(k) );
-    // x
-    loglik += mylgamma( n_x0_k_noWeight(k) + x_prior(k, 1) ) - mylgamma(n_x1_k_noWeight(k) + x_prior(k, 0) + n_x0_k_noWeight(k) + x_prior(k, 1))
-      + mylgamma( n_x1_k_noWeight(k) + x_prior(k, 0) ) ;
-    
-    // x normalization
-    loglik += mylgamma(x_prior(k, 0) + x_prior(k, 1)) - mylgamma(x_prior(k, 0)) - mylgamma(x_prior(k, 1));
+
+    if(k < keyword_k){
+      // Normalization
+      loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
+
+      // x
+      loglik += mylgamma( n_x0_k_noWeight(k) + prior_gamma(k, 1) ) 
+                -  mylgamma(n_x1_k_noWeight(k) + prior_gamma(k, 0) + n_x0_k_noWeight(k) + prior_gamma(k, 1))
+                + mylgamma( n_x1_k_noWeight(k) + prior_gamma(k, 0) );  
+    }
   }
 
 

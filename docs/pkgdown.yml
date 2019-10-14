@@ -2,11 +2,13 @@ pandoc: 2.7.3
 pkgdown: 1.3.0
 pkgdown_sha: ~
 articles:
-  Guidlines: pkgdown_examples/Guidlines.html
-  Installation: pkgdown_examples/Installation.html
-  Preparation: pkgdown_examples/Preparation.html
-  Weighted_LDA: pkgdown_examples/Weighted_LDA.html
-  keyATM_HMM: pkgdown_examples/keyATM_HMM.html
-  keyATM_basic: pkgdown_examples/keyATM_basic.html
-  keyATM_cov: pkgdown_examples/keyATM_cov.html
+  FAQ: pkgdown_files/FAQ.html
+  Installation: pkgdown_files/Installation.html
+  Options: pkgdown_files/Options.html
+  Preparation: pkgdown_files/Preparation.html
+  Priors: pkgdown_files/Priors.html
+  Weighted_LDA: pkgdown_files/Weighted_LDA.html
+  keyATM_HMM: pkgdown_files/keyATM_HMM.html
+  keyATM_basic: pkgdown_files/keyATM_basic.html
+  keyATM_cov: pkgdown_files/keyATM_cov.html
 

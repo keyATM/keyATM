@@ -1,607 +1,916 @@
-
-
-#' Initialize a model (deprecated)
+#' Read Texts
 #'
+#' This function read texts and creates a tibble. 
+#'
+#' @param texts Input. keyATM takes dfm, data.frame, tibble, and a vector of file paths.
+#'
+#' @return A list whose elements are splitted texts.
+#'
+#' @examples
+#' \dontrun{
+#'  # Use quanteda dfm 
+#'  keyATM_docs <- keyATM_read(quanteda_dfm) 
+#'   
+#'  # Use data.frame or tibble (texts should be stored in a column named `text`)
+#'  keyATM_docs <- keyATM_read(data_frame_object) 
+#'  keyATM_docs <- keyATM_read(tibble_object) 
+#' 
+#'  # Use a vector that stores full paths to the files  
+#'  files <- list.files(doc_folder, pattern="*.txt", full.names=T) 
+#'  keyATM_docs <- keyATM_read(files) 
+#' }
+#'
+#' @import magrittr
 #' @export
-topicdict_model <- function(...){
-  message("Warning: `topicdict_model` is deprecated, please use `keyATM_read` instead. keyATM does not take `quanteda` options.")
-  return(keyATM_model(...))
-}
-
-
-#' Initialize a keyATM model
-#'
-#' This function reads a text input and initialize a keyATM model.
-#' Internally, \code{keyATM_read()} calls \code{keyATM_model()} to initialize a model.
-#'
-#' @param texts Inputs. It can take quanteda dfm, data.frame, tibble, and a vector of characters.
-#' @param keywords a quanteda dictionary or a list of character vectors
-#' @param mode "basic", "cov", "hmm", "lda" and "ldahmm"
-#' @param iteration number of iteration
-#' @param regular_k number of regular topics in addition to the keyword topics by
-#'                \code{keywords}
-#' @param covariates_data covariate
-#' @param covariates_formula formula applied to covariate data
-#' @param options options are seed, use_weights,
-#'           visualize_keywords, and output_per.
-#'
-#' @return keyATM object, which is a list containing \describe{
-#'         \item{W}{a list of vectors of word indexes}
-#'         \item{Z}{a list of vectors of topic indicators isomorphic to W}
-#'         \item{C}{a covariate matrix if there is an input}
-#'         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
-#'         \item{vocab}{a vector of vocabulary items}
-#'         \item{mode}{keyATM model to fit}
-#'         \item{keywords}{a list of keywords in word_id}
-#'         \item{keywords_raw}{a list of keywords}
-#'         \item{regular_k}{how many extra non-seeded topics are required}
-#'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
-#'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
-#'         \item{Lambda_iter}{a list to store coefficients of the covariates}
-#'         \item{S_iter}{a list to store states sampled in HMM}
-#'         \item{model_fit}{a list to store perplexity and log-likelihood}
-#'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
-#'         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
-#'         \item{beta}{prior parameter for the non-seeded word generation probabilities}
-#'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
-#'         \item{use_cov}{boolean, whether or not use the covariate}
-#'         \item{num_states}{number of states in HMM}
-#'         \item{visualize_keywords}{ggplot2 object}
-#'         \item{call}{details of the function call}
-#'         }.
-#'
-#' @export
-keyATM_read <- function(texts, mode, regular_k=0, extra_k=NULL, keywords=list(),
-                        covariates_data=NULL, covariates_formula= ~.+0,
-                        num_states=NULL, time_index=NULL,
-                        options=list(
-                                     seed=225,
-                                     output_per=10,
-                                     use_weights=TRUE,
-                                     visualize_keywords=TRUE,
-                                     thinning = 1,
-                                     x_prior=NULL
-                                    )
-                       )
+keyATM_read <- function(texts, encoding="UTF-8")
 {
-  # Set option
-  if(is.null(options$output_per))
-    options$output_per <- 10
-
-  if(is.null(options$visualize_keywords))
-    options$visualize_keywords <- TRUE
-
-  if(is.null(options$thinning))
-    options$thinning <- 1
-
-  # Set random seed
-  if(is.null(options$seed))
-    options$seed <- floor(runif(1)*1e5)
-  set.seed(options$seed)
 
   # Detect input
-  if("data.frame" %in% class(texts)){
+  if("tbl" %in% class(texts)){
+    message("Using tibble.")
     text_dfm <- NULL
     files <- NULL
     text_df <- texts
+  }else if("data.frame" %in% class(texts)){
+    message("Using data.frame.")
+    text_dfm <- NULL
+    files <- NULL
+    text_df <- tibble::as_tibble(texts)
   }else if(class(texts) == "dfm"){
+    message("Using quanteda dfm.")
     text_dfm <- texts
     files <- NULL
     text_df <- NULL
   }else if(class(texts) == "character"){
+    message("Reading from files.")
     text_dfm <- NULL
     files <- texts
     text_df <- NULL
+    message(paste0("Encoding: ", encoding))
   }else{
     stop("Check `texts` argument.\n
          It can take quanteda dfm, data.frame, tibble, and a vector of characters.")  
   }
 
 
-  # Reformat keywords
-  if(class(keywords) != "list"){
-      stop("`keywords` should be a list of character vectors")
-  }
-
-  if(mode %in% c("lda", "ldahmm") & length(keywords) != 0){
-    warning("Keywords will not be used in LDA models.")
-    keywords <- list()  
-  }
-
-  if(!is.null(extra_k)){
-    warning("`extra_k` option will be deprecated. Please use `regular_k`.")  
-    regular_k <- extra_k
-  }
-
-  # Initialize model
-  message("Initializing keyATM...")
-  model <- keyATM_model(
-                          files=files, text_df=text_df, text_dfm=text_dfm,
-                          regular_k=regular_k,
-                          keywords=keywords,
-                          mode=mode,
-                          covariates_data=covariates_data, covariates_formula=covariates_formula,
-                          num_states=num_states, time_index=time_index,
-                          options=options
-                        )
-
-  return(model)
-}
-
-
-#' Fit a keyATM model
-#'
-#' Fit keyATM model.
-#'
-#' @param model keyATM object (the output of \code{keyATM_read()})
-#' @param iteration number of iteration
-#'
-#' @return keyATM object, which is a list containing \describe{
-#'         \item{W}{a list of vectors of word indexes}
-#'         \item{Z}{a list of vectors of topic indicators isomorphic to W}
-#'         \item{C}{a covariate matrix is there is an input}
-#'         \item{X}{a list of vectors of seed indicators (0/1) isomorphic to W}
-#'         \item{vocab}{a vector of vocabulary items}
-#'         \item{files}{a vector of document filenames}
-#'         \item{dict}{a tokenized version of the keyword dictionary}
-#'         \item{keywords}{a list of keywords in dict, named by dictionary category}
-#'         \item{regular_k}{how many extra non-seeded topics are required}
-#'         \item{alpha}{a vector of topic proportion hyperparameters. If you use the model with covariates, it is not used.}
-#'         \item{alpha_iter}{a list to store topic proportion hyperparameters}
-#'         \item{Lambda_iter}{a list to store coefficients of the covariates}
-#'         \item{S_iter}{a list to store states sampled in HMM}
-#'         \item{sampling_info}{information related to sampling}
-#'         \item{model_fit}{a list to store perplexity and log-likelihood}
-#'         \item{gamma1}{First prior probability parameter for X (currently the same for all topics)}
-#'         \item{gamma2}{Second prior probability parameter for X (currently the same for all topics)}
-#'         \item{beta}{prior parameter for the non-seeded word generation probabilities}
-#'         \item{beta_s}{prior parameter for the seeded word generation probabilities}
-#'         \item{use_cov}{boolean, whether or not use the covariate}
-#'         \item{num_states}{number of states in HMM}
-#'         \item{timestamps}{time stamp for topics-over-time model}
-#'         \item{visualize_keywords}{ggplot2 object}
-#'         \item{call}{details of the function call}
-#'         }.
-#'
-#' @export
-keyATM_fit <- function(model, iteration=1000, keep_model=T){
-
-  if(keep_model){
-    model <- rlang::duplicate(model)
-  }else{
-    warning("`keep_model` option is FALSE. `keyATM_read` object will change by fitting the model.")
-  }
-
-  argname <- deparse(match.call()[['model']])
-  if (!inherits(model, "keyATM"))
-    stop(paste("'", argname, '" is not a keyATM object. Please use `keyATM_read()`'))
-
-
-  # Prepare for store_theta
-  if(model$options$store_theta){
-    # We need matrices to store theta  
-    model$options$Z_tables <- list()
-  }
-
-  mode <- model$mode
-  set.seed(model$options$seed)
-
-  message("Start fitting keyATM...")  
-  if(mode == "basic"){
-    res <- keyATM_train(model, iter=iteration, output_per=model$options$output_per)
-  }else if(mode == "cov"){
-    res <- keyATM_train_cov(model, iter=iteration, output_per=model$options$output_per)
-  }else if(mode == "lda"){
-    res <- LDA_weight(model, iter=iteration, output_per=model$options$output_per)  
-  }else if(mode == "hmm"){
-    res <- keyATM_train_HMM(model, iter=iteration, output_per=model$options$output_per)  
-  }else if(mode == "ldahmm"){
-    res <- keyATM_train_LDAHMM(model, iter=iteration, output_per=model$options$output_per)  
-  }else{
-    stop("Please check `mode`.")  
-  }
-
-  return(res)
-
-}
-
-
-#' Fit topic model (deprecated)
-#'
-#' `topicdict_train()` is deprecated. Use `keyATM_fit()`
-#'
-#' @export
-topicdict_train <- function(...){
-  message("Warning: `topicdict_train` is deprecated, please use `keyATM_fit` instead.")
-  return(keyATM_train(...))
-}
-
-#' Fit topic model (deprecated)
-#'
-#' `topicdict_train_cov()` is deprecated. Use `keyATM_fit()`
-#'
-#' @export
-topicdict_train_cov <- function(...){
-  message("Warning: `topicdict_train_cov` is deprecated, please use `keyATM_fit` instead.")
-  return(keyATM_train_cov(...))
-}
-
-
-#' Initialize a keyATM model
-#'
-#' @importFrom hashmap hashmap
-#' @importFrom stats model.matrix
-#' @import ggplot2
-#' @import ggrepel
-keyATM_model <- function(files=NULL, keywords=list(), text_df=NULL, text_dfm=NULL,
-                         mode="",
-                         regular_k = 1,
-                         covariates_data=NULL, covariates_formula=NULL,
-                         num_states=NULL, time_index=NULL,
-                         alpha = 50/(length(keywords) + regular_k),
-                         beta = 0.01, beta_s = 0.1,
-                         options = list()
-                        )
-{
-  cl <- match.call()
-
-  ## Get topic number
-  K <- length(keywords)
-  proper_len <- K + regular_k
-
-  ##
-  ## Check format
-  ##
-  if(mode == "ldaweight"){
-    warning("Please name `ldaweight` as `lda`.")
-    mode <- "lda"  
-  }
-
-  if(mode %in% c("basic", "cov", "hmm", "lda", "ldahmm")){
-  }else{
-    stop(paste0("Unknown model:", mode))  
-  }
-
-
-  if(!is.null(covariates_data) & !is.null(covariates_formula) & (mode != "cov")){
-    stop("Covariates information provided, specify the model.")  
-  }
-
-  if(is.null(num_states) & (mode == "hmm" | mode=="ldahmm")){
-    stop("Provide the number of states.")  
-  }
-
-  if(is.null(time_index) & (mode == "hmm" | mode=="ldahmm")){
-    stop("`time_index` is not provided.")
-  }
-
-
-  if(length(keywords) == 0 & mode %in% c("basic", "cov", "hmm")){
-    stop("Please provide keywords.")  
-  }
-
-  if(!is.null(text_df)){
-    if("text" %in% names(text_df)){
-      text_df <- text_df["text"]
-    }else{
-      stop("text_df should have a 'text' column that has documents.")
-    }  
-  }
-
-
-  ##
-  ## Check length
-  ##
-
-  if(mode == "cov"){
-    # make sure covariates are provided for all documents  
-    doc_num <- ifelse(!is.null(files), length(files),
-                      ifelse(!is.null(text_df), nrow(text_df),
-                             ifelse(!is.null(text_dfm), nrow(text_dfm),
-                                    0)
-                             )
-                      )
-    if( nrow(covariates_data) != doc_num ){
-      stop("Covariates dimension does not match with the number of documents.")  
-    }
-  }
-
-
-  ##
-  ## Set options
-  ##
-  if(is.null(options$use_weights)){
-    options$use_weights <- 1  
-  }else{
-    options$use_weights <- as.numeric(options$use_weights)
-  }
-  if(!is.null(options$logsumexp_approx)){
-    message("Warning: `logsumexp_approx` option will be deprecated.")
-  }
-  if(is.null(options$logsumexp_approx)){
-    # 0: do not approximate logsumexp
-    options$logsumexp_approx <- 0
-  }
-  if(is.null(options$slice_shape)){
-    # parameter for slice sampling
-    options$slice_shape <- 1.2
-  }
-  if(!is.null(options$alpha)){
-    # If alpha value is overwritten
-    alpha <- options$alpha
-  }
-  if(is.null(options$store_theta)){
-    options$store_theta <- 0
-  }else{
-    options$store_theta <- as.numeric(options$store_theta)  
-  }
-  if(is.null(options$x_prior)){
-    options$x_prior <- matrix(1.0, nrow=proper_len, ncol=2)  
-  }
-  if(!is.null(options$x_prior)){
-    if(dim(options$x_prior)[1] != proper_len)  
-      stop("Check the dimension of `options$x_prior`")
-    if(dim(options$x_prior)[2] != 2)  
-      stop("Check the dimension of `options$x_prior`")
-  }
-
-
-  ## Create alpha 
-  if(is.null(covariates_data) || is.null(covariates_formula)){
-    # If it doesn't use covariates, make alpha inside
-    if (length(alpha) == 1){
-      # message("All ", proper_len, " values for alpha starting as ", alpha)
-      alpha <- rep(alpha, proper_len)
-    } else if (length(alpha) != proper_len)
-      stop("Starting alpha must be a scalar or a vector of length ", proper_len)
-  }
-
-
-  ##
-  ## Text preprocessing
-  ##
+  # Read texts
 
   # If you have quanteda object
   if(!is.null(text_dfm)){
-    message("Use quanteda dfm.")  
-
     vocabulary <- colnames(text_dfm)
-    texts <- apply(text_dfm, 1,
-                   function(x){
-                       single_text <- paste(rep(vocabulary, x), collapse=" ")
-                       return(single_text)
-                   })
-
-    text_df <- data.frame(text = texts)
-    text_df$text <- as.character(text_df$text)
+    text_df <- tibble::tibble(
+                              text_split = 
+                                apply(text_dfm, 1,
+                                       function(x){
+                                        return(rep(vocabulary, x))
+                                       }
+                                    )
+                             )
+    names(text_df$text_split) <-NULL
   }else{
     ## preprocess each text
     # Use files <- list.files(doc_folder, pattern="txt", full.names=T) when you pass
     if(is.null(text_df)){
-      text_df <- data.frame(text = unlist(lapply(files, 
+      text_df <- tibble::tibble(text = unlist(lapply(files,
                                                  function(x)
                                                  { 
                                                      paste0(readLines(x, encoding = encoding),
                                                            collapse = "\n") 
-                                                 })),
-                            stringsAsFactors = FALSE)
+                                                 })))
+    }
+    text_df <- text_df %>% dplyr::mutate(text_split = stringr::str_split(text, pattern=" "))
+  }
+
+  W_raw <- text_df %>% dplyr::pull(text_split)
+  class(W_raw) <- c("keyATM_docs", class(W_raw))
+
+  return(W_raw)
+}
+
+
+#' @noRd
+#' @export
+print.keyATM_docs <- function(x){
+  cat(paste0("keyATM_docs object of ",
+                 length(x), " documents",
+                 ".\n"
+                )
+      )
+}
+
+
+#' @noRd
+#' @export
+summary.keyATM_docs <- function(x){
+  doc_len <- sapply(x, length)
+  cat(paste0("keyATM_docs object of: ",
+              length(x), " documents",
+              ".\n",
+              "Length of documents:",
+              "\n  Avg: ", round(mean(doc_len),3),
+              "\n  Min: ", round(min(doc_len),3),
+              "\n  Max: ", round(max(doc_len),3),
+              "\n   SD: ", round(sd(doc_len),3),
+              "\n"
+             )  
+         )
+}
+
+
+
+#' Visualize texts
+#'
+#' This function visualizes the proportion of keywords in the documents.
+#'
+#' @param keyATM_docs A list of texts read via \code{keyATM_read()} function
+#' @param keywords A list of keywords
+#'
+#' @return A list containing \describe{
+#'    \item{figure}{a ggplot2 object}
+#'    \item{values}{a tibble object that stores values}
+#' }
+#'
+#' @examples
+#' \dontrun{
+#'  # Prepare a keyATM_docs object
+#'  keyATM_docs <- keyATM_read(input) 
+#'   
+#'  # Keywords are in a list  
+#'  keywords <- list(
+#'                    c("education", "child", "student"),  # Education
+#'                    c("public", "health", "program"),  # Health
+#'                  )
+#'
+#'  # Visualize keywords
+#'  keyATM_viz <- visualize_keywords(keyATM_docs, keywords)
+#'
+#'  # View a figure
+#'  keyATM_viz
+#'    # Or: `keyATM_viz$figure`
+#' 
+#'  # Save a figure 
+#'  ggsave(filename, keyATM_viz$figure)
+#'
+#' }
+#'
+#' @import magrittr
+#' @import ggplot2
+#' @export
+visualize_keywords <- function(keyATM_docs, keywords)
+{
+  # Check type
+  check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
+  check_arg_type(keywords, "list")
+  c <- lapply(keywords, function(x){check_arg_type(x, "character")})
+
+  unnested_data <- tibble::tibble(text_split = unlist(keyATM_docs,
+                                                      recursive=FALSE, use.names=FALSE))
+
+  # Organize data
+  totalwords <- nrow(unnested_data)
+
+  unnested_data %>%
+    dplyr::rename(Word=text_split) %>%
+    dplyr::group_by(Word) %>%
+    dplyr::summarize(WordCount = dplyr::n()) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
+    dplyr::arrange(desc(WordCount)) %>%
+    dplyr::mutate(Ranking = 1:(dplyr::n())) -> data
+
+  names(keywords) <- paste0("Topic", 1:length(keywords))
+  keywords <- lapply(keywords, function(x){unlist(strsplit(x," "))})
+  ext_k <- length(keywords)
+  max_num_words <- max(unlist(lapply(keywords, function(x){length(x)}), use.names=F))
+
+  # Make keywords_df
+  keywords_df <- data.frame(Topic=1, Word=1)
+  for(k in 1:ext_k){
+    words <- keywords[[k]]
+    numwords <- length(words)
+    topicname <- paste0("Topic", k)
+    for(w in 1:numwords){
+      keywords_df <- rbind(keywords_df, data.frame(Topic=topicname, Word=words[w]))
     }
   }
-  text_df$doc_id <- paste0("text", 1:nrow(text_df))
-  text_df <- text_df %>% mutate(text_split = stringr::str_split(text, pattern=" "))
-  W_raw <- text_df %>% pull(text_split)
+  keywords_df <- keywords_df[2:nrow(keywords_df), ]
+
+  dplyr::right_join(data, keywords_df, by="Word") %>%
+    dplyr::group_by(Topic) %>%
+    dplyr::arrange(desc(`Proportion(%)`)) %>%
+    dplyr::mutate(Ranking = 1:(dplyr::n())) %>%
+    dplyr::arrange(Topic, Ranking) -> temp
 
 
-  # Check time index
-  num_doc <- nrow(text_df)
+  # Check keywords existence
+  temp %>%
+    dplyr::filter(is.na(WordCount)) %>%
+    dplyr::pull(Word) -> non_appearence
 
-  if(length(time_index) != num_doc & (mode == "hmm" | mode=="ldahmm")){
-    stop("The length of the `time_index` does not match with the number of documents.")  
-  }
-  
-  if((min(time_index) < 1 | max(time_index) > num_doc) & (mode == "hmm" | mode=="ldahmm")){
-    stop("`time_index` should start from 1 and not exceed the number of documents.")
-  }
-
-  if(max(time_index) < num_states & (mode == "hmm" | mode=="ldahmm"))
-    stop("`num_states` should not exceed the maximum of `time_index`.")
-
-
-  ##
-  ## Visualize keywords
-  ##
-
-  # We need to wait `tidyr` update
-  text_df %>%
-    dplyr::select(text_split) %>%
-    tidyr::unnest_legacy(text_split=c(text_split)) -> unnested_data
-    # tidyr::unnest(col=c(text_split)) -> unnested_data
-
-  if(options$visualize_keywords & mode %in% c("basic", "cov", "hmm")){
-    totalwords <- nrow(unnested_data)
-
-    unnested_data %>%
-      dplyr::rename(Word=text_split) %>%
-      dplyr::group_by(Word) %>%
-      dplyr::summarize(WordCount = n()) %>%
-      dplyr::ungroup() %>%
-      dplyr::mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
-      dplyr::arrange(desc(WordCount)) %>%
-      dplyr::mutate(Ranking = 1:n()) -> data
-
-
-    seeds <- keywords  # copy
-    names(seeds) <- paste0("Topic", 1:length(seeds))
-    seeds <- lapply(seeds, function(x){unlist(strsplit(x," "))})
-    ext_k <- length(seeds)
-    max_num_words <- max(unlist(lapply(seeds, function(x){length(x)})))
-
-    seeds_df <- data.frame(Topic=1, Word=1)
-    for(k in 1:ext_k){
-      words <- seeds[[k]]
-      numwords <- length(words)
-      topicname <- paste0("Topic", k)
-      for(w in 1:numwords){
-        seeds_df <- rbind(seeds_df, data.frame(Topic=topicname, Word=words[w]))
-      }
+  if(length(non_appearence) != 0){
+    if(length(non_appearence) == 1){
+      stop("A keyword not found in texts: ", paste(non_appearence, collapse=", "))
+    }else{
+      stop("Keywords not found in texts: ", paste(non_appearence, collapse=", "))
     }
-    seeds_df <- seeds_df[2:nrow(seeds_df), ]
-
-    dplyr::inner_join(data, seeds_df, by="Word") %>%
-      dplyr::group_by(Topic) %>%
-      dplyr::mutate(Ranking = 1:n()) -> temp
-
-    visualize_keywords <- 
-      ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=Topic)) +
-        geom_line() +
-        geom_point() +
-        ggrepel::geom_label_repel(aes(label = Word), size=2.8,
-                         box.padding = 0.20, label.padding = 0.12,
-                         arrow=arrow(angle=10, length = unit(0.10, "inches"),
-                                     ends = "last", type = "closed"),
-                         show.legend = F) +
-        scale_x_continuous(breaks=1:max_num_words) +
-        ylab("Proportion (%)") +
-        theme_bw()
-  
-  }else{
-    visualize_keywords <- NULL  
   }
 
+
+  visualize_keywords <- 
+    ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=Topic)) +
+      geom_line() +
+      geom_point() +
+      ggrepel::geom_label_repel(aes(label = Word), size=2.8,
+                       box.padding = 0.20, label.padding = 0.12,
+                       arrow=arrow(angle=10, length = unit(0.10, "inches"),
+                                   ends = "last", type = "closed"),
+                       show.legend = F) +
+      scale_x_continuous(breaks=1:max_num_words) +
+      ylab("Proportion (%)") +
+      theme_bw()
+
+  keyATM_viz <- list(figure=visualize_keywords, values=temp)
+  class(keyATM_viz) <- c("keyATM_viz", class(keyATM_viz))
+  
+  return(keyATM_viz)
+
+}
+
+
+#' @noRd
+#' @export
+print.keyATM_viz <- function(x){
+  print(x$figure)  
+}
+
+
+#' @noRd
+#' @export
+summary.keyATM_viz <- function(x){
+  return(x$values)  
+}
+
+
+#' @noRd
+#' @export
+save.keyATM_viz <- function(x, file = stop("'file' must be specified")){
+  save(x, file=file, compress="xz", compression_level=3)
+}
+
+
+
+#' Fit keyATM model
+#'
+#' Select and specify one of the keyATM models and fit the model.
+#'
+#'
+#' @param keyATM_docs texts read via \code{keyATM_read()}
+#' @param model keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"
+#' @param regular_k the number of regular topics
+#' @param keywords a list of keywords
+#' @param model_settings a list of model specific settings
+#' @param priors a list of priors of parameters
+#' @param options a list of options
+#'
+#' @return keyATM_model object, which is a list containing \describe{
+#'   \item{W}{a list of vectors of word indexes}
+#'   \item{Z}{a list of vectors of topic indicators isomorphic to W}
+#'   \item{X}{a list}
+#'   \item{model}{the name of the model}
+#'   \item{keywords}{}
+#'   \item{keywords_raw}{}
+#'   \item{regular_k}{the number of regular topics}
+#'   \item{model_settings}{a list of settings}
+#'   \item{priors}{a list of priors}
+#'   \item{options}{a list of options}
+#'   \item{stored_values}{a list of stored_values}
+#'   \item{call}{details of the function call}
+#' } 
+#'
+#' @examples
+#' \dontrun{
+#'   # keyATM Basic
+#'   fitted <- keyATM_fit(
+#'                        keyATM_docs, model="basic", regular_k=5, keywords=keywords_list
+#'                       )
+#'
+#'   # keyATM Cov
+#'   fitted <- keyATM_fit(
+#'                        keyATM_docs, model="cov", regular_k=5, keywords=keywords_list,
+#'                        model_settings(covariates_data=cov)
+#'                       )
+#'
+#'   # keyATM HMM
+#'   fitted <- keyATM_fit(
+#'                        keyATM_docs, model="hmm", regular_k=5, keywords=keywords_list,
+#'                        model_settings(time_index=time_index_vec, num_states=5)
+#'                       )
+#'
+#'   # Weighted LDA
+#'   fitted <- keyATM_fit(
+#'                        keyATM_docs, model="lda", regular_k=5
+#'                       )
+#'
+#'   # Weighted LDA Cov
+#'   fitted <- keyATM_fit(
+#'                        keyATM_docs, model="ldacov", regular_k=5,
+#'                        model_settings(covariates_data=cov)
+#'                       )                   
+#'   # Weighted LDA HMM
+#'   fitted <- keyATM_fit(
+#'                        keyATM_docs, model="ldahmm", regular_k=5,
+#'                        model_settings(time_index=time_index_vec, num_states=5)
+#'                       )
+#'
+#' }
+#'
+#' @export
+keyATM_fit <- function(keyATM_docs, model, regular_k,
+                       keywords=list(), model_settings=list(),
+                       priors=list(), options=list()) 
+{
+  ##
+  ## Check
+  ##
+
+  # Check type
+  check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
+  if(!is.integer(regular_k) & !is.numeric(regular_k))
+    stop("`regular_k` is neigher numeric nor integer.")
+
+  regular_k <- as.integer(regular_k)
+
+  if(!model %in% c("basic", "cov", "hmm", "lda", "ldacov", "ldahmm")){
+    stop("Please select a correct model.")  
+  }
+
+  check_arg(keywords, "keywords", model)
+
+  check_arg_type(keywords, "list")
+  c <- lapply(keywords, function(x){check_arg_type(x, "character")})
+
+  # Get Info
+  info <- list(
+               num_doc = length(keyATM_docs),
+               keywords_K = length(keywords),
+               total_K = length(keywords) + regular_k
+              )
+
+  # Set default values
+  model_settings <- check_arg(model_settings, "model_settings", model, info)
+  priors <- check_arg(priors, "priors", model, info)
+  options <- check_arg(options, "options", model, info)
 
   ##
   ## Initialization
   ##
+  message("Initializing the model...")
+  set.seed(options$seed)
 
-  ## construct W and a vocab list (W elements are 0 based ids)
-  wd_names <- unique(unnested_data$text_split) # vocab
-  if(" " %in% wd_names){
+  # W
+  info$wd_names <- unique(unlist(keyATM_docs, use.names=F))
+  if(" " %in% info$wd_names){
     stop("A space is recognized as a vocabulary.
           Please remove an empty document or consider using quanteda::dfm.")  
   }
 
-  wd_map <- hashmap::hashmap(wd_names, as.integer(1:length(wd_names) - 1))
-  W <- lapply(W_raw, function(x){ wd_map[[x]] })
+  info$wd_map <- hashmap::hashmap(info$wd_names, as.integer(1:length(info$wd_names) - 1L))
+  W <- lapply(keyATM_docs, function(x){ info$wd_map[[x]] })
 
-  ## Check keywords appear at least once
-  sapply(unlist(keywords), 
-         function(x){if(! x %in% wd_names) stop(paste0('"', x, '"', " does not appear in texts. Please check keywords."))})
 
-  if(mode %in% c("basic", "cov", "hmm")){
-    # zx_assigner maps seed words to category ids
-    seed_wdids <- unlist(lapply(keywords, function(x){ wd_map$find(x) }))
-    cat_ids <- rep(1:K - 1, unlist(lapply(keywords, length)))
+  # Check keywords
+  c <- sapply(unlist(keywords), 
+         function(x){if(! x %in% info$wd_names)
+           stop(paste0('"', x, '"', " does not appear in texts. Please check keywords."))})
 
-    if(length(seed_wdids) == length(unique(seed_wdids))){
-      #
-      # No keyword appears more than once
-      #
-      zx_assigner <- hashmap(as.integer(seed_wdids), as.integer(cat_ids))
+  keywords_raw <- keywords  # keep raw keywords (not word_id)
+  keywords_id <- lapply(keywords, function(x){ as.integer(info$wd_map$find(x)) })
 
-      # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
-      make_z <- function(x){
-        zz <- zx_assigner[[x]] # if it is a seed word, we already know the topic
-        zz[is.na(zz)] <- sample(1:(K + regular_k) - 1,
-                                sum(as.numeric(is.na(zz))),
-                                replace = TRUE)
-        zz
-      }
-      
-
-    }else{
-      #
-      # Some keywords appear multiple times
-      #
-      keys_df <- data.frame(wid = seed_wdids, cat=cat_ids)
-      keys_char <- sapply(unique(seed_wdids),
-                          function(x){
-                            paste(as.character(keys_df[keys_df$wid==x, "cat"]), collapse=",")
-                          })
-      zx_hashtable <- hashmap::hashmap(as.integer(unique(seed_wdids)), keys_char)
-
-      zx_assigner <- function(x){
-        topic <- zx_hashtable[[x]]
-        topic <- strsplit(topic, split=",")
-        topic <- lapply(topic, sample, 1)
-        topic <- as.integer(unlist(topic))
-        return(topic)
-      }
-
-      # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
-      make_z <- function(x){
-        zz <- zx_assigner(x) # if it is a seed word, we already know the topic
-        zz[is.na(zz)] <- sample(1:(K + regular_k) - 1,
-                                sum(as.numeric(is.na(zz))),
-                                replace = TRUE)
-        zz
-      }
-    }
-
-    ## xx indicates whether the word comes from a seed topic-word distribution or not
-    make_x <- function(x){
-      seeded <- as.numeric(x %in% seed_wdids) # 1 if they're a seed
-      # Use x structure
-      x[seeded == 0] <- 0 # non-keyword words have x=0
-      x[seeded == 1] <- sample(0:1, length(x[seeded == 1]), prob = c(0.3, 0.7), replace = TRUE)
-        # seeded words have x=1 probabilistically
-      x
-    }
-
-    X <- lapply(W, make_x)
-    Z <- lapply(W, make_z)
-  
+  # Assign X and Z
+  if(model %in% c("basic", "cov", "hmm")){
+    res <- make_xz_key(W, keywords, info)
+    X <- res$X
+    Z <- res$Z
   }else{
-    #
-    # LDA based models  
-    #
-    make_z <- function(x){
-      zz <- sample(1:(K + regular_k) - 1,
-                   length(x),
-                   replace = TRUE)
-      return(zz)
-    }  
+    # LDA based models
+    res <- make_xz_lda(W, info)
+    X <- res$X
+    Z <- res$Z
+  }
+  rm(res)
 
-    make_x <- function(x){
-      return(rep(0, length(x)))  
-    }
+  # Organize
+  stored_values <- list()
 
-    X <- lapply(W, make_x)
-    Z <- lapply(W, make_z)
+  if(model %in% c("basic", "lda")){
+    if(options$estimate_alpha)
+      stored_values$alpha_iter <- list()  
   }
 
-  # dictionary category names -> vector of word_id.
-  # (Later processes ignore names)
-  keywords_raw <- keywords  # keep raw keywords (not word_id)
-  keywords <- lapply(keywords, function(x){ wd_map$find(x) })
+  if(model %in% c("hmm", "ldahmm")){
+    options$estimate_alpha <- 1
+    stored_values$alpha_iter <- list()  
+  }
 
-  # Covariate
-  if(is.null(covariates_data) || is.null(covariates_formula)){
-    C <- matrix()
-    use_cov <- FALSE
+
+  if(model %in% c("cov", "ldacov")){
+    stored_values$Lambda_iter <- list()
+  }
+
+  if(model %in% c("hmm", "ldahmm")){
+    stored_values$S_iter <- list()
+
+    if(options$store_transition_matrix){
+      stored_values$P_iter <- list()  
+    }
+  }
+
+  if(options$store_theta)
+    stored_values$Z_tables <- list()
+
+  key_model <- list(
+                    W = W, Z = Z, X = X,
+                    model = model,
+                    keywords = keywords_id, keywords_raw = keywords_raw,
+                    regular_k = regular_k,
+                    vocab = info$wd_names,
+                    model_settings = model_settings,
+                    priors = priors,
+                    options = options,
+                    stored_values = stored_values,
+                    model_fit = list(),
+                    call = match.call()
+                   )
+
+  rm(info)
+  class(key_model) <- c("keyATM_model", class(key_model))
+
+  if(options$iterations == 0){
+    message("`options$iterations` is 0. keyATM returns an initialized object.")  
+    return(key_model)
+  }
+
+
+  ##
+  ## Fitting
+  ##
+  message(paste0("Fitting the model. ", options$iterations, " iterations..."))
+  set.seed(options$seed)
+
+  if(model == "basic"){
+    key_model <- keyATM_train(key_model, iter=options$iterations, output_per=options$output_per)
+  }else if(model == "cov"){
+    key_model <- keyATM_train_cov(key_model, iter=options$iteration, output_per=options$output_per)
+  }else if(model == "lda"){
+    key_model <- LDA_weight(key_model, iter=options$iteration, output_per=options$output_per)  
+  }else if(model == "hmm"){
+    key_model <- keyATM_train_HMM(key_model, iter=options$iteration, output_per=options$output_per)  
+  }else if(model == "ldahmm"){
+    key_model <- keyATM_train_LDAHMM(key_model, iter=options$iteration, output_per=options$output_per)  
   }else{
-    C <- model.matrix(covariates_formula, covariates_data)
-    use_cov <- TRUE
-    if(sum(is.na(C)) != 0){
+    stop("Please check `mode`.")  
+  }
+
+  class(key_model) <- c("keyATM_fitted", class(key_model))
+  return(key_model)
+}
+
+
+#' @noRd
+#' @export
+print.keyATM_model <- function(x){
+  cat(
+      paste0(
+             "keyATM_model object for the ",
+             x$model,
+             " model.",
+             "\n"
+      )
+     )
+}
+
+
+#' @noRd
+#' @export
+summary.keyATM_model <- function(x){
+  cat(
+      paste0(
+             "keyATM_model object for the ",
+             x$model,
+             " model.",
+             "\n"
+      )
+     )
+}
+
+
+#' @noRd
+#' @export
+save.keyATM_model <- function(x, file = stop("'file' must be specified")){
+  save(x, file=file, compress="xz", compression_level=3)
+}
+
+
+#' @noRd
+#' @export
+print.keyATM_fitted <- function(x){
+  cat(
+      paste0(
+             "keyATM_model object for the ",
+             x$model,
+             " model. ",
+             x$options$iterations, " iterations.\n",
+             length(x$W), " documents | ",
+             length(x$keywords), " keyword topics",
+             "\n"
+      )
+     )
+}
+
+
+#' @noRd
+#' @export
+summary.keyATM_fitted <- function(x){
+  cat(
+      paste0(
+             "keyATM_model object for the ",
+             x$model,
+             " model. ",
+             x$options$iterations, " iterations.\n",
+             length(x$W), " documents | ",
+             length(x$keywords), " keyword topics",
+             "\n"
+      )
+     )
+}
+
+
+#' @noRd
+#' @export
+save.keyATM_fitted <- function(x, file = stop("'file' must be specified")){
+  save(x, file=file, compress="xz", compression_level=3)
+}
+
+
+check_arg <- function(obj, name, model, info=list())
+{
+  if(name == "keywords"){
+    check_arg_keywords(obj, model, info)
+  }
+
+  if(name == "model_settings"){
+    return(check_arg_model_settings(obj, model, info))  
+  }
+
+  if(name == "priors"){
+    return(check_arg_priors(obj, model, info))  
+  }
+
+  if(name == "options"){
+    return(check_arg_options(obj, model, info))  
+  }
+}
+
+
+check_arg_keywords <- function(keywords, model, info)
+{
+  if(length(keywords) == 0 & model %in% c("basic", "cov", "hmm")){
+    stop("Please provide keywords.")  
+  }
+
+  if(length(keywords) != 0 & model %in% c("lda", "ldacov", "ldahmm")){
+    stop("This model does not take keywords.")  
+  }
+}
+
+show_unused_arguments <- function(obj, name, allowed_arguments)
+{
+  unused_input <- names(obj)[! names(obj) %in% allowed_arguments]
+  if(length(unused_input) != 0)
+    stop(paste0(
+                      "keyATM doesn't recognize some of the arguments ",
+                      "in ", name, ": ",
+                      paste(unused_input, collapse=", ")
+                   )
+               )
+}
+
+
+check_arg_model_settings <- function(obj, model, info)
+{
+  check_arg_type(obj, "list")
+  allowed_arguments <- c()
+
+  if(model %in% c("cov", "ldacov")){
+     if(is.null(obj$covariates_data)){
+      stop("Please provide `obj$covariates_data`.")  
+    }
+
+    check_arg_type(obj$covariates_data, "matrix")
+
+    if(nrow(obj$covariates_data) != info$num_doc){
+      stop("The row of `model_settings$covariates_data` should be the same as the number of documents.")  
+    }
+
+    if(sum(is.na(obj$covariates_data)) != 0){
       stop("Covariate data should not contain missing values.")
     }
+
+    if(is.null(obj$covariates_formula)){
+      obj$covariates_formula <- NULL
+    }else if(is.formula(obj$covariates_formula)){
+      message("Convert covariates data using `obj$covariates_formula`.")
+      obj$covariates_data <- stats::model.matrix(obj$covariates_formula, obj$covariates_data)
+    }else{
+      stop("Check `model_settings$covariates_formula`.")  
+    }
+
+    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_formula")
   }
 
 
-  ll <- list(W = W, Z = Z, X = X, vocab = wd_names, mode=mode,
-             keywords = keywords, keywords_raw = keywords_raw, regular_k = regular_k,
-             extra_k = regular_k,
-             alpha = alpha,
-             beta = beta, beta_s = beta_s,
-             alpha_iter = list(), Lambda_iter = list(), S_iter = list(),
-             model_fit = list(), sampling_info = list(),
-             C=C, use_cov=use_cov,
-             num_states=num_states, time_index=time_index,
-             options=options,
-             visualize_keywords=visualize_keywords,
-             call = cl)
+  if(model %in% c("hmm", "ldahmm")){
+    if(is.null(obj$num_states)){
+      stop("`model_settings$num_states` is not provided.")  
+    }
 
-  class(ll) <- c("keyATM", class(ll))
+    if(is.null(obj$time_index)){
+      stop("`model_settings$time_index` is not provided.")
+    }
 
-  return(ll)
+    if(length(obj$time_index) != info$num_doc){
+      stop("The length of the `model_settings$time_index` does not match with the number of documents.")  
+    }
+    
+    if(min(obj$time_index) != 1 | max(obj$time_index) > info$num_doc){
+      stop("`model_settings$time_index` should start from 1 and not exceed the number of documents.")
+    }
+
+    if(max(obj$time_index) < obj$num_states)
+      stop("`model_settings$num_states` should not exceed the maximum of `model_settings$time_index`.")
+
+    check <- unique(obj$time_index[2:length(obj$time_index)] - lag(obj$time_index)[2:length(obj$time_index)])
+    if(sum(!unique(check) %in% c(0,1)) != 0)
+      stop("`model_settings$num_states` does not increment by 1.")
+
+    obj$time_index <- as.integer(obj$time_index)
+
+    allowed_arguments <- c(allowed_arguments, "num_states", "time_index")
+    
+  }
+
+  show_unused_arguments(obj, "`model_settings`", allowed_arguments)
+
+  return(obj)
 }
+
+
+check_arg_priors <- function(obj, model, info)
+{
+  check_arg_type(obj, "list")
+  # Base arguments
+  allowed_arguments <- c("beta")
+
+  # prior of pi
+  if(model %in% c("basic", "cov", "hmm")){
+    if(is.null(obj$gamma)){
+      obj$gamma <- matrix(1.0, nrow=info$total_K, ncol=2)  
+    }
+
+    if(!is.null(obj$gamma)){
+      if(dim(obj$gamma)[1] != info$total_K)  
+        stop("Check the dimension of `priors$gamma`")
+      if(dim(obj$gamma)[2] != 2)  
+        stop("Check the dimension of `priors$gamma`")
+    }
+
+
+    if(info$keywords_K < info$total_K){
+      # Regular topics are used in keyATM models
+      # Priors of regular topics should be 0
+      if(sum(obj$gamma[(info$keywords_K+1):info$total_K, ]) != 0){
+        obj$gamma[(info$keywords+1):info$total_K, ] <- 0
+      }
+    }
+
+    allowed_arguments <- c(allowed_arguments, "gamma")
+  }
+
+
+  # beta
+  if(is.null(obj$beta)){
+    obj$beta <- 0.01  
+  }
+
+  if(model %in% c("basic", "cov", "hmm")){
+    if(is.null(obj$beta_s)){
+      obj$beta_s <- 0.1  
+    }  
+    allowed_arguments <- c(allowed_arguments, "beta_s")
+  }
+
+
+  if(model %in% c("basic", "lda")){
+    # alpha
+    if(is.null(obj$alpha)){
+      obj$alpha <- rep(1/info$total_K, info$total_K)
+    }
+    if(length(obj$alpha) != info$total_K){
+      stop("Starting alpha must be a vector of length ", info$total_K)
+    }
+    allowed_arguments <- c(allowed_arguments, "alpha")
+  
+  }
+
+  show_unused_arguments(obj, "`priors`", allowed_arguments)
+
+  return(obj)
+}
+
+
+check_arg_options <- function(obj, model, info)
+{
+  check_arg_type(obj, "list")
+  allowed_arguments <- c("seed", "output_per", "thinning",
+                         "iterations",
+                         "use_weights",
+                         "store_theta", "slice_shape")
+
+  # Output per
+  if(is.null(obj$output_per))
+    obj$output_per <- 10L
+
+  if(!is.numeric(obj$output_per) | obj$output_per < 0 | obj$output_per%%1!=0){
+      stop("An invalid value in `options$output_per`")  
+  }
+
+  # thinning
+  if(is.null(obj$thinning))
+    obj$thinning <- 1L
+
+  if(!is.numeric(obj$thinning) | obj$thinning < 0| obj$thinning%%1!=0){
+      stop("An invalid value in `options$thinning`")  
+  }
+
+  # seed
+  if(is.null(obj$seed))
+    obj$seed <- floor(runif(1)*1e5)
+
+  # iterations
+  if(is.null(obj$iterations))
+    obj$iterations <- 1500L
+  if(!is.numeric(obj$iterations) | obj$iterations < 0| obj$iterations%%1!=0){
+      stop("An invalid value in `options$iterations`")  
+  }
+
+  # Store theta
+  if(is.null(obj$store_theta)){
+    obj$store_theta <- 0L
+  }else{
+    obj$store_theta <- as.integer(obj$store_theta)  
+    if(!obj$store_theta %in% c(0, 1)){
+      stop("An invalid value in `options$store_theta`")  
+    }
+  }
+
+  # Estimate alpha
+  if(model %in% c("basic", "lda")){
+    if(is.null(obj$estimate_alpha)){
+      obj$estimate_alpha <- 1L
+    }else{
+      obj$estimate_alpha <- as.integer(obj$estimate_alpha)  
+      if(!obj$estimate_alpha %in% c(0, 1)){
+        stop("An invalid value in `options$estimate_alpha`")  
+      }
+
+    }
+    allowed_arguments <- c(allowed_arguments, "estimate_alpha")
+  }
+  
+  # Slice shape
+  if(is.null(obj$slice_shape)){
+    # parameter for slice sampling
+    obj$slice_shape <- 1.2
+  }
+  if(!is.numeric(obj$slice_shape) | obj$slice_shape < 0){
+      stop("An invalid value in `options$slice_shape`")  
+  }
+
+  # Use weights
+  if(is.null(obj$use_weights)){
+    obj$use_weights <- 1L 
+  }else{
+    obj$use_weights <- as.integer(obj$use_weights)
+    if(!obj$use_weights %in% c(0, 1)){
+      stop("An invalid value in `options$use_weights`")  
+    }
+  }
+
+  if(model %in% c("hmm", "ldahmm")){
+    if(is.null(obj$store_transition_matrix)){
+      obj$store_transition_matrix <- 0L  
+    }
+    if(!obj$store_transition_matrix %in% c(0, 1)){
+      stop("An invalid value in `options$store_transition_matrix`")  
+    }
+    allowed_arguments <- c(allowed_arguments, "store_transition_matrix")
+  }
+
+  # Check unused arguments
+  show_unused_arguments(obj, "`options`", allowed_arguments)
+  return(obj)
+}
+
+
+make_xz_key <- function(W, keywords, info)
+{
+  # zx_assigner maps keywords to category ids
+  key_wdids <- unlist(lapply(keywords, function(x){ info$wd_map$find(x) }))
+  cat_ids <- rep(1:(info$keywords_K) - 1L, unlist(lapply(keywords, length)))
+
+  if(length(key_wdids) == length(unique(key_wdids))){
+    #
+    # No keyword appears more than once
+    #
+    zx_assigner <- hashmap::hashmap(as.integer(key_wdids), as.integer(cat_ids))
+
+    # if the word is a keyword, assign the appropriate (0 start) Z, else a random Z
+    topicvec <- 1:(info$total_K) - 1L
+    make_z <- function(x, topicvec){
+      zz <- zx_assigner[[x]] # if it is a keyword word, we already know the topic
+      zz[is.na(zz)] <- sample(topicvec,
+                              sum(is.na(zz)),
+                              replace = TRUE)
+      return(zz)
+    }
+
+  }else{
+    #
+    # Some keywords appear multiple times
+    #
+    keys_df <- data.frame(wid = key_wdids, cat=cat_ids)
+    keys_char <- sapply(unique(key_wdids),
+                        function(x){
+                          paste(as.character(keys_df[keys_df$wid==x, "cat"]), collapse=",")
+                        })
+    zx_hashtable <- hashmap::hashmap(as.integer(unique(key_wdids)), keys_char)
+
+    zx_assigner <- function(x){
+      topic <- zx_hashtable[[x]]
+      topic <- strsplit(topic, split=",")
+      topic <- lapply(topic, sample, 1)
+      topic <- as.integer(unlist(topic))
+      return(topic)
+    }
+
+    # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
+    topicvec <- 1:(info$total_K) - 1L
+    make_z <- function(x, topicvec){
+      zz <- zx_assigner(x) # if it is a seed word, we already know the topic
+      zz[is.na(zz)] <- sample(topicvec,
+                              sum(is.na(zz)),
+                              replace = TRUE)
+      return(zz)
+    }
+  }
+
+
+  ## xx indicates whether the word comes from a seed topic-word distribution or not
+  make_x <- function(x){
+    key <- as.numeric(x %in% key_wdids) # 1 if they're a seed
+    # Use x structure
+    x[key == 0] <- 0L # non-keyword words have x=0
+    x[key == 1] <- sample(0:1, length(x[key == 1]), prob = c(0.3, 0.7), replace = TRUE)
+      # keywords have x=1 probabilistically
+    return(x)
+  }
+
+ X <- lapply(W, make_x)
+ Z <- lapply(W, make_z, topicvec)
+
+ return(list(X=X, Z=Z))
+}
+
+
+make_xz_lda <- function(W, info)
+{
+  topicvec <- 1:(info$total_K) - 1L
+  make_z <- function(x, topicvec){
+    zz <- sample(topicvec,
+                 length(x),
+                 replace = TRUE)
+    return(as.integer(zz))
+  }  
+
+  make_x <- function(x){
+    return(rep(0L, length(x)))  
+  }
+
+ X <- lapply(W, make_x)
+ Z <- lapply(W, make_z, topicvec)
+
+ return(list(X=X, Z=Z))
+}
+
+
 
