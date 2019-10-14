@@ -7,7 +7,7 @@ pkgdown:
   as_is: true
 ---
 
-You can manually set priors, but we do not recommend doing it unless it is necessary and you understandd the consequences.
+You can manually set priors, but we **do not** recommend doing it unless you understandd the consequences.
 
 
 ## `alpha`
