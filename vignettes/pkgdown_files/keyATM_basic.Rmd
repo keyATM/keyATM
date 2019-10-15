@@ -27,42 +27,40 @@ Before fitting the model, we need to read texts and keywords into **keyATM**. He
 
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 library(keyATM)
-model <- keyATM_read(texts = bills_dfm,  # text input
-                     regular_k=3,  # number of regular topics
-                     keywords=bills_keywords,  # keywords
-                     mode="basic",  # select the model
-                     options=list(seed=100))
+keyATM_docs <- keyATM_read(bills_dfm)
 ```
 
 If you want to know more about `options`, please read [FAQ](FAQ.html#what-is-the-options-argument).
 
 
 ## Checking keywords
-**WE WILL MAKE A `visualize_keywords()` FUNCION LATER**
-
 Before you fit the model, please make sure your keywords appear enough in your corpus. [FAQ](FAQ.html#how-to-select-keywords) explains what could be good keywords.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
-model$visualize_keywords
+visualize_keywords(keyATM_docs, bills_keywords)
 ```
 
 
 
 ## Fit the model
 ```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
-fitted <- keyATM_fit(model, iteration=1000)
-out <- keyATM_output(fitted)
+fitted <- keyATM_fit(keyATM_docs = keyATM_docs,  # text input
+                     regular_k=3,  # number of regular topics
+                     keywords=bills_keywords,  # keywords
+                     model="basic",  # select the model
+                     options=list(seed=100))
+out <- keyATM_output(fitted)  # get useful quantities
 ```
 
 ## Save the model
 
-Once you fit the model, you can save the model with `saveRDS()` for replication.
-```{r, warning=FALSE, message=FALSE, fig.align='center'}
-
+Once you fit the model, you can save the model with `save()` for replication.
+```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+save(fitted, file="SAVENAME.rds")
 ```
 
-To load the model, you can use `readRDS()` function.
-```{r, warning=FALSE, message=FALSE, fig.align='center'}
-
+To load the model, you can use `load()` function.
+```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+fitted <-load(file="SAVENAM.rds")
 ```
 
 ## Check top words

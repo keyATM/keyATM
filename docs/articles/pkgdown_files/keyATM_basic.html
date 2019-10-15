@@ -129,36 +129,37 @@
 <a href="#creating-a-model-object" class="anchor"></a>Creating a model object</h2>
 <p>Before fitting the model, we need to read texts and keywords into <strong>keyATM</strong>. Here we use <strong>quanteda</strong>’s <code>dfm</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(keyATM)</span>
-<span id="cb2-2"><a href="#cb2-2"></a>model &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(<span class="dt">texts =</span> bills_dfm,  <span class="co"># text input</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>                     <span class="dt">regular_k=</span><span class="dv">3</span>,  <span class="co"># number of regular topics</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>                     <span class="dt">keywords=</span>bills_keywords,  <span class="co"># keywords</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>                     <span class="dt">mode=</span><span class="st">"basic"</span>,  <span class="co"># select the model</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>                     <span class="dt">options=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed=</span><span class="dv">100</span>))</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
 <p>If you want to know more about <code>options</code>, please read <a href="FAQ.html#what-is-the-options-argument">FAQ</a>.</p>
 </div>
 <div id="checking-keywords" class="section level2">
 <h2 class="hasAnchor">
 <a href="#checking-keywords" class="anchor"></a>Checking keywords</h2>
-<p><strong>WE WILL MAKE A <code><a href="../../reference/visualize_keywords.html">visualize_keywords()</a></code> FUNCION LATER</strong></p>
 <p>Before you fit the model, please make sure your keywords appear enough in your corpus. <a href="FAQ.html#how-to-select-keywords">FAQ</a> explains what could be good keywords.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>model<span class="op">$</span>visualize_keywords</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw"><a href="../../reference/visualize_keywords.html">visualize_keywords</a></span>(keyATM_docs, bills_keywords)</span></code></pre></div>
 </div>
 <div id="fit-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fit-the-model" class="anchor"></a>Fit the model</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>fitted &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_fit.html">keyATM_fit</a></span>(model, <span class="dt">iteration=</span><span class="dv">1000</span>)</span>
-<span id="cb4-2"><a href="#cb4-2"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_output.html">keyATM_output</a></span>(fitted)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>fitted &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_fit.html">keyATM_fit</a></span>(<span class="dt">keyATM_docs =</span> keyATM_docs,  <span class="co"># text input</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>                     <span class="dt">regular_k=</span><span class="dv">3</span>,  <span class="co"># number of regular topics</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>                     <span class="dt">keywords=</span>bills_keywords,  <span class="co"># keywords</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>                     <span class="dt">model=</span><span class="st">"basic"</span>,  <span class="co"># select the model</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>                     <span class="dt">options=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed=</span><span class="dv">100</span>))</span>
+<span id="cb4-6"><a href="#cb4-6"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_output.html">keyATM_output</a></span>(fitted)  <span class="co"># get useful quantities</span></span></code></pre></div>
 </div>
 <div id="save-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#save-the-model" class="anchor"></a>Save the model</h2>
-<p>Once you fit the model, you can save the model with <code><a href="https://www.rdocumentation.org/packages/base/topics/readRDS">saveRDS()</a></code> for replication.</p>
-<p>To load the model, you can use <code><a href="https://www.rdocumentation.org/packages/base/topics/readRDS">readRDS()</a></code> function.</p>
+<p>Once you fit the model, you can save the model with <code><a href="https://www.rdocumentation.org/packages/base/topics/save">save()</a></code> for replication.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/save">save</a></span>(fitted, <span class="dt">file=</span><span class="st">"SAVENAME.rds"</span>)</span></code></pre></div>
+<p>To load the model, you can use <code><a href="https://www.rdocumentation.org/packages/base/topics/load">load()</a></code> function.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>fitted &lt;-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/load">load</a></span>(<span class="dt">file=</span><span class="st">"SAVENAM.rds"</span>)</span></code></pre></div>
 </div>
 <div id="check-top-words" class="section level2">
 <h2 class="hasAnchor">
 <a href="#check-top-words" class="anchor"></a>Check top words</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
 </div>
   </div>
 
