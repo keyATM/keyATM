@@ -1,0 +1,47 @@
+---
+output: github_document
+---
+
+# keyATM: Keyword Assisted Topic Models
+
+<!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/keyATM)](https://CRAN.R-project.org/package=keyATM)
+[![metacran downloads](https://cranlogs.r-pkg.org/badges/grand-total/keyATM)](https://cran.r-project.org/package=keyATM)
+[![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
+<!-- badges: end -->
+
+
+## How to Use
+* [Installation](articles/pkgdown_files/Installation.html)
+* [Preparation](articles/pkgdown_files/Preparation.html)
+* [keyATM Basic](articles/pkgdown_files/keyATM_basic.html)
+* [keyATM Covariate](articles/pkgdown_files/keyATM_cov.html)
+* [keyATM HMM](articles/pkgdown_files/keyATM_HMM.html)
+* [Weighted LDA](articles/pkgdown_files/Weighted_LDA.html)
+* [FAQ](articles/pkgdown_files/FAQ.html)
+
+## How to report a bug
+We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/Shusei-E/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format. 
+
+Please check [an example issue](https://github.com/Shusei-E/keyATM/issues/46).
+
+```
+## Problem summary (required):
+
+## Environment information (required):
+* Your OS
+* R version
+* keyATM version
+
+## Actual output (required):
+Please wrap output with triple backticks.
+
+## Expected output (it helps us a lot):
+Please wrap output with triple backticks.
+
+## Minimal and reproducible example with less than 50 lines (it helps us a lot):
+Please wrap your code with triple backticks.
+
+```
+
+

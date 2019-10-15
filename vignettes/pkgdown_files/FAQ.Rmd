@@ -1,0 +1,59 @@
+---
+title: "FAQ"
+output: 
+  html_document:
+    toc: true
+---
+
+
+## Which model to use?
+
+The table below summarizes keyATM models and other popular models based on the inputs.
+
+|                                   | Keywords  | Covariate  | Time Structure |   
+|----------------------------------:|:---------:|:----------:|:--------------:|
+|[keyATM Basic](keyATM_basic.html)  |     ○    |     ×     |        ×      |
+|[keyATM Covariate](keyATM_cov.html)|     ○    |     ○     |        △      |
+|    [keyATM HMM](keyATM_hmm.html)  |     ○    |     ×     |        ○      |
+|            LDA Weighted           |     ×    |     ×     |        ×      |
+|          LDA Weighted Cov         |     ×    |     ○     |        ×      |
+|          LDA Weighted HMM         |     ×    |     ×     |        ○      |
+| Latent Dirichlet Allocation (LDA) |     ×    |     ×     |        ×      |
+|    Structural Topic Model (STM)   |     ×    |     ○     |        △      |
+
+
+The next table compares inference methods and speeds. CGS stands for Collapsed Gibbs Sampling and SS stands for Slice Sampling. Variational inference approximates the target distribution, while CGS and SS sample from the exact distribution.
+
+|                                   |        Inference      |                  Speed                 |
+|----------------------------------:|:----------------------|:---------------------------------------|
+|[keyATM Basic](keyATM_basic.html)  |        CGS + SS       |                  Fast                  |
+|[keyATM Covariate](keyATM_cov.html)|        CGS + SS       | Moderate  (Depends on # of covariates) |
+|[keyATM HMM](keyATM_hmm.html)      |        CGS + SS       |                  Fast                  |
+|            LDA Weighted           |        CGS + SS       |                  Fast                  |
+|          LDA Weighted Cov         |        CGS + SS       |  Moderate (Depends on # of covariates) |
+|          LDA Weighted HMM         |        CGS + SS       |                  Fast                  |
+| Latent Dirichlet Allocation (LDA) |  Variational EM / CGS |        Depends on implementation       |
+|    Structural Topic Model (STM)   |     Variational EM    |               Very Fast                |
+
+
+## It takes time to fit the model. What should I do?
+Please note that the number of unique words, the total lenght of documents, and the number of topics affect the speed. If you use `cov` model, the number of covariates matters as well, because we need to estimate coefficieitns for covariates.
+
+If you want to speed up fitting, the first thing you can do is to review preprocessing processes. Usually, documents include a lot of low frequency words that do not help interpretation. **quanteda** provides various functions to trim those words.
+
+
+
+
+## How to select keywords?
+
+
+## How to select the number of regular topics?
+
+
+
+
+## Can I run keyATM on cloud computing services?
+Yes! For example, [Professor Louis Aslett](http://www.louisaslett.com/) provides an easy to use Amazon Machine Image of RStudio [here](http://www.louisaslett.com/RStudio_AMI/). When you select an instance, please note that **keyATM** does not need multiple cores (one or two cores would be enough because we cannot parallelize Collapsed Gibbs Sampling), but make sure the memory can handle your data.
+
+
+

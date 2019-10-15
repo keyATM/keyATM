@@ -1,0 +1,69 @@
+destination: docs
+
+template:
+  params:
+    bootswatch: spacelab
+
+authors:
+  Shusei Eshima:
+    href: "https://shusei-e.github.io"
+  Tomoya Sasaki:
+    href: "https://polisci.mit.edu/people/tomoya-sasaki"
+  William Lowe:
+    href: "http://conjugateprior.org/"
+  Kosuke Imai:
+    href: "https://imai.fas.harvard.edu/"
+
+news:
+- one_page: false
+
+navbar:
+  title: "keyATM"
+  left:
+    - text: "User's Guide"
+      menu:
+        - text: "Installation"
+          href: articles/pkgdown_files/Installation.html
+        - text: "Preparation"
+          href: articles/pkgdown_files/Preparation.html
+        - text: "keyATM Basic"
+          href: articles/pkgdown_files/keyATM_basic.html
+        - text: "keyATM Covariate"
+          href: articles/pkgdown_files/keyATM_cov.html
+        - text: "keyATM HMM"
+          href: articles/pkgdown_files/keyATM_HMM.html
+        - text: "Weighted LDA"
+          href: articles/pkgdown_files/Weighted_LDA.html
+        - text: "Priors"
+          href: articles/pkgdown_files/Priors.html
+        - text: "Options"
+          href: articles/pkgdown_files/Options.html
+    - text: "FAQ"
+      href: articles/pkgdown_files/FAQ.html
+    - text: "Reference"
+      href: reference/index.html
+    - text: "Changelog"
+      href: news/index.html
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/Shusei-E/keyATM
+
+
+reference:
+- title: All functions
+  desc: ~
+  contents:
+  - '`diagnosis_alpha`'
+  - '`diagnosis_model_fit`'
+  - '`diagnosis_p`'
+  - '`keyATM_fit`'
+  - '`keyATM_output`'
+  - '`keyATM_read`'
+  - '`top_docs`'
+  - '`top_words`'
+  - '`top_topics`'
+  - '`visualize_keywords`'
+
+toc:
+  depth: 2
+

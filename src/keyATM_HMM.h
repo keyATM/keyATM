@@ -13,73 +13,88 @@ using namespace std;
 
 class keyATMhmm : public keyATMbase
 {
-	public:
-		// Parameters
-		int num_states;
-		int index_states;  // num_states - 1
-		MatrixXd Psk;    // (num_doc, num_states)
-		VectorXi S_est;  // stores state index, (num_doc)
-		VectorXi S_count;  // stores the count of each state
-		MatrixXd P_est;  // (num_states, num_states)
-		MatrixXd alphas;  // (num_states, num_topics)
-		double loglik;
-		double fixed_part;
-	
-		// Constructor
-		keyATMhmm(List model_, const int iter_, const int output_per_);
+  public:
+    // Data
+    VectorXi time_index;
+    int num_time;  // number of time segment
+    VectorXi time_doc_start;
+    VectorXi time_doc_end;
 
-		// During sampling
-			// sample_forward()
-			VectorXd logfy;  // (num_states)
-			VectorXd st_1l;
-			VectorXd st_k;
-			VectorXd logst_k;
-			double logsum;
-			int added;
+    // Parameters
+    // In this implementation, we should consider
+    // Y_n in Chib (1998) as a 'block' of documents that
+    // share the same time index.
+    // 'Time-Blocked' Change Point
+    int num_states;
+    int index_states;  // num_states - 1
+    int store_transition_matrix;
+    MatrixXd Psk;    // (num_time, num_states)
+    VectorXi S_est;  // stores state index, (num_time)
+    VectorXi S_count;  // stores the count of each state
+      // Sec 2.3 in Chib (1998)
+      // "the elements of p_ij of P may be simulated from P|S_n
+      // without regard to the sampling model for the data"
+      // so we just store the count of each state
+    MatrixXd P_est;  // (num_states, num_states)
+    MatrixXd alphas;  // (num_states, num_topics)
+    double loglik;
+    double fixed_part;
 
-			int state_id;
-			VectorXd state_prob_vec;
-			double pii;
+    // Constructor
+    keyATMhmm(List model_, const int iter_, const int output_per_);
 
-			// Sample alpha
-			VectorXi states_start;
-			VectorXi states_end;
+    // During sampling
+      // sample_forward()
+      VectorXd logfy;  // (num_states)
+      VectorXd st_1l;
+      VectorXd st_k;
+      VectorXd logst_k;
+      double logsum;
+      int added;
 
-				// Slice Sampling
-				double min_v = 1e-9;
-				double max_v = 100.0;
-				int max_shrink_time = 1000;
-				double start, end, previous_p, new_p, newlikelihood, slice_;
-				std::vector<int> topic_ids;
-				VectorXd keep_current_param;
-				double store_loglik;
-				double newalphallk;
-				MatrixXd ndk_a;
-	
-		// 
-		// Functions
-		//
-	
-		// Read data and Initialize
-		void read_data_specific();
-		void initialize_specific();
-	
-		// Iteration
-		void iteration_single(int &it);
-		void sample_parameters();
+      int state_id;
+      VectorXd state_prob_vec;
+      double pii;
 
-		void sample_alpha();
-		void sample_alpha_state(int &state, int &state_start, int &state_end);
-		double alpha_loglik(int &state_start, int &state_end);
+      // Sample alpha
+      VectorXi states_start;
+      VectorXi states_end;
 
-		void sample_forward();  // calculate Psk
-		void sample_backward();  // sample S_est
-		void sample_P();  // sample P_est
-		void store_S_est();
+        // Slice Sampling
+        double start, end, previous_p, new_p, newlikelihood, slice_;
+        std::vector<int> topic_ids;
+        VectorXd keep_current_param;
+        double store_loglik;
+        double newalphallk;
+        MatrixXd ndk_a;
+  
+    // 
+    // Functions
+    //
+    // Utilities
+    int get_state_index(const int &doc_id);
+  
+    // Read data and Initialize
+    virtual void read_data_specific();
+    virtual void initialize_specific();
+  
+    // Iteration
+    virtual void iteration_single(int &it);
+    void sample_parameters(int &it);
 
-		double polyapdfln(int &doc_id, VectorXd &alpha);
-		double loglik_total();
-		void verbose_special(int &r_index);
+    void sample_alpha();
+    void sample_alpha_state(int &state, int &state_start, int &state_end);
+    double alpha_loglik(int &state_start, int &state_end);
+
+    void sample_forward();  // calculate Psk
+    void sample_backward();  // sample S_est
+    void sample_P();  // sample P_est
+    void store_S_est();
+    void store_P_est();
+
+    double polyapdfln(int &t, VectorXd &alpha);
+    virtual double loglik_total();
+    void verbose_special(int &r_index);
 };
 
 #endif

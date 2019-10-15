@@ -4,14 +4,12 @@
 \alias{top_topics}
 \title{Show the top topics for each document}
 \usage{
-top_topics(x, n = 2, measure = c("probability", "lift"))
+top_topics(x, n = 2)
 }
 \arguments{
-\item{x}{The posterior from a fitted model (see \code{posterior})}
+\item{x}{the output from a keyATM model (see \code{keyATM_output()})}
 
 \item{n}{How many topics to show. Default: 2}
-
-\item{measure}{How to sort the topics: 'probability' (default) or 'lift'}
 }
 \value{
 An n x k table of the top n topics in each document
