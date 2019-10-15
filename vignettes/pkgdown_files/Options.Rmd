@@ -17,9 +17,12 @@ This is a seed used to generate random numbers. The same seed is used for initia
 ## `output_per`
 
 
+## `iterations`
+The  default value is `1500`.
+
 
 ## `use_weights`
-We follow the weighting Scheme in Wilson \& Chew (2010). It uses an axiom of information theory: an event $a$'s information content: $- \log_2 p(a)$. We assume that information content of a term $v$ follows this metric. The weight for a word $v$ is,
+The default value is `1` (use weights). We follow the weighting Scheme in Wilson \& Chew (2010). It uses an axiom of information theory: an event $a$'s information content: $- \log_2 p(a)$. We assume that information content of a term $v$ follows this metric. The weight for a word $v$ is,
 
 $$
 \begin{align*}
@@ -34,6 +37,8 @@ $$
         p(z_{di}=k) = \frac{m(v) N_{dk}^{-di} + \beta }{\sum_v m(v) N_{dk}^{-di} + \beta} \cdot \frac{m(v) N_{vk}^{-di} + \alpha }{\sum_v m(v) N_{vj}^{-di} + \alpha}.
 \end{align*}
 $$
+
+If you do not want to use weights, please set it to `0`.
 
 
 ## `thinning`
