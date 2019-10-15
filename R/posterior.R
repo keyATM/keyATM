@@ -556,4 +556,3 @@ diagnosis_p <- function(x, show_topic=NULL){
 
 
 
-
