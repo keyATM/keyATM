@@ -120,11 +120,17 @@
 <a href="#output_per" class="anchor"></a><code>output_per</code>
 </h2>
 </div>
+<div id="iterations" class="section level2">
+<h2 class="hasAnchor">
+<a href="#iterations" class="anchor"></a><code>iterations</code>
+</h2>
+<p>The default value is <code>1500</code>.</p>
+</div>
 <div id="use_weights" class="section level2">
 <h2 class="hasAnchor">
 <a href="#use_weights" class="anchor"></a><code>use_weights</code>
 </h2>
-<p>We follow the weighting Scheme in Wilson &amp; Chew (2010). It uses an axiom of information theory: an event <span class="math inline">\(a\)</span>’s information content: <span class="math inline">\(- \log_2 p(a)\)</span>. We assume that information content of a term <span class="math inline">\(v\)</span> follows this metric. The weight for a word <span class="math inline">\(v\)</span> is,</p>
+<p>The default value is <code>1</code> (use weights). We follow the weighting Scheme in Wilson &amp; Chew (2010). It uses an axiom of information theory: an event <span class="math inline">\(a\)</span>’s information content: <span class="math inline">\(- \log_2 p(a)\)</span>. We assume that information content of a term <span class="math inline">\(v\)</span> follows this metric. The weight for a word <span class="math inline">\(v\)</span> is,</p>
 <p><span class="math display">\[
 \begin{align*}
     m(v) &amp;= -\log_2 \dfrac{\text{# of word $v$ in corpus}}{\text{# of total occurrence}}\\
@@ -136,6 +142,7 @@
         p(z_{di}=k) = \frac{m(v) N_{dk}^{-di} + \beta }{\sum_v m(v) N_{dk}^{-di} + \beta} \cdot \frac{m(v) N_{vk}^{-di} + \alpha }{\sum_v m(v) N_{vj}^{-di} + \alpha}.
 \end{align*}
 \]</span></p>
+<p>If you do not want to use weights, please set it to <code>0</code>.</p>
 </div>
 <div id="thinning" class="section level2">
 <h2 class="hasAnchor">
