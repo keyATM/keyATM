@@ -90,7 +90,8 @@ keyATM_read <- function(texts, encoding="UTF-8")
 
 #' @noRd
 #' @export
-print.keyATM_docs <- function(x){
+print.keyATM_docs <- function(x)
+{
   cat(paste0("keyATM_docs object of ",
                  length(x), " documents",
                  ".\n"
@@ -101,7 +102,8 @@ print.keyATM_docs <- function(x){
 
 #' @noRd
 #' @export
-summary.keyATM_docs <- function(x){
+summary.keyATM_docs <- function(x)
+{
   doc_len <- sapply(x, length)
   cat(paste0("keyATM_docs object of: ",
               length(x), " documents",
@@ -239,21 +241,24 @@ visualize_keywords <- function(keyATM_docs, keywords)
 
 #' @noRd
 #' @export
-print.keyATM_viz <- function(x){
+print.keyATM_viz <- function(x)
+{
   print(x$figure)  
 }
 
 
 #' @noRd
 #' @export
-summary.keyATM_viz <- function(x){
+summary.keyATM_viz <- function(x)
+{
   return(x$values)  
 }
 
 
 #' @noRd
 #' @export
-save.keyATM_viz <- function(x, file = stop("'file' must be specified")){
+save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
+{
   save(x, file=file, compress="xz", compression_level=3)
 }
 
@@ -316,6 +321,7 @@ save.keyATM_viz <- function(x, file = stop("'file' must be specified")){
 #'                        keyATM_docs, model="ldacov", regular_k=5,
 #'                        model_settings(covariates_data=cov)
 #'                       )                   
+#'
 #'   # Weighted LDA HMM
 #'   fitted <- keyATM_fit(
 #'                        keyATM_docs, model="ldahmm", regular_k=5,
@@ -478,7 +484,8 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
 
 #' @noRd
 #' @export
-print.keyATM_model <- function(x){
+print.keyATM_model <- function(x)
+{
   cat(
       paste0(
              "keyATM_model object for the ",
@@ -492,7 +499,8 @@ print.keyATM_model <- function(x){
 
 #' @noRd
 #' @export
-summary.keyATM_model <- function(x){
+summary.keyATM_model <- function(x)
+{
   cat(
       paste0(
              "keyATM_model object for the ",
@@ -506,14 +514,16 @@ summary.keyATM_model <- function(x){
 
 #' @noRd
 #' @export
-save.keyATM_model <- function(x, file = stop("'file' must be specified")){
+save.keyATM_model <- function(x, file = stop("'file' must be specified"))
+{
   save(x, file=file, compress="xz", compression_level=3)
 }
 
 
 #' @noRd
 #' @export
-print.keyATM_fitted <- function(x){
+print.keyATM_fitted <- function(x)
+{
   cat(
       paste0(
              "keyATM_model object for the ",
@@ -530,7 +540,8 @@ print.keyATM_fitted <- function(x){
 
 #' @noRd
 #' @export
-summary.keyATM_fitted <- function(x){
+summary.keyATM_fitted <- function(x)
+{
   cat(
       paste0(
              "keyATM_model object for the ",
@@ -547,7 +558,8 @@ summary.keyATM_fitted <- function(x){
 
 #' @noRd
 #' @export
-save.keyATM_fitted <- function(x, file = stop("'file' must be specified")){
+save.keyATM_fitted <- function(x, file = stop("'file' must be specified"))
+{
   save(x, file=file, compress="xz", compression_level=3)
 }
 
@@ -910,6 +922,105 @@ make_xz_lda <- function(W, info)
  Z <- lapply(W, make_z, topicvec)
 
  return(list(X=X, Z=Z))
+}
+
+
+#' keyATM Main function
+#'
+#' This is a wrapper function of \code{keyATM_fit()} and \code{keyATM_output()}.
+#'
+#'
+#' @param keyATM_docs texts read via \code{keyATM_read()}
+#' @param model keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"
+#' @param regular_k the number of regular topics
+#' @param keywords a list of keywords
+#' @param model_settings a list of model specific settings
+#' @param priors a list of priors of parameters
+#' @param options a list of options
+#' @param keep a vector of the names of elements you want to keep from \code{keyATM_fit()} output
+#'
+#' @return A keyATM_output object containing:
+#'   \describe{
+#'     \item{keyword_k}{Number of keyword topics}
+#'     \item{regular_k}{Number of regular unseeded topics}
+#'     \item{V}{Number of word types}
+#'     \item{N}{Number of documents}
+#'     \item{theta}{Normalized topic proportions for each document}
+#'     \item{phi}{Normalized topic specific word generation probabilities}
+#'     \item{topic_counts}{Number of tokens assigned to each topic}
+#'     \item{word_counts}{Number of times each word type appears}
+#'     \item{doc_lens}{Length of each document in tokens}
+#'     \item{vocab}{Words in the vocabulary}
+#'     \item{model_fit}{Perplexity and log-likelihood}
+#'     \item{p}{Estimated p}
+#'     \item{values_iter}{Organized values stored during iterations}
+#'     \item{kept_values}{Output from \code{keyATM_fit()} you specified to store.}
+#'   }
+#'
+#' @examples
+#' \dontrun{
+#'   # keyATM Basic
+#'   fitted <- keyATM(
+#'                    keyATM_docs, model="basic", regular_k=5, keywords=keywords_list
+#'                   )
+#'
+#'   # keyATM Cov
+#'   fitted <- keyATM(
+#'                    keyATM_docs, model="cov", regular_k=5, keywords=keywords_list,
+#'                    model_settings(covariates_data=cov)
+#'                   )
+#'
+#'   # keyATM HMM
+#'   fitted <- keyATM(
+#'                    keyATM_docs, model="hmm", regular_k=5, keywords=keywords_list,
+#'                    model_settings(time_index=time_index_vec, num_states=5)
+#'                   )
+#'
+#'   # Weighted LDA
+#'   fitted <- keyATM(
+#'                    keyATM_docs, model="lda", regular_k=5
+#'                   )
+#'
+#'   # Weighted LDA Cov
+#'   fitted <- keyATM(
+#'                    keyATM_docs, model="ldacov", regular_k=5,
+#'                    model_settings(covariates_data=cov)
+#'                   )                   
+#'
+#'   # Weighted LDA HMM
+#'   fitted <- keyATM(
+#'                    keyATM_docs, model="ldahmm", regular_k=5,
+#'                    model_settings(time_index=time_index_vec, num_states=5)
+#'                   )
+#'
+#' }
+#'
+#' @export
+keyATM <- function(keyATM_docs, model, regular_k,
+                   keywords=list(), model_settings=list(),
+                   priors=list(), options=list(), keep=c())
+{
+  # Check type
+  check_arg_type(keep, "character")
+
+  # Fit keyATM
+  fitted <- keyATM_fit(
+                       keyATM_docs, model, regular_k,
+                       keywords, model_settings, priors, options
+                      )
+
+  # Get output
+  out <- keyATM_output(fitted)
+
+  # Keep some objects if specified
+  keep_values <- list()
+  use_elements <- keep[keep %in% names(fitted)]
+  for(i in 1:length(use_elements)){
+    keep_values[use_elements[i]]  <- fitted[use_elements[i]]
+  }
+  out$kept_values <- kept_values
+
+  return(out)
 }
 
 

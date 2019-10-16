@@ -4,7 +4,7 @@
 #'
 #' @param model a fitted keyATM model (an output of \code{keyATM_fit()})
 #'
-#' @return A list containing:
+#' @return A keyATM_output containing:
 #'   \describe{
 #'     \item{keyword_k}{Number of keyword topics}
 #'     \item{regular_k}{Number of regular unseeded topics}
@@ -20,8 +20,15 @@
 #'     \item{p}{Estimated p}
 #'     \item{values_iter}{Organized values stored during iterations}
 #'   }
+#' @examples
+#' \dontrun{
+#'  # `fitted` is the output of `keyATM()` 
+#'  out <- keyATM_output(fitted)
+#' }
+#'
 #' @export
-keyATM_output <- function(model){
+keyATM_output <- function(model)
+{
   message("Creating an output object. It may take time...")
 
   check_arg_type(model, "keyATM_fitted")
@@ -258,9 +265,11 @@ keyATM_output_alpha_iter_hmm <- function(model, info)
   return(alpha_iter)
 }
 
+
 #' @noRd
 #' @export
-print.keyATM_output <- function(x){
+print.keyATM_output <- function(x)
+{
   cat(
       paste0(
              "keyATM_output object for the ",
@@ -274,7 +283,8 @@ print.keyATM_output <- function(x){
 
 #' @noRd
 #' @export
-summary.keyATM_output <- function(x){
+summary.keyATM_output <- function(x)
+{
   cat(
       paste0(
              "keyATM_output object for the ",
@@ -288,7 +298,8 @@ summary.keyATM_output <- function(x){
 
 #' @noRd
 #' @export
-save.keyATM_output <- function(x, file = stop("'file' must be specified")){
+save.keyATM_output <- function(x, file = stop("'file' must be specified"))
+{
   save(x, file=file, compress="xz", compression_level=3)
 }
 
@@ -322,7 +333,8 @@ check_arg_type <- function(arg, typename, message=NULL){
 #' @export
 #'
 top_words <- function(x, n = 10, measure = c("probability", "lift"),
-                      show_keyword = TRUE){
+                      show_keyword = TRUE)
+{
   check_arg_type(x, "keyATM_output")
 
   if(x$model %in% c("lda", "ldacov", "ldahmm"))
@@ -367,7 +379,8 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
 #' @import magrittr
 #' @export
 #'
-top_topics <- function(x, n = 2){
+top_topics <- function(x, n = 2)
+{
   check_arg_type(x, "keyATM_output")
   check_arg_type(n, "numeric")
 
@@ -393,7 +406,8 @@ top_topics <- function(x, n = 2){
 #' @return An n x k table of the top n documents for each topic, each number is a document index
 #' @import magrittr
 #' @export
-top_docs <- function(x, n = 10){
+top_docs <- function(x, n = 10)
+{
   check_arg_type(x, "keyATM_output")
   if (is.null(n))
     n <- nrow(x$theta)
@@ -423,7 +437,8 @@ top_docs <- function(x, n = 10){
 #' @export
 diagnosis_alpha <- function(x, start = 0, show_topic = NULL,
                             thinning = 5,
-                            scales = "fixed"){
+                            scales = "fixed")
+{
 
   check_arg_type(x, "keyATM_output")
 
@@ -484,7 +499,8 @@ diagnosis_alpha <- function(x, start = 0, show_topic = NULL,
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @export
-diagnosis_model_fit <- function(x, start=1){
+diagnosis_model_fit <- function(x, start=1)
+{
 
   check_arg_type(x, "keyATM_output")
 
@@ -524,7 +540,8 @@ diagnosis_model_fit <- function(x, start=1){
 #' @import ggplot2
 #' @import dplyr
 #' @export
-diagnosis_p <- function(x, show_topic=NULL){
+diagnosis_p <- function(x, show_topic=NULL)
+{
 
   num <- length(unique(x$p$Topic))
   if(is.null(show_topic)){
