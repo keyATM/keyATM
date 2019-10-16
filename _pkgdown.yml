@@ -53,9 +53,10 @@ reference:
 - title: All functions
   desc: ~
   contents:
-  - '`diagnosis_alpha`'
-  - '`diagnosis_model_fit`'
-  - '`diagnosis_p`'
+  - '`plot_alpha`'
+  - '`plot_modelfit`'
+  - '`plot_p`'
+  - '`keyATM`'
   - '`keyATM_fit`'
   - '`keyATM_output`'
   - '`keyATM_read`'

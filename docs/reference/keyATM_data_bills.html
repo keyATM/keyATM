@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get posterior (deprecated) — posterior • keyATM</title>
+<title>Bills data — keyATM_data_bills • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Get posterior (deprecated) — posterior" />
+<meta property="og:title" content="Bills data — keyATM_data_bills" />
 
-<meta property="og:description" content="Get posterior (deprecated)" />
+<meta property="og:description" content="Bills data" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -77,27 +77,33 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/pkgdown_examples/Installation.html">Installation</a>
+      <a href="../articles/pkgdown_files/Installation.html">Installation</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Preparation.html">Preparation</a>
+      <a href="../articles/pkgdown_files/Preparation.html">Preparation</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_basic.html">keyATM Basic</a>
+      <a href="../articles/pkgdown_files/keyATM_basic.html">keyATM Basic</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_cov.html">keyATM Covariate</a>
+      <a href="../articles/pkgdown_files/keyATM_cov.html">keyATM Covariate</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_HMM.html">keyATM HMM</a>
+      <a href="../articles/pkgdown_files/keyATM_HMM.html">keyATM HMM</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Weighted_LDA.html">Weighted LDA</a>
+      <a href="../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Guidlines.html">Guidlines</a>
+      <a href="../articles/pkgdown_files/Priors.html">Priors</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../articles/pkgdown_files/FAQ.html">FAQ</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
@@ -126,25 +132,42 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get posterior (deprecated)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/posterior.R'><code>R/posterior.R</code></a></small>
-    <div class="hidden name"><code>posterior.Rd</code></div>
+    <h1>Bills data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/data.R'><code>R/data.R</code></a></small>
+    <div class="hidden name"><code>keyATM_data_bills.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Get posterior (deprecated)</p>
+    <p>Bills data</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>posterior</span>(<span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='no'>keyATM_data_bills</span></pre>
         
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A list with following objects:</p><dl class='dl-horizontal'>
+  <dt>doc_dfm</dt><dd><p>A <code>quanteda</code> dfm object of 140 documents</p></dd>
+  <dt>cov</dt><dd><p></p></dd>
+  <dt>keywords</dt><dd><p></p></dd>
+  <dt>time_index</dt><dd><p></p></dd>
+</dl>
+    
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p><a href='http://'>http://</a></p>
+    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-                </ul>
+      
+      <li><a href="#format">Format</a></li>
+
+      <li><a href="#source">Source</a></li>
+          </ul>
 
   </div>
 </div>

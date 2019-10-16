@@ -126,6 +126,7 @@ summary.keyATM_docs <- function(x)
 #'
 #' @param keyATM_docs A list of texts read via \code{keyATM_read()} function
 #' @param keywords A list of keywords
+#' @param label_size The size of the keyword labels
 #'
 #' @return A list containing \describe{
 #'    \item{figure}{a ggplot2 object}
@@ -158,7 +159,7 @@ summary.keyATM_docs <- function(x)
 #' @import magrittr
 #' @import ggplot2
 #' @export
-visualize_keywords <- function(keyATM_docs, keywords)
+visualize_keywords <- function(keyATM_docs, keywords, label_size=3.2)
 {
   # Check type
   check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
@@ -222,7 +223,7 @@ visualize_keywords <- function(keyATM_docs, keywords)
     ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=Topic)) +
       geom_line() +
       geom_point() +
-      ggrepel::geom_label_repel(aes(label = Word), size=2.8,
+      ggrepel::geom_label_repel(aes(label = Word), size=label_size,
                        box.padding = 0.20, label.padding = 0.12,
                        arrow=arrow(angle=10, length = unit(0.10, "inches"),
                                    ends = "last", type = "closed"),
