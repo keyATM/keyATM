@@ -960,38 +960,38 @@ make_xz_lda <- function(W, info)
 #' @examples
 #' \dontrun{
 #'   # keyATM Basic
-#'   fitted <- keyATM(
-#'                    keyATM_docs, model="basic", regular_k=5, keywords=keywords_list
-#'                   )
+#'   out <- keyATM(
+#'                 keyATM_docs, model="basic", regular_k=5, keywords=keywords_list
+#'                )
 #'
 #'   # keyATM Cov
-#'   fitted <- keyATM(
-#'                    keyATM_docs, model="cov", regular_k=5, keywords=keywords_list,
-#'                    model_settings(covariates_data=cov)
-#'                   )
+#'   out <- keyATM(
+#'                 keyATM_docs, model="cov", regular_k=5, keywords=keywords_list,
+#'                 model_settings(covariates_data=cov)
+#'                )
 #'
 #'   # keyATM HMM
-#'   fitted <- keyATM(
+#'   out <- keyATM(
 #'                    keyATM_docs, model="hmm", regular_k=5, keywords=keywords_list,
 #'                    model_settings(time_index=time_index_vec, num_states=5)
 #'                   )
 #'
 #'   # Weighted LDA
-#'   fitted <- keyATM(
-#'                    keyATM_docs, model="lda", regular_k=5
-#'                   )
+#'   out <- keyATM(
+#'                 keyATM_docs, model="lda", regular_k=5
+#'                )
 #'
 #'   # Weighted LDA Cov
-#'   fitted <- keyATM(
-#'                    keyATM_docs, model="ldacov", regular_k=5,
-#'                    model_settings(covariates_data=cov)
-#'                   )                   
+#'   out <- keyATM(
+#'                 keyATM_docs, model="ldacov", regular_k=5,
+#'                 model_settings(covariates_data=cov)
+#'                )                   
 #'
 #'   # Weighted LDA HMM
-#'   fitted <- keyATM(
-#'                    keyATM_docs, model="ldahmm", regular_k=5,
-#'                    model_settings(time_index=time_index_vec, num_states=5)
-#'                   )
+#'   out <- keyATM(
+#'                 keyATM_docs, model="ldahmm", regular_k=5,
+#'                 model_settings(time_index=time_index_vec, num_states=5)
+#'                )
 #'
 #' }
 #'

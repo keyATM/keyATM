@@ -276,7 +276,7 @@ print.keyATM_output <- function(x)
              x$model,
              " model. ",
              "\n"
-      )
+            )
      )
 }
 
@@ -291,7 +291,7 @@ summary.keyATM_output <- function(x)
              x$model,
              " model. ",
              "\n"
-      )
+            )
      )
 }
 
@@ -301,6 +301,14 @@ summary.keyATM_output <- function(x)
 save.keyATM_output <- function(x, file = stop("'file' must be specified"))
 {
   save(x, file=file, compress="xz", compression_level=3)
+}
+
+
+#' @noRd
+#' @export
+plot.keyATM_output <- function(x)
+{
+  print(plot_modelfit(x))
 }
 
 
@@ -435,9 +443,9 @@ top_docs <- function(x, n = 10)
 #' @importFrom stats as.formula
 #' @import ggplot2
 #' @export
-diagnosis_alpha <- function(x, start = 0, show_topic = NULL,
-                            thinning = 5,
-                            scales = "fixed")
+plot_alpha <- function(x, start = 0, show_topic = NULL,
+                       thinning = 5,
+                       scales = "fixed")
 {
 
   check_arg_type(x, "keyATM_output")
@@ -499,7 +507,7 @@ diagnosis_alpha <- function(x, start = 0, show_topic = NULL,
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @export
-diagnosis_model_fit <- function(x, start=1)
+plot_modelfit <- function(x, start=1)
 {
 
   check_arg_type(x, "keyATM_output")
@@ -540,7 +548,7 @@ diagnosis_model_fit <- function(x, start=1)
 #' @import ggplot2
 #' @import dplyr
 #' @export
-diagnosis_p <- function(x, show_topic=NULL)
+plot_p <- function(x, show_topic=NULL)
 {
 
   num <- length(unique(x$p$Topic))
