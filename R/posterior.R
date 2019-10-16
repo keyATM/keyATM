@@ -42,7 +42,7 @@ keyATM_output <- function(model)
   info$doc_lens <- sapply(model$Z, length)
 
   if(model$regular_k > 0 & length(model$keywords) != 0){
-    info$tnames <- c(paste0("", 1:length(model$keywords)), paste0("T_", 1:model$regular_k))
+    info$tnames <- c(names(model$keywords_raw), paste0("R_", 1:model$regular_k))
   }else if(model$regular_k > 0 & length(model$keywords) == 0) {
     # No keywords (= lda models)
     info$tnames <- paste0("T_", 1:model$regular_k)
@@ -317,10 +317,11 @@ plot.keyATM_output <- function(x)
 check_arg_type <- function(arg, typename, message=NULL){
   argname <- deparse(match.call()[['arg']])
   if (!inherits(arg, typename)){
-    if(is.null(message))
+    if(is.null(message)){
       stop(paste0('`', argname, '` is not a ', typename))
-    else
+    }else{
       stop(message)
+    }
   }
 }
 
@@ -362,18 +363,21 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
      }
   }
   res <- apply(x$phi, 1, measuref)
+
   if (show_keyword) {
     for (i in 1:ncol(res)) {
       for (j in 1:length(x$keywords_raw)) {
          inds <- which(res[,i] %in% x$keywords_raw[[j]])
          label <- ifelse(i == j,
                          paste0("[", "\U2713" ,"]"),
-                         paste0("[", names(x$keywords_raw)[j], "]"))
+                         paste0("[", as.character(j), "]"))
          res[inds, i] <- paste(res[inds, i], label)
       }
     }
   }
-  res
+  res <- as.data.frame(res)
+
+  return(res)
 }
 
 
@@ -514,7 +518,7 @@ plot_modelfit <- function(x, start=1)
 
   modelfit <- x$model_fit
 
-  if(!is.numeric(start) | length(start) != 0){
+  if(!is.numeric(start) | length(start) != 1){
     message("`start` argument is invalid. Using the default (=1)")  
     start <- 1
   }

@@ -350,17 +350,16 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
     stop("Please select a correct model.")  
   }
 
-  check_arg(keywords, "keywords", model)
-
-  check_arg_type(keywords, "list")
-  c <- lapply(keywords, function(x){check_arg_type(x, "character")})
+  info <- list(
+                models_keyATM = c("basic", "cov", "hmm"),
+                models_lda = c("lda", "ldacov", "ldahmm")
+              )
+  keywords <- check_arg(keywords, "keywords", model, info)
 
   # Get Info
-  info <- list(
-               num_doc = length(keyATM_docs),
-               keywords_K = length(keywords),
-               total_K = length(keywords) + regular_k
-              )
+  info$num_doc <- length(keyATM_docs)
+  info$keyword_k <- length(keywords)
+  info$total_k <- length(keywords) + regular_k
 
   # Set default values
   model_settings <- check_arg(model_settings, "model_settings", model, info)
@@ -393,7 +392,7 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   keywords_id <- lapply(keywords, function(x){ as.integer(info$wd_map$find(x)) })
 
   # Assign X and Z
-  if(model %in% c("basic", "cov", "hmm")){
+  if(model %in% info$models_keyATM){
     res <- make_xz_key(W, keywords, info)
     X <- res$X
     Z <- res$Z
@@ -492,7 +491,7 @@ print.keyATM_model <- function(x)
              x$model,
              " model.",
              "\n"
-      )
+            )
      )
 }
 
@@ -507,7 +506,7 @@ summary.keyATM_model <- function(x)
              x$model,
              " model.",
              "\n"
-      )
+            )
      )
 }
 
@@ -567,7 +566,7 @@ save.keyATM_fitted <- function(x, file = stop("'file' must be specified"))
 check_arg <- function(obj, name, model, info=list())
 {
   if(name == "keywords"){
-    check_arg_keywords(obj, model, info)
+    return(check_arg_keywords(obj, model, info))
   }
 
   if(name == "model_settings"){
@@ -586,13 +585,30 @@ check_arg <- function(obj, name, model, info=list())
 
 check_arg_keywords <- function(keywords, model, info)
 {
-  if(length(keywords) == 0 & model %in% c("basic", "cov", "hmm")){
+  check_arg_type(keywords, "list")
+
+  if(length(keywords) == 0 & model %in% info$models_keyATM){
     stop("Please provide keywords.")  
   }
 
-  if(length(keywords) != 0 & model %in% c("lda", "ldacov", "ldahmm")){
+  if(length(keywords) != 0 & model %in% info$models_lda){
     stop("This model does not take keywords.")  
   }
+
+
+  # Name of keywords topic
+  if(model %in% info$models_keyATM){
+    c <- lapply(keywords, function(x){check_arg_type(x, "character")})
+  
+    if(is.null(names(keywords))){
+      names(keywords)  <- paste0(1:length(keywords))
+    }else{
+      names(keywords)  <- paste0(1:length(keywords), "_", names(keywords))
+    }
+
+  }
+
+  return(keywords)
 }
 
 show_unused_arguments <- function(obj, name, allowed_arguments)
@@ -600,11 +616,11 @@ show_unused_arguments <- function(obj, name, allowed_arguments)
   unused_input <- names(obj)[! names(obj) %in% allowed_arguments]
   if(length(unused_input) != 0)
     stop(paste0(
-                      "keyATM doesn't recognize some of the arguments ",
-                      "in ", name, ": ",
-                      paste(unused_input, collapse=", ")
-                   )
+                "keyATM doesn't recognize some of the arguments ",
+                "in ", name, ": ",
+                paste(unused_input, collapse=", ")
                )
+        )
 }
 
 
@@ -684,24 +700,24 @@ check_arg_priors <- function(obj, model, info)
   allowed_arguments <- c("beta")
 
   # prior of pi
-  if(model %in% c("basic", "cov", "hmm")){
+  if(model %in% info$models_keyATM){
     if(is.null(obj$gamma)){
-      obj$gamma <- matrix(1.0, nrow=info$total_K, ncol=2)  
+      obj$gamma <- matrix(1.0, nrow=info$total_k, ncol=2)  
     }
 
     if(!is.null(obj$gamma)){
-      if(dim(obj$gamma)[1] != info$total_K)  
+      if(dim(obj$gamma)[1] != info$total_k)  
         stop("Check the dimension of `priors$gamma`")
       if(dim(obj$gamma)[2] != 2)  
         stop("Check the dimension of `priors$gamma`")
     }
 
 
-    if(info$keywords_K < info$total_K){
+    if(info$keyword_k < info$total_k){
       # Regular topics are used in keyATM models
       # Priors of regular topics should be 0
-      if(sum(obj$gamma[(info$keywords_K+1):info$total_K, ]) != 0){
-        obj$gamma[(info$keywords+1):info$total_K, ] <- 0
+      if(sum(obj$gamma[(info$keyword_k+1):info$total_k, ]) != 0){
+        obj$gamma[(info$keyword_k+1):info$total_k, ] <- 0
       }
     }
 
@@ -714,7 +730,7 @@ check_arg_priors <- function(obj, model, info)
     obj$beta <- 0.01  
   }
 
-  if(model %in% c("basic", "cov", "hmm")){
+  if(model %in% info$models_keyATM){
     if(is.null(obj$beta_s)){
       obj$beta_s <- 0.1  
     }  
@@ -725,10 +741,10 @@ check_arg_priors <- function(obj, model, info)
   if(model %in% c("basic", "lda")){
     # alpha
     if(is.null(obj$alpha)){
-      obj$alpha <- rep(1/info$total_K, info$total_K)
+      obj$alpha <- rep(1/info$total_k, info$total_k)
     }
-    if(length(obj$alpha) != info$total_K){
-      stop("Starting alpha must be a vector of length ", info$total_K)
+    if(length(obj$alpha) != info$total_k){
+      stop("Starting alpha must be a vector of length ", info$total_k)
     }
     allowed_arguments <- c(allowed_arguments, "alpha")
   
@@ -838,7 +854,7 @@ make_xz_key <- function(W, keywords, info)
 {
   # zx_assigner maps keywords to category ids
   key_wdids <- unlist(lapply(keywords, function(x){ info$wd_map$find(x) }))
-  cat_ids <- rep(1:(info$keywords_K) - 1L, unlist(lapply(keywords, length)))
+  cat_ids <- rep(1:(info$keyword_k) - 1L, unlist(lapply(keywords, length)))
 
   if(length(key_wdids) == length(unique(key_wdids))){
     #
@@ -847,7 +863,7 @@ make_xz_key <- function(W, keywords, info)
     zx_assigner <- hashmap::hashmap(as.integer(key_wdids), as.integer(cat_ids))
 
     # if the word is a keyword, assign the appropriate (0 start) Z, else a random Z
-    topicvec <- 1:(info$total_K) - 1L
+    topicvec <- 1:(info$total_k) - 1L
     make_z <- function(x, topicvec){
       zz <- zx_assigner[[x]] # if it is a keyword word, we already know the topic
       zz[is.na(zz)] <- sample(topicvec,
@@ -876,7 +892,7 @@ make_xz_key <- function(W, keywords, info)
     }
 
     # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
-    topicvec <- 1:(info$total_K) - 1L
+    topicvec <- 1:(info$total_k) - 1L
     make_z <- function(x, topicvec){
       zz <- zx_assigner(x) # if it is a seed word, we already know the topic
       zz[is.na(zz)] <- sample(topicvec,
@@ -906,7 +922,7 @@ make_xz_key <- function(W, keywords, info)
 
 make_xz_lda <- function(W, info)
 {
-  topicvec <- 1:(info$total_K) - 1L
+  topicvec <- 1:(info$total_k) - 1L
   make_z <- function(x, topicvec){
     zz <- sample(topicvec,
                  length(x),
@@ -1001,7 +1017,8 @@ keyATM <- function(keyATM_docs, model, regular_k,
                    priors=list(), options=list(), keep=c())
 {
   # Check type
-  check_arg_type(keep, "character")
+  if(length(keep) != 0)
+    check_arg_type(keep, "character")
 
   # Fit keyATM
   fitted <- keyATM_fit(
@@ -1013,12 +1030,14 @@ keyATM <- function(keyATM_docs, model, regular_k,
   out <- keyATM_output(fitted)
 
   # Keep some objects if specified
-  keep_values <- list()
-  use_elements <- keep[keep %in% names(fitted)]
-  for(i in 1:length(use_elements)){
-    keep_values[use_elements[i]]  <- fitted[use_elements[i]]
+  if(length(keep) != 0){
+    kept_values <- list()
+    use_elements <- keep[keep %in% names(fitted)]
+    for(i in 1:length(use_elements)){
+      kept_values[use_elements[i]]  <- fitted[use_elements[i]]
+    }
+    out$kept_values <- kept_values
   }
-  out$kept_values <- kept_values
 
   return(out)
 }
