@@ -13,15 +13,15 @@ Please read [Preparation](Preparation.html) for the three data types that **keyA
 We set four keyword-topics. Keywrods should be stored in a list. Each element in the list is a character vector, which corresponds to a single keyword-topic.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 bills_keywords <- list(
-                       c("education", "child", "student"),  # Education
-                       c("court", "law", "attorney"),  # Law
-                       c("public", "health", "program"),  # Health
-                       c("drug", "treatment")  # Drug
+                       Education = c("education", "child", "student"),
+                             Law = c("court", "law", "attorney"),
+                           Health = c("public", "health", "program"),
+                             Drug = c("drug", "treatment")
                       )
 ```
 
 
-## Creating a model object
+## Reading documents
 Before fitting the model, we need to read texts and keywords into **keyATM**. Here we use **quanteda**'s `dfm`.
 
 
@@ -39,31 +39,30 @@ visualize_keywords(keyATM_docs, bills_keywords)
 
 
 
-## Fit the model
+## Fitting the model
 ```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
-fitted <- keyATM_fit(keyATM_docs = keyATM_docs,  # text input
-                     regular_k=3,  # number of regular topics
-                     keywords=bills_keywords,  # keywords
-                     model="basic",  # select the model
-                     options=list(seed=100))
-out <- keyATM_output(fitted)  # get useful quantities
+out <- keyATM_fit(keyATM_docs = keyATM_docs,  # text input
+                  regular_k=3,  # number of regular topics
+                  keywords=bills_keywords,  # keywords
+                  model="basic",  # select the model
+                  options=list(seed=100))
 ```
 The default number of iterations is `1500`. Please check [this page](Options.html) for available options.
 
 
-## Save the model
+## Saving the model
 
 Once you fit the model, you can save the model with `save()` for replication.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
-save(fitted, file="SAVENAME.rds")
+save(out, file="SAVENAME.rds")
 ```
 
 To load the model, you can use `load()` function.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
-fitted <-load(file="SAVENAME.rds")
+out <- load(file="SAVENAME.rds")
 ```
 
-## Check top words
+## Checking top words
 ```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
 top_words(out)
 ```

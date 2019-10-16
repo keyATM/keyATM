@@ -70,6 +70,7 @@ Select and specify one of the keyATM models and fit the model.
                        keyATM_docs, model="ldacov", regular_k=5,
                        model_settings(covariates_data=cov)
                       )                   
+
   # Weighted LDA HMM
   fitted <- keyATM_fit(
                        keyATM_docs, model="ldahmm", regular_k=5,

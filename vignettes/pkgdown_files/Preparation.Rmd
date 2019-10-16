@@ -22,7 +22,7 @@ Lastly, you can make a `dfm` object with a function `dfm()` in **quanteda**.
 `keyATM_read()` can read `data.frame` and `tibble` if you preprocess texts without **quanteda**. Please store texts in a column named `text`.
 
 ```
-> head(docs)  # `doc` stores preprocessed texts
+> head(docs)  # `docs` stores preprocessed texts
 # A tibble: 6 x 1
   text                                                                      
   <chr>                                                                     

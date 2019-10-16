@@ -10,7 +10,7 @@ keyATM_output(model)
 \item{model}{a fitted keyATM model (an output of \code{keyATM_fit()})}
 }
 \value{
-A list containing:
+A keyATM_output containing:
   \describe{
     \item{keyword_k}{Number of keyword topics}
     \item{regular_k}{Number of regular unseeded topics}
@@ -29,4 +29,11 @@ A list containing:
 }
 \description{
 \code{keyATM_output()} makes various quantities that help interpret the model.
+}
+\examples{
+\dontrun{
+ # `fitted` is the output of `keyATM()` 
+ out <- keyATM_output(fitted)
+}
+
 }
