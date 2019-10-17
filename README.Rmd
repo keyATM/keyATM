@@ -4,7 +4,7 @@ output: github_document
 
 # keyATM: Keyword Assisted Topic Models
 
-# While we are writing this reference, we do not upload figures. Please check .gitignore
+# While we are writing this reference, we do not upload figures. Please check `.gitignore` and global options.
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/keyATM)](https://CRAN.R-project.org/package=keyATM)

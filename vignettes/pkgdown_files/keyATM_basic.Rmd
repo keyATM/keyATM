@@ -5,9 +5,12 @@ output:
     toc: true
 ---
 
+```{r setup II, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(eval = F, echo = TRUE)
+```
 
 ## Preparing documents
-Please read [Preparation](Preparation.html) for the three data types that **keyATM** can read. **keyATM** package includes a tidy dataset for illustration purpose.
+Please read [Preparation](Preparation.html) for the three data types that **keyATM** can read. **keyATM** package includes a tidy dataset for illustration purpose. In this example, we use ***. You can load this data by `data(keyATM_data_bills)`.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 library(keyATM)

@@ -111,7 +111,7 @@
 <div id="preparing-documents" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preparing-documents" class="anchor"></a>Preparing documents</h2>
-<p>Please read <a href="Preparation.html">Preparation</a> for the three data types that <strong>keyATM</strong> can read. <strong>keyATM</strong> package includes a tidy dataset for illustration purpose.</p>
+<p>Please read <a href="Preparation.html">Preparation</a> for the three data types that <strong>keyATM</strong> can read. <strong>keyATM</strong> package includes a tidy dataset for illustration purpose. In this example, we use ***. You can load this data by <code><a href="https://www.rdocumentation.org/packages/utils/topics/data">data(keyATM_data_bills)</a></code>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(keyATM)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(keyATM_data_bills)</span></code></pre></div>
 </div>
@@ -139,7 +139,6 @@
 <a href="#checking-keywords" class="anchor"></a>Checking keywords</h2>
 <p>Before you fit the model, please make sure your keywords appear enough in your corpus. <a href="FAQ.html#how-to-select-keywords">FAQ</a> explains what could be good keywords.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw"><a href="../../reference/visualize_keywords.html">visualize_keywords</a></span>(keyATM_docs, bills_keywords)</span></code></pre></div>
-<p><img src="keyATM_basic_files/figure-html/unnamed-chunk-4-1.png" width="700" style="display: block; margin: auto;"></p>
 </div>
 <div id="fitting-the-model" class="section level2">
 <h2 class="hasAnchor">
@@ -163,28 +162,6 @@
 <h2 class="hasAnchor">
 <a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##      1_Education        2_Law      3_Health     4_Drug         R_1
-## 1           loan      law [✓]   program [✓]    section    wildlife
-## 2      child [✓]        state    health [✓]      shall  commission
-## 3  education [✓]    court [✓]    public [✓]        act        fish
-## 4         school       action         grant      state  public [3]
-## 5    program [3]       person        system subsection corporation
-## 6    student [✓]        class      activity        may      refuge
-## 7          abuse attorney [✓] administrator        sec        plan
-## 8           rate        crime          care       year   frequency
-## 9       borrower  enforcement        agency  secretary        unit
-## 10       federal       united         water  paragraph    property
-##            R_2          R_3
-## 1  information     research
-## 2       safety     national
-## 3       entity       center
-## 4     security      project
-## 5      product         fund
-## 6       system    secretary
-## 7      protect  program [3]
-## 8         work       fiscal
-## 9       access conservation
-## 10     network      science</code></pre>
 </div>
   </div>
 
