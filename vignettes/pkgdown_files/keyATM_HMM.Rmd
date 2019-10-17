@@ -22,7 +22,7 @@ keyATM_docs <- keyATM_read(bills_dfm)
 ```
 
 ## Preparing time index
-HMM model needs a vector of time indexes. This is an "index" and not the actural time stamps (year and date). For examplle, `bills` data contain session information, which ranges from `101` to `114`. 
+HMM model needs a vector of time indexes. This is an "index" and not the actual time stamps (year and date). For example, `bills` data contain session information, which ranges from `101` to `114`. 
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 bills_time_index <- keyATM_data_bills$time_index
