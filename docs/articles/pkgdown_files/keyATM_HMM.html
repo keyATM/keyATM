@@ -122,7 +122,7 @@
 <div id="preparing-time-index" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preparing-time-index" class="anchor"></a>Preparing time index</h2>
-<p>HMM model needs a vector of time indexes. This is an “index” and not the actural time stamps (year and date). For examplle, <code>bills</code> data contain session information, which ranges from <code>101</code> to <code>114</code>.</p>
+<p>HMM model needs a vector of time indexes. This is an “index” and not the actual time stamps (year and date). For example, <code>bills</code> data contain session information, which ranges from <code>101</code> to <code>114</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>bills_time_index &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>time_index</span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/table">table</a></span>(bills_time_index)</span></code></pre></div>
 <pre><code>## bills_time_index
