@@ -99,7 +99,7 @@ void keyATMbase::initialize_common()
     keywords.push_back(keywords_set);
   }
 
-  for(int i=keyword_k; i<num_topics; i++){
+  for(int i = keyword_k; i < num_topics; i++){
     std::unordered_set<int> keywords_set{ -1 };
   
     seed_num.push_back(0);
@@ -181,7 +181,7 @@ void keyATMbase::initialize_common()
 // Iteration
 void keyATMbase::iteration()
 {
-  for(int it=0; it<iter; it++){
+  for(int it = 0; it < iter; it++){
     iteration_single(it);
 
     int r_index = it + 1;
@@ -380,7 +380,7 @@ double keyATMbase::betapdfln(const double &x, const double &a, const double &b){
 NumericVector keyATMbase::alpha_reformat(VectorXd& alpha, int& num_topics){
   NumericVector alpha_rvec(num_topics);
 
-  for(int i=0; i<num_topics; ++i){
+  for(int i = 0; i < num_topics; ++i){
     alpha_rvec[i] = alpha(i);
   }
 
@@ -397,7 +397,7 @@ double keyATMbase::gammaln_frac(const double &value, const int &count){
   }else{
     gammaln_val = 0.0;
 
-    for(int i=0; i<count; i++){
+    for(int i = 0; i<count; i++){
       gammaln_val += log(value + i);  
     }
 

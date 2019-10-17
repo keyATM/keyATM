@@ -45,36 +45,36 @@ Select and specify one of the keyATM models and fit the model.
 \dontrun{
   # keyATM Basic
   fitted <- keyATM_fit(
-                       keyATM_docs, model="basic", regular_k=5, keywords=keywords_list
+                       keyATM_docs, model = "basic", regular_k = 5, keywords = keywords_list
                       )
 
   # keyATM Cov
   fitted <- keyATM_fit(
-                       keyATM_docs, model="cov", regular_k=5, keywords=keywords_list,
-                       model_settings(covariates_data=cov)
+                       keyATM_docs, model = "cov", regular_k = 5, keywords = keywords_list,
+                       model_settings(covariates_data = cov)
                       )
 
   # keyATM HMM
   fitted <- keyATM_fit(
-                       keyATM_docs, model="hmm", regular_k=5, keywords=keywords_list,
-                       model_settings(time_index=time_index_vec, num_states=5)
+                       keyATM_docs, model = "hmm", regular_k = 5, keywords = keywords_list,
+                       model_settings(time_index = time_index_vec, num_states = 5)
                       )
 
   # Weighted LDA
   fitted <- keyATM_fit(
-                       keyATM_docs, model="lda", regular_k=5
+                       keyATM_docs, model = "lda", regular_k = 5
                       )
 
   # Weighted LDA Cov
   fitted <- keyATM_fit(
-                       keyATM_docs, model="ldacov", regular_k=5,
-                       model_settings(covariates_data=cov)
+                       keyATM_docs, model = "ldacov", regular_k = 5,
+                       model_settings(covariates_data = cov)
                       )                   
 
   # Weighted LDA HMM
   fitted <- keyATM_fit(
-                       keyATM_docs, model="ldahmm", regular_k=5,
-                       model_settings(time_index=time_index_vec, num_states=5)
+                       keyATM_docs, model = "ldahmm", regular_k = 5,
+                       model_settings(time_index = time_index_vec, num_states = 5)
                       )
 
 }

@@ -88,27 +88,27 @@ keyATM_output <- function(model)
   }
 
   # p
-  data <- tibble::tibble(Z=unlist(model$Z, use.names=F),
-                         X=unlist(model$X, use.names=F))
+  data <- tibble::tibble(Z = unlist(model$Z, use.names = F),
+                         X = unlist(model$X, use.names = F))
   data %>%
-    dplyr::mutate(Topic=Z+1L) %>%
+    dplyr::mutate(Topic = Z+1L) %>%
     dplyr::select(-starts_with("Z")) %>%
     dplyr::group_by(Topic) %>%
-    dplyr::summarize(count = (dplyr::n()), sumx=sum(X)) %>%
+    dplyr::summarize(count = (dplyr::n()), sumx = sum(X)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(Proportion=round(sumx/count*100, 3)) %>%
+    dplyr::mutate(Proportion = round(sumx/count*100, 3)) %>%
     dplyr::select(-sumx) -> p_estimated
 
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), regular_k = model$regular_k,
              V = length(model$vocab), N = length(model$Z),
-             model=model$model,
+             model = model$model,
              theta = theta, phi = phi,
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = info$doc_lens, vocab = model$vocab,
              keywords_raw = model$keywords_raw,
-             model_fit=modelfit, p=p_estimated,
-             values_iter=values_iter)
+             model_fit = modelfit, p = p_estimated,
+             values_iter = values_iter)
   class(ll) <- c("keyATM_output", class(ll))
   return(ll)
 }
@@ -147,7 +147,7 @@ keyATM_output_theta <- function(model, info)
     S <- model$stored_values$S_iter[[length(model$stored_values$S_iter)]] + 1L  # adjust index for R
     S <- S[model$model_settings$time_index]  # retrieve doc level state info
     alphas <- matrix(model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]][S],
-                     nrow=length(model$Z), ncol=info$allK)
+                     nrow = length(model$Z), ncol = info$allK)
 
     Z_table <- do.call(dplyr::bind_rows, 
                        lapply(model$Z, 
@@ -166,8 +166,8 @@ keyATM_output_theta <- function(model, info)
 
 keyATM_output_phi <- function(model, info)
 {
-  all_words <- model$vocab[as.integer(unlist(model$W, use.names=F)) + 1L]
-  all_topics <- as.integer(unlist(model$Z, use.names=F))
+  all_words <- model$vocab[as.integer(unlist(model$W, use.names = F)) + 1L]
+  all_topics <- as.integer(unlist(model$Z, use.names = F))
   
   res_tibble <- data.frame(
                         Word = all_words,
@@ -177,7 +177,7 @@ keyATM_output_phi <- function(model, info)
                 dplyr::summarize(Count = dplyr::n())
   
   res_tibble %>%
-    tidyr::spread(key=Word, value=Count)  -> beta
+    tidyr::spread(key = Word, value = Count)  -> beta
   beta <- apply(beta, 2, function(x){ifelse(is.na(x), 0, x)})
   beta <- beta[, 2:ncol(beta)] + model$priors$beta
   beta <- beta[, model$vocab]
@@ -188,7 +188,7 @@ keyATM_output_phi <- function(model, info)
   phi <- beta / topic_counts
   rownames(phi) <- info$tnames
 
-  return(list(phi=phi, topic_counts=topic_counts, word_counts=word_counts))
+  return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
 }
 
 
@@ -212,7 +212,7 @@ keyATM_output_theta_iter <- function(model, info)
       S <- S[model$model_settings$time_index]  # retrieve doc level state info
 
       alphas <- matrix(model$stored_values$alpha_iter[[x]][S],
-                       nrow=length(model$Z), ncol=info$allK)
+                       nrow = length(model$Z), ncol = info$allK)
     
       tt <- Z_table + alphas
       theta <- tt / Matrix::rowSums(tt)
@@ -243,7 +243,7 @@ keyATM_output_alpha_iter_basic <- function(model, info)
     t() %>%
     tibble::as_tibble(., .name_repair = ~topics) %>%
     dplyr::mutate(Iteration = 1:(dplyr::n())) %>%
-    tidyr::gather(key=Topic, value=alpha, -Iteration) %>%
+    tidyr::gather(key = Topic, value = alpha, -Iteration) %>%
     dplyr::mutate(Topic = as.integer(Topic)) -> alpha_iter
   return(alpha_iter)
 }
@@ -259,7 +259,7 @@ keyATM_output_alpha_iter_hmm <- function(model, info)
                                               .name_repair = ~topics) %>%
                             dplyr::mutate(State = 1:(dplyr::n()),
                                           Iteration = i) %>%
-                            tidyr::gather(key=Topic, value=alpha, -State, -Iteration)
+                            tidyr::gather(key = Topic, value = alpha, -State, -Iteration)
                         }) %>%
      dplyr::mutate(Topic = as.integer(Topic)) -> alpha_iter
   return(alpha_iter)
@@ -300,7 +300,7 @@ summary.keyATM_output <- function(x)
 #' @export
 save.keyATM_output <- function(x, file = stop("'file' must be specified"))
 {
-  save(x, file=file, compress="xz", compression_level=3)
+  save(x, file = file, compress="xz", compression_level = 3)
 }
 
 
@@ -314,7 +314,7 @@ plot.keyATM_output <- function(x)
 
 # a more than usually informative error message for handing in the
 # wrong type to a function
-check_arg_type <- function(arg, typename, message=NULL){
+check_arg_type <- function(arg, typename, message = NULL){
   argname <- deparse(match.call()[['arg']])
   if (!inherits(arg, typename)){
     if(is.null(message)){
@@ -478,18 +478,18 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
   }
 
   if(x$model %in% c("basic", "lda")){
-    p <- ggplot(res_alpha, aes(x=Iteration, y=alpha, group=Topic)) +
+    p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = Topic)) +
           geom_line() +
-          geom_point(size=0.3) +
+          geom_point(size = 0.3) +
           facet_wrap(~ Topic, ncol = 2, scales = scales) +
           ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
   }else if(x$model %in% c("hmm", "ldahmm")){
     res_alpha %>% mutate(State = as.character(State)) -> res_alpha
-    p <- ggplot(res_alpha, aes(x=Iteration, y=alpha, group=State, colour=State)) +
+    p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = State, colour = State)) +
           geom_line() +
-          geom_point(size=0.3) +
+          geom_point(size = 0.3) +
           facet_wrap(~ Topic, ncol = 2, scales = scales) +
           ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
@@ -511,7 +511,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @export
-plot_modelfit <- function(x, start=1)
+plot_modelfit <- function(x, start = 1)
 {
 
   check_arg_type(x, "keyATM_output")
@@ -527,13 +527,13 @@ plot_modelfit <- function(x, start=1)
     modelfit <- modelfit[ modelfit$Iteration >= start, ]
   }
 
-  modelfit <- tidyr::gather(modelfit, key=Measures, value=value, -Iteration)
+  modelfit <- tidyr::gather(modelfit, key = Measures, value = value, -Iteration)
 
-  p <- ggplot(data=modelfit, aes_string(x='Iteration', y='value',
+  p <- ggplot(data = modelfit, aes_string(x='Iteration', y='value',
                                         group='Measures', color='Measures')) +
      geom_line(show.legend = F) +
-     geom_point(size=0.3, show.legend = F) +
-     facet_wrap(as.formula(paste("~", "Measures")), ncol=2, scales = "free") +
+     geom_point(size = 0.3, show.legend = F) +
+     facet_wrap(as.formula(paste("~", "Measures")), ncol = 2, scales = "free") +
      ylab("Value")
 
   p <- p + ggtitle("Model Fit") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
@@ -552,7 +552,7 @@ plot_modelfit <- function(x, start=1)
 #' @import ggplot2
 #' @import dplyr
 #' @export
-plot_p <- function(x, show_topic=NULL)
+plot_p <- function(x, show_topic = NULL)
 {
 
   num <- length(unique(x$p$Topic))

@@ -1,0 +1,30 @@
+
+
+processing file: Weighted_LDA.Rmd
+  |                                                                         |                                                                 |   0%  |                                                                         |......                                                           |   9%
+  ordinary text without R code
+
+  |                                                                         |............                                                     |  18%
+label: setup II (with options) 
+List of 2
+ $ include: logi FALSE
+ $ eval   : logi TRUE
+
+  |                                                                         |..................                                               |  27%
+  ordinary text without R code
+
+  |                                                                         |........................                                         |  36%
+label: unnamed-chunk-1 (with options) 
+List of 4
+ $ include  : symbol F
+ $ warning  : logi FALSE
+ $ message  : logi FALSE
+ $ fig.align: chr "center"
+
+keyATM v0.1.0 successfully loaded.
+ Papers, examples, resources, and other materials are at xxx.xxx
+Quitting from lines 16-20 (Weighted_LDA.Rmd) 
+Error in load(keyATM_data_bills) : bad 'file' argument
+Calls: <Anonymous> ... withCallingHandlers -> withVisible -> eval -> eval -> load
+
+Execution halted

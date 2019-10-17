@@ -51,36 +51,36 @@ This is a wrapper function of \code{keyATM_fit()} and \code{keyATM_output()}.
 \dontrun{
   # keyATM Basic
   out <- keyATM(
-                keyATM_docs, model="basic", regular_k=5, keywords=keywords_list
+                keyATM_docs, model = "basic", regular_k = 5, keywords = keywords_list
                )
 
   # keyATM Cov
   out <- keyATM(
-                keyATM_docs, model="cov", regular_k=5, keywords=keywords_list,
-                model_settings(covariates_data=cov)
+                keyATM_docs, model = "cov", regular_k = 5, keywords = keywords_list,
+                model_settings(covariates_data = cov)
                )
 
   # keyATM HMM
   out <- keyATM(
-                   keyATM_docs, model="hmm", regular_k=5, keywords=keywords_list,
-                   model_settings(time_index=time_index_vec, num_states=5)
+                   keyATM_docs, model = "hmm", regular_k = 5, keywords = keywords_list,
+                   model_settings(time_index = time_index_vec, num_states = 5)
                   )
 
   # Weighted LDA
   out <- keyATM(
-                keyATM_docs, model="lda", regular_k=5
+                keyATM_docs, model = "lda", regular_k = 5
                )
 
   # Weighted LDA Cov
   out <- keyATM(
-                keyATM_docs, model="ldacov", regular_k=5,
-                model_settings(covariates_data=cov)
+                keyATM_docs, model = "ldacov", regular_k = 5,
+                model_settings(covariates_data = cov)
                )                   
 
   # Weighted LDA HMM
   out <- keyATM(
-                keyATM_docs, model="ldahmm", regular_k=5,
-                model_settings(time_index=time_index_vec, num_states=5)
+                keyATM_docs, model = "ldahmm", regular_k = 5,
+                model_settings(time_index = time_index_vec, num_states = 5)
                )
 
 }

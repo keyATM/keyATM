@@ -6,7 +6,7 @@ output:
 ---
 
 ```{r setup II, include=FALSE, eval=TRUE}
-knitr::opts_chunk$set(eval = F, echo = TRUE)
+knitr::opts_chunk$set(eval = T, echo = TRUE)
 ```
 
 ## Preparing documents
@@ -24,9 +24,9 @@ We set four keyword-topics. Keywrods should be stored in a list. Each element in
 ```{r, eval=T, warning=FALSE, message=FALSE, fig.align='center'}
 bills_keywords <- list(
                        Education = c("education", "child", "student"),
-                             Law = c("court", "law", "attorney"),
-                          Health = c("public", "health", "program"),
-                            Drug = c("drug", "treatment")
+                       Law       = c("court", "law", "attorney"),
+                       Health    = c("public", "health", "program"),
+                       Drug      = c("drug", "treatment")
                       )
 ```
 
@@ -53,10 +53,11 @@ visualize_keywords(keyATM_docs, bills_keywords)
 ## Fitting the model
 ```{r, warning=FALSE, message=FALSE, fig.align='center', results="hide"}
 out <- keyATM(keyATM_docs = keyATM_docs,    # text input
-                regular_k = 3,              # number of regular topics
-                 keywords = bills_keywords, # keywords
-                    model = "basic",        # select the model
-                  options = list(seed = 100))
+              regular_k   = 3,              # number of regular topics
+              keywords    = bills_keywords, # keywords
+              model       = "basic",        # select the model
+              options     = list(seed = 100)
+             )
 ```
 The default number of iterations is `1500`. Please check [this page](Options.html) for available options.
 

@@ -16,13 +16,13 @@
 #'  keyATM_docs <- keyATM_read(tibble_object) 
 #' 
 #'  # Use a vector that stores full paths to the files  
-#'  files <- list.files(doc_folder, pattern="*.txt", full.names=T) 
+#'  files <- list.files(doc_folder, pattern = "*.txt", full.names = T) 
 #'  keyATM_docs <- keyATM_read(files) 
 #' }
 #'
 #' @import magrittr
 #' @export
-keyATM_read <- function(texts, encoding="UTF-8")
+keyATM_read <- function(texts, encoding = "UTF-8")
 {
 
   # Detect input
@@ -69,7 +69,7 @@ keyATM_read <- function(texts, encoding="UTF-8")
     names(text_df$text_split) <-NULL
   }else{
     ## preprocess each text
-    # Use files <- list.files(doc_folder, pattern="txt", full.names=T) when you pass
+    # Use files <- list.files(doc_folder, pattern = "txt", full.names = T) when you pass
     if(is.null(text_df)){
       text_df <- tibble::tibble(text = unlist(lapply(files,
                                                  function(x)
@@ -78,7 +78,7 @@ keyATM_read <- function(texts, encoding="UTF-8")
                                                            collapse = "\n") 
                                                  })))
     }
-    text_df <- text_df %>% dplyr::mutate(text_split = stringr::str_split(text, pattern=" "))
+    text_df <- text_df %>% dplyr::mutate(text_split = stringr::str_split(text, pattern = " "))
   }
 
   W_raw <- text_df %>% dplyr::pull(text_split)
@@ -159,7 +159,7 @@ summary.keyATM_docs <- function(x)
 #' @import magrittr
 #' @import ggplot2
 #' @export
-visualize_keywords <- function(keyATM_docs, keywords, label_size=3.2)
+visualize_keywords <- function(keyATM_docs, keywords, label_size = 3.2)
 {
   # Check type
   check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
@@ -167,41 +167,41 @@ visualize_keywords <- function(keyATM_docs, keywords, label_size=3.2)
   c <- lapply(keywords, function(x){check_arg_type(x, "character")})
 
   unnested_data <- tibble::tibble(text_split = unlist(keyATM_docs,
-                                                      recursive=FALSE, use.names=FALSE))
+                                                      recursive = FALSE, use.names = FALSE))
 
   # Organize data
   totalwords <- nrow(unnested_data)
 
   unnested_data %>%
-    dplyr::rename(Word=text_split) %>%
+    dplyr::rename(Word = text_split) %>%
     dplyr::group_by(Word) %>%
     dplyr::summarize(WordCount = dplyr::n()) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(`Proportion(%)` = round(WordCount/totalwords*100, 3)) %>%
+    dplyr::mutate(`Proportion(%)` = round(WordCount / totalwords * 100, 3)) %>%
     dplyr::arrange(desc(WordCount)) %>%
     dplyr::mutate(Ranking = 1:(dplyr::n())) -> data
 
   names(keywords) <- paste0("Topic", 1:length(keywords))
   keywords <- lapply(keywords, function(x){unlist(strsplit(x," "))})
   ext_k <- length(keywords)
-  max_num_words <- max(unlist(lapply(keywords, function(x){length(x)}), use.names=F))
+  max_num_words <- max(unlist(lapply(keywords, function(x){length(x)}), use.names = F))
 
   # Make keywords_df
-  keywords_df <- data.frame(Topic=1, Word=1)
+  keywords_df <- data.frame(Topic = 1, Word = 1)
   for(k in 1:ext_k){
     words <- keywords[[k]]
     numwords <- length(words)
     topicname <- paste0("Topic", k)
     for(w in 1:numwords){
-      keywords_df <- rbind(keywords_df, data.frame(Topic=topicname, Word=words[w]))
+      keywords_df <- rbind(keywords_df, data.frame(Topic = topicname, Word = words[w]))
     }
   }
   keywords_df <- keywords_df[2:nrow(keywords_df), ]
 
-  dplyr::right_join(data, keywords_df, by="Word") %>%
+  dplyr::right_join(data, keywords_df, by = "Word") %>%
     dplyr::group_by(Topic) %>%
     dplyr::arrange(desc(`Proportion(%)`)) %>%
-    dplyr::mutate(Ranking = 1:(dplyr::n())) %>%
+    dplyr::mutate(Ranking  =  1:(dplyr::n())) %>%
     dplyr::arrange(Topic, Ranking) -> temp
 
 
@@ -212,27 +212,27 @@ visualize_keywords <- function(keyATM_docs, keywords, label_size=3.2)
 
   if(length(non_appearence) != 0){
     if(length(non_appearence) == 1){
-      stop("A keyword not found in texts: ", paste(non_appearence, collapse=", "))
+      stop("A keyword not found in texts: ", paste(non_appearence, collapse = ", "))
     }else{
-      stop("Keywords not found in texts: ", paste(non_appearence, collapse=", "))
+      stop("Keywords not found in texts: ", paste(non_appearence, collapse = ", "))
     }
   }
 
 
   visualize_keywords <- 
-    ggplot(temp, aes(x=Ranking, y=`Proportion(%)`, colour=Topic)) +
+    ggplot(temp, aes(x = Ranking, y=`Proportion(%)`, colour = Topic)) +
       geom_line() +
       geom_point() +
-      ggrepel::geom_label_repel(aes(label = Word), size=label_size,
+      ggrepel::geom_label_repel(aes(label = Word), size = label_size,
                        box.padding = 0.20, label.padding = 0.12,
-                       arrow=arrow(angle=10, length = unit(0.10, "inches"),
+                       arrow = arrow(angle = 10, length = unit(0.10, "inches"),
                                    ends = "last", type = "closed"),
                        show.legend = F) +
-      scale_x_continuous(breaks=1:max_num_words) +
+      scale_x_continuous(breaks = 1:max_num_words) +
       ylab("Proportion (%)") +
       theme_bw()
 
-  keyATM_viz <- list(figure=visualize_keywords, values=temp)
+  keyATM_viz <- list(figure = visualize_keywords, values = temp)
   class(keyATM_viz) <- c("keyATM_viz", class(keyATM_viz))
   
   return(keyATM_viz)
@@ -260,7 +260,7 @@ summary.keyATM_viz <- function(x)
 #' @export
 save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 {
-  save(x, file=file, compress="xz", compression_level=3)
+  save(x, file = file, compress="xz", compression_level = 3)
 }
 
 
@@ -297,44 +297,44 @@ save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 #' \dontrun{
 #'   # keyATM Basic
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model="basic", regular_k=5, keywords=keywords_list
+#'                        keyATM_docs, model = "basic", regular_k = 5, keywords = keywords_list
 #'                       )
 #'
 #'   # keyATM Cov
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model="cov", regular_k=5, keywords=keywords_list,
-#'                        model_settings(covariates_data=cov)
+#'                        keyATM_docs, model = "cov", regular_k = 5, keywords = keywords_list,
+#'                        model_settings(covariates_data = cov)
 #'                       )
 #'
 #'   # keyATM HMM
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model="hmm", regular_k=5, keywords=keywords_list,
-#'                        model_settings(time_index=time_index_vec, num_states=5)
+#'                        keyATM_docs, model = "hmm", regular_k = 5, keywords = keywords_list,
+#'                        model_settings(time_index = time_index_vec, num_states = 5)
 #'                       )
 #'
 #'   # Weighted LDA
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model="lda", regular_k=5
+#'                        keyATM_docs, model = "lda", regular_k = 5
 #'                       )
 #'
 #'   # Weighted LDA Cov
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model="ldacov", regular_k=5,
-#'                        model_settings(covariates_data=cov)
+#'                        keyATM_docs, model = "ldacov", regular_k = 5,
+#'                        model_settings(covariates_data = cov)
 #'                       )                   
 #'
 #'   # Weighted LDA HMM
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model="ldahmm", regular_k=5,
-#'                        model_settings(time_index=time_index_vec, num_states=5)
+#'                        keyATM_docs, model = "ldahmm", regular_k = 5,
+#'                        model_settings(time_index = time_index_vec, num_states = 5)
 #'                       )
 #'
 #' }
 #'
 #' @export
 keyATM_fit <- function(keyATM_docs, model, regular_k,
-                       keywords=list(), model_settings=list(),
-                       priors=list(), options=list()) 
+                       keywords = list(), model_settings = list(),
+                       priors = list(), options = list()) 
 {
   ##
   ## Check
@@ -374,7 +374,7 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   set.seed(options$seed)
 
   # W
-  info$wd_names <- unique(unlist(keyATM_docs, use.names=F))
+  info$wd_names <- unique(unlist(keyATM_docs, use.names = F))
   if(" " %in% info$wd_names){
     stop("A space is recognized as a vocabulary.
           Please remove an empty document or consider using quanteda::dfm.")  
@@ -464,15 +464,15 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   set.seed(options$seed)
 
   if(model == "basic"){
-    key_model <- keyATM_train(key_model, iter=options$iterations, output_per=options$output_per)
+    key_model <- keyATM_train(key_model, iter = options$iterations, output_per = options$output_per)
   }else if(model == "cov"){
-    key_model <- keyATM_train_cov(key_model, iter=options$iteration, output_per=options$output_per)
+    key_model <- keyATM_train_cov(key_model, iter = options$iteration, output_per = options$output_per)
   }else if(model == "lda"){
-    key_model <- LDA_weight(key_model, iter=options$iteration, output_per=options$output_per)  
+    key_model <- LDA_weight(key_model, iter = options$iteration, output_per = options$output_per)  
   }else if(model == "hmm"){
-    key_model <- keyATM_train_HMM(key_model, iter=options$iteration, output_per=options$output_per)  
+    key_model <- keyATM_train_HMM(key_model, iter = options$iteration, output_per = options$output_per)  
   }else if(model == "ldahmm"){
-    key_model <- keyATM_train_LDAHMM(key_model, iter=options$iteration, output_per=options$output_per)  
+    key_model <- keyATM_train_LDAHMM(key_model, iter = options$iteration, output_per = options$output_per)  
   }else{
     stop("Please check `mode`.")  
   }
@@ -516,7 +516,7 @@ summary.keyATM_model <- function(x)
 #' @export
 save.keyATM_model <- function(x, file = stop("'file' must be specified"))
 {
-  save(x, file=file, compress="xz", compression_level=3)
+  save(x, file = file, compress="xz", compression_level = 3)
 }
 
 
@@ -560,11 +560,11 @@ summary.keyATM_fitted <- function(x)
 #' @export
 save.keyATM_fitted <- function(x, file = stop("'file' must be specified"))
 {
-  save(x, file=file, compress="xz", compression_level=3)
+  save(x, file = file, compress="xz", compression_level = 3)
 }
 
 
-check_arg <- function(obj, name, model, info=list())
+check_arg <- function(obj, name, model, info = list())
 {
   if(name == "keywords"){
     return(check_arg_keywords(obj, model, info))
@@ -703,7 +703,7 @@ check_arg_priors <- function(obj, model, info)
   # prior of pi
   if(model %in% info$models_keyATM){
     if(is.null(obj$gamma)){
-      obj$gamma <- matrix(1.0, nrow=info$total_k, ncol=2)  
+      obj$gamma <- matrix(1.0, nrow = info$total_k, ncol = 2)  
     }
 
     if(!is.null(obj$gamma)){
@@ -877,7 +877,7 @@ make_xz_key <- function(W, keywords, info)
     #
     # Some keywords appear multiple times
     #
-    keys_df <- data.frame(wid = key_wdids, cat=cat_ids)
+    keys_df <- data.frame(wid = key_wdids, cat = cat_ids)
     keys_char <- sapply(unique(key_wdids),
                         function(x){
                           paste(as.character(keys_df[keys_df$wid==x, "cat"]), collapse=",")
@@ -908,16 +908,16 @@ make_xz_key <- function(W, keywords, info)
   make_x <- function(x){
     key <- as.numeric(x %in% key_wdids) # 1 if they're a seed
     # Use x structure
-    x[key == 0] <- 0L # non-keyword words have x=0
+    x[key == 0] <- 0L # non-keyword words have x = 0
     x[key == 1] <- sample(0:1, length(x[key == 1]), prob = c(0.3, 0.7), replace = TRUE)
-      # keywords have x=1 probabilistically
+      # keywords have x = 1 probabilistically
     return(x)
   }
 
  X <- lapply(W, make_x)
  Z <- lapply(W, make_z, topicvec)
 
- return(list(X=X, Z=Z))
+ return(list(X = X, Z = Z))
 }
 
 
@@ -938,7 +938,7 @@ make_xz_lda <- function(W, info)
  X <- lapply(W, make_x)
  Z <- lapply(W, make_z, topicvec)
 
- return(list(X=X, Z=Z))
+ return(list(X = X, Z = Z))
 }
 
 
@@ -978,44 +978,44 @@ make_xz_lda <- function(W, info)
 #' \dontrun{
 #'   # keyATM Basic
 #'   out <- keyATM(
-#'                 keyATM_docs, model="basic", regular_k=5, keywords=keywords_list
+#'                 keyATM_docs, model = "basic", regular_k = 5, keywords = keywords_list
 #'                )
 #'
 #'   # keyATM Cov
 #'   out <- keyATM(
-#'                 keyATM_docs, model="cov", regular_k=5, keywords=keywords_list,
-#'                 model_settings(covariates_data=cov)
+#'                 keyATM_docs, model = "cov", regular_k = 5, keywords = keywords_list,
+#'                 model_settings(covariates_data = cov)
 #'                )
 #'
 #'   # keyATM HMM
 #'   out <- keyATM(
-#'                    keyATM_docs, model="hmm", regular_k=5, keywords=keywords_list,
-#'                    model_settings(time_index=time_index_vec, num_states=5)
+#'                    keyATM_docs, model = "hmm", regular_k = 5, keywords = keywords_list,
+#'                    model_settings(time_index = time_index_vec, num_states = 5)
 #'                   )
 #'
 #'   # Weighted LDA
 #'   out <- keyATM(
-#'                 keyATM_docs, model="lda", regular_k=5
+#'                 keyATM_docs, model = "lda", regular_k = 5
 #'                )
 #'
 #'   # Weighted LDA Cov
 #'   out <- keyATM(
-#'                 keyATM_docs, model="ldacov", regular_k=5,
-#'                 model_settings(covariates_data=cov)
+#'                 keyATM_docs, model = "ldacov", regular_k = 5,
+#'                 model_settings(covariates_data = cov)
 #'                )                   
 #'
 #'   # Weighted LDA HMM
 #'   out <- keyATM(
-#'                 keyATM_docs, model="ldahmm", regular_k=5,
-#'                 model_settings(time_index=time_index_vec, num_states=5)
+#'                 keyATM_docs, model = "ldahmm", regular_k = 5,
+#'                 model_settings(time_index = time_index_vec, num_states = 5)
 #'                )
 #'
 #' }
 #'
 #' @export
 keyATM <- function(keyATM_docs, model, regular_k,
-                   keywords=list(), model_settings=list(),
-                   priors=list(), options=list(), keep=c())
+                   keywords = list(), model_settings = list(),
+                   priors = list(), options = list(), keep = c())
 {
   # Check type
   if(length(keep) != 0)

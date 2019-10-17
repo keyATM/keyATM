@@ -86,7 +86,7 @@ List keyATM_train_HMM(List model, int iter = 0, int output_per = 10){
 //'
 //' @export
 // [[Rcpp::export]]
-List lda_cov(List model, int K, int iter=0, int output_iter=10)
+List lda_cov(List model, int K, int iter = 0, int output_iter = 10)
 {
 
   LDACOV ldacov(model, K, iter, output_iter);
