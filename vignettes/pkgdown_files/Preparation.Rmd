@@ -47,8 +47,8 @@ Keywords should be in a list. For example, let's prepare two keyword-topics. The
 
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 keywords_list <- list(
-                      c("election", "vote", "voter"),
-                      c("economy", "recession")
+                      Election = c("election", "vote", "voter"),
+                      Economy = c("economy", "recession")
                      )
 ```
 
