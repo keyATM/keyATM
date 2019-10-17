@@ -66,7 +66,7 @@ keyATM_read <- function(texts, encoding = "UTF-8")
                                        }
                                     )
                              )
-    names(text_df$text_split) <-NULL
+    names(text_df$text_split) <- NULL
   }else{
     ## preprocess each text
     # Use files <- list.files(doc_folder, pattern = "txt", full.names = T) when you pass
@@ -880,7 +880,7 @@ make_xz_key <- function(W, keywords, info)
     keys_df <- data.frame(wid = key_wdids, cat = cat_ids)
     keys_char <- sapply(unique(key_wdids),
                         function(x){
-                          paste(as.character(keys_df[keys_df$wid==x, "cat"]), collapse=",")
+                          paste(as.character(keys_df[keys_df$wid == x, "cat"]), collapse=",")
                         })
     zx_hashtable <- hashmap::hashmap(as.integer(unique(key_wdids)), keys_char)
 

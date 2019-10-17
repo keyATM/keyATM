@@ -45,7 +45,7 @@ void keyATMhmm::read_data_specific()
   }
 
   for(int s = 0; s < num_time-1; s++){
-    time_doc_end(s) = time_doc_start(s+1) - 1;  
+    time_doc_end(s) = time_doc_start(s + 1) - 1;  
   }
   time_doc_end(num_time-1) = num_doc-1;
 
@@ -68,7 +68,7 @@ void keyATMhmm::initialize_specific()
   double u;
   int index;
   for(int i = 0; i < num_states; i++){
-    S_est_temp(i) = cumulative * (i+1);
+    S_est_temp(i) = cumulative * (i + 1);
   }
 
   for(int j = 0; j < num_time-num_states; j++){
@@ -101,7 +101,7 @@ void keyATMhmm::initialize_specific()
   for(int i = 0; i <= (index_states-1); i++){
     prob = R::rbeta(1.0, 1.0);
     P_est(i, i) = prob;
-    P_est(i, i+1) = 1-prob;
+    P_est(i, i + 1) = 1-prob;
   }
   P_est(index_states, index_states) = 1;
 
@@ -408,7 +408,7 @@ void keyATMhmm::sample_backward()
   S_count(index_states) += 1;  // last document
 
   for(int t=(num_time-2); 0<= t; --t){
-    state_id = S_est(t+1);
+    state_id = S_est(t + 1);
 
     state_prob_vec.array() = Psk.row(t).transpose().array() * P_est.col(state_id).array(); 
     state_prob_vec.array() = state_prob_vec.array() / state_prob_vec.sum();
@@ -425,11 +425,11 @@ void keyATMhmm::sample_P()
 {
   // sample P_est
   // iterate until index_state - 2
-  for(int s = 0; s <= (num_states-2); ++s){
-    pii = R::rbeta(1+S_count(s), 1);  
+  for(int s = 0; s <= (num_states - 2); ++s){
+    pii = R::rbeta(1 + S_count(s), 1);  
 
     P_est(s, s) = pii;
-    P_est(s, s+1) = 1.0 - pii;
+    P_est(s, s + 1) = 1.0 - pii;
   }
 }
 

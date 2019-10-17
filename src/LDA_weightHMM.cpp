@@ -39,10 +39,10 @@ void LDAhmm::read_data_specific()
     }
   }
 
-  for(int s = 0; s < num_time-1; s++){
+  for(int s = 0; s < num_time - 1; s++){
     time_doc_end(s) = time_doc_start(s+1) - 1;  
   }
-  time_doc_end(num_time-1) = num_doc-1;
+  time_doc_end(num_time - 1) = num_doc - 1;
 
   store_transition_matrix = options_list["store_transition_matrix"];
 }
@@ -92,10 +92,10 @@ void LDAhmm::initialize_specific()
   // Initializae P_est
   P_est = MatrixXd::Zero(num_states, num_states);
   double prob;
-  for(int i = 0; i <= (index_states-1); i++){
+  for(int i = 0; i <= (index_states - 1); i++){
     prob = R::rbeta(1.0, 1.0);
     P_est(i, i) = prob;
-    P_est(i, i+1) = 1-prob;
+    P_est(i, i + 1) = 1 - prob;
   }
   P_est(index_states, index_states) = 1;
 

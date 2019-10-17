@@ -136,7 +136,7 @@ double LDACOV::loglik_lambda()
   // Prior
   double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
   for(int k = 0; k < num_topics; k++){
-    for(int t = 0; t<num_cov; t++){
+    for(int t = 0; t < num_cov; t++){
       loglik += prior_fixedterm;
       loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
     }

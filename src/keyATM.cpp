@@ -397,7 +397,7 @@ double keyATMbase::gammaln_frac(const double &value, const int &count){
   }else{
     gammaln_val = 0.0;
 
-    for(int i = 0; i<count; i++){
+    for(int i = 0; i < count; i++){
       gammaln_val += log(value + i);  
     }
 
