@@ -500,8 +500,6 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
 
 
 
-
-
 #' Show a diagnosis plot of log-likelihood and perplexity
 #'
 #' @param x the output from a keyATM model (see \code{keyATM_output()})

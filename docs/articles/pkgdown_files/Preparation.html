@@ -108,20 +108,41 @@
 
     
     
-<div id="prepare-texts" class="section level2">
+<div id="preparing-texts" class="section level2">
 <h2 class="hasAnchor">
-<a href="#prepare-texts" class="anchor"></a>Prepare Texts</h2>
+<a href="#preparing-texts" class="anchor"></a>Preparing Texts</h2>
 <p>To fit topic models with <strong>keyATM</strong>, uesrs need to prepare texts for <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code>. <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code> has three ways to input texts.</p>
-<div id="use-quanteda-dfm-recommended" class="section level3">
+<div id="using-quanteda-dfm-recommended" class="section level3">
 <h3 class="hasAnchor">
-<a href="#use-quanteda-dfm-recommended" class="anchor"></a>Use quanteda dfm (recommended)</h3>
+<a href="#using-quanteda-dfm-recommended" class="anchor"></a>Using quanteda dfm (recommended)</h3>
 <p><strong>keyATM</strong> can read a <code>dfm</code> object created by <strong>quanteda</strong> package. Since <strong>keyATM</strong> does not provide preprocessing functions, we recommend users to preprocess documents with <strong>quanteda</strong>. Please visit <a href="https://quanteda.io/articles/quickstart.html#creating-a-corpus">quanteda Quick Start: Creating a Corpus</a> to see how to create a <code>corpus</code> object.</p>
 <p>By making a <code>token</code> object from a <code>corpus</code> object, <strong>quanteda</strong> can perform various preprocessing methods (<a href="https://quanteda.io/articles/quickstart.html#tokenizing-texts">quanteda Quick Start: Tokenizing texts</a>).</p>
-<p>Lastly, you can make a <code>dfm</code> object with a function <code>dfm()</code> in <strong>quanteda</strong>.</p>
+<p>Lastly, you can make a <code>dfm</code> object with a function <code><a href="https://quanteda.io/reference/dfm.html">dfm()</a></code> in <strong>quanteda</strong>.</p>
+<p>Here is an example preprocessing steps with <strong>quanteda</strong>. In this example, we read texts with <strong>readtext</strong> package.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(quanteda)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(readtext)</span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a>raw_docs &lt;-<span class="st"> </span><span class="kw">readtext</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(path_data, <span class="st">"PATH_TO_THE_FOLDER/*.txt"</span>),</span>
+<span id="cb1-5"><a href="#cb1-5"></a>                     <span class="dt">encoding =</span> <span class="st">"UTF-8"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6"></a></span>
+<span id="cb1-7"><a href="#cb1-7"></a>key_corpus &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(raw_docs, <span class="dt">text_field =</span> <span class="st">"text"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-9"><a href="#cb1-9"></a>key_tokens &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(key_corpus,</span>
+<span id="cb1-10"><a href="#cb1-10"></a>                     <span class="dt">remove_numbers =</span> <span class="ot">TRUE</span>, </span>
+<span id="cb1-11"><a href="#cb1-11"></a>                     <span class="dt">remove_punct =</span> <span class="ot">TRUE</span>, </span>
+<span id="cb1-12"><a href="#cb1-12"></a>                     <span class="dt">remove_symbols =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb1-13"><a href="#cb1-13"></a>                     <span class="dt">remove_separators =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb1-14"><a href="#cb1-14"></a>                     <span class="dt">remove_url =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_tolower.html">tokens_tolower</a></span>() <span class="op">%&gt;%</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_select.html">tokens_remove</a></span>(<span class="kw"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"english"</span>))</span>
+<span id="cb1-17"><a href="#cb1-17"></a></span>
+<span id="cb1-18"><a href="#cb1-18"></a>key_dfm &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(key_tokens) <span class="op">%&gt;%</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="st">             </span><span class="kw"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="dt">min_termfreq =</span> <span class="dv">5</span>, <span class="dt">min_docfreq =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p>You can also use <code><a href="https://www.rdocumentation.org/packages/base/topics/c">c(stopwords("english"), "your", "stopwords")</a></code> if you want to add corpus specific stopwords.</p>
 </div>
-<div id="use-data-frame-or-tibble" class="section level3">
+<div id="using-data-frame-or-tibble" class="section level3">
 <h3 class="hasAnchor">
-<a href="#use-data-frame-or-tibble" class="anchor"></a>Use data.frame or tibble</h3>
+<a href="#using-data-frame-or-tibble" class="anchor"></a>Using data.frame or tibble</h3>
 <p><code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code> can read <code>data.frame</code> and <code>tibble</code> if you preprocess texts without <strong>quanteda</strong>. Please store texts in a column named <code>text</code>.</p>
 <pre><code>&gt; head(docs)  # `docs` stores preprocessed texts
 # A tibble: 6 x 1
@@ -134,21 +155,21 @@
 5 congress congress one united united united united united unit...
 6 h.r h.r one one one one one hundred hundred first congress co...</code></pre>
 </div>
-<div id="read-directly-from-files" class="section level3">
+<div id="reading-directly-from-files" class="section level3">
 <h3 class="hasAnchor">
-<a href="#read-directly-from-files" class="anchor"></a>Read directly from files</h3>
+<a href="#reading-directly-from-files" class="anchor"></a>Reading directly from files</h3>
 <p>If you have preprocessed text files, you can pass a list of files to <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>textfiles &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list.files">list.files</a></span>(PATH_TO_THE_FOLDER, <span class="dt">pattern =</span> <span class="st">"*.txt"</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>textfiles &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list.files">list.files</a></span>(PATH_TO_THE_FOLDER, <span class="dt">pattern =</span> <span class="st">"*.txt"</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 </div>
 </div>
-<div id="prepare-keywords" class="section level2">
+<div id="preparing-keywords" class="section level2">
 <h2 class="hasAnchor">
-<a href="#prepare-keywords" class="anchor"></a>Prepare keywords</h2>
+<a href="#preparing-keywords" class="anchor"></a>Preparing keywords</h2>
 <p>Keywords should be in a list. For example, let’s prepare two keyword-topics. The number of keywords can vary between topics. Please also check <a href="FAQ.html">FAQ</a> to see how to select keywords that help models.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>keywords_list &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</span>
-<span id="cb3-2"><a href="#cb3-2"></a>                      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"election"</span>, <span class="st">"vote"</span>, <span class="st">"voter"</span>),</span>
-<span id="cb3-3"><a href="#cb3-3"></a>                      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"economy"</span>, <span class="st">"recession"</span>)</span>
-<span id="cb3-4"><a href="#cb3-4"></a>                     )</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>keywords_list &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</span>
+<span id="cb4-2"><a href="#cb4-2"></a>                      <span class="dt">Election =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"election"</span>, <span class="st">"vote"</span>, <span class="st">"voter"</span>),</span>
+<span id="cb4-3"><a href="#cb4-3"></a>                      <span class="dt">Economy =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"economy"</span>, <span class="st">"recession"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a>                     )</span></code></pre></div>
 </div>
 <div id="next-step" class="section level2">
 <h2 class="hasAnchor">
@@ -185,8 +206,8 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#prepare-texts">Prepare Texts</a></li>
-      <li><a href="#prepare-keywords">Prepare keywords</a></li>
+<li><a href="#preparing-texts">Preparing Texts</a></li>
+      <li><a href="#preparing-keywords">Preparing keywords</a></li>
       <li><a href="#next-step">Next Step</a></li>
       </ul>
 </div>
