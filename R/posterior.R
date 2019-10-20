@@ -41,12 +41,12 @@ keyATM_output <- function(model)
   info$N <- length(model$Z)
   info$doc_lens <- sapply(model$Z, length)
 
-  if(model$regular_k > 0 & length(model$keywords) != 0){
+  if (model$regular_k > 0 & length(model$keywords) != 0) {
     info$tnames <- c(names(model$keywords_raw), paste0("R_", 1:model$regular_k))
-  }else if(model$regular_k > 0 & length(model$keywords) == 0) {
+  } else if (model$regular_k > 0 & length(model$keywords) == 0) {
     # No keywords (= lda models)
     info$tnames <- paste0("R_", 1:model$regular_k)
-  }else{
+  } else {
     # Keywords only
     info$tnames <- c(paste0("", 1:length(model$keywords)))
   }
@@ -56,7 +56,7 @@ keyATM_output <- function(model)
   theta <- keyATM_output_theta(model, info)
 
   # theta iter
-  if(model$options$store_theta){
+  if (model$options$store_theta) {
     values_iter$theta_iter <- keyATM_output_theta_iter(model, info)  
   }
 
@@ -68,18 +68,18 @@ keyATM_output <- function(model)
   
 
   # alpha_iter
-  if(model$model %in% c("hmm", "ldahmm")){
+  if (model$model %in% c("hmm", "ldahmm")) {
     values_iter$alpha_iter <- keyATM_output_alpha_iter_hmm(model, info)
   }
 
-  if((model$model %in% c("basic", "lda"))){
-    if(model$options$estimate_alpha)
+  if ((model$model %in% c("basic", "lda"))) {
+    if (model$options$estimate_alpha)
       values_iter$alpha_iter <- keyATM_output_alpha_iter_basic(model, info)  
   }
 
   # model fit
   modelfit <- NULL
-  if(length(model$model_fit) > 0){
+  if (length(model$model_fit) > 0) {
     model$model_fit %>%
       purrr::set_names(1:length(.)) %>%
       dplyr::bind_rows() %>%
@@ -117,7 +117,7 @@ keyATM_output <- function(model)
 keyATM_output_theta <- function(model, info)
 {
   # Theta
-  if(model$model %in% c("cov")){
+  if (model$model %in% c("cov")) {
     Alpha <- exp(model$model_settings$covariates_data %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
 
     posterior_z <- function(docid){
@@ -129,10 +129,10 @@ keyATM_output_theta <- function(model, info)
 
     theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z))
 
-  }else if(model$model %in% c("basic", "lda")){
-    if(model$options$estimate_alpha){
+  } else if (model$model %in% c("basic", "lda")) {
+    if (model$options$estimate_alpha) {
       alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]  
-    }else{
+    } else {
       alpha <- model$priors$alpha  
     }
 
@@ -143,7 +143,7 @@ keyATM_output_theta <- function(model, info)
 
     theta <- do.call(dplyr::bind_rows, lapply(model$Z, posterior_z))
 
-  }else if(model$model %in% c("hmm", "ldahmm")){
+  } else if (model$model %in% c("hmm", "ldahmm")) {
     S <- model$stored_values$S_iter[[length(model$stored_values$S_iter)]] + 1L  # adjust index for R
     S <- S[model$model_settings$time_index]  # retrieve doc level state info
     alphas <- matrix(model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]][S],
@@ -194,7 +194,7 @@ keyATM_output_phi <- function(model, info)
 
 keyATM_output_theta_iter <- function(model, info)
 {
-  if(model$model %in% c("cov")){
+  if (model$model %in% c("cov")) {
     posterior_theta <- function(x){
       Z_table <- model$stored_values$Z_tables[[x]]
       lambda <- model$stored_values$Lambda_iter[[x]]
@@ -205,7 +205,7 @@ keyATM_output_theta_iter <- function(model, info)
 
       return(tt / Matrix::rowSums(tt))
     }
-  }else if(model$model %in% c("hmm", "ldahmm")){
+  } else if (model$model %in% c("hmm", "ldahmm")) {
     posterior_theta <- function(x){
       Z_table <- model$stored_values$Z_tables[[x]]
       S <- model$stored_values$S_iter[[x]] + 1L  # adjust index for R
@@ -218,7 +218,7 @@ keyATM_output_theta_iter <- function(model, info)
       theta <- tt / Matrix::rowSums(tt)
       return(theta)
     }
-  }else{
+  } else {
     posterior_theta <- function(x){
       Z_table <- model$stored_values$Z_tables[[x]]
       alpha <- model$stored_values$alpha_iter[[x]]
@@ -317,9 +317,9 @@ plot.keyATM_output <- function(x)
 check_arg_type <- function(arg, typename, message = NULL){
   argname <- deparse(match.call()[['arg']])
   if (!inherits(arg, typename)){
-    if(is.null(message)){
+    if (is.null(message)) {
       stop(paste0('`', argname, '` is not a ', typename))
-    }else{
+    } else {
       stop(message)
     }
   }
@@ -346,7 +346,7 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
 {
   check_arg_type(x, "keyATM_output")
 
-  if(x$model %in% c("lda", "ldacov", "ldahmm"))
+  if (x$model %in% c("lda", "ldacov", "ldahmm"))
      show_keyword <- FALSE
 
   if (is.null(n))
@@ -454,14 +454,14 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
 
   check_arg_type(x, "keyATM_output")
 
-  if(!"alpha_iter" %in% names(x$values_iter)){
+  if (!"alpha_iter" %in% names(x$values_iter)) {
     stop("`alpha` is not stored. Please check the settings of the model.")  
   }
 
   thinning <- as.integer(thinning)
   enq_thinning <- enquo(thinning)
 
-  if(is.null(show_topic)){
+  if (is.null(show_topic)) {
     show_topic <- 1:(x$keyword_k + x$regular_k)  
   }
   check_arg_type(show_topic, "numeric")
@@ -473,11 +473,11 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
     dplyr::filter(Topic %in% (!!show_topic)) %>%
     dplyr::mutate(Topic = paste0("Topic", Topic)) -> res_alpha
 
-  if(nrow(res_alpha) == 0){
+  if (nrow(res_alpha) == 0) {
     stop("Nothing left to plot. Please check arguments.")  
   }
 
-  if(x$model %in% c("basic", "lda")){
+  if (x$model %in% c("basic", "lda")) {
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = Topic)) +
           geom_line() +
           geom_point(size = 0.3) +
@@ -485,7 +485,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
           ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
-  }else if(x$model %in% c("hmm", "ldahmm")){
+  } else if (x$model %in% c("hmm", "ldahmm")) {
     res_alpha %>% mutate(State = as.character(State)) -> res_alpha
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = State, colour = State)) +
           geom_line() +
@@ -516,12 +516,12 @@ plot_modelfit <- function(x, start = 1)
 
   modelfit <- x$model_fit
 
-  if(!is.numeric(start) | length(start) != 1){
+  if (!is.numeric(start) | length(start) != 1) {
     message("`start` argument is invalid. Using the default (=1)")  
     start <- 1
   }
 
-  if(!is.null(start)){
+  if (!is.null(start)) {
     modelfit <- modelfit[ modelfit$Iteration >= start, ]
   }
 
@@ -554,7 +554,7 @@ plot_p <- function(x, show_topic = NULL)
 {
 
   num <- length(unique(x$p$Topic))
-  if(is.null(show_topic)){
+  if (is.null(show_topic)) {
     shoe_topic <- 1:num
   }
 
