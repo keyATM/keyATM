@@ -26,28 +26,28 @@ keyATM_read <- function(texts, encoding = "UTF-8")
 {
 
   # Detect input
-  if("tbl" %in% class(texts)){
+  if ("tbl" %in% class(texts)) {
     message("Using tibble.")
     text_dfm <- NULL
     files <- NULL
     text_df <- texts
-  }else if("data.frame" %in% class(texts)){
+  } else if ("data.frame" %in% class(texts)) {
     message("Using data.frame.")
     text_dfm <- NULL
     files <- NULL
     text_df <- tibble::as_tibble(texts)
-  }else if(class(texts) == "dfm"){
+  } else if (class(texts) == "dfm") {
     message("Using quanteda dfm.")
     text_dfm <- texts
     files <- NULL
     text_df <- NULL
-  }else if(class(texts) == "character"){
+  } else if (class(texts) == "character") {
     message("Reading from files.")
     text_dfm <- NULL
     files <- texts
     text_df <- NULL
     message(paste0("Encoding: ", encoding))
-  }else{
+  } else {
     stop("Check `texts` argument.\n
          It can take quanteda dfm, data.frame, tibble, and a vector of characters.")  
   }
@@ -56,7 +56,7 @@ keyATM_read <- function(texts, encoding = "UTF-8")
   # Read texts
 
   # If you have quanteda object
-  if(!is.null(text_dfm)){
+  if (!is.null(text_dfm)) {
     vocabulary <- colnames(text_dfm)
     text_df <- tibble::tibble(
                               text_split = 
@@ -70,7 +70,7 @@ keyATM_read <- function(texts, encoding = "UTF-8")
   }else{
     ## preprocess each text
     # Use files <- list.files(doc_folder, pattern = "txt", full.names = T) when you pass
-    if(is.null(text_df)){
+    if (is.null(text_df)) {
       text_df <- tibble::tibble(text = unlist(lapply(files,
                                                  function(x)
                                                  { 
@@ -210,10 +210,10 @@ visualize_keywords <- function(keyATM_docs, keywords, label_size = 3.2)
     dplyr::filter(is.na(WordCount)) %>%
     dplyr::pull(Word) -> non_appearence
 
-  if(length(non_appearence) != 0){
-    if(length(non_appearence) == 1){
+  if (length(non_appearence) != 0) {
+    if (length(non_appearence) == 1) {
       stop("A keyword not found in texts: ", paste(non_appearence, collapse = ", "))
-    }else{
+    } else {
       stop("Keywords not found in texts: ", paste(non_appearence, collapse = ", "))
     }
   }
@@ -342,12 +342,12 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
 
   # Check type
   check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
-  if(!is.integer(regular_k) & !is.numeric(regular_k))
+  if (!is.integer(regular_k) & !is.numeric(regular_k))
     stop("`regular_k` is neigher numeric nor integer.")
 
   regular_k <- as.integer(regular_k)
 
-  if(!model %in% c("basic", "cov", "hmm", "lda", "ldacov", "ldahmm")){
+  if (!model %in% c("basic", "cov", "hmm", "lda", "ldacov", "ldahmm")) {
     stop("Please select a correct model.")  
   }
 
@@ -375,7 +375,7 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
 
   # W
   info$wd_names <- unique(unlist(keyATM_docs, use.names = F))
-  if(" " %in% info$wd_names){
+  if (" " %in% info$wd_names) {
     stop("A space is recognized as a vocabulary.
           Please remove an empty document or consider using quanteda::dfm.")  
   }
@@ -386,14 +386,14 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
 
   # Check keywords
   c <- sapply(unlist(keywords), 
-         function(x){if(! x %in% info$wd_names)
+         function(x){if (! x %in% info$wd_names)
            stop(paste0('"', x, '"', " does not appear in texts. Please check keywords."))})
 
   keywords_raw <- keywords  # keep raw keywords (not word_id)
   keywords_id <- lapply(keywords, function(x){ as.integer(info$wd_map$find(x)) })
 
   # Assign X and Z
-  if(model %in% info$models_keyATM){
+  if (model %in% info$models_keyATM) {
     res <- make_xz_key(W, keywords, info)
     X <- res$X
     Z <- res$Z
@@ -408,30 +408,30 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   # Organize
   stored_values <- list()
 
-  if(model %in% c("basic", "lda")){
-    if(options$estimate_alpha)
+  if (model %in% c("basic", "lda")) {
+    if (options$estimate_alpha)
       stored_values$alpha_iter <- list()  
   }
 
-  if(model %in% c("hmm", "ldahmm")){
+  if (model %in% c("hmm", "ldahmm")) {
     options$estimate_alpha <- 1
     stored_values$alpha_iter <- list()  
   }
 
 
-  if(model %in% c("cov", "ldacov")){
+  if (model %in% c("cov", "ldacov")) {
     stored_values$Lambda_iter <- list()
   }
 
-  if(model %in% c("hmm", "ldahmm")){
+  if (model %in% c("hmm", "ldahmm")) {
     stored_values$S_iter <- list()
 
-    if(options$store_transition_matrix){
+    if (options$store_transition_matrix) {
       stored_values$P_iter <- list()  
     }
   }
 
-  if(options$store_theta)
+  if (options$store_theta)
     stored_values$Z_tables <- list()
 
   key_model <- list(
@@ -451,7 +451,7 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   rm(info)
   class(key_model) <- c("keyATM_model", class(key_model))
 
-  if(options$iterations == 0){
+  if (options$iterations == 0) {
     message("`options$iterations` is 0. keyATM returns an initialized object.")  
     return(key_model)
   }
@@ -463,17 +463,17 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   message(paste0("Fitting the model. ", options$iterations, " iterations..."))
   set.seed(options$seed)
 
-  if(model == "basic"){
+  if (model == "basic") {
     key_model <- keyATM_train(key_model, iter = options$iterations, output_per = options$output_per)
-  }else if(model == "cov"){
+  } else if (model == "cov") {
     key_model <- keyATM_train_cov(key_model, iter = options$iteration, output_per = options$output_per)
-  }else if(model == "lda"){
+  } else if (model == "lda") {
     key_model <- LDA_weight(key_model, iter = options$iteration, output_per = options$output_per)  
-  }else if(model == "hmm"){
+  } else if (model == "hmm") {
     key_model <- keyATM_train_HMM(key_model, iter = options$iteration, output_per = options$output_per)  
-  }else if(model == "ldahmm"){
+  } else if (model == "ldahmm") {
     key_model <- keyATM_train_LDAHMM(key_model, iter = options$iteration, output_per = options$output_per)  
-  }else{
+  } else {
     stop("Please check `mode`.")  
   }
 
@@ -566,19 +566,19 @@ save.keyATM_fitted <- function(x, file = stop("'file' must be specified"))
 
 check_arg <- function(obj, name, model, info = list())
 {
-  if(name == "keywords"){
+  if (name == "keywords") {
     return(check_arg_keywords(obj, model, info))
   }
 
-  if(name == "model_settings"){
+  if (name == "model_settings") {
     return(check_arg_model_settings(obj, model, info))  
   }
 
-  if(name == "priors"){
+  if (name == "priors") {
     return(check_arg_priors(obj, model, info))  
   }
 
-  if(name == "options"){
+  if (name == "options") {
     return(check_arg_options(obj, model, info))  
   }
 }
@@ -588,20 +588,20 @@ check_arg_keywords <- function(keywords, model, info)
 {
   check_arg_type(keywords, "list")
 
-  if(length(keywords) == 0 & model %in% info$models_keyATM){
+  if (length(keywords) == 0 & model %in% info$models_keyATM) {
     stop("Please provide keywords.")  
   }
 
-  if(length(keywords) != 0 & model %in% info$models_lda){
+  if (length(keywords) != 0 & model %in% info$models_lda) {
     stop("This model does not take keywords.")  
   }
 
 
   # Name of keywords topic
-  if(model %in% info$models_keyATM){
+  if (model %in% info$models_keyATM) {
     c <- lapply(keywords, function(x){check_arg_type(x, "character")})
   
-    if(is.null(names(keywords))){
+    if (is.null(names(keywords))) {
       names(keywords)  <- paste0(1:length(keywords))
     }else{
       names(keywords)  <- paste0(1:length(keywords), "_", names(keywords))
@@ -615,7 +615,7 @@ check_arg_keywords <- function(keywords, model, info)
 show_unused_arguments <- function(obj, name, allowed_arguments)
 {
   unused_input <- names(obj)[! names(obj) %in% allowed_arguments]
-  if(length(unused_input) != 0)
+  if (length(unused_input) != 0)
     stop(paste0(
                 "keyATM doesn't recognize some of the arguments ",
                 "in ", name, ": ",
@@ -630,24 +630,24 @@ check_arg_model_settings <- function(obj, model, info)
   check_arg_type(obj, "list")
   allowed_arguments <- c()
 
-  if(model %in% c("cov", "ldacov")){
-     if(is.null(obj$covariates_data)){
+  if (model %in% c("cov", "ldacov")) {
+     if (is.null(obj$covariates_data)) {
       stop("Please provide `obj$covariates_data`.")  
     }
 
     check_arg_type(obj$covariates_data, "matrix")
 
-    if(nrow(obj$covariates_data) != info$num_doc){
+    if (nrow(obj$covariates_data) != info$num_doc) {
       stop("The row of `model_settings$covariates_data` should be the same as the number of documents.")  
     }
 
-    if(sum(is.na(obj$covariates_data)) != 0){
+    if (sum(is.na(obj$covariates_data)) != 0) {
       stop("Covariate data should not contain missing values.")
     }
 
-    if(is.null(obj$covariates_formula)){
+    if (is.null(obj$covariates_formula)) {
       obj$covariates_formula <- NULL
-    }else if(is.formula(obj$covariates_formula)){
+    }else if (is.formula(obj$covariates_formula)) {
       message("Convert covariates data using `obj$covariates_formula`.")
       obj$covariates_data <- stats::model.matrix(obj$covariates_formula, obj$covariates_data)
     }else{
@@ -658,28 +658,28 @@ check_arg_model_settings <- function(obj, model, info)
   }
 
 
-  if(model %in% c("hmm", "ldahmm")){
-    if(is.null(obj$num_states)){
+  if (model %in% c("hmm", "ldahmm")) {
+    if (is.null(obj$num_states)) {
       stop("`model_settings$num_states` is not provided.")  
     }
 
-    if(is.null(obj$time_index)){
+    if (is.null(obj$time_index)) {
       stop("`model_settings$time_index` is not provided.")
     }
 
-    if(length(obj$time_index) != info$num_doc){
+    if (length(obj$time_index) != info$num_doc) {
       stop("The length of the `model_settings$time_index` does not match with the number of documents.")  
     }
     
-    if(min(obj$time_index) != 1 | max(obj$time_index) > info$num_doc){
+    if (min(obj$time_index) != 1 | max(obj$time_index) > info$num_doc) {
       stop("`model_settings$time_index` should start from 1 and not exceed the number of documents.")
     }
 
-    if(max(obj$time_index) < obj$num_states)
+    if (max(obj$time_index) < obj$num_states)
       stop("`model_settings$num_states` should not exceed the maximum of `model_settings$time_index`.")
 
     check <- unique(obj$time_index[2:length(obj$time_index)] - lag(obj$time_index)[2:length(obj$time_index)])
-    if(sum(!unique(check) %in% c(0,1)) != 0)
+    if (sum(!unique(check) %in% c(0,1)) != 0)
       stop("`model_settings$num_states` does not increment by 1.")
 
     obj$time_index <- as.integer(obj$time_index)
@@ -701,23 +701,23 @@ check_arg_priors <- function(obj, model, info)
   allowed_arguments <- c("beta")
 
   # prior of pi
-  if(model %in% info$models_keyATM){
-    if(is.null(obj$gamma)){
+  if (model %in% info$models_keyATM) {
+    if (is.null(obj$gamma)) {
       obj$gamma <- matrix(1.0, nrow = info$total_k, ncol = 2)  
     }
 
-    if(!is.null(obj$gamma)){
-      if(dim(obj$gamma)[1] != info$total_k)  
+    if (!is.null(obj$gamma)) {
+      if (dim(obj$gamma)[1] != info$total_k)  
         stop("Check the dimension of `priors$gamma`")
-      if(dim(obj$gamma)[2] != 2)  
+      if (dim(obj$gamma)[2] != 2)  
         stop("Check the dimension of `priors$gamma`")
     }
 
 
-    if(info$keyword_k < info$total_k){
+    if (info$keyword_k < info$total_k) {
       # Regular topics are used in keyATM models
       # Priors of regular topics should be 0
-      if(sum(obj$gamma[(info$keyword_k+1):info$total_k, ]) != 0){
+      if (sum(obj$gamma[(info$keyword_k+1):info$total_k, ]) != 0) {
         obj$gamma[(info$keyword_k+1):info$total_k, ] <- 0
       }
     }
@@ -727,24 +727,24 @@ check_arg_priors <- function(obj, model, info)
 
 
   # beta
-  if(is.null(obj$beta)){
+  if (is.null(obj$beta)) {
     obj$beta <- 0.01  
   }
 
-  if(model %in% info$models_keyATM){
-    if(is.null(obj$beta_s)){
+  if (model %in% info$models_keyATM) {
+    if (is.null(obj$beta_s)) {
       obj$beta_s <- 0.1  
     }  
     allowed_arguments <- c(allowed_arguments, "beta_s")
   }
 
 
-  if(model %in% c("basic", "lda")){
+  if (model %in% c("basic", "lda")) {
     # alpha
-    if(is.null(obj$alpha)){
+    if (is.null(obj$alpha)) {
       obj$alpha <- rep(1/info$total_k, info$total_k)
     }
-    if(length(obj$alpha) != info$total_k){
+    if (length(obj$alpha) != info$total_k) {
       stop("Starting alpha must be a vector of length ", info$total_k)
     }
     allowed_arguments <- c(allowed_arguments, "alpha")
@@ -766,49 +766,49 @@ check_arg_options <- function(obj, model, info)
                          "store_theta", "slice_shape")
 
   # Output per
-  if(is.null(obj$output_per))
+  if (is.null(obj$output_per))
     obj$output_per <- 10L
 
-  if(!is.numeric(obj$output_per) | obj$output_per < 0 | obj$output_per%%1!=0){
+  if (!is.numeric(obj$output_per) | obj$output_per < 0 | obj$output_per%%1 != 0) {
       stop("An invalid value in `options$output_per`")  
   }
 
   # thinning
-  if(is.null(obj$thinning))
+  if (is.null(obj$thinning))
     obj$thinning <- 1L
 
-  if(!is.numeric(obj$thinning) | obj$thinning < 0| obj$thinning%%1!=0){
+  if (!is.numeric(obj$thinning) | obj$thinning < 0| obj$thinning%%1 != 0) {
       stop("An invalid value in `options$thinning`")  
   }
 
   # seed
-  if(is.null(obj$seed))
+  if (is.null(obj$seed))
     obj$seed <- floor(runif(1)*1e5)
 
   # iterations
-  if(is.null(obj$iterations))
+  if (is.null(obj$iterations))
     obj$iterations <- 1500L
-  if(!is.numeric(obj$iterations) | obj$iterations < 0| obj$iterations%%1!=0){
+  if (!is.numeric(obj$iterations) | obj$iterations < 0| obj$iterations%%1 != 0) {
       stop("An invalid value in `options$iterations`")  
   }
 
   # Store theta
-  if(is.null(obj$store_theta)){
+  if (is.null(obj$store_theta)) {
     obj$store_theta <- 0L
-  }else{
+  } else {
     obj$store_theta <- as.integer(obj$store_theta)  
-    if(!obj$store_theta %in% c(0, 1)){
+    if (!obj$store_theta %in% c(0, 1)) {
       stop("An invalid value in `options$store_theta`")  
     }
   }
 
   # Estimate alpha
-  if(model %in% c("basic", "lda")){
-    if(is.null(obj$estimate_alpha)){
+  if (model %in% c("basic", "lda")) {
+    if (is.null(obj$estimate_alpha)) {
       obj$estimate_alpha <- 1L
-    }else{
+    } else {
       obj$estimate_alpha <- as.integer(obj$estimate_alpha)  
-      if(!obj$estimate_alpha %in% c(0, 1)){
+      if (!obj$estimate_alpha %in% c(0, 1)) {
         stop("An invalid value in `options$estimate_alpha`")  
       }
 
@@ -817,29 +817,29 @@ check_arg_options <- function(obj, model, info)
   }
   
   # Slice shape
-  if(is.null(obj$slice_shape)){
+  if (is.null(obj$slice_shape)) {
     # parameter for slice sampling
     obj$slice_shape <- 1.2
   }
-  if(!is.numeric(obj$slice_shape) | obj$slice_shape < 0){
+  if (!is.numeric(obj$slice_shape) | obj$slice_shape < 0) {
       stop("An invalid value in `options$slice_shape`")  
   }
 
   # Use weights
-  if(is.null(obj$use_weights)){
+  if (is.null(obj$use_weights)) {
     obj$use_weights <- 1L 
-  }else{
+  } else {
     obj$use_weights <- as.integer(obj$use_weights)
-    if(!obj$use_weights %in% c(0, 1)){
+    if (!obj$use_weights %in% c(0, 1)) {
       stop("An invalid value in `options$use_weights`")  
     }
   }
 
-  if(model %in% c("hmm", "ldahmm")){
-    if(is.null(obj$store_transition_matrix)){
+  if (model %in% c("hmm", "ldahmm")) {
+    if (is.null(obj$store_transition_matrix)) {
       obj$store_transition_matrix <- 0L  
     }
-    if(!obj$store_transition_matrix %in% c(0, 1)){
+    if (!obj$store_transition_matrix %in% c(0, 1)) {
       stop("An invalid value in `options$store_transition_matrix`")  
     }
     allowed_arguments <- c(allowed_arguments, "store_transition_matrix")
@@ -857,7 +857,7 @@ make_xz_key <- function(W, keywords, info)
   key_wdids <- unlist(lapply(keywords, function(x){ info$wd_map$find(x) }))
   cat_ids <- rep(1:(info$keyword_k) - 1L, unlist(lapply(keywords, length)))
 
-  if(length(key_wdids) == length(unique(key_wdids))){
+  if (length(key_wdids) == length(unique(key_wdids))) {
     #
     # No keyword appears more than once
     #
@@ -1018,7 +1018,7 @@ keyATM <- function(keyATM_docs, model, regular_k,
                    priors = list(), options = list(), keep = c())
 {
   # Check type
-  if(length(keep) != 0)
+  if (length(keep) != 0)
     check_arg_type(keep, "character")
 
   # Fit keyATM
@@ -1031,7 +1031,7 @@ keyATM <- function(keyATM_docs, model, regular_k,
   out <- keyATM_output(fitted)
 
   # Keep some objects if specified
-  if(length(keep) != 0){
+  if (length(keep) != 0) {
     kept_values <- list()
     use_elements <- keep[keep %in% names(fitted)]
     for(i in 1:length(use_elements)){
