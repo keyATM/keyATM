@@ -183,7 +183,7 @@ double keyATMbasic::loglik_total()
 
     // word normalization
     loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
-    loglik += mylgamma( beta_s * (double)num_vocab ) - mylgamma(beta_s * (double)num_vocab + n_x1_k_noWeight(k) );
+    loglik += mylgamma( beta_s * (double)keywords_unique_num ) - mylgamma(beta_s * (double)keywords_unique_num + n_x1_k_noWeight(k) );
 
     if(k < keyword_k){
       // Normalization

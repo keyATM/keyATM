@@ -108,7 +108,21 @@
 
     
     
-<p><code><a href="../../reference/keyATM_fit.html">keyATM_fit()</a></code> takes various options.</p>
+<p><code><a href="../../reference/keyATM_fit.html">keyATM_fit()</a></code> takes various options. You can set options through a list.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>my_options &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(       <span class="dt">seed =</span> <span class="dv">100</span>,</span>
+<span id="cb1-2"><a href="#cb1-2"></a>                    <span class="dt">output_per =</span> <span class="dv">10</span>,</span>
+<span id="cb1-3"><a href="#cb1-3"></a>                    <span class="dt">iterations =</span> <span class="dv">1500</span>,</span>
+<span id="cb1-4"><a href="#cb1-4"></a>                   <span class="dt">use_weights =</span> <span class="dv">1</span>,</span>
+<span id="cb1-5"><a href="#cb1-5"></a>                      <span class="dt">thinning =</span> <span class="dv">10</span>,</span>
+<span id="cb1-6"><a href="#cb1-6"></a>                   <span class="dt">store_theta =</span> <span class="dv">0</span>,</span>
+<span id="cb1-7"><a href="#cb1-7"></a>                   <span class="dt">slice_shape =</span> <span class="fl">1.2</span>)</span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-9"><a href="#cb1-9"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(<span class="dt">keyATM_docs =</span> keyATM_docs,    <span class="co"># text input</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>              <span class="dt">regular_k   =</span> <span class="dv">3</span>,              <span class="co"># number of regular topics</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>              <span class="dt">keywords    =</span> bills_keywords, <span class="co"># keywords</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>              <span class="dt">model       =</span> <span class="st">"basic"</span>,        <span class="co"># select the model</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>              <span class="dt">options     =</span> my_options</span>
+<span id="cb1-14"><a href="#cb1-14"></a>             )</span></code></pre></div>
 <div id="seed" class="section level2">
 <h2 class="hasAnchor">
 <a href="#seed" class="anchor"></a><code>seed</code>

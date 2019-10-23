@@ -83,26 +83,32 @@ void keyATMbase::initialize_common()
   max_v = 100.0;
   max_shrink_time = 200;
 
-  // Vector that stores seed words (words in dictionary)
+  // Vector that stores keywords (words in dictionary)
   int wd_id;
   IntegerVector wd_ids;
+  std::unordered_set<int> keywords_all;
   for (int ii = 0; ii < keyword_k; ii++){
     wd_ids = keywords_list[ii];
-    seed_num.push_back(wd_ids.size());
+    keywords_num.push_back(wd_ids.size());
     
     std::unordered_set<int> keywords_set;
     for (int jj = 0; jj < wd_ids.size(); jj++){
       wd_id = wd_ids(jj);
       keywords_set.insert(wd_id);
+      keywords_all.insert(wd_id);
     }
     
     keywords.push_back(keywords_set);
   }
 
+  // Get the number of keywords vocabulary
+  keywords_unique_num = keywords_all.size();
+
+
   for(int i = keyword_k; i < num_topics; i++){
     std::unordered_set<int> keywords_set{ -1 };
   
-    seed_num.push_back(0);
+    keywords_num.push_back(0);
     keywords.push_back(keywords_set);
   }
 
@@ -274,7 +280,7 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
           (n_x1_k(k) + prior_gamma(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
       }
-      denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
+      denominator = ((double)keywords_num[k] * beta_s + n_x1_k(k) ) *
         (n_x1_k(k) + prior_gamma(k, 0) + n_x0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
@@ -328,7 +334,7 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
 
   numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
     ( n_x1_k(k) + prior_gamma(k, 0) );
-  denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
+  denominator = ((double)keywords_num[k] * beta_s + n_x1_k(k) ) *
     (n_x1_k(k) + prior_gamma(k, 0) + n_x0_k(k) + prior_gamma(k, 1));
   x1_prob = numerator / denominator;
 
