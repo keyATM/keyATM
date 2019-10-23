@@ -38,9 +38,9 @@ void keyATMcov::initialize_specific()
 
   // Lambda
   Lambda = MatrixXd::Zero(num_topics, num_cov);
-  for(int k=0; k<num_topics; k++){
+  for(int k = 0; k < num_topics; k++){
     // Initialize with R random
-    for(int i=0; i<num_cov; i++){
+    for(int i = 0; i < num_cov; i++){
       Lambda(k, i) = R::rnorm(0.0, 0.3);
     }
   }
@@ -116,7 +116,7 @@ double keyATMcov::likelihood_lambda()
   Alpha = (C * Lambda.transpose()).array().exp();
   alpha = VectorXd::Zero(num_topics);
 
-  for(int d=0; d<num_doc; d++){
+  for(int d = 0; d < num_doc; d++){
     alpha = Alpha.row(d).transpose(); // Doc alpha, column vector
     // alpha = ((C.row(d) * Lambda)).array().exp(); // Doc alpha, column vector
   
@@ -125,7 +125,7 @@ double keyATMcov::likelihood_lambda()
     loglik -= mylgamma( doc_each_len[d] + alpha.sum() ); 
         // the second term denoinator in the first square bracket
   
-    for(int k=0; k<num_topics; k++){
+    for(int k = 0; k < num_topics; k++){
       loglik -= mylgamma(alpha(k));
         // the first term denominator in the first square bracket
       loglik += mylgamma( n_dk(d, k) + alpha(k) );
@@ -135,8 +135,8 @@ double keyATMcov::likelihood_lambda()
 
   // Prior
   double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
-  for(int k=0; k<num_topics; k++){
-    for(int t=0; t<num_cov; t++){
+  for(int k = 0; k < num_topics; k++){
+    for(int t = 0; t < num_cov; t++){
       loglik += prior_fixedterm;
       loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
     }
@@ -163,10 +163,10 @@ void keyATMcov::sample_lambda_slice()
   store_loglik = likelihood_lambda();
   newlambdallk = 0.0;
 
-  for(int kk=0; kk<num_topics; kk++){
+  for(int kk = 0; kk < num_topics; kk++){
     k = topic_ids[kk];
 
-    for(int tt=0; tt<num_cov; tt++){
+    for(int tt = 0; tt < num_cov; tt++){
       t = cov_ids[tt];
 
       start = 0.0; // shrink

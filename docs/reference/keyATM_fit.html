@@ -202,35 +202,36 @@
     <pre class="examples"><span class='co'># NOT RUN {</span>
   <span class='co'># keyATM Basic</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"basic"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>keywords</span><span class='kw'>=</span><span class='no'>keywords_list</span>
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"basic"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>
                       )
 
   <span class='co'># keyATM Cov</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"cov"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>keywords</span><span class='kw'>=</span><span class='no'>keywords_list</span>,
-                       <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span><span class='kw'>=</span><span class='no'>cov</span>)
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"cov"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
+                       <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov</span>)
                       )
 
   <span class='co'># keyATM HMM</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"hmm"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>keywords</span><span class='kw'>=</span><span class='no'>keywords_list</span>,
-                       <span class='fu'>model_settings</span>(<span class='kw'>time_index</span><span class='kw'>=</span><span class='no'>time_index_vec</span>, <span class='kw'>num_states</span><span class='kw'>=</span><span class='fl'>5</span>)
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"hmm"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
+                       <span class='fu'>model_settings</span>(<span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>time_index_vec</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>)
                       )
 
   <span class='co'># Weighted LDA</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"lda"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"lda"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>
                       )
 
   <span class='co'># Weighted LDA Cov</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"ldacov"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>,
-                       <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span><span class='kw'>=</span><span class='no'>cov</span>)
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"ldacov"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                       <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov</span>)
                       )
+
   <span class='co'># Weighted LDA HMM</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span><span class='kw'>=</span><span class='st'>"ldahmm"</span>, <span class='kw'>regular_k</span><span class='kw'>=</span><span class='fl'>5</span>,
-                       <span class='fu'>model_settings</span>(<span class='kw'>time_index</span><span class='kw'>=</span><span class='no'>time_index_vec</span>, <span class='kw'>num_states</span><span class='kw'>=</span><span class='fl'>5</span>)
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"ldahmm"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                       <span class='fu'>model_settings</span>(<span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>time_index_vec</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>)
                       )
 
 <span class='co'># }</span><div class='input'>

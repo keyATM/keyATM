@@ -6,10 +6,10 @@ output:
 ---
 
 
-## Prepare Texts
+## Preparing Texts
 To fit topic models with **keyATM**, uesrs need to prepare texts for `keyATM_read()`. `keyATM_read()` has three ways to input texts.
 
-### Use quanteda dfm (recommended)
+### Using quanteda dfm (recommended)
 
 **keyATM** can read a `dfm` object created by **quanteda** package. Since **keyATM** does not provide preprocessing functions, we recommend users to preprocess documents with **quanteda**. Please visit [quanteda Quick Start: Creating a Corpus](https://quanteda.io/articles/quickstart.html#creating-a-corpus) to see how to create a `corpus` object.
 
@@ -17,12 +17,37 @@ By making a `token` object from a `corpus` object, **quanteda** can perform vari
 
 Lastly, you can make a `dfm` object with a function `dfm()` in **quanteda**.
 
+Here is an example preprocessing steps with **quanteda**. In this example, we read texts with **readtext** package.
+```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+library(quanteda)
+library(readtext)
 
-### Use data.frame or tibble
+raw_docs <- readtext("PATH_TO_THE_FOLDER/*.txt",
+                     encoding = "UTF-8")
+
+key_corpus <- corpus(raw_docs, text_field = "text")
+
+key_tokens <- tokens(key_corpus,
+                     remove_numbers = TRUE, 
+                     remove_punct = TRUE, 
+                     remove_symbols = TRUE,
+                     remove_separators = TRUE,
+                     remove_url = TRUE) %>%
+                tokens_tolower() %>%
+                tokens_remove(stopwords("english"))
+
+key_dfm <- dfm(key_tokens) %>%
+             dfm_trim(min_termfreq = 5, min_docfreq = 2)
+```
+
+You can also use `c(stopwords("english"), "your", "stopwords")` if you want to add corpus specific stopwords.
+
+
+### Using data.frame or tibble
 `keyATM_read()` can read `data.frame` and `tibble` if you preprocess texts without **quanteda**. Please store texts in a column named `text`.
 
 ```
-> head(docs)  # `doc` stores preprocessed texts
+> head(docs)  # `docs` stores preprocessed texts
 # A tibble: 6 x 1
   text                                                                      
   <chr>                                                                     
@@ -34,21 +59,21 @@ Lastly, you can make a `dfm` object with a function `dfm()` in **quanteda**.
 6 h.r h.r one one one one one hundred hundred first congress co...
 ```
 
-### Read directly from files
+### Reading directly from files
 If you have preprocessed text files, you can pass a list of files to `keyATM_read()`.
 
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 textfiles <- list.files(PATH_TO_THE_FOLDER, pattern = "*.txt", full.names = TRUE)
 ```
 
-## Prepare keywords
+## Preparing keywords
 
 Keywords should be in a list. For example, let's prepare two keyword-topics. The number of keywords can vary between topics. Please also check [FAQ](FAQ.html) to see how to select keywords that help models.
 
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 keywords_list <- list(
-                      c("election", "vote", "voter"),
-                      c("economy", "recession")
+                      Election = c("election", "vote", "voter"),
+                      Economy = c("economy", "recession")
                      )
 ```
 

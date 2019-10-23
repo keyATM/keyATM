@@ -35,7 +35,7 @@ void keyATMhmm::read_data_specific()
   int index_prev = -1;
   int index;
   int store_index = 0;
-  for(int d=0; d<num_doc; d++){
+  for(int d = 0; d < num_doc; d++){
      index = time_index[d]; 
     if(index != index_prev){
       time_doc_start[store_index] = d;
@@ -44,8 +44,8 @@ void keyATMhmm::read_data_specific()
     }
   }
 
-  for(int s=0; s<num_time-1; s++){
-    time_doc_end(s) = time_doc_start(s+1) - 1;  
+  for(int s = 0; s < num_time-1; s++){
+    time_doc_end(s) = time_doc_start(s + 1) - 1;  
   }
   time_doc_end(num_time-1) = num_doc-1;
 
@@ -67,13 +67,13 @@ void keyATMhmm::initialize_specific()
   double cumulative = 1.0 / num_states;
   double u;
   int index;
-  for(int i=0; i<num_states; i++){
-    S_est_temp(i) = cumulative * (i+1);
+  for(int i = 0; i < num_states; i++){
+    S_est_temp(i) = cumulative * (i + 1);
   }
 
-  for(int j=0; j<num_time-num_states; j++){
+  for(int j = 0; j < num_time-num_states; j++){
     u = R::runif(0, 1);
-    for(int i=0; i<num_states; i++){
+    for(int i = 0; i < num_states; i++){
       if(u < S_est_temp(i)){
         index = i;
         break;
@@ -87,9 +87,9 @@ void keyATMhmm::initialize_specific()
   S_count = S_est_num;
   int count;
   index = 0;
-  for(int i=0; i<num_states; i++){
+  for(int i = 0; i < num_states; i++){
     count = S_est_num(i);
-    for(int j=0; j<count; j++){
+    for(int j = 0; j < count; j++){
       S_est(index) = i;
       index += 1;
     }
@@ -98,10 +98,10 @@ void keyATMhmm::initialize_specific()
   // Initializae P_est
   P_est = MatrixXd::Zero(num_states, num_states);
   double prob;
-  for(int i=0; i<=(index_states-1); i++){
+  for(int i = 0; i <= (index_states-1); i++){
     prob = R::rbeta(1.0, 1.0);
     P_est(i, i) = prob;
-    P_est(i, i+1) = 1-prob;
+    P_est(i, i + 1) = 1-prob;
   }
   P_est(index_states, index_states) = 1;
 
@@ -127,7 +127,7 @@ int keyATMhmm::get_state_index(const int &doc_id)
 {
   // Which time segment the document belongs to
   int t;
-  for(t=0; t<num_time; t++){
+  for(t = 0; t < num_time; t++){
     if(time_doc_start(t) <= doc_id && doc_id <= time_doc_end(t)){
       break;  
     }
@@ -209,14 +209,14 @@ void keyATMhmm::sample_alpha()
 
   // Retrieve start and end indexes of states in documents
   int index_start, index_end;
-  for(int s=0; s<num_states; s++){
+  for(int s = 0; s < num_states; s++){
     if(s == 0){
       // First state
-      // Which time segment correspond to s=0
+      // Which time segment correspond to s = 0
       index_start = 0;
       index_end = S_count(s) - 1;
 
-      // Index of documents that belong to s=0
+      // Index of documents that belong to s = 0
       states_start(s) = time_doc_start(index_start);
       states_end(s) = time_doc_end(index_end);
       continue;
@@ -234,7 +234,7 @@ void keyATMhmm::sample_alpha()
   // cout << states_start.transpose() << endl;
   // cout << states_end.transpose() << endl;
 
-  for(int s=0; s<num_states; s++){
+  for(int s = 0; s < num_states; s++){
     sample_alpha_state(s, states_start(s),
                           states_end(s));  
   }
@@ -332,7 +332,7 @@ void keyATMhmm::sample_forward()
 
   // Psk = MatrixXd::Zero(num_doc, num_states);
 
-  for(int t=0; t<num_time; t++){
+  for(int t = 0; t < num_time; t++){
     if(t == 0){
       // First time segment should be the first state
       Psk(0, 0) = 1.0;
@@ -340,7 +340,7 @@ void keyATMhmm::sample_forward()
     }  
 
     // Prepare f in Eq.(6) of Chib (1998)
-    for(int s=0; s<num_states; s++){
+    for(int s = 0; s < num_states; s++){
       alpha = alphas.row(s).transpose();
       logfy(s) = polyapdfln(t, alpha);
     }  
@@ -352,7 +352,7 @@ void keyATMhmm::sample_forward()
     // Format numerator and calculate denominator at the same time
     logsum = 0.0;
     added = 0;
-    for(int s=0; s<num_states; s++){
+    for(int s = 0; s < num_states; s++){
       if(st_k(s) != 0.0){
         loglik = log(st_k(s)) + logfy(s);
         logst_k(s) = loglik;
@@ -363,7 +363,7 @@ void keyATMhmm::sample_forward()
       }
     }
 
-    for(int s=0; s<num_states; s++){
+    for(int s = 0; s < num_states; s++){
       if(st_k(s) != 0.0){
         Psk(t, s) = exp( logst_k(s) - logsum );  
       }else{
@@ -384,7 +384,7 @@ double keyATMhmm::polyapdfln(int &t, VectorXd &alpha)
   doc_start = time_doc_start(t);  // starting doc index of time segment t
   doc_end = time_doc_end(t);
 
-  for(int d=doc_start; d<= doc_end; d++){
+  for(int d = doc_start; d <= doc_end; d++){
     loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
@@ -408,7 +408,7 @@ void keyATMhmm::sample_backward()
   S_count(index_states) += 1;  // last document
 
   for(int t=(num_time-2); 0<= t; --t){
-    state_id = S_est(t+1);
+    state_id = S_est(t + 1);
 
     state_prob_vec.array() = Psk.row(t).transpose().array() * P_est.col(state_id).array(); 
     state_prob_vec.array() = state_prob_vec.array() / state_prob_vec.sum();
@@ -425,11 +425,11 @@ void keyATMhmm::sample_P()
 {
   // sample P_est
   // iterate until index_state - 2
-  for(int s=0; s<=(num_states-2); ++s){
-    pii = R::rbeta(1+S_count(s), 1);  
+  for(int s = 0; s <= (num_states - 2); ++s){
+    pii = R::rbeta(1 + S_count(s), 1);  
 
     P_est(s, s) = pii;
-    P_est(s, s+1) = 1.0 - pii;
+    P_est(s, s + 1) = 1.0 - pii;
   }
 }
 
@@ -496,7 +496,7 @@ double keyATMhmm::loglik_total()
   }
 
   // HMM part
-  for(int t=0; t<num_time; t++){
+  for(int t = 0; t < num_time; t++){
     state_id = S_est(t);
     loglik += log( P_est(state_id, state_id) );
   }

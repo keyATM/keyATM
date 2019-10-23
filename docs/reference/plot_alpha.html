@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Set topic names — set_topic_names • keyATM</title>
+<title>Show a diagnosis plot of alpha — plot_alpha • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Set topic names — set_topic_names" />
+<meta property="og:title" content="Show a diagnosis plot of alpha — plot_alpha" />
 
-<meta property="og:description" content="Set topic names" />
+<meta property="og:description" content="Show a diagnosis plot of alpha" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -77,27 +77,33 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/pkgdown_examples/Installation.html">Installation</a>
+      <a href="../articles/pkgdown_files/Installation.html">Installation</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Preparation.html">Preparation</a>
+      <a href="../articles/pkgdown_files/Preparation.html">Preparation</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_basic.html">keyATM Basic</a>
+      <a href="../articles/pkgdown_files/keyATM_basic.html">keyATM Basic</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_cov.html">keyATM Covariate</a>
+      <a href="../articles/pkgdown_files/keyATM_cov.html">keyATM Covariate</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/keyATM_HMM.html">keyATM HMM</a>
+      <a href="../articles/pkgdown_files/keyATM_HMM.html">keyATM HMM</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Weighted_LDA.html">Weighted LDA</a>
+      <a href="../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_examples/Guidlines.html">Guidlines</a>
+      <a href="../articles/pkgdown_files/Priors.html">Priors</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../articles/pkgdown_files/FAQ.html">FAQ</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
@@ -126,35 +132,48 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Set topic names</h1>
+    <h1>Show a diagnosis plot of alpha</h1>
     <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/posterior.R'><code>R/posterior.R</code></a></small>
-    <div class="hidden name"><code>set_topic_names.Rd</code></div>
+    <div class="hidden name"><code>plot_alpha.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Set topic names</p>
+    <p>Show a diagnosis plot of alpha</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>set_topic_names</span>(<span class='no'>x</span>, <span class='no'>topic_names</span>)</pre>
+    <pre class="usage"><span class='fu'>plot_alpha</span>(<span class='no'>x</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>show_topic</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>thinning</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+  <span class='kw'>scales</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>the output from a keyATM model (see <code>keyATM_output</code>)</p></td>
+      <td><p>the output from a keyATM model (see <code><a href='keyATM_output.html'>keyATM_output()</a></code>)</p></td>
     </tr>
     <tr>
-      <th>topic_names</th>
-      <td><p>new names for topics</p></td>
+      <th>start</th>
+      <td><p>Slice iteration</p></td>
+    </tr>
+    <tr>
+      <th>show_topic</th>
+      <td><p>a vector to specify topic indexes to show</p></td>
+    </tr>
+    <tr>
+      <th>thinning</th>
+      <td><p>a integer for thinning</p></td>
+    </tr>
+    <tr>
+      <th>scale</th>
+      <td><p>a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>an output object with new topic names in its components</p>
+    <p>ggplot2 object</p>
     
 
   </div>

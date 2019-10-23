@@ -30,7 +30,7 @@ void LDAhmm::read_data_specific()
   int index_prev = -1;
   int index;
   int store_index = 0;
-  for(int d=0; d<num_doc; d++){
+  for(int d = 0; d < num_doc; d++){
      index = time_index[d]; 
     if(index != index_prev){
       time_doc_start[store_index] = d;
@@ -39,10 +39,10 @@ void LDAhmm::read_data_specific()
     }
   }
 
-  for(int s=0; s<num_time-1; s++){
+  for(int s = 0; s < num_time - 1; s++){
     time_doc_end(s) = time_doc_start(s+1) - 1;  
   }
-  time_doc_end(num_time-1) = num_doc-1;
+  time_doc_end(num_time - 1) = num_doc - 1;
 
   store_transition_matrix = options_list["store_transition_matrix"];
 }
@@ -61,13 +61,13 @@ void LDAhmm::initialize_specific()
   double cumulative = 1.0 / num_states;
   double u;
   int index;
-  for(int i=0; i<num_states; i++){
+  for(int i = 0; i < num_states; i++){
     S_est_temp(i) = cumulative * (i+1);
   }
 
-  for(int j=0; j<num_time; j++){
+  for(int j = 0; j < num_time; j++){
     u = R::runif(0, 1);
-    for(int i=0; i<num_states; i++){
+    for(int i = 0; i < num_states; i++){
       if(u < S_est_temp(i)){
         index = i;
         break;
@@ -81,9 +81,9 @@ void LDAhmm::initialize_specific()
   S_count = S_est_num;
   int count;
   index = 0;
-  for(int i=0; i<num_states; i++){
+  for(int i = 0; i < num_states; i++){
     count = S_est_num(i);
-    for(int j=0; j<count; j++){
+    for(int j = 0; j < count; j++){
       S_est(index) = i;
       index += 1;
     }
@@ -92,10 +92,10 @@ void LDAhmm::initialize_specific()
   // Initializae P_est
   P_est = MatrixXd::Zero(num_states, num_states);
   double prob;
-  for(int i=0; i<=(index_states-1); i++){
+  for(int i = 0; i <= (index_states - 1); i++){
     prob = R::rbeta(1.0, 1.0);
     P_est(i, i) = prob;
-    P_est(i, i+1) = 1-prob;
+    P_est(i, i + 1) = 1 - prob;
   }
   P_est(index_states, index_states) = 1;
 
@@ -238,7 +238,7 @@ double LDAhmm::loglik_total()
   }
 
   // HMM part
-  for(int t=0; t<num_time; t++){
+  for(int t = 0; t < num_time; t++){
     state_id = S_est(t);
     loglik += log( P_est(state_id, state_id) );
   }

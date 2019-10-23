@@ -25,7 +25,7 @@ This function read texts and creates a tibble.
  keyATM_docs <- keyATM_read(tibble_object) 
 
  # Use a vector that stores full paths to the files  
- files <- list.files(doc_folder, pattern="*.txt", full.names=T) 
+ files <- list.files(doc_folder, pattern = "*.txt", full.names = T) 
  keyATM_docs <- keyATM_read(files) 
 }
 

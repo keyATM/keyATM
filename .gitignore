@@ -1,6 +1,7 @@
 # Vim File
 *.swp
 .DS_Store
+*.png
 
 # History files
 .Rhistory

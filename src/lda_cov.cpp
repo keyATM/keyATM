@@ -37,9 +37,9 @@ void LDACOV::initialize()
 {
   // Initialize Lambda
   Lambda = MatrixXd::Zero(num_topics, num_cov);
-  for(int k=0; k<num_topics; k++){
+  for(int k = 0; k < num_topics; k++){
     // Initialize with R random
-    for(int i=0; i<num_cov; i++){
+    for(int i = 0; i < num_cov; i++){
       Lambda(k, i) = R::rnorm(0.0, 1.5);
     }
   }
@@ -69,7 +69,7 @@ void LDACOV::iteration()
   // Iteration
   VectorXd alpha_ = VectorXd::Zero(num_topics);
   
-  for(int it=0; it<iter; it++){
+  for(int it = 0; it < iter; it++){
     std::vector<int> doc_indexes = shuffled_indexes(num_doc);
   
     Alpha = (C * Lambda.transpose()).array().exp();
@@ -116,7 +116,7 @@ double LDACOV::loglik_lambda()
   Alpha = (C * Lambda.transpose()).array().exp();
   VectorXd alpha = VectorXd::Zero(num_topics);
 
-  for(int d=0; d<num_doc; d++){
+  for(int d = 0; d < num_doc; d++){
     alpha = Alpha.row(d).transpose(); // Doc alpha, column vector
     // alpha = ((C.row(d) * Lambda)).array().exp(); // Doc alpha, column vector
 
@@ -125,7 +125,7 @@ double LDACOV::loglik_lambda()
     loglik -= lgamma( n_dk.row(d).sum() + alpha.sum() ); 
         // the second term denoinator in the first square bracket
 
-    for(int k=0; k<num_topics; k++){
+    for(int k = 0; k<num_topics; k++){
       loglik -= lgamma(alpha(k));
         // the first term denominator in the first square bracket
       loglik += lgamma( n_dk(d, k) + alpha(k) );
@@ -135,8 +135,8 @@ double LDACOV::loglik_lambda()
 
   // Prior
   double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
-  for(int k=0; k<num_topics; k++){
-    for(int t=0; t<num_cov; t++){
+  for(int k = 0; k < num_topics; k++){
+    for(int t = 0; t < num_cov; t++){
       loglik += prior_fixedterm;
       loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
     }
@@ -159,10 +159,10 @@ void LDACOV::lambda_sample()
   double store_loglik = loglik_lambda();
   double newlambdallk = 0.0;
 
-  for(int kk=0; kk<num_topics; kk++){
+  for(int kk = 0; kk < num_topics; kk++){
     int k = topic_ids[kk];
 
-    for(int tt=0; tt<num_cov; tt++){
+    for(int tt = 0; tt < num_cov; tt++){
       int t = cov_ids[tt];
 
       start = 0.0; // shrink
@@ -268,7 +268,7 @@ int LDACOV::sample_z(Eigen::VectorXd &alpha, int &z,
   int new_z = -1;
   double numerator, denominator;
 
-  for(int k=0; k<num_topics; k++){
+  for(int k = 0; k < num_topics; k++){
     numerator = (beta + (double)n_kv(k, w)) *
       ((double)n_k(k) + gamma_2) *
       ((double)n_dk(doc_id, k) + alpha(k));
