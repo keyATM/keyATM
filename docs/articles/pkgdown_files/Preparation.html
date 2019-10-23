@@ -122,7 +122,7 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(quanteda)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(readtext)</span>
 <span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a>raw_docs &lt;-<span class="st"> </span><span class="kw">readtext</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(path_data, <span class="st">"PATH_TO_THE_FOLDER/*.txt"</span>),</span>
+<span id="cb1-4"><a href="#cb1-4"></a>raw_docs &lt;-<span class="st"> </span><span class="kw">readtext</span>(<span class="st">"PATH_TO_THE_FOLDER/*.txt"</span>,</span>
 <span id="cb1-5"><a href="#cb1-5"></a>                     <span class="dt">encoding =</span> <span class="st">"UTF-8"</span>)</span>
 <span id="cb1-6"><a href="#cb1-6"></a></span>
 <span id="cb1-7"><a href="#cb1-7"></a>key_corpus &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(raw_docs, <span class="dt">text_field =</span> <span class="st">"text"</span>)</span>
