@@ -4,7 +4,7 @@
 \alias{keyATM}
 \title{keyATM Main function}
 \usage{
-keyATM(keyATM_docs, model, regular_k, keywords = list(),
+keyATM(keyATM_docs, model, no_keyword_topics, keywords = list(),
   model_settings = list(), priors = list(), options = list(),
   keep = c())
 }
@@ -13,7 +13,7 @@ keyATM(keyATM_docs, model, regular_k, keywords = list(),
 
 \item{model}{keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"}
 
-\item{regular_k}{the number of regular topics}
+\item{no_keyword_topics}{the number of regular topics}
 
 \item{keywords}{a list of keywords}
 
@@ -29,7 +29,7 @@ keyATM(keyATM_docs, model, regular_k, keywords = list(),
 A keyATM_output object containing:
   \describe{
     \item{keyword_k}{Number of keyword topics}
-    \item{regular_k}{Number of regular unseeded topics}
+    \item{no_keyword_topics}{Number of regular unseeded topics}
     \item{V}{Number of word types}
     \item{N}{Number of documents}
     \item{theta}{Normalized topic proportions for each document}
@@ -51,35 +51,35 @@ This is a wrapper function of \code{keyATM_fit()} and \code{keyATM_output()}.
 \dontrun{
   # keyATM Basic
   out <- keyATM(
-                keyATM_docs, model = "basic", regular_k = 5, keywords = keywords_list
+                keyATM_docs, model = "basic", no_keyword_topics = 5, keywords = keywords_list
                )
 
   # keyATM Cov
   out <- keyATM(
-                keyATM_docs, model = "cov", regular_k = 5, keywords = keywords_list,
+                keyATM_docs, model = "cov", no_keyword_topics = 5, keywords = keywords_list,
                 model_settings(covariates_data = cov)
                )
 
   # keyATM HMM
   out <- keyATM(
-                   keyATM_docs, model = "hmm", regular_k = 5, keywords = keywords_list,
+                   keyATM_docs, model = "hmm", no_keyword_topics = 5, keywords = keywords_list,
                    model_settings(time_index = time_index_vec, num_states = 5)
                   )
 
   # Weighted LDA
   out <- keyATM(
-                keyATM_docs, model = "lda", regular_k = 5
+                keyATM_docs, model = "lda", no_keyword_topics = 5
                )
 
   # Weighted LDA Cov
   out <- keyATM(
-                keyATM_docs, model = "ldacov", regular_k = 5,
+                keyATM_docs, model = "ldacov", no_keyword_topics = 5,
                 model_settings(covariates_data = cov)
                )                   
 
   # Weighted LDA HMM
   out <- keyATM(
-                keyATM_docs, model = "ldahmm", regular_k = 5,
+                keyATM_docs, model = "ldahmm", no_keyword_topics = 5,
                 model_settings(time_index = time_index_vec, num_states = 5)
                )
 

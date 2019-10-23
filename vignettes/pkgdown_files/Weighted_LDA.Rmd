@@ -20,10 +20,10 @@ keyATM_docs <- keyATM_read(bills_dfm)
 ```
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-out <- keyATM(keyATM_docs = keyATM_docs,  # text input
-              regular_k   = 7,            # number of regular topics
-              model       = "lda",        # select the model
-              options     = list(seed = 100))
+out <- keyATM(keyATM_docs       = keyATM_docs,  # text input
+              no_keyword_topics = 7,            # number of regular topics
+              model             = "lda",        # select the model
+              options           = list(seed = 100))
 top_words(out)
 ```
 
@@ -41,12 +41,12 @@ keyATM_docs <- keyATM_read(bills_dfm)
 
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-fitted <- keyATM(keyATM_docs    = keyATM_docs,  # text input
-                 regular_k      = 7,            # number of regular topics
-                 model          = "ldahmm",     # select the model
-                 model_settings = list(time_index = bills_time_index, 
+fitted <- keyATM(keyATM_docs       = keyATM_docs,  # text input
+                 no_keyword_topics = 7,            # number of regular topics
+                 model             = "ldahmm",     # select the model
+                 model_settings    = list(time_index = bills_time_index, 
                                        num_states = 5),
-                 options        = list(seed = 100))
+                 options           = list(seed = 100))
 top_words(out)
 ```
 

@@ -143,7 +143,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>keyATM</span>(<span class='no'>keyATM_docs</span>, <span class='no'>model</span>, <span class='no'>regular_k</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
+    <pre class="usage"><span class='fu'>keyATM</span>(<span class='no'>keyATM_docs</span>, <span class='no'>model</span>, <span class='no'>no_keyword_topics</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
   <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>priors</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
   <span class='kw'>keep</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>())</pre>
     
@@ -159,7 +159,7 @@
       <td><p>keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"</p></td>
     </tr>
     <tr>
-      <th>regular_k</th>
+      <th>no_keyword_topics</th>
       <td><p>the number of regular topics</p></td>
     </tr>
     <tr>
@@ -188,7 +188,7 @@
 
     <p>A keyATM_output object containing:</p><dl class='dl-horizontal'>
     <dt>keyword_k</dt><dd><p>Number of keyword topics</p></dd>
-    <dt>regular_k</dt><dd><p>Number of regular unseeded topics</p></dd>
+    <dt>no_keyword_topics</dt><dd><p>Number of regular unseeded topics</p></dd>
     <dt>V</dt><dd><p>Number of word types</p></dd>
     <dt>N</dt><dd><p>Number of documents</p></dd>
     <dt>theta</dt><dd><p>Normalized topic proportions for each document</p></dd>
@@ -209,35 +209,35 @@
     <pre class="examples"><span class='co'># NOT RUN {</span>
   <span class='co'># keyATM Basic</span>
   <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(
-                <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"basic"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>
+                <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"basic"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>
                )
 
   <span class='co'># keyATM Cov</span>
   <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(
-                <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"cov"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
+                <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"cov"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
                 <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov</span>)
                )
 
   <span class='co'># keyATM HMM</span>
   <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(
-                   <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"hmm"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
+                   <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"hmm"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
                    <span class='fu'>model_settings</span>(<span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>time_index_vec</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>)
                   )
 
   <span class='co'># Weighted LDA</span>
   <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(
-                <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"lda"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>
+                <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"lda"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>
                )
 
   <span class='co'># Weighted LDA Cov</span>
   <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(
-                <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"ldacov"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"ldacov"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
                 <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov</span>)
                )
 
   <span class='co'># Weighted LDA HMM</span>
   <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(
-                <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"ldahmm"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"ldahmm"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
                 <span class='fu'>model_settings</span>(<span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>time_index_vec</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>)
                )
 

@@ -35,7 +35,7 @@ void keyATMbase::read_data_common()
   // Read data
   W = model["W"]; Z = model["Z"]; X = model["X"];
   vocab = model["vocab"];
-  regular_k = model["regular_k"];
+  regular_k = model["no_keyword_topics"];
   keywords_list = model["keywords"];
   keyword_k = keywords_list.size();
   model_fit = model["model_fit"];

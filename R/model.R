@@ -272,7 +272,7 @@ save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 #'
 #' @param keyATM_docs texts read via \code{keyATM_read()}
 #' @param model keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"
-#' @param regular_k the number of regular topics
+#' @param no_keyword_topics the number of regular topics
 #' @param keywords a list of keywords
 #' @param model_settings a list of model specific settings
 #' @param priors a list of priors of parameters
@@ -285,7 +285,7 @@ save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 #'   \item{model}{the name of the model}
 #'   \item{keywords}{}
 #'   \item{keywords_raw}{}
-#'   \item{regular_k}{the number of regular topics}
+#'   \item{no_keyword_topics}{the number of regular topics}
 #'   \item{model_settings}{a list of settings}
 #'   \item{priors}{a list of priors}
 #'   \item{options}{a list of options}
@@ -297,42 +297,42 @@ save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 #' \dontrun{
 #'   # keyATM Basic
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "basic", regular_k = 5, keywords = keywords_list
+#'                        keyATM_docs, model = "basic", no_keyword_topics = 5, keywords = keywords_list
 #'                       )
 #'
 #'   # keyATM Cov
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "cov", regular_k = 5, keywords = keywords_list,
+#'                        keyATM_docs, model = "cov", no_keyword_topics = 5, keywords = keywords_list,
 #'                        model_settings(covariates_data = cov)
 #'                       )
 #'
 #'   # keyATM HMM
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "hmm", regular_k = 5, keywords = keywords_list,
+#'                        keyATM_docs, model = "hmm", no_keyword_topics = 5, keywords = keywords_list,
 #'                        model_settings(time_index = time_index_vec, num_states = 5)
 #'                       )
 #'
 #'   # Weighted LDA
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "lda", regular_k = 5
+#'                        keyATM_docs, model = "lda", no_keyword_topics = 5
 #'                       )
 #'
 #'   # Weighted LDA Cov
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "ldacov", regular_k = 5,
+#'                        keyATM_docs, model = "ldacov", no_keyword_topics = 5,
 #'                        model_settings(covariates_data = cov)
 #'                       )                   
 #'
 #'   # Weighted LDA HMM
 #'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "ldahmm", regular_k = 5,
+#'                        keyATM_docs, model = "ldahmm", no_keyword_topics = 5,
 #'                        model_settings(time_index = time_index_vec, num_states = 5)
 #'                       )
 #'
 #' }
 #'
 #' @export
-keyATM_fit <- function(keyATM_docs, model, regular_k,
+keyATM_fit <- function(keyATM_docs, model, no_keyword_topics,
                        keywords = list(), model_settings = list(),
                        priors = list(), options = list()) 
 {
@@ -342,10 +342,10 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
 
   # Check type
   check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
-  if (!is.integer(regular_k) & !is.numeric(regular_k))
-    stop("`regular_k` is neigher numeric nor integer.")
+  if (!is.integer(no_keyword_topics) & !is.numeric(no_keyword_topics))
+    stop("`no_keyword_topics` is neigher numeric nor integer.")
 
-  regular_k <- as.integer(regular_k)
+  no_keyword_topics <- as.integer(no_keyword_topics)
 
   if (!model %in% c("basic", "cov", "hmm", "lda", "ldacov", "ldahmm")) {
     stop("Please select a correct model.")  
@@ -360,7 +360,7 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   # Get Info
   info$num_doc <- length(keyATM_docs)
   info$keyword_k <- length(keywords)
-  info$total_k <- length(keywords) + regular_k
+  info$total_k <- length(keywords) + no_keyword_topics
 
   # Set default values
   model_settings <- check_arg(model_settings, "model_settings", model, info)
@@ -438,7 +438,7 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
                     W = W, Z = Z, X = X,
                     model = model,
                     keywords = keywords_id, keywords_raw = keywords_raw,
-                    regular_k = regular_k,
+                    no_keyword_topics = no_keyword_topics,
                     vocab = info$wd_names,
                     model_settings = model_settings,
                     priors = priors,
@@ -949,7 +949,7 @@ make_xz_lda <- function(W, info)
 #'
 #' @param keyATM_docs texts read via \code{keyATM_read()}
 #' @param model keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"
-#' @param regular_k the number of regular topics
+#' @param no_keyword_topics the number of regular topics
 #' @param keywords a list of keywords
 #' @param model_settings a list of model specific settings
 #' @param priors a list of priors of parameters
@@ -959,7 +959,7 @@ make_xz_lda <- function(W, info)
 #' @return A keyATM_output object containing:
 #'   \describe{
 #'     \item{keyword_k}{Number of keyword topics}
-#'     \item{regular_k}{Number of regular unseeded topics}
+#'     \item{no_keyword_topics}{Number of regular unseeded topics}
 #'     \item{V}{Number of word types}
 #'     \item{N}{Number of documents}
 #'     \item{theta}{Normalized topic proportions for each document}
@@ -978,42 +978,42 @@ make_xz_lda <- function(W, info)
 #' \dontrun{
 #'   # keyATM Basic
 #'   out <- keyATM(
-#'                 keyATM_docs, model = "basic", regular_k = 5, keywords = keywords_list
+#'                 keyATM_docs, model = "basic", no_keyword_topics = 5, keywords = keywords_list
 #'                )
 #'
 #'   # keyATM Cov
 #'   out <- keyATM(
-#'                 keyATM_docs, model = "cov", regular_k = 5, keywords = keywords_list,
+#'                 keyATM_docs, model = "cov", no_keyword_topics = 5, keywords = keywords_list,
 #'                 model_settings(covariates_data = cov)
 #'                )
 #'
 #'   # keyATM HMM
 #'   out <- keyATM(
-#'                    keyATM_docs, model = "hmm", regular_k = 5, keywords = keywords_list,
+#'                    keyATM_docs, model = "hmm", no_keyword_topics = 5, keywords = keywords_list,
 #'                    model_settings(time_index = time_index_vec, num_states = 5)
 #'                   )
 #'
 #'   # Weighted LDA
 #'   out <- keyATM(
-#'                 keyATM_docs, model = "lda", regular_k = 5
+#'                 keyATM_docs, model = "lda", no_keyword_topics = 5
 #'                )
 #'
 #'   # Weighted LDA Cov
 #'   out <- keyATM(
-#'                 keyATM_docs, model = "ldacov", regular_k = 5,
+#'                 keyATM_docs, model = "ldacov", no_keyword_topics = 5,
 #'                 model_settings(covariates_data = cov)
 #'                )                   
 #'
 #'   # Weighted LDA HMM
 #'   out <- keyATM(
-#'                 keyATM_docs, model = "ldahmm", regular_k = 5,
+#'                 keyATM_docs, model = "ldahmm", no_keyword_topics = 5,
 #'                 model_settings(time_index = time_index_vec, num_states = 5)
 #'                )
 #'
 #' }
 #'
 #' @export
-keyATM <- function(keyATM_docs, model, regular_k,
+keyATM <- function(keyATM_docs, model, no_keyword_topics,
                    keywords = list(), model_settings = list(),
                    priors = list(), options = list(), keep = c())
 {
@@ -1023,7 +1023,7 @@ keyATM <- function(keyATM_docs, model, regular_k,
 
   # Fit keyATM
   fitted <- keyATM_fit(
-                       keyATM_docs, model, regular_k,
+                       keyATM_docs, model, no_keyword_topics,
                        keywords, model_settings, priors, options
                       )
 

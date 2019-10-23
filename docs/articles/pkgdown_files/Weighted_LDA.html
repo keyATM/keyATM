@@ -115,10 +115,10 @@
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(keyATM_data_bills)</span>
 <span id="cb1-3"><a href="#cb1-3"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda object</span></span>
 <span id="cb1-4"><a href="#cb1-4"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(<span class="dt">keyATM_docs =</span> keyATM_docs,  <span class="co"># text input</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>              <span class="dt">regular_k   =</span> <span class="dv">7</span>,            <span class="co"># number of regular topics</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>              <span class="dt">model       =</span> <span class="st">"lda"</span>,        <span class="co"># select the model</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>              <span class="dt">options     =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(<span class="dt">keyATM_docs       =</span> keyATM_docs,  <span class="co"># text input</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">7</span>,            <span class="co"># number of regular topics</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>              <span class="dt">model             =</span> <span class="st">"lda"</span>,        <span class="co"># select the model</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
 <span id="cb2-5"><a href="#cb2-5"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
 <pre><code>##            R_1        R_2            R_3           R_4      R_5        R_6
 ## 1      federal    section       research       project    state       drug
@@ -152,12 +152,12 @@
 <span id="cb4-4"><a href="#cb4-4"></a>bills_time_index &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>time_index</span>
 <span id="cb4-5"><a href="#cb4-5"></a>bills_time_index &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/integer">as.integer</a></span>(bills_time_index <span class="op">-</span><span class="st"> </span><span class="dv">100</span>)</span>
 <span id="cb4-6"><a href="#cb4-6"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>fitted &lt;-<span class="st"> </span><span class="kw">keyATM</span>(<span class="dt">keyATM_docs    =</span> keyATM_docs,  <span class="co"># text input</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>                 <span class="dt">regular_k      =</span> <span class="dv">7</span>,            <span class="co"># number of regular topics</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>                 <span class="dt">model          =</span> <span class="st">"ldahmm"</span>,     <span class="co"># select the model</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>                 <span class="dt">model_settings =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">time_index =</span> bills_time_index, </span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>fitted &lt;-<span class="st"> </span><span class="kw">keyATM</span>(<span class="dt">keyATM_docs       =</span> keyATM_docs,  <span class="co"># text input</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>                 <span class="dt">no_keyword_topics =</span> <span class="dv">7</span>,            <span class="co"># number of regular topics</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>                 <span class="dt">model             =</span> <span class="st">"ldahmm"</span>,     <span class="co"># select the model</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>                 <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">time_index =</span> bills_time_index, </span>
 <span id="cb5-5"><a href="#cb5-5"></a>                                       <span class="dt">num_states =</span> <span class="dv">5</span>),</span>
-<span id="cb5-6"><a href="#cb5-6"></a>                 <span class="dt">options        =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
+<span id="cb5-6"><a href="#cb5-6"></a>                 <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
 <span id="cb5-7"><a href="#cb5-7"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
 <pre><code>##            R_1        R_2            R_3           R_4      R_5        R_6
 ## 1      federal    section       research       project    state       drug

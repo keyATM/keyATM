@@ -143,7 +143,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>keyATM_fit</span>(<span class='no'>keyATM_docs</span>, <span class='no'>model</span>, <span class='no'>regular_k</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
+    <pre class="usage"><span class='fu'>keyATM_fit</span>(<span class='no'>keyATM_docs</span>, <span class='no'>model</span>, <span class='no'>no_keyword_topics</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
   <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>priors</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -158,7 +158,7 @@
       <td><p>keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"</p></td>
     </tr>
     <tr>
-      <th>regular_k</th>
+      <th>no_keyword_topics</th>
       <td><p>the number of regular topics</p></td>
     </tr>
     <tr>
@@ -188,7 +188,7 @@
   <dt>model</dt><dd><p>the name of the model</p></dd>
   <dt>keywords</dt><dd><p></p></dd>
   <dt>keywords_raw</dt><dd><p></p></dd>
-  <dt>regular_k</dt><dd><p>the number of regular topics</p></dd>
+  <dt>no_keyword_topics</dt><dd><p>the number of regular topics</p></dd>
   <dt>model_settings</dt><dd><p>a list of settings</p></dd>
   <dt>priors</dt><dd><p>a list of priors</p></dd>
   <dt>options</dt><dd><p>a list of options</p></dd>
@@ -202,35 +202,35 @@
     <pre class="examples"><span class='co'># NOT RUN {</span>
   <span class='co'># keyATM Basic</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"basic"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"basic"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>
                       )
 
   <span class='co'># keyATM Cov</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"cov"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"cov"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
                        <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov</span>)
                       )
 
   <span class='co'># keyATM HMM</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"hmm"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"hmm"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
                        <span class='fu'>model_settings</span>(<span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>time_index_vec</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>)
                       )
 
   <span class='co'># Weighted LDA</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"lda"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"lda"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>
                       )
 
   <span class='co'># Weighted LDA Cov</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"ldacov"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"ldacov"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
                        <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov</span>)
                       )
 
   <span class='co'># Weighted LDA HMM</span>
   <span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_fit</span>(
-                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"ldahmm"</span>, <span class='kw'>regular_k</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                       <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"ldahmm"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
                        <span class='fu'>model_settings</span>(<span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>time_index_vec</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>)
                       )
 

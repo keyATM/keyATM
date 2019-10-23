@@ -13,7 +13,7 @@ keyATM_output(model)
 A keyATM_output containing:
   \describe{
     \item{keyword_k}{Number of keyword topics}
-    \item{regular_k}{Number of regular unseeded topics}
+    \item{no_keyword_topics}{Number of regular unseeded topics}
     \item{V}{Number of word types}
     \item{N}{Number of documents}
     \item{theta}{Normalized topic proportions for each document}

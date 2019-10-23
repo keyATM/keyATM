@@ -144,11 +144,11 @@
 <div id="fitting-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(<span class="dt">keyATM_docs =</span> keyATM_docs,    <span class="co"># text input</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>              <span class="dt">regular_k   =</span> <span class="dv">3</span>,              <span class="co"># number of regular topics</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>              <span class="dt">keywords    =</span> bills_keywords, <span class="co"># keywords</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>              <span class="dt">model       =</span> <span class="st">"basic"</span>,        <span class="co"># select the model</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>              <span class="dt">options     =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(<span class="dt">keyATM_docs       =</span> keyATM_docs,    <span class="co"># text input</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of regular topics</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>              <span class="dt">model             =</span> <span class="st">"basic"</span>,        <span class="co"># select the model</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
 <span id="cb5-6"><a href="#cb5-6"></a>             )</span></code></pre></div>
 <p>The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options.</p>
 </div>

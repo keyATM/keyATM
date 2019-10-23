@@ -54,13 +54,13 @@ Before you fit the model, please make sure your keywords appear enough in your c
 ## Fitting the model
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(    
-              keyATM_docs    = keyATM_docs,    # text input
-              regular_k      = 3,              # number of regular topics
-              keywords       = bills_keywords, # keywords
-              model          = "hmm",          # select the model
-              model_settings = list(time_index = bills_time_index,
+              keyATM_docs       = keyATM_docs,    # text input
+              no_keyword_topics = 3,              # number of regular topics
+              keywords          = bills_keywords, # keywords
+              model             = "hmm",          # select the model
+              model_settings    = list(time_index = bills_time_index,
                                     num_states = 5),
-              options        = list(seed = 100)
+              options           = list(seed = 100)
              )
 ```
 

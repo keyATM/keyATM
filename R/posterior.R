@@ -7,7 +7,7 @@
 #' @return A keyATM_output containing:
 #'   \describe{
 #'     \item{keyword_k}{Number of keyword topics}
-#'     \item{regular_k}{Number of regular unseeded topics}
+#'     \item{no_keyword_topics}{Number of regular unseeded topics}
 #'     \item{V}{Number of word types}
 #'     \item{N}{Number of documents}
 #'     \item{theta}{Normalized topic proportions for each document}
@@ -36,16 +36,16 @@ keyATM_output <- function(model)
 
   # Make info
   info <- list()
-  info$allK <- model$regular_k + length(model$keywords)
+  info$allK <- model$no_keyword_topics + length(model$keywords)
   info$V <- length(model$vocab)
   info$N <- length(model$Z)
   info$doc_lens <- sapply(model$Z, length)
 
-  if (model$regular_k > 0 & length(model$keywords) != 0) {
-    info$tnames <- c(names(model$keywords_raw), paste0("R_", 1:model$regular_k))
-  } else if (model$regular_k > 0 & length(model$keywords) == 0) {
+  if (model$no_keyword_topics > 0 & length(model$keywords) != 0) {
+    info$tnames <- c(names(model$keywords_raw), paste0("Other_", 1:model$no_keyword_topics))
+  } else if (model$no_keyword_topics > 0 & length(model$keywords) == 0) {
     # No keywords (= lda models)
-    info$tnames <- paste0("R_", 1:model$regular_k)
+    info$tnames <- paste0("Topic_", 1:model$no_keyword_topics)
   } else {
     # Keywords only
     info$tnames <- c(paste0("", 1:length(model$keywords)))
@@ -100,7 +100,7 @@ keyATM_output <- function(model)
     dplyr::select(-sumx) -> p_estimated
 
   # Make an object to return
-  ll <- list(keyword_k = length(model$keywords), regular_k = model$regular_k,
+  ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
              V = length(model$vocab), N = length(model$Z),
              model = model$model,
              theta = theta, phi = phi,
@@ -462,7 +462,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
   enq_thinning <- enquo(thinning)
 
   if (is.null(show_topic)) {
-    show_topic <- 1:(x$keyword_k + x$regular_k)  
+    show_topic <- 1:(x$keyword_k + x$no_keyword_topics)  
   }
   check_arg_type(show_topic, "numeric")
   enq_show_topic <- enquo(show_topic)

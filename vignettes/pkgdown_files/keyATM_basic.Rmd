@@ -52,11 +52,11 @@ visualize_keywords(keyATM_docs, bills_keywords)
 
 ## Fitting the model
 ```{r, warning=FALSE, message=FALSE, fig.align='center', results="hide"}
-out <- keyATM(keyATM_docs = keyATM_docs,    # text input
-              regular_k   = 3,              # number of regular topics
-              keywords    = bills_keywords, # keywords
-              model       = "basic",        # select the model
-              options     = list(seed = 100)
+out <- keyATM(keyATM_docs       = keyATM_docs,    # text input
+              no_keyword_topics = 3,              # number of regular topics
+              keywords          = bills_keywords, # keywords
+              model             = "basic",        # select the model
+              options           = list(seed = 100)
              )
 ```
 The default number of iterations is `1500`. Please check [this page](Options.html) for available options.
