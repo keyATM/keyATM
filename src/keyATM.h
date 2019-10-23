@@ -56,7 +56,6 @@ class keyATMbase
     // Keywords
     std::vector< std::unordered_set<int> > keywords;
     std::vector<int> keywords_num;
-    int keywords_unique_num;
 
     // Latent Variables
     MatrixXd n_x0_kv;
