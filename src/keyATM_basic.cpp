@@ -23,9 +23,9 @@ void keyATMbasic::read_data_specific()
   beta_s = priors_list["beta_s"];
 
   estimate_alpha = options_list["estimate_alpha"];
-  if(estimate_alpha == 0){
+  if (estimate_alpha == 0) {
     store_alpha = 0;
-  }else{
+  } else {
     store_alpha = 1;
   }
 }
@@ -71,13 +71,13 @@ void keyATMbasic::iteration_single(int &it)
 
 void keyATMbasic::sample_parameters(int &it)
 {
-  if(estimate_alpha)
+  if (estimate_alpha)
     sample_alpha();
 
   // Store alpha
-  if(store_alpha){
+  if (store_alpha){
     int r_index = it + 1;
-    if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
+    if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
       NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
       List alpha_iter = stored_values["alpha_iter"];
       alpha_iter.push_back(alpha_rvec);
@@ -97,7 +97,7 @@ void keyATMbasic::sample_alpha()
   newalphallk = 0.0;
   int k;
 
-  for(int i = 0; i < num_topics; i++){
+  for (int i = 0; i < num_topics; i++) {
     k = topic_ids[i];
     start = min_v / (1.0 + min_v); // shrinkp
     end = 1.0;
@@ -140,20 +140,20 @@ double keyATMbasic::alpha_loglik()
   
   
   fixed_part += mylgamma(alpha_sum_val); // first term numerator
-  for(int k = 0; k < num_topics; k++){
+  for (int k = 0; k < num_topics; k++) {
     fixed_part -= mylgamma(alpha(k)); // first term denominator
     // Add prior
-    if(k < keyword_k){
+    if (k < keyword_k) {
       loglik += gammapdfln(alpha(k), eta_1, eta_2);
-    }else{
+    } else {
       loglik += gammapdfln(alpha(k), eta_1_regular, eta_2_regular);
     }
   
   }
-  for(int d = 0; d < num_doc; d++){
+  for (int d = 0; d < num_doc; d++) {
     loglik += fixed_part;
     // second term numerator
-    for(int k = 0; k < num_topics; k++){
+    for (int k = 0; k < num_topics; k++) {
       loglik += mylgamma(ndk_a(d,k));
     }
     // second term denominator
@@ -181,7 +181,7 @@ double keyATMbasic::loglik_total()
     // word normalization
     loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
 
-    if(k < keyword_k){
+    if (k < keyword_k) {
       // For keyword topics
 
       // n_x1_kv
