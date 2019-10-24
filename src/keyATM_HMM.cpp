@@ -13,11 +13,6 @@ void keyATMhmm::read_data_specific()
   num_states = model_settings["num_states"];
   index_states = num_states - 1;
 
-  prior_gamma = MatrixXd::Zero(num_topics, 2);
-  NumericMatrix RMatrix = priors_list["gamma"];
-  prior_gamma = Rcpp::as<Eigen::MatrixXd>(RMatrix);
-  beta_s = priors_list["beta_s"];
-
   IntegerVector time_index_R = model_settings["time_index"];
   time_index = Rcpp::as<Eigen::VectorXi>(time_index_R);
   num_time = time_index.maxCoeff();

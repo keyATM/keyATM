@@ -14,11 +14,6 @@ void keyATMcov::read_data_specific()
   NumericMatrix C_r = model_settings["covariates_data"];
   C = Rcpp::as<Eigen::MatrixXd>(C_r);
   num_cov = C.cols();
-
-  prior_gamma = MatrixXd::Zero(num_topics, 2);
-  NumericMatrix RMatrix = priors_list["gamma"];
-  prior_gamma = Rcpp::as<Eigen::MatrixXd>(RMatrix);
-  beta_s = priors_list["beta_s"];
 }
 
 void keyATMcov::initialize_specific()

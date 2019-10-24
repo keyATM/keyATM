@@ -58,6 +58,11 @@ void keyATMbase::read_data_common()
   priors_list = model["priors"];
   beta = priors_list["beta"];
 
+  prior_gamma = MatrixXd::Zero(num_topics, 2);
+  NumericMatrix RMatrix = priors_list["gamma"];
+  prior_gamma = Rcpp::as<Eigen::MatrixXd>(RMatrix);
+  beta_s = priors_list["beta_s"];
+
   // Stored values
   stored_values = model["stored_values"];
 }

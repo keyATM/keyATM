@@ -552,6 +552,9 @@ plot_modelfit <- function(x, start = 1)
 #' @export
 plot_p <- function(x, show_topic = NULL)
 {
+  if (x$model %in% c("lda", "ldacov", "ldahmm")) {
+    stop(paste0("`", x$model, "` is not a model with keywords.")) 
+  }
 
   num <- length(unique(x$p$Topic))
   if (is.null(show_topic)) {

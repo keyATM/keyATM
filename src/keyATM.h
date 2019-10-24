@@ -101,10 +101,6 @@ class keyATMbase
       double gammaln_val;
 
 
-    // Track time
-    // std::chrono::time_point<std::chrono::high_resolution_clock> start;
-    double prepare_data;
-
     //
     // Functions
     //
@@ -114,11 +110,11 @@ class keyATMbase
 
     // Reading and Initialization
     void read_data();
-    void read_data_common();
+    virtual void read_data_common();
     virtual void read_data_specific() = 0;
 
     void initialize();
-    void initialize_common();
+    virtual void initialize_common();
     virtual void initialize_specific() = 0;
 
     // Sampling
@@ -150,15 +146,17 @@ class keyATMbase
 
     // Inline functions
 
-    double expand(double &p, const double &A){
+    double expand(double &p, const double &A)
+    {
       return (-(1.0/A) * log((1.0/p) - 1.0));
     };
-    double shrink(double &x, const double &A){
+    double shrink(double &x, const double &A)
+    {
       return (1.0 / (1.0 + exp(-A*x)));
     };
     
 
-    double logsumexp (double x, double y, bool flg)
+    double logsumexp(double x, double y, bool flg)
     {
       if (flg) return y; // init mode
       if (x == y) return x + 0.69314718055; // log(2)
@@ -198,6 +196,7 @@ class keyATMbase
         return ((x-0.5)*log(x) - x + 0.91893853320467 + 1/(12*x));
     };
 
+    // These approximations are not used
     double mypow(const double &a, const double &b){
       // Reference: https://github.com/ekmett/approximate/blob/master/cbits/fast.c
       // Probably not good to use if b>1.0

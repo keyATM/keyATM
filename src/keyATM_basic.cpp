@@ -10,11 +10,6 @@ void keyATMbasic::read_data_specific()
   nv_alpha = priors_list["alpha"];
   alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
 
-  prior_gamma = MatrixXd::Zero(num_topics, 2);
-  NumericMatrix RMatrix = priors_list["gamma"];
-  prior_gamma = Rcpp::as<Eigen::MatrixXd>(RMatrix);
-  beta_s = priors_list["beta_s"];
-
   estimate_alpha = options_list["estimate_alpha"];
   if (estimate_alpha == 0) {
     store_alpha = 0;
