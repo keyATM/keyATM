@@ -23,8 +23,6 @@ class LDAhmm : public LDAbase, public keyATMhmm
 
 
     // Functions
-		void read_data_specific();
-    void initialize_specific();
     void iteration_single(int &it);
     double loglik_total();
 
