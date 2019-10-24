@@ -117,7 +117,7 @@ keyATM_output <- function(model)
 keyATM_output_theta <- function(model, info)
 {
   # Theta
-  if (model$model %in% c("cov")) {
+  if (model$model %in% c("cov", "ldacov")) {
     Alpha <- exp(model$model_settings$covariates_data %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
 
     posterior_z <- function(docid){
@@ -194,7 +194,7 @@ keyATM_output_phi <- function(model, info)
 
 keyATM_output_theta_iter <- function(model, info)
 {
-  if (model$model %in% c("cov")) {
+  if (model$model %in% c("cov", "ldacov")) {
     posterior_theta <- function(x){
       Z_table <- model$stored_values$Z_tables[[x]]
       lambda <- model$stored_values$Lambda_iter[[x]]

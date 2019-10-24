@@ -464,15 +464,17 @@ keyATM_fit <- function(keyATM_docs, model, no_keyword_topics,
   set.seed(options$seed)
 
   if (model == "basic") {
-    key_model <- keyATM_train(key_model, iter = options$iterations, output_per = options$output_per)
+    key_model <- keyATM_fit_basic(key_model, iter = options$iterations, output_per = options$output_per)
   } else if (model == "cov") {
-    key_model <- keyATM_train_cov(key_model, iter = options$iteration, output_per = options$output_per)
-  } else if (model == "lda") {
-    key_model <- LDA_weight(key_model, iter = options$iteration, output_per = options$output_per)  
+    key_model <- keyATM_fit_cov(key_model, iter = options$iteration, output_per = options$output_per)
   } else if (model == "hmm") {
-    key_model <- keyATM_train_HMM(key_model, iter = options$iteration, output_per = options$output_per)  
+    key_model <- keyATM_fit_HMM(key_model, iter = options$iteration, output_per = options$output_per)  
+  } else if (model == "lda") {
+    key_model <- keyATM_fit_LDA(key_model, iter = options$iteration, output_per = options$output_per)
+  } else if (model == "ldacov") {
+    key_model <- keyATM_fit_LDAcov(key_model, iter = options$iteration, output_per = options$output_per)
   } else if (model == "ldahmm") {
-    key_model <- keyATM_train_LDAHMM(key_model, iter = options$iteration, output_per = options$output_per)  
+    key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration, output_per = options$output_per)  
   } else {
     stop("Please check `mode`.")  
   }

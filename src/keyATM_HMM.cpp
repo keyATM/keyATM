@@ -4,9 +4,6 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-# define PI_V   3.14159265358979323846  /* pi */
-
-
 void keyATMhmm::read_data_specific()
 {
   model_settings = model["model_settings"];
