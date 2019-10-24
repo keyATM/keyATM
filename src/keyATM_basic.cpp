@@ -5,13 +5,6 @@ using namespace Rcpp;
 using namespace std;
 
 
-keyATMbasic::keyATMbasic(List model_, const int iter_, const int output_per_) :
-  keyATMbase(model_, iter_, output_per_) // pass to parent!
-{
-
-}
-
-
 void keyATMbasic::read_data_specific()
 {
   nv_alpha = priors_list["alpha"];

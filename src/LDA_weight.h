@@ -6,12 +6,13 @@
 #include <unordered_set>
 #include "sampler.h"
 #include "keyATM.h"
+#include "keyATM_basic.h"
 
 using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-class LDAweight : public keyATMbase
+class LDAweight : public keyATMbasic
 {
   public:  
     //
@@ -44,7 +45,8 @@ class LDAweight : public keyATMbase
     //
 
     // Constructor
-    LDAweight(List model_, const int iter_, const int output_per_);
+    LDAweight(List model_, const int iter_, const int output_per_) :
+      keyATMbase(model_, iter_, output_per_), keyATMbasic(model_, iter_, output_per_) {};
 
     // Read data
     void read_data_specific();

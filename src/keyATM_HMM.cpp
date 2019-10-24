@@ -6,12 +6,6 @@ using namespace std;
 
 # define PI_V   3.14159265358979323846  /* pi */
 
-keyATMhmm::keyATMhmm(List model_, const int iter_, const int output_per_) :
-  keyATMbase(model_, iter_, output_per_) // pass to parent!
-{
-
-}
-
 
 void keyATMhmm::read_data_specific()
 {

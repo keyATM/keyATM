@@ -15,7 +15,8 @@ class LDAhmm : public keyATMhmm
 {
   public:
     // Constructor
-    LDAhmm(List model_, const int iter_, const int output_per_);
+    LDAhmm(List model_, const int iter_, const int output_per_) :
+      keyATMbase(model_, iter_, output_per_), keyATMhmm(model_, iter_, output_per_) {};
 
     // Parameters in LDA HMM
     MatrixXd n_kv;

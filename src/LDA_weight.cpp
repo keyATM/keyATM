@@ -5,12 +5,6 @@ using namespace Rcpp;
 using namespace std;
 
 
-LDAweight::LDAweight(List model_, const int iter_, const int output_per_) :
-  keyATMbase(model_, iter_, output_per_) // pass to parent!
-{
-
-}
-
 
 void LDAweight::read_data_specific()
 {

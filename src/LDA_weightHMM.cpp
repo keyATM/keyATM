@@ -6,12 +6,6 @@ using namespace std;
 
 # define PI_V   3.14159265358979323846  /* pi */
 
-LDAhmm::LDAhmm(List model_, const int iter_, const int output_per_) :
-  keyATMhmm(model_, iter_, output_per_) // pass to parent!
-{
-  // Nothing to add
-}
-
 
 void LDAhmm::read_data_specific()
 {

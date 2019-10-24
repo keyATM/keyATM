@@ -11,7 +11,7 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-class keyATMcov : public keyATMbase
+class keyATMcov : virtual public keyATMbase
 {
   public:  
     //
@@ -45,7 +45,8 @@ class keyATMcov : public keyATMbase
     //
 
     // Constructor
-    keyATMcov(List model_, const int iter_, const int output_per_);
+    keyATMcov(List model_, const int iter_, const int output_per_) :
+      keyATMbase(model_, iter_, output_per_) {};
 
     // Read data
     void read_data_specific();
