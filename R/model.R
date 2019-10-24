@@ -933,14 +933,10 @@ make_xz_lda <- function(W, info)
     return(as.integer(zz))
   }  
 
-  make_x <- function(x){
-    return(rep(0L, length(x)))  
-  }
 
- X <- lapply(W, make_x)
  Z <- lapply(W, make_z, topicvec)
 
- return(list(X = X, Z = Z))
+ return(list(X = list(), Z = Z))
 }
 
 

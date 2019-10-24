@@ -88,16 +88,11 @@ keyATM_output <- function(model)
   }
 
   # p
-  data <- tibble::tibble(Z = unlist(model$Z, use.names = F),
-                         X = unlist(model$X, use.names = F))
-  data %>%
-    dplyr::mutate(Topic = Z+1L) %>%
-    dplyr::select(-starts_with("Z")) %>%
-    dplyr::group_by(Topic) %>%
-    dplyr::summarize(count = (dplyr::n()), sumx = sum(X)) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(Proportion = round(sumx/count*100, 3)) %>%
-    dplyr::select(-sumx) -> p_estimated
+  if (model$model %in% c("basic", "cov", "hmm")){
+    p_estiamted <- keyATM_output_p(model) 
+  } else {
+    p_estimated <- NULL 
+  }
 
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
@@ -111,6 +106,23 @@ keyATM_output <- function(model)
              values_iter = values_iter)
   class(ll) <- c("keyATM_output", class(ll))
   return(ll)
+}
+
+
+keyATM_output_p <- function(model)
+{
+  data <- tibble::tibble(Z = unlist(model$Z, use.names = F),
+                         X = unlist(model$X, use.names = F))
+  data %>%
+    dplyr::mutate(Topic = Z+1L) %>%
+    dplyr::select(-starts_with("Z")) %>%
+    dplyr::group_by(Topic) %>%
+    dplyr::summarize(count = (dplyr::n()), sumx = sum(X)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(Proportion = round(sumx/count*100, 3)) %>%
+    dplyr::select(-sumx) -> p_estimated
+
+  return(p_estimated)
 }
 
 
