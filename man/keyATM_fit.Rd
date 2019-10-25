@@ -4,13 +4,13 @@
 \alias{keyATM_fit}
 \title{Fit keyATM model}
 \usage{
-keyATM_fit(keyATM_docs, model, no_keyword_topics, keywords = list(),
+keyATM_fit(docs, model, no_keyword_topics, keywords = list(),
   model_settings = list(), priors = list(), options = list())
 }
 \arguments{
-\item{keyATM_docs}{texts read via \code{keyATM_read()}}
+\item{docs}{texts read via \code{keyATM_read()}}
 
-\item{model}{keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"}
+\item{model}{keyATM model: "base", "covariates", and "dynamic"}
 
 \item{no_keyword_topics}{the number of regular topics}
 
@@ -43,37 +43,37 @@ Select and specify one of the keyATM models and fit the model.
 }
 \examples{
 \dontrun{
-  # keyATM Basic
+  # keyATM base
   fitted <- keyATM_fit(
-                       keyATM_docs, model = "basic", no_keyword_topics = 5, keywords = keywords_list
+                       docs, model = "base", no_keyword_topics = 5, keywords = keywords_list
                       )
 
   # keyATM Cov
   fitted <- keyATM_fit(
-                       keyATM_docs, model = "cov", no_keyword_topics = 5, keywords = keywords_list,
+                       docs, model = "cov", no_keyword_topics = 5, keywords = keywords_list,
                        model_settings(covariates_data = cov)
                       )
 
   # keyATM HMM
   fitted <- keyATM_fit(
-                       keyATM_docs, model = "hmm", no_keyword_topics = 5, keywords = keywords_list,
+                       docs, model = "hmm", no_keyword_topics = 5, keywords = keywords_list,
                        model_settings(time_index = time_index_vec, num_states = 5)
                       )
 
   # Weighted LDA
   fitted <- keyATM_fit(
-                       keyATM_docs, model = "lda", no_keyword_topics = 5
+                       docs, model = "lda", no_keyword_topics = 5
                       )
 
   # Weighted LDA Cov
   fitted <- keyATM_fit(
-                       keyATM_docs, model = "ldacov", no_keyword_topics = 5,
+                       docs, model = "ldacov", no_keyword_topics = 5,
                        model_settings(covariates_data = cov)
                       )                   
 
   # Weighted LDA HMM
   fitted <- keyATM_fit(
-                       keyATM_docs, model = "ldahmm", no_keyword_topics = 5,
+                       docs, model = "ldahmm", no_keyword_topics = 5,
                        model_settings(time_index = time_index_vec, num_states = 5)
                       )
 

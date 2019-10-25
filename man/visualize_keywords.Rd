@@ -4,10 +4,10 @@
 \alias{visualize_keywords}
 \title{Visualize texts}
 \usage{
-visualize_keywords(keyATM_docs, keywords, label_size = 3.2)
+visualize_keywords(docs, keywords, label_size = 3.2)
 }
 \arguments{
-\item{keyATM_docs}{A list of texts read via \code{keyATM_read()} function}
+\item{docs}{A list of texts read via \code{keyATM_read()} function}
 
 \item{keywords}{A list of keywords}
 
