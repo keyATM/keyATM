@@ -4,25 +4,11 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-# define PI_V   3.14159265358979323846  /* pi */
-
-keyATMhmm::keyATMhmm(List model_, const int iter_, const int output_per_) :
-  keyATMbase(model_, iter_, output_per_) // pass to parent!
-{
-
-}
-
-
 void keyATMhmm::read_data_specific()
 {
   model_settings = model["model_settings"];
   num_states = model_settings["num_states"];
   index_states = num_states - 1;
-
-  prior_gamma = MatrixXd::Zero(num_topics, 2);
-  NumericMatrix RMatrix = priors_list["gamma"];
-  prior_gamma = Rcpp::as<Eigen::MatrixXd>(RMatrix);
-  beta_s = priors_list["beta_s"];
 
   IntegerVector time_index_R = model_settings["time_index"];
   time_index = Rcpp::as<Eigen::VectorXi>(time_index_R);

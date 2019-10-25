@@ -11,7 +11,7 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-class keyATMcov : public keyATMbase
+class keyATMcov : virtual public keyATMbase
 {
   public:  
     //
@@ -45,20 +45,21 @@ class keyATMcov : public keyATMbase
     //
 
     // Constructor
-    keyATMcov(List model_, const int iter_, const int output_per_);
+    keyATMcov(List model_, const int iter_, const int output_per_) :
+      keyATMbase(model_, iter_, output_per_) {};
 
     // Read data
-    void read_data_specific();
+    void read_data_specific() final;
 
     // Initialization
-    void initialize_specific();
+    void initialize_specific() final;
 
     // Iteration
-    void iteration_single(int &it);
+    virtual void iteration_single(int &it);
     void sample_parameters(int &it);
     void sample_lambda();
     double alpha_loglik();
-    double loglik_total();
+    virtual double loglik_total();
 
     void sample_lambda_slice();
     double likelihood_lambda();

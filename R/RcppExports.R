@@ -8,8 +8,8 @@
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-keyATM_train <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_keyATM_keyATM_train', PACKAGE = 'keyATM', model, iter, output_per)
+keyATM_fit_basic <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_fit_basic', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for the covariate model
@@ -19,8 +19,8 @@ keyATM_train <- function(model, iter = 0L, output_per = 10L) {
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-keyATM_train_cov <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_keyATM_keyATM_train_cov', PACKAGE = 'keyATM', model, iter, output_per)
+keyATM_fit_cov <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_fit_cov', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for the HMM model
@@ -30,19 +30,8 @@ keyATM_train_cov <- function(model, iter = 0L, output_per = 10L) {
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-keyATM_train_HMM <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_keyATM_keyATM_train_HMM', PACKAGE = 'keyATM', model, iter, output_per)
-}
-
-#' Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)
-#'
-#' @param model A initialized model
-#' @param iter Required number of iterations
-#' @param output_per Show log-likelihood and perplexity per this number during the iteration
-#'
-#' @export
-lda_cov <- function(model, K, iter = 0L, output_iter = 10L) {
-    .Call('_keyATM_lda_cov', PACKAGE = 'keyATM', model, K, iter, output_iter)
+keyATM_fit_HMM <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_fit_HMM', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for LDA with weights
@@ -52,8 +41,19 @@ lda_cov <- function(model, K, iter = 0L, output_iter = 10L) {
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-LDA_weight <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_keyATM_LDA_weight', PACKAGE = 'keyATM', model, iter, output_per)
+keyATM_fit_LDA <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_fit_LDA', PACKAGE = 'keyATM', model, iter, output_per)
+}
+
+#' Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)
+#'
+#' @param model A initialized model
+#' @param iter Required number of iterations
+#' @param output_per Show log-likelihood and perplexity per this number during the iteration
+#'
+#' @export
+keyATM_fit_LDAcov <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_fit_LDAcov', PACKAGE = 'keyATM', model, iter, output_per)
 }
 
 #' Run the Collapsed Gibbs sampler for the HMM model
@@ -63,7 +63,7 @@ LDA_weight <- function(model, iter = 0L, output_per = 10L) {
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
 #' @export
-keyATM_train_LDAHMM <- function(model, iter = 0L, output_per = 10L) {
-    .Call('_keyATM_keyATM_train_LDAHMM', PACKAGE = 'keyATM', model, iter, output_per)
+keyATM_fit_LDAHMM <- function(model, iter = 0L, output_per = 10L) {
+    .Call('_keyATM_keyATM_fit_LDAHMM', PACKAGE = 'keyATM', model, iter, output_per)
 }
 

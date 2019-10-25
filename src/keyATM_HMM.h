@@ -11,7 +11,7 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-class keyATMhmm : public keyATMbase
+class keyATMhmm : virtual public keyATMbase
 {
   public:
     // Data
@@ -41,7 +41,8 @@ class keyATMhmm : public keyATMbase
     double fixed_part;
 
     // Constructor
-    keyATMhmm(List model_, const int iter_, const int output_per_);
+    keyATMhmm(List model_, const int iter_, const int output_per_) :
+      keyATMbase(model_, iter_, output_per_) {};
 
     // During sampling
       // sample_forward()
@@ -75,8 +76,8 @@ class keyATMhmm : public keyATMbase
     int get_state_index(const int &doc_id);
   
     // Read data and Initialize
-    virtual void read_data_specific();
-    virtual void initialize_specific();
+    void read_data_specific() final;
+    void initialize_specific() final;
   
     // Iteration
     virtual void iteration_single(int &it);
