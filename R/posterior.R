@@ -89,7 +89,7 @@ keyATM_output <- function(model)
 
   # p
   if (model$model %in% c("basic", "cov", "hmm")){
-    p_estiamted <- keyATM_output_p(model) 
+    p_estimated <- keyATM_output_p(model) 
   } else {
     p_estimated <- NULL 
   }

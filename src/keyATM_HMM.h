@@ -76,8 +76,8 @@ class keyATMhmm : virtual public keyATMbase
     int get_state_index(const int &doc_id);
   
     // Read data and Initialize
-    virtual void read_data_specific();
-    virtual void initialize_specific();
+    void read_data_specific() final;
+    void initialize_specific() final;
   
     // Iteration
     virtual void iteration_single(int &it);

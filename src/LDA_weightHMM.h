@@ -21,10 +21,9 @@ class LDAhmm : public LDAbase, public keyATMhmm
       LDAbase(model_, iter_, output_per_),
       keyATMhmm(model_, iter_, output_per_) {};
 
-
     // Functions
-    void iteration_single(int &it);
-    double loglik_total();
+    void iteration_single(int &it) final;
+    double loglik_total() final;
 
 };
 
