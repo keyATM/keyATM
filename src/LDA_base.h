@@ -26,11 +26,11 @@ class LDAbase : virtual public keyATMbase
 
     // Functions
     // In LDA, we do not need to read and initialize X
-    virtual void read_data_common();
-    virtual void initialize_common();
+    virtual void read_data_common() final;
+    virtual void initialize_common() final;
     virtual void iteration_single(int &it) = 0;
     virtual int sample_z(VectorXd &alpha, int &z, int &x,
-                         int &w, int &doc_id);
+                         int &w, int &doc_id) final;
     virtual double loglik_total() = 0;
 };
 
