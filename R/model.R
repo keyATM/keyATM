@@ -126,11 +126,13 @@ summary.keyATM_docs <- function(x)
 #'
 #' @param docs A list of texts read via \code{keyATM_read()} function
 #' @param keywords A list of keywords
+#' @param prune Prune keywords that do not appear in `docs`
 #' @param label_size The size of the keyword labels
 #'
 #' @return A list containing \describe{
 #'    \item{figure}{a ggplot2 object}
 #'    \item{values}{a tibble object that stores values}
+#'    \item{keywords}{a list of keywords that appear in documents}
 #' }
 #'
 #' @examples
@@ -159,17 +161,21 @@ summary.keyATM_docs <- function(x)
 #' @import magrittr
 #' @import ggplot2
 #' @export
-visualize_keywords <- function(docs, keywords, label_size = 3.2)
+visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
 {
   # Check type
   check_arg_type(docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
   check_arg_type(keywords, "list")
   c <- lapply(keywords, function(x){check_arg_type(x, "character")})
 
-  unnested_data <- tibble::tibble(text_split = unlist(docs,
-                                                      recursive = FALSE, use.names = FALSE))
+  unlisted <- unlist(docs, recursive = FALSE, use.names = FALSE)
+
+
+  # Check keywords
+  keywords <- check_keywords(unique(unlisted), keywords, prune)
 
   # Organize data
+  unnested_data <- tibble::tibble(text_split = unlisted)
   totalwords <- nrow(unnested_data)
 
   unnested_data %>%
@@ -205,20 +211,7 @@ visualize_keywords <- function(docs, keywords, label_size = 3.2)
     dplyr::arrange(Topic, Ranking) -> temp
 
 
-  # Check keywords existence
-  temp %>%
-    dplyr::filter(is.na(WordCount)) %>%
-    dplyr::pull(Word) -> non_appearence
-
-  if (length(non_appearence) != 0) {
-    if (length(non_appearence) == 1) {
-      stop("A keyword not found in texts: ", paste(non_appearence, collapse = ", "))
-    } else {
-      stop("Keywords not found in texts: ", paste(non_appearence, collapse = ", "))
-    }
-  }
-
-
+  # Visualize
   visualize_keywords <- 
     ggplot(temp, aes(x = Ranking, y=`Proportion(%)`, colour = Topic)) +
       geom_line() +
@@ -232,11 +225,52 @@ visualize_keywords <- function(docs, keywords, label_size = 3.2)
       ylab("Proportion (%)") +
       theme_bw()
 
-  keyATM_viz <- list(figure = visualize_keywords, values = temp)
+  keyATM_viz <- list(figure = visualize_keywords, values = temp, keywords = keywords)
   class(keyATM_viz) <- c("keyATM_viz", class(keyATM_viz))
   
   return(keyATM_viz)
 
+}
+
+
+check_keywords <- function(unique_words, keywords, prune)
+{
+  # Prune keywords that do not appear in the corpus
+  keywords_flat <- unlist(keywords, use.names = F, recursive = F)
+  non_existent <- keywords_flat[!keywords_flat %in% unique_words]
+
+  if (prune){
+    # Prune keywords 
+    if (length(non_existent) != 0) {
+     if (length(non_existent) == 1) {
+       warning("A keyword will be pruned because it does not appear in documents: ",
+               paste(non_existent, collapse = ", "))
+     } else {
+       warning("Keywords will be pruned because they do not appear in documents: ",
+               paste(non_existent, collapse = ", "))
+     }
+    }
+
+    keywords <- lapply(keywords,
+                       function(x){
+                          x[!x %in% non_existent] 
+                       })
+
+  } else {
+
+    # Raise error 
+    if (length(non_existent) != 0) {
+     if (length(non_existent) == 1) {
+       stop("A keyword not found in texts: ", paste(non_existent, collapse = ", "))
+     } else {
+       stop("Keywords not found in texts: ", paste(non_existent, collapse = ", "))
+     }
+    } 
+
+  }
+
+
+  return(keywords)
 }
 
 
@@ -335,7 +369,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   set.seed(options$seed)
 
   # W
-  info$wd_names <- unique(unlist(docs, use.names = F))
+  info$wd_names <- unique(unlist(docs, use.names = F, recursive = F))
   if (" " %in% info$wd_names) {
     stop("A space is recognized as a vocabulary.
           Please remove an empty document or consider using quanteda::dfm.")  
@@ -346,9 +380,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 
 
   # Check keywords
-  c <- sapply(unlist(keywords), 
-         function(x){if (! x %in% info$wd_names)
-           stop(paste0('"', x, '"', " does not appear in texts. Please check keywords."))})
+  keywords <- check_keywords(info$wd_names, keywords, options$prune)
 
   keywords_raw <- keywords  # keep raw keywords (not word_id)
   keywords_id <- lapply(keywords, function(x){ as.integer(info$wd_map$find(x)) })
@@ -725,7 +757,7 @@ check_arg_options <- function(obj, model, info)
   check_arg_type(obj, "list")
   allowed_arguments <- c("seed", "output_per", "thinning",
                          "iterations",
-                         "use_weights",
+                         "use_weights", "prune",
                          "store_theta", "slice_shape")
 
   # Output per
@@ -798,6 +830,17 @@ check_arg_options <- function(obj, model, info)
     }
   }
 
+  # Prune keywords
+  if (is.null(obj$prune)) {
+    obj$prune <- 1L 
+  } else {
+    obj$prune <- as.integer(obj$prune)
+    if (!obj$prune %in% c(0, 1)) {
+      stop("An invalid value in `options$prune`")  
+    }
+  }
+
+  # Store transition matrix in Dynamic models
   if (model %in% c("hmm", "ldahmm")) {
     if (is.null(obj$store_transition_matrix)) {
       obj$store_transition_matrix <- 0L  

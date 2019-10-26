@@ -4,12 +4,14 @@
 \alias{visualize_keywords}
 \title{Visualize texts}
 \usage{
-visualize_keywords(docs, keywords, label_size = 3.2)
+visualize_keywords(docs, keywords, prune = TRUE, label_size = 3.2)
 }
 \arguments{
 \item{docs}{A list of texts read via \code{keyATM_read()} function}
 
 \item{keywords}{A list of keywords}
+
+\item{prune}{Prune keywords that do not appear in `docs`}
 
 \item{label_size}{The size of the keyword labels}
 }
@@ -17,6 +19,7 @@ visualize_keywords(docs, keywords, label_size = 3.2)
 A list containing \describe{
    \item{figure}{a ggplot2 object}
    \item{values}{a tibble object that stores values}
+   \item{keywords}{a list of keywords that appear in documents}
 }
 }
 \description{
