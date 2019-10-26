@@ -20,16 +20,32 @@ keyATM_docs <- keyATM_read(bills_dfm)
 ```
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-out <- keyATM(keyATM_docs       = keyATM_docs,  # text input
-              no_keyword_topics = 7,            # number of regular topics
-              model             = "lda",        # select the model
-              options           = list(seed = 100))
+out <- weightedLDA(docs              = keyATM_docs,  # text input
+                   no_keyword_topics = 7,            # number of regular topics
+                   model             = "base",       # select the model
+                   options           = list(seed = 100))
 top_words(out)
 ```
 
+# Weighted LDA Covariates
+```{r,  warning=FALSE, message=FALSE, fig.align='center'}
+library(keyATM)
+data(keyATM_data_bills)
+bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda object
+bills_cov <- keyATM_data_bills$cov
+keyATM_docs <- keyATM_read(bills_dfm)
+```
 
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+out <- weightedLDA(docs              = keyATM_docs,   # text input
+                   no_keyword_topics = 7,             # number of regular topics
+                   model             = "covariates",  # select the model
+                   model_settings    = list(covariates_data = bills_cov),
+                   options           = list(seed = 100))
+top_words(out)
+```
 
-# Weighted LDA HMM
+# Weighted LDA Dynamic
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 library(keyATM)
 data(keyATM_data_bills)
@@ -41,12 +57,12 @@ keyATM_docs <- keyATM_read(bills_dfm)
 
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-fitted <- keyATM(keyATM_docs       = keyATM_docs,  # text input
-                 no_keyword_topics = 7,            # number of regular topics
-                 model             = "ldahmm",     # select the model
-                 model_settings    = list(time_index = bills_time_index, 
-                                       num_states = 5),
-                 options           = list(seed = 100))
+fitted <- weightedLDA(docs              = keyATM_docs,  # text input
+                      no_keyword_topics = 7,            # number of regular topics
+                      model             = "dynamic",    # select the model
+                      model_settings    = list(time_index = bills_time_index, 
+                                               num_states = 5),
+                      options           = list(seed = 100))
 top_words(out)
 ```
 

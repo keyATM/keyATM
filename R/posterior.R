@@ -20,13 +20,7 @@
 #'     \item{p}{Estimated p}
 #'     \item{values_iter}{Organized values stored during iterations}
 #'   }
-#' @examples
-#' \dontrun{
-#'  # `fitted` is the output of `keyATM()` 
-#'  out <- keyATM_output(fitted)
-#' }
 #'
-#' @export
 keyATM_output <- function(model)
 {
   message("Creating an output object. It may take time...")

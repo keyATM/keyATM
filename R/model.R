@@ -293,45 +293,6 @@ save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 #'   \item{call}{details of the function call}
 #' } 
 #'
-#' @examples
-#' \dontrun{
-#'   # keyATM base
-#'   fitted <- keyATM_fit(
-#'                        docs, model = "base", no_keyword_topics = 5, keywords = keywords_list
-#'                       )
-#'
-#'   # keyATM Cov
-#'   fitted <- keyATM_fit(
-#'                        docs, model = "cov", no_keyword_topics = 5, keywords = keywords_list,
-#'                        model_settings(covariates_data = cov)
-#'                       )
-#'
-#'   # keyATM HMM
-#'   fitted <- keyATM_fit(
-#'                        docs, model = "hmm", no_keyword_topics = 5, keywords = keywords_list,
-#'                        model_settings(time_index = time_index_vec, num_states = 5)
-#'                       )
-#'
-#'   # Weighted LDA
-#'   fitted <- keyATM_fit(
-#'                        docs, model = "lda", no_keyword_topics = 5
-#'                       )
-#'
-#'   # Weighted LDA Cov
-#'   fitted <- keyATM_fit(
-#'                        docs, model = "ldacov", no_keyword_topics = 5,
-#'                        model_settings(covariates_data = cov)
-#'                       )                   
-#'
-#'   # Weighted LDA HMM
-#'   fitted <- keyATM_fit(
-#'                        docs, model = "ldahmm", no_keyword_topics = 5,
-#'                        model_settings(time_index = time_index_vec, num_states = 5)
-#'                       )
-#'
-#' }
-#'
-#' @export
 keyATM_fit <- function(docs, model, no_keyword_topics,
                        keywords = list(), model_settings = list(),
                        priors = list(), options = list()) 
@@ -981,6 +942,7 @@ full_model_name <- function(model = c("base", "covariates", "dynamic"),
 
 abb_model_name <- function(fullname)
 {
+  # Get abbribiation from the full name
   if (fullname %in% c("base", "lda")) {
     return("base") 
   } else if (fullname %in% c("cov", "ldacov")) {
@@ -996,6 +958,7 @@ abb_model_name <- function(fullname)
 
 extract_full_model_name <- function(obj)
 {
+  # Get model full name from S3 class
   if ("base" %in% class(obj)) {
     return("base") 
   } else if ("cov" %in% class(obj)) {

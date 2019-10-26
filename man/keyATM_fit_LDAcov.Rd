@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{keyATM_fit_LDAcov}
 \alias{keyATM_fit_LDAcov}
-\title{Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)}
+\title{Run the Collapsed Gibbs sampler for weighted LDA with covariates}
 \usage{
 keyATM_fit_LDAcov(model, iter = 0L, output_per = 10L)
 }
@@ -14,5 +14,5 @@ keyATM_fit_LDAcov(model, iter = 0L, output_per = 10L)
 \item{output_per}{Show log-likelihood and perplexity per this number during the iteration}
 }
 \description{
-Run the Collapsed Gibbs sampler for LDA Dir-Multi (Mimno and McCalum 2008)
+Run the Collapsed Gibbs sampler for weighted LDA with covariates
 }

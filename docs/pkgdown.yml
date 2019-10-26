@@ -8,7 +8,7 @@ articles:
   Preparation: pkgdown_files/Preparation.html
   Priors: pkgdown_files/Priors.html
   Weighted_LDA: pkgdown_files/Weighted_LDA.html
-  keyATM_HMM: pkgdown_files/keyATM_HMM.html
-  keyATM_basic: pkgdown_files/keyATM_basic.html
+  keyATM_base: pkgdown_files/keyATM_base.html
   keyATM_cov: pkgdown_files/keyATM_cov.html
+  keyATM_dynamic: pkgdown_files/keyATM_dynamic.html
 

@@ -128,7 +128,7 @@ keyATM <- function(docs, model, no_keyword_topics,
 #'   # Weighted LDA Covariates
 #'   out <- weightedLDA(
 #'                      keyATM_docs, model = "covariates", no_keyword_topics = 5,
-#'                      model_settings(covariates_data = cov)
+#'                      model_settings(covariates_data = cov_matrix)
 #'                     )                   
 #'
 #'   # Weighted LDA Dynamic
