@@ -62,9 +62,6 @@
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_files/Priors.html">Priors</a>
-    </li>
-    <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -115,10 +112,10 @@
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(keyATM_data_bills)</span>
 <span id="cb1-3"><a href="#cb1-3"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda object</span></span>
 <span id="cb1-4"><a href="#cb1-4"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs              =</span> keyATM_docs,  <span class="co"># text input</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>                   <span class="dt">no_keyword_topics =</span> <span class="dv">7</span>,            <span class="co"># number of topics</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>                   <span class="dt">model             =</span> <span class="st">"base"</span>,       <span class="co"># select the model</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>                   <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs             =</span> keyATM_docs,  <span class="co"># text input</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>                   <span class="dt">number_of_topics =</span> <span class="dv">7</span>,            <span class="co"># number of topics</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>                   <span class="dt">model            =</span> <span class="st">"base"</span>,       <span class="co"># select the model</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>                   <span class="dt">options          =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
 <span id="cb2-5"><a href="#cb2-5"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
 <pre><code>##        Topic_1    Topic_2     Topic_3       Topic_4  Topic_5   Topic_6
 ## 1         loan    section    national       project    state education
@@ -151,11 +148,11 @@
 <span id="cb4-3"><a href="#cb4-3"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda object</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a>bills_cov &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>cov</span>
 <span id="cb4-5"><a href="#cb4-5"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs              =</span> keyATM_docs,   <span class="co"># text input</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>                   <span class="dt">no_keyword_topics =</span> <span class="dv">7</span>,             <span class="co"># number of topics</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>                   <span class="dt">model             =</span> <span class="st">"covariates"</span>,  <span class="co"># select the model</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>                   <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariates_data =</span> bills_cov),</span>
-<span id="cb5-5"><a href="#cb5-5"></a>                   <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs             =</span> keyATM_docs,   <span class="co"># text input</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>                   <span class="dt">number_of_topics =</span> <span class="dv">7</span>,             <span class="co"># number of topics</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>                   <span class="dt">model            =</span> <span class="st">"covariates"</span>,  <span class="co"># select the model</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>                   <span class="dt">model_settings   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariates_data =</span> bills_cov),</span>
+<span id="cb5-5"><a href="#cb5-5"></a>                   <span class="dt">options          =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
 <span id="cb5-6"><a href="#cb5-6"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
 <pre><code>##        Topic_1   Topic_2  Topic_3  Topic_4   Topic_5       Topic_6
 ## 1      federal    health    state     loan    action       program
@@ -189,12 +186,12 @@
 <span id="cb7-4"><a href="#cb7-4"></a>bills_time_index &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>time_index</span>
 <span id="cb7-5"><a href="#cb7-5"></a>bills_time_index &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/integer">as.integer</a></span>(bills_time_index <span class="op">-</span><span class="st"> </span><span class="dv">100</span>)</span>
 <span id="cb7-6"><a href="#cb7-6"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>fitted &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs              =</span> keyATM_docs,  <span class="co"># text input</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a>                      <span class="dt">no_keyword_topics =</span> <span class="dv">7</span>,            <span class="co"># number of topics</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>                      <span class="dt">model             =</span> <span class="st">"dynamic"</span>,    <span class="co"># select the model</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a>                      <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">time_index =</span> bills_time_index, </span>
-<span id="cb8-5"><a href="#cb8-5"></a>                                               <span class="dt">num_states =</span> <span class="dv">5</span>),</span>
-<span id="cb8-6"><a href="#cb8-6"></a>                      <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>fitted &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs             =</span> keyATM_docs,  <span class="co"># text input</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>                      <span class="dt">number_of_topics =</span> <span class="dv">7</span>,            <span class="co"># number of topics</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>                      <span class="dt">model            =</span> <span class="st">"dynamic"</span>,    <span class="co"># select the model</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>                      <span class="dt">model_settings   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">time_index =</span> bills_time_index, </span>
+<span id="cb8-5"><a href="#cb8-5"></a>                                              <span class="dt">num_states =</span> <span class="dv">5</span>),</span>
+<span id="cb8-6"><a href="#cb8-6"></a>                      <span class="dt">options          =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
 <span id="cb8-7"><a href="#cb8-7"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
 <pre><code>##        Topic_1   Topic_2  Topic_3  Topic_4   Topic_5       Topic_6
 ## 1      federal    health    state     loan    action       program

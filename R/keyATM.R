@@ -91,10 +91,9 @@ keyATM <- function(docs, model, no_keyword_topics,
 #' This is a wrapper function of \code{keyATM_fit()} and \code{keyATM_output()}.
 #'
 #'
-#' @param keyATM_docs texts read via \code{keyATM_read()}
+#' @param docs texts read via \code{keyATM_read()}
 #' @param model Weighted LDA model: "base", "covariates", and "dynamic"
-#' @param no_keyword_topics the number of regular topics
-#' @param keywords a list of keywords
+#' @param number_of_topics the number of regular topics
 #' @param model_settings a list of model specific settings
 #' @param priors a list of priors of parameters
 #' @param options a list of options
@@ -122,26 +121,26 @@ keyATM <- function(docs, model, no_keyword_topics,
 #' \dontrun{
 #'   # Weighted LDA
 #'   out <- weightedLDA(
-#'                      keyATM_docs, model = "base", no_keyword_topics = 5
+#'                      keyATM_docs, model = "base", number_of_topics = 5
 #'                     )
 #'
 #'   # Weighted LDA Covariates
 #'   out <- weightedLDA(
-#'                      keyATM_docs, model = "covariates", no_keyword_topics = 5,
+#'                      keyATM_docs, model = "covariates", number_of_topics = 5,
 #'                      model_settings(covariates_data = cov_matrix)
 #'                     )                   
 #'
 #'   # Weighted LDA Dynamic
 #'   out <- weightedLDA(
-#'                      keyATM_docs, model = "dynamic", no_keyword_topics = 5,
+#'                      keyATM_docs, model = "dynamic", number_of_topics = 5,
 #'                      model_settings(time_index = time_index_vec, num_states = 5)
 #'                     )
 #'
 #' }
 #'
 #' @export
-weightedLDA <- function(docs, model, no_keyword_topics,
-                        keywords = list(), model_settings = list(),
+weightedLDA <- function(docs, model, number_of_topics,
+                        model_settings = list(),
                         priors = list(), options = list(), keep = c())
 {
   # Check type
@@ -152,8 +151,11 @@ weightedLDA <- function(docs, model, no_keyword_topics,
 
   # Fit keyATM
   fitted <- keyATM_fit(
-                       docs, model, no_keyword_topics,
-                       keywords, model_settings, priors, options
+                       docs, model, number_of_topics,
+                       keywords = list(),
+                       model_settings = model_settings,
+                       priors = priors,
+                       options = options
                       )
 
   # Get output
