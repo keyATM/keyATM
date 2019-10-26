@@ -95,9 +95,6 @@
       <a href="../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_files/Priors.html">Priors</a>
-    </li>
-    <li>
       <a href="../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -143,9 +140,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>weightedLDA</span>(<span class='no'>docs</span>, <span class='no'>model</span>, <span class='no'>no_keyword_topics</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
-  <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>priors</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
-  <span class='kw'>keep</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>())</pre>
+    <pre class="usage"><span class='fu'>weightedLDA</span>(<span class='no'>docs</span>, <span class='no'>model</span>, <span class='no'>number_of_topics</span>, <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
+  <span class='kw'>priors</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>keep</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -155,12 +151,8 @@
       <td><p>Weighted LDA model: "base", "covariates", and "dynamic"</p></td>
     </tr>
     <tr>
-      <th>no_keyword_topics</th>
+      <th>number_of_topics</th>
       <td><p>the number of regular topics</p></td>
-    </tr>
-    <tr>
-      <th>keywords</th>
-      <td><p>a list of keywords</p></td>
     </tr>
     <tr>
       <th>model_settings</th>
@@ -188,7 +180,7 @@
 
     <p>A keyATM_output object containing:</p><dl class='dl-horizontal'>
     <dt>keyword_k</dt><dd><p>Number of keyword topics</p></dd>
-    <dt>no_keyword_topics</dt><dd><p>Number of regular unseeded topics</p></dd>
+    <dt>number_of_topics</dt><dd><p>Number of regular unseeded topics</p></dd>
     <dt>V</dt><dd><p>Number of word types</p></dd>
     <dt>N</dt><dd><p>Number of documents</p></dd>
     <dt>theta</dt><dd><p>Normalized topic proportions for each document</p></dd>
@@ -209,18 +201,18 @@
     <pre class="examples"><span class='co'># NOT RUN {</span>
   <span class='co'># Weighted LDA</span>
   <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>weightedLDA</span>(
-                     <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"base"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>
+                     <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"base"</span>, <span class='kw'>number_of_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>
                     )
 
   <span class='co'># Weighted LDA Covariates</span>
   <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>weightedLDA</span>(
-                     <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"covariates"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                     <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"covariates"</span>, <span class='kw'>number_of_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
                      <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov_matrix</span>)
                     )
 
   <span class='co'># Weighted LDA Dynamic</span>
   <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>weightedLDA</span>(
-                     <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"dynamic"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                     <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"dynamic"</span>, <span class='kw'>number_of_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
                      <span class='fu'>model_settings</span>(<span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>time_index_vec</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>)
                     )
 

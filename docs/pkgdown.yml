@@ -6,7 +6,6 @@ articles:
   Installation: pkgdown_files/Installation.html
   Options: pkgdown_files/Options.html
   Preparation: pkgdown_files/Preparation.html
-  Priors: pkgdown_files/Priors.html
   Weighted_LDA: pkgdown_files/Weighted_LDA.html
   keyATM_base: pkgdown_files/keyATM_base.html
   keyATM_cov: pkgdown_files/keyATM_cov.html

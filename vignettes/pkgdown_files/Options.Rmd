@@ -1,12 +1,15 @@
 ---
-title: "Options"
+title: "Options / Priors / Keep"
 output: 
   html_document:
-    toc: false
+    toc: true
+    toc_depth: 1
 pkgdown:
   as_is: true
 ---
 
+
+# Options
 `keyATM_fit()` takes various options. You can set options through a list.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 my_options <- list(seed        = 100,
@@ -67,5 +70,27 @@ Prune keywords that do not appear in the documents.
 
 
 ## `slice_shape`
+
+
+
+# Priors
+You can manually set priors, but we **do not** recommend doing it unless you understandd the consequences.
+
+
+## `alpha`
+
+
+
+## `beta`
+
+
+## `beta_s`
+
+
+## `gamma`
+
+
+# Keep
+
 
 

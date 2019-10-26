@@ -4,16 +4,15 @@
 \alias{weightedLDA}
 \title{Weighted LDA Main function}
 \usage{
-weightedLDA(docs, model, no_keyword_topics, keywords = list(),
-  model_settings = list(), priors = list(), options = list(),
-  keep = c())
+weightedLDA(docs, model, number_of_topics, model_settings = list(),
+  priors = list(), options = list(), keep = c())
 }
 \arguments{
+\item{docs}{texts read via \code{keyATM_read()}}
+
 \item{model}{Weighted LDA model: "base", "covariates", and "dynamic"}
 
-\item{no_keyword_topics}{the number of regular topics}
-
-\item{keywords}{a list of keywords}
+\item{number_of_topics}{the number of regular topics}
 
 \item{model_settings}{a list of model specific settings}
 
@@ -22,8 +21,6 @@ weightedLDA(docs, model, no_keyword_topics, keywords = list(),
 \item{options}{a list of options}
 
 \item{keep}{a vector of the names of elements you want to keep from \code{keyATM_fit()} output}
-
-\item{keyATM_docs}{texts read via \code{keyATM_read()}}
 }
 \value{
 A keyATM_output object containing:
@@ -51,18 +48,18 @@ This is a wrapper function of \code{keyATM_fit()} and \code{keyATM_output()}.
 \dontrun{
   # Weighted LDA
   out <- weightedLDA(
-                     keyATM_docs, model = "base", no_keyword_topics = 5
+                     keyATM_docs, model = "base", number_of_topics = 5
                     )
 
   # Weighted LDA Covariates
   out <- weightedLDA(
-                     keyATM_docs, model = "covariates", no_keyword_topics = 5,
+                     keyATM_docs, model = "covariates", number_of_topics = 5,
                      model_settings(covariates_data = cov_matrix)
                     )                   
 
   # Weighted LDA Dynamic
   out <- weightedLDA(
-                     keyATM_docs, model = "dynamic", no_keyword_topics = 5,
+                     keyATM_docs, model = "dynamic", number_of_topics = 5,
                      model_settings(time_index = time_index_vec, num_states = 5)
                     )
 

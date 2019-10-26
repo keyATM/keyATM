@@ -59,7 +59,7 @@ out <- keyATM(
               keywords          = bills_keywords, # keywords
               model             = "dynamic",          # select the model
               model_settings    = list(time_index = bills_time_index,
-                                    num_states = 5),
+                                       num_states = 5),
               options           = list(seed = 100)
              )
 ```
