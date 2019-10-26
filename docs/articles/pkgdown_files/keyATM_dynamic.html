@@ -149,14 +149,14 @@
 <div id="checking-keywords" class="section level2">
 <h2 class="hasAnchor">
 <a href="#checking-keywords" class="anchor"></a>Checking keywords</h2>
-<p>Before you fit the model, please make sure your keywords appear enough in your corpus. <a href="FAQ.html#how-to-select-keywords">FAQ</a> explains what could be good keywords. This step is the same as <a href="keyATM_basic.html#checking-keywords">basic model</a>.</p>
+<p>Before you fit the model, please make sure your keywords appear enough in your corpus. <a href="FAQ.html#how-to-select-keywords">FAQ</a> explains what could be good keywords. This step is the same as the <a href="keyATM_basic.html#checking-keywords">Base model</a>.</p>
 </div>
 <div id="fitting-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(    </span>
 <span id="cb7-2"><a href="#cb7-2"></a>              <span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of regular topics</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
 <span id="cb7-4"><a href="#cb7-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
 <span id="cb7-5"><a href="#cb7-5"></a>              <span class="dt">model             =</span> <span class="st">"dynamic"</span>,          <span class="co"># select the model</span></span>
 <span id="cb7-6"><a href="#cb7-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">time_index =</span> bills_time_index,</span>
@@ -167,7 +167,7 @@
 <div id="saving-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#saving-the-model" class="anchor"></a>Saving the model</h2>
-<p>Once you fit the model, you can save the model with <code><a href="https://www.rdocumentation.org/packages/base/topics/save">save()</a></code> for replication. This is the same as <a href="keyATM_basic.html#saving-the-model">basic model</a>.</p>
+<p>Once you fit the model, you can save the model with <code><a href="https://www.rdocumentation.org/packages/base/topics/save">save()</a></code> for replication. This is the same as the <a href="keyATM_basic.html#saving-the-model">Base model</a>.</p>
 </div>
 <div id="checking-top-words" class="section level2">
 <h2 class="hasAnchor">

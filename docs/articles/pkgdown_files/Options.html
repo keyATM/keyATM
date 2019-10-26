@@ -109,20 +109,21 @@
     
     
 <p><code><a href="../../reference/keyATM_fit.html">keyATM_fit()</a></code> takes various options. You can set options through a list.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>my_options &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(       <span class="dt">seed =</span> <span class="dv">100</span>,</span>
-<span id="cb1-2"><a href="#cb1-2"></a>                    <span class="dt">output_per =</span> <span class="dv">10</span>,</span>
-<span id="cb1-3"><a href="#cb1-3"></a>                    <span class="dt">iterations =</span> <span class="dv">1500</span>,</span>
-<span id="cb1-4"><a href="#cb1-4"></a>                   <span class="dt">use_weights =</span> <span class="dv">1</span>,</span>
-<span id="cb1-5"><a href="#cb1-5"></a>                      <span class="dt">thinning =</span> <span class="dv">10</span>,</span>
-<span id="cb1-6"><a href="#cb1-6"></a>                   <span class="dt">store_theta =</span> <span class="dv">0</span>,</span>
-<span id="cb1-7"><a href="#cb1-7"></a>                   <span class="dt">slice_shape =</span> <span class="fl">1.2</span>)</span>
-<span id="cb1-8"><a href="#cb1-8"></a></span>
-<span id="cb1-9"><a href="#cb1-9"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(<span class="dt">keyATM_docs =</span> keyATM_docs,    <span class="co"># text input</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a>              <span class="dt">regular_k   =</span> <span class="dv">3</span>,              <span class="co"># number of regular topics</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a>              <span class="dt">keywords    =</span> bills_keywords, <span class="co"># keywords</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>              <span class="dt">model       =</span> <span class="st">"basic"</span>,        <span class="co"># select the model</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a>              <span class="dt">options     =</span> my_options</span>
-<span id="cb1-14"><a href="#cb1-14"></a>             )</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>my_options &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed        =</span> <span class="dv">100</span>,</span>
+<span id="cb1-2"><a href="#cb1-2"></a>                   <span class="dt">iterations  =</span> <span class="dv">1500</span>,</span>
+<span id="cb1-3"><a href="#cb1-3"></a>                   <span class="dt">output_per  =</span> <span class="dv">10</span>,</span>
+<span id="cb1-4"><a href="#cb1-4"></a>                   <span class="dt">use_weights =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb1-5"><a href="#cb1-5"></a>                   <span class="dt">prune       =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb1-6"><a href="#cb1-6"></a>                   <span class="dt">thinning    =</span> <span class="dv">10</span>,</span>
+<span id="cb1-7"><a href="#cb1-7"></a>                   <span class="dt">store_theta =</span> <span class="dv">0</span>,</span>
+<span id="cb1-8"><a href="#cb1-8"></a>                   <span class="dt">slice_shape =</span> <span class="fl">1.2</span>)</span>
+<span id="cb1-9"><a href="#cb1-9"></a></span>
+<span id="cb1-10"><a href="#cb1-10"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(<span class="dt">docs      =</span> keyATM_docs,    <span class="co"># text input</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>              <span class="dt">regular_k =</span> <span class="dv">3</span>,              <span class="co"># number of regular topics</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>              <span class="dt">keywords  =</span> bills_keywords, <span class="co"># keywords</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>              <span class="dt">model     =</span> <span class="st">"basic"</span>,        <span class="co"># select the model</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>              <span class="dt">options   =</span> my_options</span>
+<span id="cb1-15"><a href="#cb1-15"></a>             )</span></code></pre></div>
 <div id="seed" class="section level2">
 <h2 class="hasAnchor">
 <a href="#seed" class="anchor"></a><code>seed</code>
@@ -144,7 +145,7 @@
 <h2 class="hasAnchor">
 <a href="#use_weights" class="anchor"></a><code>use_weights</code>
 </h2>
-<p>The default value is <code>1</code> (use weights). We follow the weighting Scheme in Wilson &amp; Chew (2010). It uses an axiom of information theory: an event <span class="math inline">\(a\)</span>’s information content: <span class="math inline">\(- \log_2 p(a)\)</span>. We assume that information content of a term <span class="math inline">\(v\)</span> follows this metric. The weight for a word <span class="math inline">\(v\)</span> is,</p>
+<p>The default value is <code>TRUE</code> (use weights). We follow the weighting Scheme in Wilson &amp; Chew (2010). It uses an axiom of information theory: an event <span class="math inline">\(a\)</span>’s information content: <span class="math inline">\(- \log_2 p(a)\)</span>. We assume that information content of a term <span class="math inline">\(v\)</span> follows this metric. The weight for a word <span class="math inline">\(v\)</span> is,</p>
 <p><span class="math display">\[
 \begin{align*}
     m(v) &amp;= -\log_2 \dfrac{\text{# of word $v$ in corpus}}{\text{# of total occurrence}}\\
@@ -157,6 +158,12 @@
 \end{align*}
 \]</span></p>
 <p>If you do not want to use weights, please set it to <code>0</code>.</p>
+</div>
+<div id="prune" class="section level2">
+<h2 class="hasAnchor">
+<a href="#prune" class="anchor"></a><code>prune</code>
+</h2>
+<p>Prune keywords that do not appear in the documents.</p>
 </div>
 <div id="thinning" class="section level2">
 <h2 class="hasAnchor">

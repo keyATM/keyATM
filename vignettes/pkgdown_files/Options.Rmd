@@ -9,19 +9,20 @@ pkgdown:
 
 `keyATM_fit()` takes various options. You can set options through a list.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
-my_options <- list(       seed = 100,
-                    output_per = 10,
-                    iterations = 1500,
-                   use_weights = 1,
-                      thinning = 10,
+my_options <- list(seed        = 100,
+                   iterations  = 1500,
+                   output_per  = 10,
+                   use_weights = TRUE,
+                   prune       = TRUE,
+                   thinning    = 10,
                    store_theta = 0,
                    slice_shape = 1.2)
 
-out <- keyATM(keyATM_docs = keyATM_docs,    # text input
-              regular_k   = 3,              # number of regular topics
-              keywords    = bills_keywords, # keywords
-              model       = "basic",        # select the model
-              options     = my_options
+out <- keyATM(docs      = keyATM_docs,    # text input
+              regular_k = 3,              # number of regular topics
+              keywords  = bills_keywords, # keywords
+              model     = "basic",        # select the model
+              options   = my_options
              )
 ```
 
@@ -36,7 +37,7 @@ The  default value is `1500`.
 
 
 ## `use_weights`
-The default value is `1` (use weights). We follow the weighting Scheme in Wilson \& Chew (2010). It uses an axiom of information theory: an event $a$'s information content: $- \log_2 p(a)$. We assume that information content of a term $v$ follows this metric. The weight for a word $v$ is,
+The default value is `TRUE` (use weights). We follow the weighting Scheme in Wilson \& Chew (2010). It uses an axiom of information theory: an event $a$'s information content: $- \log_2 p(a)$. We assume that information content of a term $v$ follows this metric. The weight for a word $v$ is,
 
 $$
 \begin{align*}
@@ -53,6 +54,10 @@ $$
 $$
 
 If you do not want to use weights, please set it to `0`.
+
+
+## `prune`
+Prune keywords that do not appear in the documents.
 
 
 ## `thinning`

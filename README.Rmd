@@ -16,10 +16,10 @@ output: github_document
 ## How to Use
 * [Installation](articles/pkgdown_files/Installation.html)
 * [Preparation](articles/pkgdown_files/Preparation.html)
-* [keyATM Basic](articles/pkgdown_files/keyATM_base.html)
-* [keyATM Covariate](articles/pkgdown_files/keyATM_cov.html)
-* [keyATM HMM](articles/pkgdown_files/keyATM_dynamic.html)
-* [Weighted LDA](articles/pkgdown_files/Weighted_LDA.html)
+* [keyATM Base](articles/pkgdown_files/keyATM_base.html)
+* [keyATM Covariates](articles/pkgdown_files/keyATM_cov.html)
+* [keyATM Dynamic](articles/pkgdown_files/keyATM_dynamic.html)
+* [Weighted LDA models](articles/pkgdown_files/Weighted_LDA.html)
 * [FAQ](articles/pkgdown_files/FAQ.html)
 
 ## How to report a bug

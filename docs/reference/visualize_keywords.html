@@ -143,7 +143,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>visualize_keywords</span>(<span class='no'>docs</span>, <span class='no'>keywords</span>, <span class='kw'>label_size</span> <span class='kw'>=</span> <span class='fl'>3.2</span>)</pre>
+    <pre class="usage"><span class='fu'>visualize_keywords</span>(<span class='no'>docs</span>, <span class='no'>keywords</span>, <span class='kw'>prune</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>label_size</span> <span class='kw'>=</span> <span class='fl'>3.2</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -157,6 +157,10 @@
       <td><p>A list of keywords</p></td>
     </tr>
     <tr>
+      <th>prune</th>
+      <td><p>Prune keywords that do not appear in `docs`</p></td>
+    </tr>
+    <tr>
       <th>label_size</th>
       <td><p>The size of the keyword labels</p></td>
     </tr>
@@ -167,6 +171,7 @@
     <p>A list containing</p><dl class='dl-horizontal'>
    <dt>figure</dt><dd><p>a ggplot2 object</p></dd>
    <dt>values</dt><dd><p>a tibble object that stores values</p></dd>
+   <dt>keywords</dt><dd><p>a list of keywords that appear in documents</p></dd>
 </dl>
 
     

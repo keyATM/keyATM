@@ -1,5 +1,5 @@
 ---
-title: "keyATM Basic"
+title: "keyATM Base"
 output: 
   html_document:
     toc: true
@@ -53,9 +53,9 @@ visualize_keywords(keyATM_docs, bills_keywords)
 ## Fitting the model
 ```{r, warning=FALSE, message=FALSE, fig.align='center', results="hide"}
 out <- keyATM(docs              = keyATM_docs,    # text input
-              no_keyword_topics = 3,              # number of regular topics
+              no_keyword_topics = 3,              # number of topics without keywords
               keywords          = bills_keywords, # keywords
-              model             = "base",        # select the model
+              model             = "base",         # select the model
               options           = list(seed = 100)
              )
 ```
