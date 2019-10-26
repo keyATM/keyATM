@@ -5,19 +5,19 @@
 #include <RcppEigen.h>
 #include <unordered_set>
 #include "sampler.h"
-#include "keyATM.h"
+#include "keyATM_meta.h"
 
 using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-class LDAbase : virtual public keyATMbase
+class LDAbase : virtual public keyATMmeta
 {
   public:
 
     // Constructor
     LDAbase(List model_, const int iter_, const int output_per_) :
-      keyATMbase(model_, iter_, output_per_) {};
+      keyATMmeta(model_, iter_, output_per_) {};
   
     // Variables
     MatrixXd n_kv;
@@ -26,8 +26,8 @@ class LDAbase : virtual public keyATMbase
 
     // Functions
     // In LDA, we do not need to read and initialize X
-    virtual void read_data_common() final;
-    virtual void initialize_common() final;
+    virtual void read_data_common();
+    virtual void initialize_common();
     virtual void iteration_single(int &it) = 0;
     virtual int sample_z(VectorXd &alpha, int &z, int &x,
                          int &w, int &doc_id) final;

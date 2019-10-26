@@ -5,13 +5,13 @@
 #include <RcppEigen.h>
 #include <unordered_set>
 #include "sampler.h"
-#include "keyATM.h"
+#include "keyATM_meta.h"
 
 using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-class keyATMhmm : virtual public keyATMbase
+class keyATMhmm : virtual public keyATMmeta
 {
   public:
     // Data
@@ -42,7 +42,7 @@ class keyATMhmm : virtual public keyATMbase
 
     // Constructor
     keyATMhmm(List model_, const int iter_, const int output_per_) :
-      keyATMbase(model_, iter_, output_per_) {};
+      keyATMmeta(model_, iter_, output_per_) {};
 
     // During sampling
       // sample_forward()

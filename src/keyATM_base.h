@@ -1,17 +1,17 @@
-#ifndef __keyATM_basic__INCLUDED__
-#define __keyATM_basic__INCLUDED__
+#ifndef __keyATM_base__INCLUDED__
+#define __keyATM_base__INCLUDED__
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
 #include <unordered_set>
 #include "sampler.h"
-#include "keyATM.h"
+#include "keyATM_meta.h"
 
 using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-class keyATMbasic : virtual public keyATMbase
+class keyATMbase : virtual public keyATMmeta
 {
   public:  
     //
@@ -37,14 +37,14 @@ class keyATMbasic : virtual public keyATMbase
     //
 
     // Constructor
-    keyATMbasic(List model_, const int iter_, const int output_per_) :
-      keyATMbase(model_, iter_, output_per_) {};
+    keyATMbase(List model_, const int iter_, const int output_per_) :
+      keyATMmeta(model_, iter_, output_per_) {};
 
     // Read data
-    void read_data_specific() final;
+    void read_data_specific();
 
     // Initialization
-    void initialize_specific() final;
+    void initialize_specific();
 
     // Iteration
     virtual void iteration_single(int &it);
