@@ -242,7 +242,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &x,
     n_x0_kv(z, w) -= vocab_weights(w);
     n_x0_k(z) -= vocab_weights(w);
     n_x0_k_noWeight(z) -= 1.0;
-  } else if (x==1) {
+  } else if (x == 1) {
     n_x1_kv.coeffRef(z, w) -= vocab_weights(w);
     n_x1_k(z) -= vocab_weights(w);
     n_x1_k_noWeight(z) -= 1.0;
@@ -296,7 +296,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &x,
     n_x0_kv(new_z, w) += vocab_weights(w);
     n_x0_k(new_z) += vocab_weights(w);
     n_x0_k_noWeight(new_z) += 1.0;
-  } else if (x==1) {
+  } else if (x == 1) {
     n_x1_kv.coeffRef(new_z, w) += vocab_weights(w);
     n_x1_k(new_z) += vocab_weights(w);
     n_x1_k_noWeight(new_z) += 1.0;
@@ -370,7 +370,7 @@ int keyATMmeta::sample_x(VectorXd &alpha, int &z, int &x,
 // Utilities
 double keyATMmeta::gammapdfln(const double &x, const double &a, const double &b){
   // a: shape, b: scale
-  return - a * log(b) - lgamma(a) + (a-1.0) * log(x) - x/b;
+  return - a * log(b) - mylgamma(a) + (a-1.0) * log(x) - x/b;
 }
 
 
@@ -398,7 +398,7 @@ double keyATMmeta::gammaln_frac(const double &value, const int &count){
   // Not very fast
   
   if (count > 19) {
-    return lgamma(value + count) - lgamma(value);  
+    return mylgamma(value + count) - mylgamma(value);  
   } else {
     gammaln_val = 0.0;
 
