@@ -1,5 +1,5 @@
-#ifndef __keyATM__INCLUDED__
-#define __keyATM__INCLUDED__
+#ifndef __keyATMmeta__INCLUDED__
+#define __keyATMmeta__INCLUDED__
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -10,7 +10,7 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-class keyATMbase
+class keyATMmeta
 {
   public:
     //
@@ -104,8 +104,8 @@ class keyATMbase
     //
     // Functions
     //
-    keyATMbase(List model_, const int iter_, const int output_per_);
-    ~keyATMbase();
+    keyATMmeta(List model_, const int iter_, const int output_per_);
+    ~keyATMmeta();
     void fit();
 
     // Reading and Initialization

@@ -1,11 +1,11 @@
-#include "keyATM_basic.h"
+#include "keyATM_base.h"
 
 using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
 
-void keyATMbasic::read_data_specific()
+void keyATMbase::read_data_specific()
 {
   nv_alpha = priors_list["alpha"];
   alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
@@ -19,12 +19,12 @@ void keyATMbasic::read_data_specific()
 }
 
 
-void keyATMbasic::initialize_specific()
+void keyATMbase::initialize_specific()
 {
   // No additional initialization
 }
 
-void keyATMbasic::iteration_single(int &it)
+void keyATMbase::iteration_single(int &it)
 { // Single iteration
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
@@ -57,7 +57,7 @@ void keyATMbasic::iteration_single(int &it)
 
 }
 
-void keyATMbasic::sample_parameters(int &it)
+void keyATMbase::sample_parameters(int &it)
 {
   if (estimate_alpha)
     sample_alpha();
@@ -75,7 +75,7 @@ void keyATMbasic::sample_parameters(int &it)
 }
 
 
-void keyATMbasic::sample_alpha()
+void keyATMbase::sample_alpha()
 {
 
   // start, end, previous_p, new_p, newlikelihood, slice_;
@@ -118,7 +118,7 @@ void keyATMbasic::sample_alpha()
 }
 
 
-double keyATMbasic::alpha_loglik()
+double keyATMbase::alpha_loglik()
 {
   loglik = 0.0;
   
@@ -153,7 +153,7 @@ double keyATMbasic::alpha_loglik()
 }
 
 
-double keyATMbasic::loglik_total()
+double keyATMbase::loglik_total()
 {
   double loglik = 0.0;
 

@@ -1,4 +1,4 @@
-#include "keyATM.h"
+#include "keyATM_meta.h"
 
 using namespace Eigen;
 using namespace Rcpp;
@@ -6,31 +6,31 @@ using namespace std;
 
 # define PI_V   3.14159265358979323846  /* pi */
 
-keyATMbase::keyATMbase(List model_, const int iter_, const int output_per_)
+keyATMmeta::keyATMmeta(List model_, const int iter_, const int output_per_)
 {
   model = model_;
   iter = iter_;
   output_per = output_per_;
 }
 
-keyATMbase::~keyATMbase(){
+keyATMmeta::~keyATMmeta(){
   model["stored_values"] = stored_values;
 }
 
-void keyATMbase::fit()
+void keyATMmeta::fit()
 {
   read_data();
   initialize();
   iteration();
 }
 
-void keyATMbase::read_data()
+void keyATMmeta::read_data()
 {
   read_data_common();
   read_data_specific();
 }
 
-void keyATMbase::read_data_common()
+void keyATMmeta::read_data_common()
 {
   // Read data
   W = model["W"]; Z = model["Z"]; X = model["X"];
@@ -68,14 +68,14 @@ void keyATMbase::read_data_common()
 }
 
 
-void keyATMbase::initialize()
+void keyATMmeta::initialize()
 {
   initialize_common();
   initialize_specific();
 }
 
 
-void keyATMbase::initialize_common()
+void keyATMmeta::initialize_common()
 {
   // Parameters
   eta_1 = 1.0;
@@ -184,7 +184,7 @@ void keyATMbase::initialize_common()
 
 
 // Iteration
-void keyATMbase::iteration()
+void keyATMmeta::iteration()
 {
   for (int it = 0; it < iter; it++) {
     iteration_single(it);
@@ -205,7 +205,7 @@ void keyATMbase::iteration()
   model["model_fit"] = model_fit;
 }
 
-void keyATMbase::sampling_store(int &r_index)
+void keyATMmeta::sampling_store(int &r_index)
 {
 
   double loglik = loglik_total();
@@ -221,7 +221,7 @@ void keyATMbase::sampling_store(int &r_index)
            " (perplexity: " << perplexity << ")" << std::endl;
 }
 
-void keyATMbase::store_theta_iter(int &r_index)
+void keyATMmeta::store_theta_iter(int &r_index)
 {
   Z_tables = stored_values["Z_tables"];
   NumericMatrix Z_table = Rcpp::wrap(n_dk);
@@ -229,12 +229,12 @@ void keyATMbase::store_theta_iter(int &r_index)
   stored_values["Z_tables"] = Z_tables;
 }
 
-void keyATMbase::verbose_special(int &r_index){
+void keyATMmeta::verbose_special(int &r_index){
   // If there is anything special to show or store, write here.
 }
 
 // Sampling
-int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
+int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &x,
                          int &w, int &doc_id)
 {
   // remove data
@@ -309,7 +309,7 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
 }
 
 
-int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
+int keyATMmeta::sample_x(VectorXd &alpha, int &z, int &x,
                  int &w, int &doc_id)
 {
       
@@ -368,21 +368,21 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
 
 
 // Utilities
-double keyATMbase::gammapdfln(const double &x, const double &a, const double &b){
+double keyATMmeta::gammapdfln(const double &x, const double &a, const double &b){
   // a: shape, b: scale
   return - a * log(b) - lgamma(a) + (a-1.0) * log(x) - x/b;
 }
 
 
-double keyATMbase::betapdf(const double &x, const double &a, const double &b){
+double keyATMmeta::betapdf(const double &x, const double &a, const double &b){
   return tgamma(a+b) / (tgamma(a) * tgamma(b)) * pow(x, a-1) * pow(1-x, b-1);
 }
 
-double keyATMbase::betapdfln(const double &x, const double &a, const double &b){
+double keyATMmeta::betapdfln(const double &x, const double &a, const double &b){
   return (a-1)*log(x) + (b-1)*log(1.0-x) + mylgamma(a+b) - mylgamma(a) - mylgamma(b);
 }
 
-NumericVector keyATMbase::alpha_reformat(VectorXd& alpha, int& num_topics){
+NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int& num_topics){
   NumericVector alpha_rvec(num_topics);
 
   for (int i = 0; i < num_topics; ++i) {
@@ -393,7 +393,7 @@ NumericVector keyATMbase::alpha_reformat(VectorXd& alpha, int& num_topics){
 }
 
 
-double keyATMbase::gammaln_frac(const double &value, const int &count){
+double keyATMmeta::gammaln_frac(const double &value, const int &count){
   // Calculate \log \frac{\gamma(value + count)}{\gamma(\value)}
   // Not very fast
   
@@ -411,7 +411,7 @@ double keyATMbase::gammaln_frac(const double &value, const int &count){
 }
 
 
-List keyATMbase::return_model(){
+List keyATMmeta::return_model(){
   return model;
 }
 

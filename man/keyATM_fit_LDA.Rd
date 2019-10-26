@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{keyATM_fit_LDA}
 \alias{keyATM_fit_LDA}
-\title{Run the Collapsed Gibbs sampler for LDA with weights}
+\title{Run the Collapsed Gibbs sampler for weighted LDA}
 \usage{
 keyATM_fit_LDA(model, iter = 0L, output_per = 10L)
 }
@@ -14,5 +14,5 @@ keyATM_fit_LDA(model, iter = 0L, output_per = 10L)
 \item{output_per}{Show log-likelihood and perplexity per this number during the iteration}
 }
 \description{
-Run the Collapsed Gibbs sampler for LDA with weights
+Run the Collapsed Gibbs sampler for weighted LDA
 }

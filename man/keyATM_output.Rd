@@ -30,10 +30,3 @@ A keyATM_output containing:
 \description{
 \code{keyATM_output()} makes various quantities that help interpret the model.
 }
-\examples{
-\dontrun{
- # `fitted` is the output of `keyATM()` 
- out <- keyATM_output(fitted)
-}
-
-}

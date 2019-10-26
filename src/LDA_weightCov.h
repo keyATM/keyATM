@@ -17,7 +17,7 @@ class LDAcov : public LDAbase, public keyATMcov
   public:
     // Constructor
     LDAcov(List model_, const int iter_, const int output_per_) :
-      keyATMbase(model_, iter_, output_per_),
+      keyATMmeta(model_, iter_, output_per_),
       LDAbase(model_, iter_, output_per_),
       keyATMcov(model_, iter_, output_per_) {};
 

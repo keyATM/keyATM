@@ -5,14 +5,14 @@
 #include <RcppEigen.h>
 #include <unordered_set>
 #include "sampler.h"
-#include "keyATM_basic.h"
+#include "keyATM_base.h"
 #include "LDA_base.h"
 
 using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-class LDAweight : public LDAbase, public keyATMbasic
+class LDAweight : public LDAbase, public keyATMbase
 {
   public:  
     //
@@ -41,9 +41,9 @@ class LDAweight : public LDAbase, public keyATMbasic
 
     // Constructor
     LDAweight(List model_, const int iter_, const int output_per_) :
-      keyATMbase(model_, iter_, output_per_),
+      keyATMmeta(model_, iter_, output_per_),
       LDAbase(model_, iter_, output_per_),
-      keyATMbasic(model_, iter_, output_per_) {};
+      keyATMbase(model_, iter_, output_per_) {};
 
     // Iteration
     void iteration_single(int &it) final;

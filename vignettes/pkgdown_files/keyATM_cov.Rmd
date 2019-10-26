@@ -1,5 +1,5 @@
 ---
-title: "keyATM Covariate"
+title: "keyATM Covariates"
 output: 
   html_document:
     toc: true
@@ -49,10 +49,10 @@ Before you fit the model, please make sure your keywords appear enough in your c
 ## Fitting the model
 ```{r, warning=FALSE, message=FALSE, fig.align='center', results="hide"}
 out <- keyATM(    
-              keyATM_docs       = keyATM_docs,    # text input
+              docs              = keyATM_docs,    # text input
               no_keyword_topics = 3,              # number of regular topics
               keywords          = bills_keywords, # keywords
-              model             = "cov",          # select the model
+              model             = "covariates",          # select the model
               model_settings    = list(covariates_data = bills_cov),
               options           = list(seed = 100)
              )

@@ -6,16 +6,16 @@
 
 using namespace Rcpp;
 
-// keyATM_fit_basic
-List keyATM_fit_basic(List model, int iter, int output_per);
-RcppExport SEXP _keyATM_keyATM_fit_basic(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
+// keyATM_fit_base
+List keyATM_fit_base(List model, int iter, int output_per);
+RcppExport SEXP _keyATM_keyATM_fit_base(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_fit_basic(model, iter, output_per));
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_base(model, iter, output_per));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -86,7 +86,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_keyATM_keyATM_fit_basic", (DL_FUNC) &_keyATM_keyATM_fit_basic, 3},
+    {"_keyATM_keyATM_fit_base", (DL_FUNC) &_keyATM_keyATM_fit_base, 3},
     {"_keyATM_keyATM_fit_cov", (DL_FUNC) &_keyATM_keyATM_fit_cov, 3},
     {"_keyATM_keyATM_fit_HMM", (DL_FUNC) &_keyATM_keyATM_fit_HMM, 3},
     {"_keyATM_keyATM_fit_LDA", (DL_FUNC) &_keyATM_keyATM_fit_LDA, 3},

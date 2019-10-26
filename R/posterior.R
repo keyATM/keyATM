@@ -20,19 +20,14 @@
 #'     \item{p}{Estimated p}
 #'     \item{values_iter}{Organized values stored during iterations}
 #'   }
-#' @examples
-#' \dontrun{
-#'  # `fitted` is the output of `keyATM()` 
-#'  out <- keyATM_output(fitted)
-#' }
 #'
-#' @export
 keyATM_output <- function(model)
 {
   message("Creating an output object. It may take time...")
 
   check_arg_type(model, "keyATM_fitted")
   values_iter <- list()  # store values by iteration
+  model$model <- extract_full_model_name(model)
 
   # Make info
   info <- list()
@@ -72,9 +67,9 @@ keyATM_output <- function(model)
     values_iter$alpha_iter <- keyATM_output_alpha_iter_hmm(model, info)
   }
 
-  if ((model$model %in% c("basic", "lda"))) {
+  if ((model$model %in% c("base", "lda"))) {
     if (model$options$estimate_alpha)
-      values_iter$alpha_iter <- keyATM_output_alpha_iter_basic(model, info)  
+      values_iter$alpha_iter <- keyATM_output_alpha_iter_base(model, info)  
   }
 
   # model fit
@@ -88,7 +83,7 @@ keyATM_output <- function(model)
   }
 
   # p
-  if (model$model %in% c("basic", "cov", "hmm")){
+  if (model$model %in% c("base", "cov", "hmm")){
     p_estimated <- keyATM_output_p(model) 
   } else {
     p_estimated <- NULL 
@@ -97,14 +92,14 @@ keyATM_output <- function(model)
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
              V = length(model$vocab), N = length(model$Z),
-             model = model$model,
+             model = abb_model_name(model$model),
              theta = theta, phi = phi,
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = info$doc_lens, vocab = model$vocab,
              keywords_raw = model$keywords_raw,
              model_fit = modelfit, p = p_estimated,
              values_iter = values_iter)
-  class(ll) <- c("keyATM_output", class(ll))
+  class(ll) <- c("keyATM_output", model$model, class(ll))
   return(ll)
 }
 
@@ -128,6 +123,7 @@ keyATM_output_p <- function(model)
 
 keyATM_output_theta <- function(model, info)
 {
+
   # Theta
   if (model$model %in% c("cov", "ldacov")) {
     Alpha <- exp(model$model_settings$covariates_data %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
@@ -141,7 +137,7 @@ keyATM_output_theta <- function(model, info)
 
     theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z))
 
-  } else if (model$model %in% c("basic", "lda")) {
+  } else if (model$model %in% c("base", "lda")) {
     if (model$options$estimate_alpha) {
       alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]  
     } else {
@@ -246,7 +242,7 @@ keyATM_output_theta_iter <- function(model, info)
 }
 
 
-keyATM_output_alpha_iter_basic <- function(model, info)
+keyATM_output_alpha_iter_base <- function(model, info)
 {
   topics <- paste0(1:(info$allK))
   model$stored_values$alpha_iter %>%
@@ -357,8 +353,9 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
                       show_keyword = TRUE)
 {
   check_arg_type(x, "keyATM_output")
+  modelname <- extract_full_model_name(x)
 
-  if (x$model %in% c("lda", "ldacov", "ldahmm"))
+  if (modelname %in% c("lda", "ldacov", "ldahmm"))
      show_keyword <- FALSE
 
   if (is.null(n))
@@ -465,6 +462,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
 {
 
   check_arg_type(x, "keyATM_output")
+  modelname <- extract_full_model_name(x)
 
   if (!"alpha_iter" %in% names(x$values_iter)) {
     stop("`alpha` is not stored. Please check the settings of the model.")  
@@ -489,7 +487,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
     stop("Nothing left to plot. Please check arguments.")  
   }
 
-  if (x$model %in% c("basic", "lda")) {
+  if (modelname %in% c("base", "lda")) {
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = Topic)) +
           geom_line() +
           geom_point(size = 0.3) +
@@ -497,7 +495,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
           ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
-  } else if (x$model %in% c("hmm", "ldahmm")) {
+  } else if (modelname %in% c("hmm", "ldahmm")) {
     res_alpha %>% mutate(State = as.character(State)) -> res_alpha
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = State, colour = State)) +
           geom_line() +
@@ -564,7 +562,10 @@ plot_modelfit <- function(x, start = 1)
 #' @export
 plot_p <- function(x, show_topic = NULL)
 {
-  if (x$model %in% c("lda", "ldacov", "ldahmm")) {
+  check_arg_type(x, "keyATM_output")
+  modelname <- extract_full_model_name(x)
+
+  if (modelname %in% c("lda", "ldacov", "ldahmm")) {
     stop(paste0("`", x$model, "` is not a model with keywords.")) 
   }
 
