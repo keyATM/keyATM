@@ -114,7 +114,7 @@ keyATM_output_p <- function(model)
     dplyr::group_by(Topic) %>%
     dplyr::summarize(count = (dplyr::n()), sumx = sum(X)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(Proportion = round(sumx/count*100, 3)) %>%
+    dplyr::mutate(Proportion = sumx/count*100) %>%
     dplyr::select(-sumx) -> p_estimated
 
   return(p_estimated)
