@@ -472,7 +472,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
   enq_thinning <- enquo(thinning)
 
   if (is.null(show_topic)) {
-    show_topic <- 1:(x$keyword_k + x$no_keyword_topics)  
+    show_topic <- 1:ncol(x$theta)  
   }
   check_arg_type(show_topic, "numeric")
   enq_show_topic <- enquo(show_topic)
@@ -538,7 +538,7 @@ plot_modelfit <- function(x, start = 1)
   modelfit <- tidyr::gather(modelfit, key = Measures, value = value, -Iteration)
 
   p <- ggplot(data = modelfit, aes_string(x='Iteration', y='value',
-                                        group='Measures', color='Measures')) +
+                                          group='Measures', color='Measures')) +
      geom_line(show.legend = F) +
      geom_point(size = 0.3, show.legend = F) +
      facet_wrap(as.formula(paste("~", "Measures")), ncol = 2, scales = "free") +
