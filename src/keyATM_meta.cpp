@@ -1,4 +1,4 @@
-#include "keyATM.h"
+#include "keyATM_meta.h"
 
 using namespace Eigen;
 using namespace Rcpp;
@@ -6,36 +6,36 @@ using namespace std;
 
 # define PI_V   3.14159265358979323846  /* pi */
 
-keyATMbase::keyATMbase(List model_, const int iter_, const int output_per_)
+keyATMmeta::keyATMmeta(List model_, const int iter_, const int output_per_)
 {
   model = model_;
   iter = iter_;
   output_per = output_per_;
 }
 
-keyATMbase::~keyATMbase(){
+keyATMmeta::~keyATMmeta(){
   model["stored_values"] = stored_values;
 }
 
-void keyATMbase::fit()
+void keyATMmeta::fit()
 {
   read_data();
   initialize();
   iteration();
 }
 
-void keyATMbase::read_data()
+void keyATMmeta::read_data()
 {
   read_data_common();
   read_data_specific();
 }
 
-void keyATMbase::read_data_common()
+void keyATMmeta::read_data_common()
 {
   // Read data
   W = model["W"]; Z = model["Z"]; X = model["X"];
   vocab = model["vocab"];
-  regular_k = model["regular_k"];
+  regular_k = model["no_keyword_topics"];
   keywords_list = model["keywords"];
   keyword_k = keywords_list.size();
   model_fit = model["model_fit"];
@@ -58,19 +58,24 @@ void keyATMbase::read_data_common()
   priors_list = model["priors"];
   beta = priors_list["beta"];
 
+  prior_gamma = MatrixXd::Zero(num_topics, 2);
+  NumericMatrix RMatrix = priors_list["gamma"];
+  prior_gamma = Rcpp::as<Eigen::MatrixXd>(RMatrix);
+  beta_s = priors_list["beta_s"];
+
   // Stored values
   stored_values = model["stored_values"];
 }
 
 
-void keyATMbase::initialize()
+void keyATMmeta::initialize()
 {
   initialize_common();
   initialize_specific();
 }
 
 
-void keyATMbase::initialize_common()
+void keyATMmeta::initialize_common()
 {
   // Parameters
   eta_1 = 1.0;
@@ -83,15 +88,15 @@ void keyATMbase::initialize_common()
   max_v = 100.0;
   max_shrink_time = 200;
 
-  // Vector that stores seed words (words in dictionary)
+  // Vector that stores keywords (words in dictionary)
   int wd_id;
   IntegerVector wd_ids;
-  for (int ii = 0; ii < keyword_k; ii++){
+  for (int ii = 0; ii < keyword_k; ii++) {
     wd_ids = keywords_list[ii];
-    seed_num.push_back(wd_ids.size());
+    keywords_num.push_back(wd_ids.size());
     
     std::unordered_set<int> keywords_set;
-    for (int jj = 0; jj < wd_ids.size(); jj++){
+    for (int jj = 0; jj < wd_ids.size(); jj++) {
       wd_id = wd_ids(jj);
       keywords_set.insert(wd_id);
     }
@@ -99,10 +104,10 @@ void keyATMbase::initialize_common()
     keywords.push_back(keywords_set);
   }
 
-  for(int i = keyword_k; i < num_topics; i++){
+  for (int i = keyword_k; i < num_topics; i++) {
     std::unordered_set<int> keywords_set{ -1 };
   
-    seed_num.push_back(0);
+    keywords_num.push_back(0);
     keywords.push_back(keywords_set);
   }
 
@@ -123,12 +128,12 @@ void keyATMbase::initialize_common()
 
 
   // Construct vocab weights
-  for(int doc_id = 0; doc_id < num_doc; doc_id++){
+  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
     doc_w = W[doc_id];
     doc_len = doc_w.size();
     doc_each_len.push_back(doc_len);
   
-    for(int w_position = 0; w_position < doc_len; w_position++){
+    for (int w_position = 0; w_position < doc_len; w_position++) {
       w = doc_w[w_position];
       vocab_weights(w) += 1.0;
     }
@@ -139,7 +144,7 @@ void keyATMbase::initialize_common()
   vocab_weights = - vocab_weights.array() / log(2);
   
 
-  if(use_weight == 0){
+  if (use_weight == 0) {
     cout << "Not using weights!! Check `options$use_weight`." << endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
@@ -148,11 +153,11 @@ void keyATMbase::initialize_common()
   // Construct data matrices
   vector<Triplet> trip_x1;   
   
-  for(int doc_id = 0; doc_id < num_doc; doc_id++){
+  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
     doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
 
-    for(int w_position = 0; w_position < doc_len; w_position++){
+    for (int w_position = 0; w_position < doc_len; w_position++) {
       x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
       if (x == 0){
         n_x0_kv(z, w) += vocab_weights(w);
@@ -179,18 +184,18 @@ void keyATMbase::initialize_common()
 
 
 // Iteration
-void keyATMbase::iteration()
+void keyATMmeta::iteration()
 {
-  for(int it = 0; it < iter; it++){
+  for (int it = 0; it < iter; it++) {
     iteration_single(it);
 
     int r_index = it + 1;
-    if(r_index % output_per == 0 || r_index == 1 || r_index == iter){
+    if (r_index % output_per == 0 || r_index == 1 || r_index == iter) {
       sampling_store(r_index);
       verbose_special(r_index);
     }
-    if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
-      if(store_theta)
+    if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
+      if (store_theta)
         store_theta_iter(r_index);
     }
 
@@ -200,7 +205,7 @@ void keyATMbase::iteration()
   model["model_fit"] = model_fit;
 }
 
-void keyATMbase::sampling_store(int &r_index)
+void keyATMmeta::sampling_store(int &r_index)
 {
 
   double loglik = loglik_total();
@@ -216,7 +221,7 @@ void keyATMbase::sampling_store(int &r_index)
            " (perplexity: " << perplexity << ")" << std::endl;
 }
 
-void keyATMbase::store_theta_iter(int &r_index)
+void keyATMmeta::store_theta_iter(int &r_index)
 {
   Z_tables = stored_values["Z_tables"];
   NumericMatrix Z_table = Rcpp::wrap(n_dk);
@@ -224,12 +229,12 @@ void keyATMbase::store_theta_iter(int &r_index)
   stored_values["Z_tables"] = Z_tables;
 }
 
-void keyATMbase::verbose_special(int &r_index){
+void keyATMmeta::verbose_special(int &r_index){
   // If there is anything special to show or store, write here.
 }
 
 // Sampling
-int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
+int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &x,
                          int &w, int &doc_id)
 {
   // remove data
@@ -237,7 +242,7 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
     n_x0_kv(z, w) -= vocab_weights(w);
     n_x0_k(z) -= vocab_weights(w);
     n_x0_k_noWeight(z) -= 1.0;
-  } else if (x==1) {
+  } else if (x == 1) {
     n_x1_kv.coeffRef(z, w) -= vocab_weights(w);
     n_x1_k(z) -= vocab_weights(w);
     n_x1_k_noWeight(z) -= 1.0;
@@ -269,12 +274,12 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
       if (keywords[k].find(w) == keywords[k].end()){
         z_prob_vec(k) = 0.0;
         continue;
-      } else{ 
+      } else { 
         numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
           (n_x1_k(k) + prior_gamma(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
       }
-      denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
+      denominator = ((double)keywords_num[k] * beta_s + n_x1_k(k) ) *
         (n_x1_k(k) + prior_gamma(k, 0) + n_x0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
@@ -291,7 +296,7 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
     n_x0_kv(new_z, w) += vocab_weights(w);
     n_x0_k(new_z) += vocab_weights(w);
     n_x0_k_noWeight(new_z) += 1.0;
-  } else if (x==1) {
+  } else if (x == 1) {
     n_x1_kv.coeffRef(new_z, w) += vocab_weights(w);
     n_x1_k(new_z) += vocab_weights(w);
     n_x1_k_noWeight(new_z) += 1.0;
@@ -304,12 +309,12 @@ int keyATMbase::sample_z(VectorXd &alpha, int &z, int &x,
 }
 
 
-int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
+int keyATMmeta::sample_x(VectorXd &alpha, int &z, int &x,
                  int &w, int &doc_id)
 {
       
   // If a word is not a keyword, no need to sample
-  if(keywords[z].find(w) == keywords[z].end())
+  if (keywords[z].find(w) == keywords[z].end())
     return x;
   
   // remove data
@@ -328,7 +333,7 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
 
   numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
     ( n_x1_k(k) + prior_gamma(k, 0) );
-  denominator = ((double)seed_num[k] * beta_s + n_x1_k(k) ) *
+  denominator = ((double)keywords_num[k] * beta_s + n_x1_k(k) ) *
     (n_x1_k(k) + prior_gamma(k, 0) + n_x0_k(k) + prior_gamma(k, 1));
   x1_prob = numerator / denominator;
 
@@ -363,24 +368,24 @@ int keyATMbase::sample_x(VectorXd &alpha, int &z, int &x,
 
 
 // Utilities
-double keyATMbase::gammapdfln(const double &x, const double &a, const double &b){
+double keyATMmeta::gammapdfln(const double &x, const double &a, const double &b){
   // a: shape, b: scale
-  return - a * log(b) - lgamma(a) + (a-1.0) * log(x) - x/b;
+  return - a * log(b) - mylgamma(a) + (a-1.0) * log(x) - x/b;
 }
 
 
-double keyATMbase::betapdf(const double &x, const double &a, const double &b){
+double keyATMmeta::betapdf(const double &x, const double &a, const double &b){
   return tgamma(a+b) / (tgamma(a) * tgamma(b)) * pow(x, a-1) * pow(1-x, b-1);
 }
 
-double keyATMbase::betapdfln(const double &x, const double &a, const double &b){
+double keyATMmeta::betapdfln(const double &x, const double &a, const double &b){
   return (a-1)*log(x) + (b-1)*log(1.0-x) + mylgamma(a+b) - mylgamma(a) - mylgamma(b);
 }
 
-NumericVector keyATMbase::alpha_reformat(VectorXd& alpha, int& num_topics){
+NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int& num_topics){
   NumericVector alpha_rvec(num_topics);
 
-  for(int i = 0; i < num_topics; ++i){
+  for (int i = 0; i < num_topics; ++i) {
     alpha_rvec[i] = alpha(i);
   }
 
@@ -388,16 +393,16 @@ NumericVector keyATMbase::alpha_reformat(VectorXd& alpha, int& num_topics){
 }
 
 
-double keyATMbase::gammaln_frac(const double &value, const int &count){
+double keyATMmeta::gammaln_frac(const double &value, const int &count){
   // Calculate \log \frac{\gamma(value + count)}{\gamma(\value)}
   // Not very fast
   
-  if(count > 19){
-    return lgamma(value + count) - lgamma(value);  
-  }else{
+  if (count > 19) {
+    return mylgamma(value + count) - mylgamma(value);  
+  } else {
     gammaln_val = 0.0;
 
-    for(int i = 0; i < count; i++){
+    for (int i = 0; i < count; i++) {
       gammaln_val += log(value + i);  
     }
 
@@ -406,7 +411,7 @@ double keyATMbase::gammaln_frac(const double &value, const int &count){
 }
 
 
-List keyATMbase::return_model(){
+List keyATMmeta::return_model(){
   return model;
 }
 

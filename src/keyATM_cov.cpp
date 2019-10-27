@@ -6,25 +6,14 @@ using namespace std;
 
 # define PI_V   3.14159265358979323846  /* pi */
 
-keyATMcov::keyATMcov(List model_, const int iter_, const int output_per_) :
-  keyATMbase(model_, iter_, output_per_) // pass to parent!
-{
-
-}
-
 
 void keyATMcov::read_data_specific()
 {
   // Covariate
-	model_settings = model["model_settings"];
+  model_settings = model["model_settings"];
   NumericMatrix C_r = model_settings["covariates_data"];
   C = Rcpp::as<Eigen::MatrixXd>(C_r);
   num_cov = C.cols();
-
-  prior_gamma = MatrixXd::Zero(num_topics, 2);
-  NumericMatrix RMatrix = priors_list["gamma"];
-  prior_gamma = Rcpp::as<Eigen::MatrixXd>(RMatrix);
-  beta_s = priors_list["beta_s"];
 }
 
 void keyATMcov::initialize_specific()
@@ -38,9 +27,9 @@ void keyATMcov::initialize_specific()
 
   // Lambda
   Lambda = MatrixXd::Zero(num_topics, num_cov);
-  for(int k = 0; k < num_topics; k++){
+  for (int k = 0; k < num_topics; k++) {
     // Initialize with R random
-    for(int i = 0; i < num_cov; i++){
+    for (int i = 0; i < num_cov; i++) {
       Lambda(k, i) = R::rnorm(0.0, 0.3);
     }
   }
@@ -94,7 +83,7 @@ void keyATMcov::sample_parameters(int &it)
 
   // Store lambda 
   int r_index = it + 1;
-  if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
+  if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
     Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
     List Lambda_iter = stored_values["Lambda_iter"];
     Lambda_iter.push_back(Lambda_R);
@@ -116,7 +105,7 @@ double keyATMcov::likelihood_lambda()
   Alpha = (C * Lambda.transpose()).array().exp();
   alpha = VectorXd::Zero(num_topics);
 
-  for(int d = 0; d < num_doc; d++){
+  for (int d = 0; d < num_doc; d++) {
     alpha = Alpha.row(d).transpose(); // Doc alpha, column vector
     // alpha = ((C.row(d) * Lambda)).array().exp(); // Doc alpha, column vector
   
@@ -125,7 +114,7 @@ double keyATMcov::likelihood_lambda()
     loglik -= mylgamma( doc_each_len[d] + alpha.sum() ); 
         // the second term denoinator in the first square bracket
   
-    for(int k = 0; k < num_topics; k++){
+    for (int k = 0; k < num_topics; k++) {
       loglik -= mylgamma(alpha(k));
         // the first term denominator in the first square bracket
       loglik += mylgamma( n_dk(d, k) + alpha(k) );
@@ -135,8 +124,8 @@ double keyATMcov::likelihood_lambda()
 
   // Prior
   double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
-  for(int k = 0; k < num_topics; k++){
-    for(int t = 0; t < num_cov; t++){
+  for (int k = 0; k < num_topics; k++) {
+    for (int t = 0; t < num_cov; t++) {
       loglik += prior_fixedterm;
       loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
     }
@@ -163,10 +152,10 @@ void keyATMcov::sample_lambda_slice()
   store_loglik = likelihood_lambda();
   newlambdallk = 0.0;
 
-  for(int kk = 0; kk < num_topics; kk++){
+  for (int kk = 0; kk < num_topics; kk++) {
     k = topic_ids[kk];
 
-    for(int tt = 0; tt < num_cov; tt++){
+    for (int tt = 0; tt < num_cov; tt++) {
       t = cov_ids[tt];
 
       start = 0.0; // shrink
@@ -213,19 +202,21 @@ double keyATMcov::loglik_total()
   for (int k = 0; k < num_topics; k++){
     for (int v = 0; v < num_vocab; v++){ // word
       loglik += mylgamma(beta + n_x0_kv(k, v) / vocab_weights(v) ) - mylgamma(beta);
-      // loglik += mylgamma(beta_s + n_x1_kv.coeffRef(k, v) / vocab_weights(v) ) - mylgamma(beta_s);
-    }
-
-    // n_x1_kv
-    for (SparseMatrix<double,RowMajor>::InnerIterator it(n_x1_kv, k); it; ++it){
-      loglik += mylgamma(beta_s + it.value() / vocab_weights(it.index()) ) - mylgamma(beta_s);
     }
 
     // word normalization
     loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
-    loglik += mylgamma( beta_s * (double)num_vocab ) - mylgamma(beta_s * (double)num_vocab + n_x1_k_noWeight(k) );
 
-    if(k < keyword_k){
+    if (k < keyword_k) {
+      // For keyword topics
+
+      // n_x1_kv
+      for (SparseMatrix<double,RowMajor>::InnerIterator it(n_x1_kv, k); it; ++it){
+        loglik += mylgamma(beta_s + it.value() / vocab_weights(it.index()) ) - mylgamma(beta_s);
+      }
+      loglik += mylgamma( beta_s * (double)keywords_num[k] ) - mylgamma(beta_s * (double)keywords_num[k] + n_x1_k_noWeight(k) );
+
+
       // Normalization
       loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
 
@@ -247,6 +238,15 @@ double keyATMcov::loglik_total()
     loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+    }
+  }
+
+  // Lambda loglik
+  double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
+  for (int k = 0; k < num_topics; k++) {
+    for (int t = 0; t < num_cov; t++) {
+      loglik += prior_fixedterm;
+      loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
     }
   }
 

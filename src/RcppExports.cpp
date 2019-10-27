@@ -6,93 +6,92 @@
 
 using namespace Rcpp;
 
-// keyATM_train
-List keyATM_train(List model, int iter, int output_per);
-RcppExport SEXP _keyATM_keyATM_train(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
+// keyATM_fit_base
+List keyATM_fit_base(List model, int iter, int output_per);
+RcppExport SEXP _keyATM_keyATM_fit_base(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_train(model, iter, output_per));
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_base(model, iter, output_per));
     return rcpp_result_gen;
 END_RCPP
 }
-// keyATM_train_cov
-List keyATM_train_cov(List model, int iter, int output_per);
-RcppExport SEXP _keyATM_keyATM_train_cov(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
+// keyATM_fit_cov
+List keyATM_fit_cov(List model, int iter, int output_per);
+RcppExport SEXP _keyATM_keyATM_fit_cov(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_train_cov(model, iter, output_per));
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_cov(model, iter, output_per));
     return rcpp_result_gen;
 END_RCPP
 }
-// keyATM_train_HMM
-List keyATM_train_HMM(List model, int iter, int output_per);
-RcppExport SEXP _keyATM_keyATM_train_HMM(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
+// keyATM_fit_HMM
+List keyATM_fit_HMM(List model, int iter, int output_per);
+RcppExport SEXP _keyATM_keyATM_fit_HMM(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_train_HMM(model, iter, output_per));
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_HMM(model, iter, output_per));
     return rcpp_result_gen;
 END_RCPP
 }
-// lda_cov
-List lda_cov(List model, int K, int iter, int output_iter);
-RcppExport SEXP _keyATM_lda_cov(SEXP modelSEXP, SEXP KSEXP, SEXP iterSEXP, SEXP output_iterSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type K(KSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    Rcpp::traits::input_parameter< int >::type output_iter(output_iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(lda_cov(model, K, iter, output_iter));
-    return rcpp_result_gen;
-END_RCPP
-}
-// LDA_weight
-List LDA_weight(List model, int iter, int output_per);
-RcppExport SEXP _keyATM_LDA_weight(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
+// keyATM_fit_LDA
+List keyATM_fit_LDA(List model, int iter, int output_per);
+RcppExport SEXP _keyATM_keyATM_fit_LDA(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    rcpp_result_gen = Rcpp::wrap(LDA_weight(model, iter, output_per));
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_LDA(model, iter, output_per));
     return rcpp_result_gen;
 END_RCPP
 }
-// keyATM_train_LDAHMM
-List keyATM_train_LDAHMM(List model, int iter, int output_per);
-RcppExport SEXP _keyATM_keyATM_train_LDAHMM(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
+// keyATM_fit_LDAcov
+List keyATM_fit_LDAcov(List model, int iter, int output_per);
+RcppExport SEXP _keyATM_keyATM_fit_LDAcov(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_train_LDAHMM(model, iter, output_per));
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_LDAcov(model, iter, output_per));
+    return rcpp_result_gen;
+END_RCPP
+}
+// keyATM_fit_LDAHMM
+List keyATM_fit_LDAHMM(List model, int iter, int output_per);
+RcppExport SEXP _keyATM_keyATM_fit_LDAHMM(SEXP modelSEXP, SEXP iterSEXP, SEXP output_perSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< int >::type output_per(output_perSEXP);
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_LDAHMM(model, iter, output_per));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_keyATM_keyATM_train", (DL_FUNC) &_keyATM_keyATM_train, 3},
-    {"_keyATM_keyATM_train_cov", (DL_FUNC) &_keyATM_keyATM_train_cov, 3},
-    {"_keyATM_keyATM_train_HMM", (DL_FUNC) &_keyATM_keyATM_train_HMM, 3},
-    {"_keyATM_lda_cov", (DL_FUNC) &_keyATM_lda_cov, 4},
-    {"_keyATM_LDA_weight", (DL_FUNC) &_keyATM_LDA_weight, 3},
-    {"_keyATM_keyATM_train_LDAHMM", (DL_FUNC) &_keyATM_keyATM_train_LDAHMM, 3},
+    {"_keyATM_keyATM_fit_base", (DL_FUNC) &_keyATM_keyATM_fit_base, 3},
+    {"_keyATM_keyATM_fit_cov", (DL_FUNC) &_keyATM_keyATM_fit_cov, 3},
+    {"_keyATM_keyATM_fit_HMM", (DL_FUNC) &_keyATM_keyATM_fit_HMM, 3},
+    {"_keyATM_keyATM_fit_LDA", (DL_FUNC) &_keyATM_keyATM_fit_LDA, 3},
+    {"_keyATM_keyATM_fit_LDAcov", (DL_FUNC) &_keyATM_keyATM_fit_LDAcov, 3},
+    {"_keyATM_keyATM_fit_LDAHMM", (DL_FUNC) &_keyATM_keyATM_fit_LDAHMM, 3},
     {NULL, NULL, 0}
 };
 

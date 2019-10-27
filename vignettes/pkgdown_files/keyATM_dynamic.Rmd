@@ -1,5 +1,5 @@
 ---
-title: "keyATM HMM"
+title: "keyATM Dynamic"
 output: 
   html_document:
     toc: true
@@ -48,25 +48,25 @@ bills_keywords <- list(
 ```
 
 ## Checking keywords
-Before you fit the model, please make sure your keywords appear enough in your corpus. [FAQ](FAQ.html#how-to-select-keywords) explains what could be good keywords. This step is the same as [basic model](keyATM_basic.html#checking-keywords).
+Before you fit the model, please make sure your keywords appear enough in your corpus. [FAQ](FAQ.html#how-to-select-keywords) explains what could be good keywords. This step is the same as the [Base model](keyATM_basic.html#checking-keywords).
 
 
 ## Fitting the model
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(    
-              keyATM_docs    = keyATM_docs,    # text input
-              regular_k      = 3,              # number of regular topics
-              keywords       = bills_keywords, # keywords
-              model          = "hmm",          # select the model
-              model_settings = list(time_index = bills_time_index,
-                                    num_states = 5),
-              options        = list(seed = 100)
+              docs              = keyATM_docs,    # text input
+              no_keyword_topics = 3,              # number of topics without keywords
+              keywords          = bills_keywords, # keywords
+              model             = "dynamic",          # select the model
+              model_settings    = list(time_index = bills_time_index,
+                                       num_states = 5),
+              options           = list(seed = 100)
              )
 ```
 
 ## Saving the model
 
-Once you fit the model, you can save the model with `save()` for replication. This is the same as [basic model](keyATM_basic.html#saving-the-model).
+Once you fit the model, you can save the model with `save()` for replication. This is the same as the [Base model](keyATM_basic.html#saving-the-model).
 
 ## Checking top words
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}

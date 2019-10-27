@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit keyATM model — keyATM_fit • keyATM</title>
+<title>Weighted LDA Main function — weightedLDA • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Fit keyATM model — keyATM_fit" />
+<meta property="og:title" content="Weighted LDA Main function — weightedLDA" />
 
-<meta property="og:description" content="Select and specify one of the keyATM models and fit the model." />
+<meta property="og:description" content="This is a wrapper function of keyATM_fit() and keyATM_output()." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -129,38 +129,30 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fit keyATM model</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/model.R'><code>R/model.R</code></a></small>
-    <div class="hidden name"><code>keyATM_fit.Rd</code></div>
+    <h1>Weighted LDA Main function</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/keyATM.R'><code>R/keyATM.R</code></a></small>
+    <div class="hidden name"><code>weightedLDA.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Select and specify one of the keyATM models and fit the model.</p>
+    <p>This is a wrapper function of <code><a href='keyATM_fit.html'>keyATM_fit()</a></code> and <code><a href='keyATM_output.html'>keyATM_output()</a></code>.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>keyATM_fit</span>(<span class='no'>docs</span>, <span class='no'>model</span>, <span class='no'>no_keyword_topics</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
-  <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>priors</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>())</pre>
+    <pre class="usage"><span class='fu'>weightedLDA</span>(<span class='no'>docs</span>, <span class='no'>model</span>, <span class='no'>number_of_topics</span>, <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
+  <span class='kw'>priors</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>keep</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>docs</th>
-      <td><p>texts read via <code><a href='keyATM_read.html'>keyATM_read()</a></code></p></td>
-    </tr>
-    <tr>
       <th>model</th>
-      <td><p>keyATM model: "base", "covariates", and "dynamic"</p></td>
+      <td><p>Weighted LDA model: "base", "covariates", and "dynamic"</p></td>
     </tr>
     <tr>
-      <th>no_keyword_topics</th>
+      <th>number_of_topics</th>
       <td><p>the number of regular topics</p></td>
-    </tr>
-    <tr>
-      <th>keywords</th>
-      <td><p>a list of keywords</p></td>
     </tr>
     <tr>
       <th>model_settings</th>
@@ -174,27 +166,58 @@
       <th>options</th>
       <td><p>a list of options</p></td>
     </tr>
+    <tr>
+      <th>keep</th>
+      <td><p>a vector of the names of elements you want to keep from <code><a href='keyATM_fit.html'>keyATM_fit()</a></code> output</p></td>
+    </tr>
+    <tr>
+      <th>keyATM_docs</th>
+      <td><p>texts read via <code><a href='keyATM_read.html'>keyATM_read()</a></code></p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>keyATM_model object, which is a list containing</p><dl class='dl-horizontal'>
-  <dt>W</dt><dd><p>a list of vectors of word indexes</p></dd>
-  <dt>Z</dt><dd><p>a list of vectors of topic indicators isomorphic to W</p></dd>
-  <dt>X</dt><dd><p>a list</p></dd>
-  <dt>model</dt><dd><p>the name of the model</p></dd>
-  <dt>keywords</dt><dd><p></p></dd>
-  <dt>keywords_raw</dt><dd><p></p></dd>
-  <dt>no_keyword_topics</dt><dd><p>the number of regular topics</p></dd>
-  <dt>model_settings</dt><dd><p>a list of settings</p></dd>
-  <dt>priors</dt><dd><p>a list of priors</p></dd>
-  <dt>options</dt><dd><p>a list of options</p></dd>
-  <dt>stored_values</dt><dd><p>a list of stored_values</p></dd>
-  <dt>call</dt><dd><p>details of the function call</p></dd>
-</dl>
+    <p>A keyATM_output object containing:</p><dl class='dl-horizontal'>
+    <dt>keyword_k</dt><dd><p>Number of keyword topics</p></dd>
+    <dt>number_of_topics</dt><dd><p>Number of regular unseeded topics</p></dd>
+    <dt>V</dt><dd><p>Number of word types</p></dd>
+    <dt>N</dt><dd><p>Number of documents</p></dd>
+    <dt>theta</dt><dd><p>Normalized topic proportions for each document</p></dd>
+    <dt>phi</dt><dd><p>Normalized topic specific word generation probabilities</p></dd>
+    <dt>topic_counts</dt><dd><p>Number of tokens assigned to each topic</p></dd>
+    <dt>word_counts</dt><dd><p>Number of times each word type appears</p></dd>
+    <dt>doc_lens</dt><dd><p>Length of each document in tokens</p></dd>
+    <dt>vocab</dt><dd><p>Words in the vocabulary</p></dd>
+    <dt>model_fit</dt><dd><p>Perplexity and log-likelihood</p></dd>
+    <dt>p</dt><dd><p>Estimated p</p></dd>
+    <dt>values_iter</dt><dd><p>Organized values stored during iterations</p></dd>
+    <dt>kept_values</dt><dd><p>Output from <code><a href='keyATM_fit.html'>keyATM_fit()</a></code> you specified to store.</p></dd>
+  </dl>
 
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+  <span class='co'># Weighted LDA</span>
+  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>weightedLDA</span>(
+                     <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"base"</span>, <span class='kw'>number_of_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>
+                    )
+
+  <span class='co'># Weighted LDA Covariates</span>
+  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>weightedLDA</span>(
+                     <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"covariates"</span>, <span class='kw'>number_of_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                     <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov_matrix</span>)
+                    )
+
+  <span class='co'># Weighted LDA Dynamic</span>
+  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>weightedLDA</span>(
+                     <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"dynamic"</span>, <span class='kw'>number_of_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                     <span class='fu'>model_settings</span>(<span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>time_index_vec</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>)
+                    )
+
+<span class='co'># }</span><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -202,7 +225,9 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

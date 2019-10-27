@@ -7,7 +7,7 @@
 #' @return A keyATM_output containing:
 #'   \describe{
 #'     \item{keyword_k}{Number of keyword topics}
-#'     \item{regular_k}{Number of regular unseeded topics}
+#'     \item{no_keyword_topics}{Number of regular unseeded topics}
 #'     \item{V}{Number of word types}
 #'     \item{N}{Number of documents}
 #'     \item{theta}{Normalized topic proportions for each document}
@@ -20,32 +20,27 @@
 #'     \item{p}{Estimated p}
 #'     \item{values_iter}{Organized values stored during iterations}
 #'   }
-#' @examples
-#' \dontrun{
-#'  # `fitted` is the output of `keyATM()` 
-#'  out <- keyATM_output(fitted)
-#' }
 #'
-#' @export
 keyATM_output <- function(model)
 {
   message("Creating an output object. It may take time...")
 
   check_arg_type(model, "keyATM_fitted")
   values_iter <- list()  # store values by iteration
+  model$model <- extract_full_model_name(model)
 
   # Make info
   info <- list()
-  info$allK <- model$regular_k + length(model$keywords)
+  info$allK <- model$no_keyword_topics + length(model$keywords)
   info$V <- length(model$vocab)
   info$N <- length(model$Z)
   info$doc_lens <- sapply(model$Z, length)
 
-  if (model$regular_k > 0 & length(model$keywords) != 0) {
-    info$tnames <- c(names(model$keywords_raw), paste0("R_", 1:model$regular_k))
-  } else if (model$regular_k > 0 & length(model$keywords) == 0) {
+  if (model$no_keyword_topics > 0 & length(model$keywords) != 0) {
+    info$tnames <- c(names(model$keywords_raw), paste0("Other_", 1:model$no_keyword_topics))
+  } else if (model$no_keyword_topics > 0 & length(model$keywords) == 0) {
     # No keywords (= lda models)
-    info$tnames <- paste0("R_", 1:model$regular_k)
+    info$tnames <- paste0("Topic_", 1:model$no_keyword_topics)
   } else {
     # Keywords only
     info$tnames <- c(paste0("", 1:length(model$keywords)))
@@ -72,9 +67,9 @@ keyATM_output <- function(model)
     values_iter$alpha_iter <- keyATM_output_alpha_iter_hmm(model, info)
   }
 
-  if ((model$model %in% c("basic", "lda"))) {
+  if ((model$model %in% c("base", "lda"))) {
     if (model$options$estimate_alpha)
-      values_iter$alpha_iter <- keyATM_output_alpha_iter_basic(model, info)  
+      values_iter$alpha_iter <- keyATM_output_alpha_iter_base(model, info)  
   }
 
   # model fit
@@ -88,6 +83,29 @@ keyATM_output <- function(model)
   }
 
   # p
+  if (model$model %in% c("base", "cov", "hmm")){
+    p_estimated <- keyATM_output_p(model) 
+  } else {
+    p_estimated <- NULL 
+  }
+
+  # Make an object to return
+  ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
+             V = length(model$vocab), N = length(model$Z),
+             model = abb_model_name(model$model),
+             theta = theta, phi = phi,
+             topic_counts = topic_counts, word_counts = word_counts,
+             doc_lens = info$doc_lens, vocab = model$vocab,
+             keywords_raw = model$keywords_raw,
+             model_fit = modelfit, p = p_estimated,
+             values_iter = values_iter)
+  class(ll) <- c("keyATM_output", model$model, class(ll))
+  return(ll)
+}
+
+
+keyATM_output_p <- function(model)
+{
   data <- tibble::tibble(Z = unlist(model$Z, use.names = F),
                          X = unlist(model$X, use.names = F))
   data %>%
@@ -99,25 +117,15 @@ keyATM_output <- function(model)
     dplyr::mutate(Proportion = round(sumx/count*100, 3)) %>%
     dplyr::select(-sumx) -> p_estimated
 
-  # Make an object to return
-  ll <- list(keyword_k = length(model$keywords), regular_k = model$regular_k,
-             V = length(model$vocab), N = length(model$Z),
-             model = model$model,
-             theta = theta, phi = phi,
-             topic_counts = topic_counts, word_counts = word_counts,
-             doc_lens = info$doc_lens, vocab = model$vocab,
-             keywords_raw = model$keywords_raw,
-             model_fit = modelfit, p = p_estimated,
-             values_iter = values_iter)
-  class(ll) <- c("keyATM_output", class(ll))
-  return(ll)
+  return(p_estimated)
 }
 
 
 keyATM_output_theta <- function(model, info)
 {
+
   # Theta
-  if (model$model %in% c("cov")) {
+  if (model$model %in% c("cov", "ldacov")) {
     Alpha <- exp(model$model_settings$covariates_data %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
 
     posterior_z <- function(docid){
@@ -129,7 +137,7 @@ keyATM_output_theta <- function(model, info)
 
     theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z))
 
-  } else if (model$model %in% c("basic", "lda")) {
+  } else if (model$model %in% c("base", "lda")) {
     if (model$options$estimate_alpha) {
       alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]  
     } else {
@@ -194,7 +202,7 @@ keyATM_output_phi <- function(model, info)
 
 keyATM_output_theta_iter <- function(model, info)
 {
-  if (model$model %in% c("cov")) {
+  if (model$model %in% c("cov", "ldacov")) {
     posterior_theta <- function(x){
       Z_table <- model$stored_values$Z_tables[[x]]
       lambda <- model$stored_values$Lambda_iter[[x]]
@@ -234,7 +242,7 @@ keyATM_output_theta_iter <- function(model, info)
 }
 
 
-keyATM_output_alpha_iter_basic <- function(model, info)
+keyATM_output_alpha_iter_base <- function(model, info)
 {
   topics <- paste0(1:(info$allK))
   model$stored_values$alpha_iter %>%
@@ -345,8 +353,9 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
                       show_keyword = TRUE)
 {
   check_arg_type(x, "keyATM_output")
+  modelname <- extract_full_model_name(x)
 
-  if (x$model %in% c("lda", "ldacov", "ldahmm"))
+  if (modelname %in% c("lda", "ldacov", "ldahmm"))
      show_keyword <- FALSE
 
   if (is.null(n))
@@ -453,6 +462,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
 {
 
   check_arg_type(x, "keyATM_output")
+  modelname <- extract_full_model_name(x)
 
   if (!"alpha_iter" %in% names(x$values_iter)) {
     stop("`alpha` is not stored. Please check the settings of the model.")  
@@ -462,7 +472,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
   enq_thinning <- enquo(thinning)
 
   if (is.null(show_topic)) {
-    show_topic <- 1:(x$keyword_k + x$regular_k)  
+    show_topic <- 1:(x$keyword_k + x$no_keyword_topics)  
   }
   check_arg_type(show_topic, "numeric")
   enq_show_topic <- enquo(show_topic)
@@ -477,7 +487,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
     stop("Nothing left to plot. Please check arguments.")  
   }
 
-  if (x$model %in% c("basic", "lda")) {
+  if (modelname %in% c("base", "lda")) {
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = Topic)) +
           geom_line() +
           geom_point(size = 0.3) +
@@ -485,7 +495,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
           ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
-  } else if (x$model %in% c("hmm", "ldahmm")) {
+  } else if (modelname %in% c("hmm", "ldahmm")) {
     res_alpha %>% mutate(State = as.character(State)) -> res_alpha
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = State, colour = State)) +
           geom_line() +
@@ -552,6 +562,12 @@ plot_modelfit <- function(x, start = 1)
 #' @export
 plot_p <- function(x, show_topic = NULL)
 {
+  check_arg_type(x, "keyATM_output")
+  modelname <- extract_full_model_name(x)
+
+  if (modelname %in% c("lda", "ldacov", "ldahmm")) {
+    stop(paste0("`", x$model, "` is not a model with keywords.")) 
+  }
 
   num <- length(unique(x$p$Topic))
   if (is.null(show_topic)) {

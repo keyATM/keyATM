@@ -81,13 +81,13 @@ keywords_list <- list(
 ## Next Step
 Now you have texts and keywords! The next step is to prepare a model object with `keyATM_read()`. **keyATM** has three models:
 
-* [keyATM Basic](keyATM_basic.html)
+* [keyATM Base](keyATM_base.html)
   * This is an extension of the most famous topic model, Latent Dirichlet Allocation.
   * If you do not have covariates, this model is your first option.
-* [keyATM Covariate](keyATM_cov.html)
+* [keyATM Covariates](keyATM_cov.html)
   * If you have covariates, please use this model.
   * This model uses covariates to model topic prevalence (the prior of document-topic distribution).
-* [keyATM HMM](keyATM_HMM.html)
+* [keyATM Dynamic](keyATM_dynamic.html)
   * If you want to explicitly consider time structure, please use this model.
 
 

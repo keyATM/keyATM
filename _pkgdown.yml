@@ -26,16 +26,14 @@ navbar:
           href: articles/pkgdown_files/Installation.html
         - text: "Preparation"
           href: articles/pkgdown_files/Preparation.html
-        - text: "keyATM Basic"
-          href: articles/pkgdown_files/keyATM_basic.html
-        - text: "keyATM Covariate"
+        - text: "keyATM Base"
+          href: articles/pkgdown_files/keyATM_base.html
+        - text: "keyATM Covariates"
           href: articles/pkgdown_files/keyATM_cov.html
-        - text: "keyATM HMM"
-          href: articles/pkgdown_files/keyATM_HMM.html
+        - text: "keyATM Dynamic"
+          href: articles/pkgdown_files/keyATM_dynamic.html
         - text: "Weighted LDA"
           href: articles/pkgdown_files/Weighted_LDA.html
-        - text: "Priors"
-          href: articles/pkgdown_files/Priors.html
         - text: "Options"
           href: articles/pkgdown_files/Options.html
     - text: "FAQ"
@@ -57,13 +55,12 @@ reference:
   - '`plot_modelfit`'
   - '`plot_p`'
   - '`keyATM`'
-  - '`keyATM_fit`'
-  - '`keyATM_output`'
   - '`keyATM_read`'
   - '`top_docs`'
   - '`top_words`'
   - '`top_topics`'
   - '`visualize_keywords`'
+  - '`weightedLDA`'
 
 toc:
   depth: 2

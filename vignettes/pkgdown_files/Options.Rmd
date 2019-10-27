@@ -1,15 +1,33 @@
 ---
-title: "Options"
+title: "Options / Priors / Keep"
 output: 
   html_document:
-    toc: false
+    toc: true
+    toc_depth: 1
 pkgdown:
   as_is: true
 ---
 
-`keyATM_fit()` takes various options.
 
+# Options
+`keyATM_fit()` takes various options. You can set options through a list.
+```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+my_options <- list(seed        = 100,
+                   iterations  = 1500,
+                   output_per  = 10,
+                   use_weights = TRUE,
+                   prune       = TRUE,
+                   thinning    = 10,
+                   store_theta = 0,
+                   slice_shape = 1.2)
 
+out <- keyATM(docs      = keyATM_docs,    # text input
+              regular_k = 3,              # number of regular topics
+              keywords  = bills_keywords, # keywords
+              model     = "basic",        # select the model
+              options   = my_options
+             )
+```
 
 ## `seed`
 This is a seed used to generate random numbers. The same seed is used for initialization and fitting the model (`set.seed()` is executed before both initialization and fitting). If you do not provide `seed`, **keyATM** randomly selects a seed for you.
@@ -22,7 +40,7 @@ The  default value is `1500`.
 
 
 ## `use_weights`
-The default value is `1` (use weights). We follow the weighting Scheme in Wilson \& Chew (2010). It uses an axiom of information theory: an event $a$'s information content: $- \log_2 p(a)$. We assume that information content of a term $v$ follows this metric. The weight for a word $v$ is,
+The default value is `TRUE` (use weights). We follow the weighting Scheme in Wilson \& Chew (2010). It uses an axiom of information theory: an event $a$'s information content: $- \log_2 p(a)$. We assume that information content of a term $v$ follows this metric. The weight for a word $v$ is,
 
 $$
 \begin{align*}
@@ -31,7 +49,7 @@ $$
 \end{align*}
 $$
 
-This changes the sampling formula. Sampling topic with weights ($x_{di} =v$) would be
+This changes the sampling formula. Sampling topic with weights ($w_{di} =v$) would be
 $$
 \begin{align*}
         p(z_{di}=k) = \frac{m(v) N_{dk}^{-di} + \beta }{\sum_v m(v) N_{dk}^{-di} + \beta} \cdot \frac{m(v) N_{vk}^{-di} + \alpha }{\sum_v m(v) N_{vj}^{-di} + \alpha}.
@@ -41,6 +59,10 @@ $$
 If you do not want to use weights, please set it to `0`.
 
 
+## `prune`
+Prune keywords that do not appear in the documents.
+
+
 ## `thinning`
 
 
@@ -48,5 +70,27 @@ If you do not want to use weights, please set it to `0`.
 
 
 ## `slice_shape`
+
+
+
+# Priors
+You can manually set priors, but we **do not** recommend doing it unless you understandd the consequences.
+
+
+## `alpha`
+
+
+
+## `beta`
+
+
+## `beta_s`
+
+
+## `gamma`
+
+
+# Keep
+
 
 

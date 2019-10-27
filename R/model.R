@@ -124,13 +124,15 @@ summary.keyATM_docs <- function(x)
 #'
 #' This function visualizes the proportion of keywords in the documents.
 #'
-#' @param keyATM_docs A list of texts read via \code{keyATM_read()} function
+#' @param docs A list of texts read via \code{keyATM_read()} function
 #' @param keywords A list of keywords
+#' @param prune Prune keywords that do not appear in `docs`
 #' @param label_size The size of the keyword labels
 #'
 #' @return A list containing \describe{
 #'    \item{figure}{a ggplot2 object}
 #'    \item{values}{a tibble object that stores values}
+#'    \item{keywords}{a list of keywords that appear in documents}
 #' }
 #'
 #' @examples
@@ -159,17 +161,21 @@ summary.keyATM_docs <- function(x)
 #' @import magrittr
 #' @import ggplot2
 #' @export
-visualize_keywords <- function(keyATM_docs, keywords, label_size = 3.2)
+visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
 {
   # Check type
-  check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
+  check_arg_type(docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
   check_arg_type(keywords, "list")
   c <- lapply(keywords, function(x){check_arg_type(x, "character")})
 
-  unnested_data <- tibble::tibble(text_split = unlist(keyATM_docs,
-                                                      recursive = FALSE, use.names = FALSE))
+  unlisted <- unlist(docs, recursive = FALSE, use.names = FALSE)
+
+
+  # Check keywords
+  keywords <- check_keywords(unique(unlisted), keywords, prune)
 
   # Organize data
+  unnested_data <- tibble::tibble(text_split = unlisted)
   totalwords <- nrow(unnested_data)
 
   unnested_data %>%
@@ -205,20 +211,7 @@ visualize_keywords <- function(keyATM_docs, keywords, label_size = 3.2)
     dplyr::arrange(Topic, Ranking) -> temp
 
 
-  # Check keywords existence
-  temp %>%
-    dplyr::filter(is.na(WordCount)) %>%
-    dplyr::pull(Word) -> non_appearence
-
-  if (length(non_appearence) != 0) {
-    if (length(non_appearence) == 1) {
-      stop("A keyword not found in texts: ", paste(non_appearence, collapse = ", "))
-    } else {
-      stop("Keywords not found in texts: ", paste(non_appearence, collapse = ", "))
-    }
-  }
-
-
+  # Visualize
   visualize_keywords <- 
     ggplot(temp, aes(x = Ranking, y=`Proportion(%)`, colour = Topic)) +
       geom_line() +
@@ -232,11 +225,52 @@ visualize_keywords <- function(keyATM_docs, keywords, label_size = 3.2)
       ylab("Proportion (%)") +
       theme_bw()
 
-  keyATM_viz <- list(figure = visualize_keywords, values = temp)
+  keyATM_viz <- list(figure = visualize_keywords, values = temp, keywords = keywords)
   class(keyATM_viz) <- c("keyATM_viz", class(keyATM_viz))
   
   return(keyATM_viz)
 
+}
+
+
+check_keywords <- function(unique_words, keywords, prune)
+{
+  # Prune keywords that do not appear in the corpus
+  keywords_flat <- unlist(keywords, use.names = F, recursive = F)
+  non_existent <- keywords_flat[!keywords_flat %in% unique_words]
+
+  if (prune){
+    # Prune keywords 
+    if (length(non_existent) != 0) {
+     if (length(non_existent) == 1) {
+       warning("A keyword will be pruned because it does not appear in documents: ",
+               paste(non_existent, collapse = ", "))
+     } else {
+       warning("Keywords will be pruned because they do not appear in documents: ",
+               paste(non_existent, collapse = ", "))
+     }
+    }
+
+    keywords <- lapply(keywords,
+                       function(x){
+                          x[!x %in% non_existent] 
+                       })
+
+  } else {
+
+    # Raise error 
+    if (length(non_existent) != 0) {
+     if (length(non_existent) == 1) {
+       stop("A keyword not found in texts: ", paste(non_existent, collapse = ", "))
+     } else {
+       stop("Keywords not found in texts: ", paste(non_existent, collapse = ", "))
+     }
+    } 
+
+  }
+
+
+  return(keywords)
 }
 
 
@@ -270,9 +304,9 @@ save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 #' Select and specify one of the keyATM models and fit the model.
 #'
 #'
-#' @param keyATM_docs texts read via \code{keyATM_read()}
-#' @param model keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"
-#' @param regular_k the number of regular topics
+#' @param docs texts read via \code{keyATM_read()}
+#' @param model keyATM model: "base", "covariates", and "dynamic"
+#' @param no_keyword_topics the number of regular topics
 #' @param keywords a list of keywords
 #' @param model_settings a list of model specific settings
 #' @param priors a list of priors of parameters
@@ -285,7 +319,7 @@ save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 #'   \item{model}{the name of the model}
 #'   \item{keywords}{}
 #'   \item{keywords_raw}{}
-#'   \item{regular_k}{the number of regular topics}
+#'   \item{no_keyword_topics}{the number of regular topics}
 #'   \item{model_settings}{a list of settings}
 #'   \item{priors}{a list of priors}
 #'   \item{options}{a list of options}
@@ -293,46 +327,7 @@ save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 #'   \item{call}{details of the function call}
 #' } 
 #'
-#' @examples
-#' \dontrun{
-#'   # keyATM Basic
-#'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "basic", regular_k = 5, keywords = keywords_list
-#'                       )
-#'
-#'   # keyATM Cov
-#'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "cov", regular_k = 5, keywords = keywords_list,
-#'                        model_settings(covariates_data = cov)
-#'                       )
-#'
-#'   # keyATM HMM
-#'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "hmm", regular_k = 5, keywords = keywords_list,
-#'                        model_settings(time_index = time_index_vec, num_states = 5)
-#'                       )
-#'
-#'   # Weighted LDA
-#'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "lda", regular_k = 5
-#'                       )
-#'
-#'   # Weighted LDA Cov
-#'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "ldacov", regular_k = 5,
-#'                        model_settings(covariates_data = cov)
-#'                       )                   
-#'
-#'   # Weighted LDA HMM
-#'   fitted <- keyATM_fit(
-#'                        keyATM_docs, model = "ldahmm", regular_k = 5,
-#'                        model_settings(time_index = time_index_vec, num_states = 5)
-#'                       )
-#'
-#' }
-#'
-#' @export
-keyATM_fit <- function(keyATM_docs, model, regular_k,
+keyATM_fit <- function(docs, model, no_keyword_topics,
                        keywords = list(), model_settings = list(),
                        priors = list(), options = list()) 
 {
@@ -341,26 +336,26 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   ##
 
   # Check type
-  check_arg_type(keyATM_docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
-  if (!is.integer(regular_k) & !is.numeric(regular_k))
-    stop("`regular_k` is neigher numeric nor integer.")
+  check_arg_type(docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
+  if (!is.integer(no_keyword_topics) & !is.numeric(no_keyword_topics))
+    stop("`no_keyword_topics` is neigher numeric nor integer.")
 
-  regular_k <- as.integer(regular_k)
+  no_keyword_topics <- as.integer(no_keyword_topics)
 
-  if (!model %in% c("basic", "cov", "hmm", "lda", "ldacov", "ldahmm")) {
+  if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm")) {
     stop("Please select a correct model.")  
   }
 
   info <- list(
-                models_keyATM = c("basic", "cov", "hmm"),
+                models_keyATM = c("base", "cov", "hmm"),
                 models_lda = c("lda", "ldacov", "ldahmm")
               )
   keywords <- check_arg(keywords, "keywords", model, info)
 
   # Get Info
-  info$num_doc <- length(keyATM_docs)
+  info$num_doc <- length(docs)
   info$keyword_k <- length(keywords)
-  info$total_k <- length(keywords) + regular_k
+  info$total_k <- length(keywords) + no_keyword_topics
 
   # Set default values
   model_settings <- check_arg(model_settings, "model_settings", model, info)
@@ -374,20 +369,18 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   set.seed(options$seed)
 
   # W
-  info$wd_names <- unique(unlist(keyATM_docs, use.names = F))
+  info$wd_names <- unique(unlist(docs, use.names = F, recursive = F))
   if (" " %in% info$wd_names) {
     stop("A space is recognized as a vocabulary.
           Please remove an empty document or consider using quanteda::dfm.")  
   }
 
   info$wd_map <- hashmap::hashmap(info$wd_names, as.integer(1:length(info$wd_names) - 1L))
-  W <- lapply(keyATM_docs, function(x){ info$wd_map[[x]] })
+  W <- lapply(docs, function(x){ info$wd_map[[x]] })
 
 
   # Check keywords
-  c <- sapply(unlist(keywords), 
-         function(x){if (! x %in% info$wd_names)
-           stop(paste0('"', x, '"', " does not appear in texts. Please check keywords."))})
+  keywords <- check_keywords(info$wd_names, keywords, options$prune)
 
   keywords_raw <- keywords  # keep raw keywords (not word_id)
   keywords_id <- lapply(keywords, function(x){ as.integer(info$wd_map$find(x)) })
@@ -408,7 +401,7 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   # Organize
   stored_values <- list()
 
-  if (model %in% c("basic", "lda")) {
+  if (model %in% c("base", "lda")) {
     if (options$estimate_alpha)
       stored_values$alpha_iter <- list()  
   }
@@ -436,9 +429,9 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
 
   key_model <- list(
                     W = W, Z = Z, X = X,
-                    model = model,
+                    model = abb_model_name(model),
                     keywords = keywords_id, keywords_raw = keywords_raw,
-                    regular_k = regular_k,
+                    no_keyword_topics = no_keyword_topics,
                     vocab = info$wd_names,
                     model_settings = model_settings,
                     priors = priors,
@@ -449,7 +442,7 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
                    )
 
   rm(info)
-  class(key_model) <- c("keyATM_model", class(key_model))
+  class(key_model) <- c("keyATM_model", model, class(key_model))
 
   if (options$iterations == 0) {
     message("`options$iterations` is 0. keyATM returns an initialized object.")  
@@ -463,16 +456,18 @@ keyATM_fit <- function(keyATM_docs, model, regular_k,
   message(paste0("Fitting the model. ", options$iterations, " iterations..."))
   set.seed(options$seed)
 
-  if (model == "basic") {
-    key_model <- keyATM_train(key_model, iter = options$iterations, output_per = options$output_per)
+  if (model == "base") {
+    key_model <- keyATM_fit_base(key_model, iter = options$iterations, output_per = options$output_per)
   } else if (model == "cov") {
-    key_model <- keyATM_train_cov(key_model, iter = options$iteration, output_per = options$output_per)
-  } else if (model == "lda") {
-    key_model <- LDA_weight(key_model, iter = options$iteration, output_per = options$output_per)  
+    key_model <- keyATM_fit_cov(key_model, iter = options$iteration, output_per = options$output_per)
   } else if (model == "hmm") {
-    key_model <- keyATM_train_HMM(key_model, iter = options$iteration, output_per = options$output_per)  
+    key_model <- keyATM_fit_HMM(key_model, iter = options$iteration, output_per = options$output_per)  
+  } else if (model == "lda") {
+    key_model <- keyATM_fit_LDA(key_model, iter = options$iteration, output_per = options$output_per)
+  } else if (model == "ldacov") {
+    key_model <- keyATM_fit_LDAcov(key_model, iter = options$iteration, output_per = options$output_per)
   } else if (model == "ldahmm") {
-    key_model <- keyATM_train_LDAHMM(key_model, iter = options$iteration, output_per = options$output_per)  
+    key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration, output_per = options$output_per)  
   } else {
     stop("Please check `mode`.")  
   }
@@ -739,7 +734,7 @@ check_arg_priors <- function(obj, model, info)
   }
 
 
-  if (model %in% c("basic", "lda")) {
+  if (model %in% c("base", "lda")) {
     # alpha
     if (is.null(obj$alpha)) {
       obj$alpha <- rep(1/info$total_k, info$total_k)
@@ -762,7 +757,7 @@ check_arg_options <- function(obj, model, info)
   check_arg_type(obj, "list")
   allowed_arguments <- c("seed", "output_per", "thinning",
                          "iterations",
-                         "use_weights",
+                         "use_weights", "prune",
                          "store_theta", "slice_shape")
 
   # Output per
@@ -803,7 +798,7 @@ check_arg_options <- function(obj, model, info)
   }
 
   # Estimate alpha
-  if (model %in% c("basic", "lda")) {
+  if (model %in% c("base", "lda")) {
     if (is.null(obj$estimate_alpha)) {
       obj$estimate_alpha <- 1L
     } else {
@@ -835,6 +830,17 @@ check_arg_options <- function(obj, model, info)
     }
   }
 
+  # Prune keywords
+  if (is.null(obj$prune)) {
+    obj$prune <- 1L 
+  } else {
+    obj$prune <- as.integer(obj$prune)
+    if (!obj$prune %in% c(0, 1)) {
+      stop("An invalid value in `options$prune`")  
+    }
+  }
+
+  # Store transition matrix in Dynamic models
   if (model %in% c("hmm", "ldahmm")) {
     if (is.null(obj$store_transition_matrix)) {
       obj$store_transition_matrix <- 0L  
@@ -931,116 +937,85 @@ make_xz_lda <- function(W, info)
     return(as.integer(zz))
   }  
 
-  make_x <- function(x){
-    return(rep(0L, length(x)))  
-  }
 
- X <- lapply(W, make_x)
  Z <- lapply(W, make_z, topicvec)
 
- return(list(X = X, Z = Z))
+ return(list(X = list(), Z = Z))
 }
 
 
-#' keyATM Main function
-#'
-#' This is a wrapper function of \code{keyATM_fit()} and \code{keyATM_output()}.
-#'
-#'
-#' @param keyATM_docs texts read via \code{keyATM_read()}
-#' @param model keyATM model: "basic", "cov", "hmm", "lda", "ldacov" and "ldahmm"
-#' @param regular_k the number of regular topics
-#' @param keywords a list of keywords
-#' @param model_settings a list of model specific settings
-#' @param priors a list of priors of parameters
-#' @param options a list of options
-#' @param keep a vector of the names of elements you want to keep from \code{keyATM_fit()} output
-#'
-#' @return A keyATM_output object containing:
-#'   \describe{
-#'     \item{keyword_k}{Number of keyword topics}
-#'     \item{regular_k}{Number of regular unseeded topics}
-#'     \item{V}{Number of word types}
-#'     \item{N}{Number of documents}
-#'     \item{theta}{Normalized topic proportions for each document}
-#'     \item{phi}{Normalized topic specific word generation probabilities}
-#'     \item{topic_counts}{Number of tokens assigned to each topic}
-#'     \item{word_counts}{Number of times each word type appears}
-#'     \item{doc_lens}{Length of each document in tokens}
-#'     \item{vocab}{Words in the vocabulary}
-#'     \item{model_fit}{Perplexity and log-likelihood}
-#'     \item{p}{Estimated p}
-#'     \item{values_iter}{Organized values stored during iterations}
-#'     \item{kept_values}{Output from \code{keyATM_fit()} you specified to store.}
-#'   }
-#'
-#' @examples
-#' \dontrun{
-#'   # keyATM Basic
-#'   out <- keyATM(
-#'                 keyATM_docs, model = "basic", regular_k = 5, keywords = keywords_list
-#'                )
-#'
-#'   # keyATM Cov
-#'   out <- keyATM(
-#'                 keyATM_docs, model = "cov", regular_k = 5, keywords = keywords_list,
-#'                 model_settings(covariates_data = cov)
-#'                )
-#'
-#'   # keyATM HMM
-#'   out <- keyATM(
-#'                    keyATM_docs, model = "hmm", regular_k = 5, keywords = keywords_list,
-#'                    model_settings(time_index = time_index_vec, num_states = 5)
-#'                   )
-#'
-#'   # Weighted LDA
-#'   out <- keyATM(
-#'                 keyATM_docs, model = "lda", regular_k = 5
-#'                )
-#'
-#'   # Weighted LDA Cov
-#'   out <- keyATM(
-#'                 keyATM_docs, model = "ldacov", regular_k = 5,
-#'                 model_settings(covariates_data = cov)
-#'                )                   
-#'
-#'   # Weighted LDA HMM
-#'   out <- keyATM(
-#'                 keyATM_docs, model = "ldahmm", regular_k = 5,
-#'                 model_settings(time_index = time_index_vec, num_states = 5)
-#'                )
-#'
-#' }
-#'
-#' @export
-keyATM <- function(keyATM_docs, model, regular_k,
-                   keywords = list(), model_settings = list(),
-                   priors = list(), options = list(), keep = c())
+full_model_name <- function(model = c("base", "covariates", "dynamic"),
+                            type = c("keyATM", "lda"))
 {
-  # Check type
-  if (length(keep) != 0)
-    check_arg_type(keep, "character")
+  model <- measure <- match.arg(model)
+  type <- measure <- match.arg(type)
 
-  # Fit keyATM
-  fitted <- keyATM_fit(
-                       keyATM_docs, model, regular_k,
-                       keywords, model_settings, priors, options
-                      )
+  if (type == "keyATM") {
 
-  # Get output
-  out <- keyATM_output(fitted)
-
-  # Keep some objects if specified
-  if (length(keep) != 0) {
-    kept_values <- list()
-    use_elements <- keep[keep %in% names(fitted)]
-    for(i in 1:length(use_elements)){
-      kept_values[use_elements[i]]  <- fitted[use_elements[i]]
+    if (model == "base") {
+      return("base") 
+    } else if (model == "covariates") {
+      return("cov") 
+    } else if (model == "dynamic") {
+      return("hmm") 
+    } else {
+      stop("Please select a correct model.") 
     }
-    out$kept_values <- kept_values
+  
+  
+  } else if (type == "lda") {
+
+    if (model == "base") {
+      return("lda") 
+    } else if (model == "covariates") {
+      return("ldacov") 
+    } else if (model == "dynamic") {
+      return("ldahmm") 
+    } else {
+      stop("Please select a correct model.") 
+    }     
+  
+  } else {
+    stop("Please select a correct type") 
   }
 
-  return(out)
+
+}
+
+
+abb_model_name <- function(fullname)
+{
+  # Get abbribiation from the full name
+  if (fullname %in% c("base", "lda")) {
+    return("base") 
+  } else if (fullname %in% c("cov", "ldacov")) {
+    return("covariates") 
+  }else if (fullname %in% c("hmm", "ldahmm")) {
+    return("dynamic") 
+  }else{
+    stop("Invalid full model name.") 
+  }
+
+}
+
+
+extract_full_model_name <- function(obj)
+{
+  # Get model full name from S3 class
+  if ("base" %in% class(obj)) {
+    return("base") 
+  } else if ("cov" %in% class(obj)) {
+    return("cov") 
+  } else if ("hmm" %in% class(obj)) {
+    return("hmm") 
+  } else if ("lda" %in% class(obj)) {
+    return("lda") 
+  } else if ("ldacov" %in% class(obj)) {
+    return("ldacov") 
+  } else if ("ldahmm" %in% class(obj)) {
+    return("ldahmm") 
+  }
+
 }
 
 

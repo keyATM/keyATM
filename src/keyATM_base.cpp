@@ -1,42 +1,30 @@
-#include "keyATM_basic.h"
+#include "keyATM_base.h"
 
 using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
 
-keyATMbasic::keyATMbasic(List model_, const int iter_, const int output_per_) :
-  keyATMbase(model_, iter_, output_per_) // pass to parent!
-{
-
-}
-
-
-void keyATMbasic::read_data_specific()
+void keyATMbase::read_data_specific()
 {
   nv_alpha = priors_list["alpha"];
   alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
 
-  prior_gamma = MatrixXd::Zero(num_topics, 2);
-  NumericMatrix RMatrix = priors_list["gamma"];
-  prior_gamma = Rcpp::as<Eigen::MatrixXd>(RMatrix);
-  beta_s = priors_list["beta_s"];
-
   estimate_alpha = options_list["estimate_alpha"];
-  if(estimate_alpha == 0){
+  if (estimate_alpha == 0) {
     store_alpha = 0;
-  }else{
+  } else {
     store_alpha = 1;
   }
 }
 
 
-void keyATMbasic::initialize_specific()
+void keyATMbase::initialize_specific()
 {
   // No additional initialization
 }
 
-void keyATMbasic::iteration_single(int &it)
+void keyATMbase::iteration_single(int &it)
 { // Single iteration
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
@@ -69,15 +57,15 @@ void keyATMbasic::iteration_single(int &it)
 
 }
 
-void keyATMbasic::sample_parameters(int &it)
+void keyATMbase::sample_parameters(int &it)
 {
-  if(estimate_alpha)
+  if (estimate_alpha)
     sample_alpha();
 
   // Store alpha
-  if(store_alpha){
+  if (store_alpha){
     int r_index = it + 1;
-    if(r_index % thinning == 0 || r_index == 1 || r_index == iter){
+    if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
       NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
       List alpha_iter = stored_values["alpha_iter"];
       alpha_iter.push_back(alpha_rvec);
@@ -87,7 +75,7 @@ void keyATMbasic::sample_parameters(int &it)
 }
 
 
-void keyATMbasic::sample_alpha()
+void keyATMbase::sample_alpha()
 {
 
   // start, end, previous_p, new_p, newlikelihood, slice_;
@@ -97,7 +85,7 @@ void keyATMbasic::sample_alpha()
   newalphallk = 0.0;
   int k;
 
-  for(int i = 0; i < num_topics; i++){
+  for (int i = 0; i < num_topics; i++) {
     k = topic_ids[i];
     start = min_v / (1.0 + min_v); // shrinkp
     end = 1.0;
@@ -130,7 +118,7 @@ void keyATMbasic::sample_alpha()
 }
 
 
-double keyATMbasic::alpha_loglik()
+double keyATMbase::alpha_loglik()
 {
   loglik = 0.0;
   
@@ -140,20 +128,20 @@ double keyATMbasic::alpha_loglik()
   
   
   fixed_part += mylgamma(alpha_sum_val); // first term numerator
-  for(int k = 0; k < num_topics; k++){
+  for (int k = 0; k < num_topics; k++) {
     fixed_part -= mylgamma(alpha(k)); // first term denominator
     // Add prior
-    if(k < keyword_k){
+    if (k < keyword_k) {
       loglik += gammapdfln(alpha(k), eta_1, eta_2);
-    }else{
+    } else {
       loglik += gammapdfln(alpha(k), eta_1_regular, eta_2_regular);
     }
   
   }
-  for(int d = 0; d < num_doc; d++){
+  for (int d = 0; d < num_doc; d++) {
     loglik += fixed_part;
     // second term numerator
-    for(int k = 0; k < num_topics; k++){
+    for (int k = 0; k < num_topics; k++) {
       loglik += mylgamma(ndk_a(d,k));
     }
     // second term denominator
@@ -165,7 +153,7 @@ double keyATMbasic::alpha_loglik()
 }
 
 
-double keyATMbasic::loglik_total()
+double keyATMbase::loglik_total()
 {
   double loglik = 0.0;
 
@@ -176,16 +164,20 @@ double keyATMbasic::loglik_total()
       // loglik += mylgamma(beta_s + n_x1_kv.coeffRef(k, v) / vocab_weights(v) ) - mylgamma(beta_s);
     }
 
-    // n_x1_kv
-    for (SparseMatrix<double,RowMajor>::InnerIterator it(n_x1_kv, k); it; ++it){
-      loglik += mylgamma(beta_s + it.value() / vocab_weights(it.index()) ) - mylgamma(beta_s);
-    }
+
 
     // word normalization
     loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_x0_k_noWeight(k) );
-    loglik += mylgamma( beta_s * (double)num_vocab ) - mylgamma(beta_s * (double)num_vocab + n_x1_k_noWeight(k) );
 
-    if(k < keyword_k){
+    if (k < keyword_k) {
+      // For keyword topics
+
+      // n_x1_kv
+      for (SparseMatrix<double,RowMajor>::InnerIterator it(n_x1_kv, k); it; ++it){
+        loglik += mylgamma(beta_s + it.value() / vocab_weights(it.index()) ) - mylgamma(beta_s);
+      }
+      loglik += mylgamma( beta_s * (double)keywords_num[k] ) - mylgamma(beta_s * (double)keywords_num[k] + n_x1_k_noWeight(k) );
+
       // Normalization
       loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
 
