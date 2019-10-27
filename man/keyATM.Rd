@@ -21,7 +21,7 @@ keyATM(docs, model, no_keyword_topics, keywords = list(),
 
 \item{options}{a list of options}
 
-\item{keep}{a vector of the names of elements you want to keep from \code{keyATM_fit()} output}
+\item{keep}{a vector of the names of elements you want to keep in output}
 
 \item{keyATM_docs}{texts read via \code{keyATM_read()}}
 }
@@ -41,11 +41,11 @@ A keyATM_output object containing:
     \item{model_fit}{Perplexity and log-likelihood}
     \item{p}{Estimated p}
     \item{values_iter}{Organized values stored during iterations}
-    \item{kept_values}{Output from \code{keyATM_fit()} you specified to store.}
+    \item{kept_values}{Outputs you specified to store.}
   }
 }
 \description{
-This is a wrapper function of \code{keyATM_fit()} and \code{keyATM_output()}.
+Run keyATM models.
 }
 \examples{
 \dontrun{

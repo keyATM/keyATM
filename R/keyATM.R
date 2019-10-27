@@ -1,6 +1,6 @@
 #' keyATM Main function
 #'
-#' This is a wrapper function of \code{keyATM_fit()} and \code{keyATM_output()}.
+#' Run keyATM models.
 #'
 #'
 #' @param keyATM_docs texts read via \code{keyATM_read()}
@@ -10,7 +10,7 @@
 #' @param model_settings a list of model specific settings
 #' @param priors a list of priors of parameters
 #' @param options a list of options
-#' @param keep a vector of the names of elements you want to keep from \code{keyATM_fit()} output
+#' @param keep a vector of the names of elements you want to keep in output
 #'
 #' @return A keyATM_output object containing:
 #'   \describe{
@@ -27,7 +27,7 @@
 #'     \item{model_fit}{Perplexity and log-likelihood}
 #'     \item{p}{Estimated p}
 #'     \item{values_iter}{Organized values stored during iterations}
-#'     \item{kept_values}{Output from \code{keyATM_fit()} you specified to store.}
+#'     \item{kept_values}{Outputs you specified to store.}
 #'   }
 #'
 #' @examples
@@ -88,7 +88,7 @@ keyATM <- function(docs, model, no_keyword_topics,
 
 #' Weighted LDA Main function
 #'
-#' This is a wrapper function of \code{keyATM_fit()} and \code{keyATM_output()}.
+#' Run weighted LDA models.
 #'
 #'
 #' @param docs texts read via \code{keyATM_read()}
@@ -97,12 +97,11 @@ keyATM <- function(docs, model, no_keyword_topics,
 #' @param model_settings a list of model specific settings
 #' @param priors a list of priors of parameters
 #' @param options a list of options
-#' @param keep a vector of the names of elements you want to keep from \code{keyATM_fit()} output
+#' @param keep a vector of the names of elements you want to keep in output
 #'
 #' @return A keyATM_output object containing:
 #'   \describe{
-#'     \item{keyword_k}{Number of keyword topics}
-#'     \item{no_keyword_topics}{Number of regular unseeded topics}
+#'     \item{number_of_topics}{Number of regular unseeded topics}
 #'     \item{V}{Number of word types}
 #'     \item{N}{Number of documents}
 #'     \item{theta}{Normalized topic proportions for each document}
@@ -114,7 +113,7 @@ keyATM <- function(docs, model, no_keyword_topics,
 #'     \item{model_fit}{Perplexity and log-likelihood}
 #'     \item{p}{Estimated p}
 #'     \item{values_iter}{Organized values stored during iterations}
-#'     \item{kept_values}{Output from \code{keyATM_fit()} you specified to store.}
+#'     \item{kept_values}{Outputs you specified to store.}
 #'   }
 #'
 #' @examples
@@ -160,6 +159,9 @@ weightedLDA <- function(docs, model, number_of_topics,
 
   # Get output
   out <- keyATM_output(fitted)
+  out$number_of_topics <- number_of_topics
+  out$no_keyword_topics <- NULL
+  out$keyword_k <- NULL
 
   # Keep some objects if specified
   if (length(keep) != 0) {
@@ -173,9 +175,5 @@ weightedLDA <- function(docs, model, number_of_topics,
 
   return(out)
 }
-
-
-
-
 
 

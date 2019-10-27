@@ -10,29 +10,23 @@ knitr::opts_chunk$set(eval = T, echo = TRUE)
 ```
 
 ## Preparing documents and covariates
-Please read [Preparation](Preparation.html) for the three data types that **keyATM** can read. **keyATM** package includes a tidy dataset for illustration purpose. In this example, we use ***. You can load this data by `data(keyATM_data_bills)`.
+Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. We use bills data we prapared ([documents](Preparation.html#reading-documents-into-keyatm) and [keywords](Preparation.html#preparing-keywords)).
+
+**keyATM** takes `matrix` type covariates data. If you have $D$ documents and $C$ covariates, the matrix should be $D \times C$. In this example, we have a dummy variable that indicates ...
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 library(keyATM)
 data(keyATM_data_bills)
-
-library(quanteda)
-bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda object
-keyATM_docs <- keyATM_read(bills_dfm)
-```
-
-**keyATM** takes `matrix` type data. If you have $D$ documents and $C$ covariates, the matrix should be $D \times C$. In this example, we have a dummy variable that indicates ...
-
-```{r, warning=FALSE, message=FALSE, fig.align='center'}
 bills_cov <- keyATM_data_bills$cov
 dim(bills_cov)  # We have 140 documents and a single covariate
 ```
 
 
-## Keywords
+```{r, include = F, warning=FALSE, message=FALSE, fig.align='center'}
+library(quanteda)
+bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda object
+keyATM_docs <- keyATM_read(bills_dfm)
 
-We set four keyword-topics. Keywrods should be stored in a list. Each element in the list is a character vector, which corresponds to a single keyword-topic.
-```{r, eval=T, warning=FALSE, message=FALSE, fig.align='center'}
 bills_keywords <- list(
                        Education = c("education", "child", "student"),
                        Law       = c("court", "law", "attorney"),
@@ -40,10 +34,6 @@ bills_keywords <- list(
                        Drug      = c("drug", "treatment")
                       )
 ```
-
-
-## Checking keywords
-Before you fit the model, please make sure your keywords appear enough in your corpus. [FAQ](FAQ.html#how-to-select-keywords) explains what could be good keywords. This step is the same as the [Base model](keyATM_base.html#checking-keywords).
 
 
 ## Fitting the model

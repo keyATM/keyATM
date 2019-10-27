@@ -108,45 +108,25 @@
 <div id="preparing-documents-and-covariates" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preparing-documents-and-covariates" class="anchor"></a>Preparing documents and covariates</h2>
-<p>Please read <a href="Preparation.html">Preparation</a> for the three data types that <strong>keyATM</strong> can read. <strong>keyATM</strong> package includes a tidy dataset for illustration purpose. In this example, we use ***. You can load this data by <code><a href="https://www.rdocumentation.org/packages/utils/topics/data">data(keyATM_data_bills)</a></code>.</p>
+<p>Please read <a href="Preparation.html">Preparation</a> for the reading of documents and creating a list of keywords. We use bills data we prapared (<a href="Preparation.html#reading-documents-into-keyatm">documents</a> and <a href="Preparation.html#preparing-keywords">keywords</a>).</p>
+<p><strong>keyATM</strong> takes <code>matrix</code> type covariates data. If you have <span class="math inline">\(D\)</span> documents and <span class="math inline">\(C\)</span> covariates, the matrix should be <span class="math inline">\(D \times C\)</span>. In this example, we have a dummy variable that indicates …</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(keyATM)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(keyATM_data_bills)</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(quanteda)</span>
-<span id="cb1-5"><a href="#cb1-5"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda object</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<p><strong>keyATM</strong> takes <code>matrix</code> type data. If you have <span class="math inline">\(D\)</span> documents and <span class="math inline">\(C\)</span> covariates, the matrix should be <span class="math inline">\(D \times C\)</span>. In this example, we have a dummy variable that indicates …</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>bills_cov &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>cov</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/dim">dim</a></span>(bills_cov)  <span class="co"># We have 140 documents and a single covariate</span></span></code></pre></div>
+<span id="cb1-3"><a href="#cb1-3"></a>bills_cov &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>cov</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/dim">dim</a></span>(bills_cov)  <span class="co"># We have 140 documents and a single covariate</span></span></code></pre></div>
 <pre><code>## [1] 140   1</code></pre>
-</div>
-<div id="keywords" class="section level2">
-<h2 class="hasAnchor">
-<a href="#keywords" class="anchor"></a>Keywords</h2>
-<p>We set four keyword-topics. Keywrods should be stored in a list. Each element in the list is a character vector, which corresponds to a single keyword-topic.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>bills_keywords &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</span>
-<span id="cb4-2"><a href="#cb4-2"></a>                       <span class="dt">Education =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"education"</span>, <span class="st">"child"</span>, <span class="st">"student"</span>),</span>
-<span id="cb4-3"><a href="#cb4-3"></a>                       <span class="dt">Law       =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"court"</span>, <span class="st">"law"</span>, <span class="st">"attorney"</span>),</span>
-<span id="cb4-4"><a href="#cb4-4"></a>                       <span class="dt">Health    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"public"</span>, <span class="st">"health"</span>, <span class="st">"program"</span>),</span>
-<span id="cb4-5"><a href="#cb4-5"></a>                       <span class="dt">Drug      =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"drug"</span>, <span class="st">"treatment"</span>)</span>
-<span id="cb4-6"><a href="#cb4-6"></a>                      )</span></code></pre></div>
-</div>
-<div id="checking-keywords" class="section level2">
-<h2 class="hasAnchor">
-<a href="#checking-keywords" class="anchor"></a>Checking keywords</h2>
-<p>Before you fit the model, please make sure your keywords appear enough in your corpus. <a href="FAQ.html#how-to-select-keywords">FAQ</a> explains what could be good keywords. This step is the same as the <a href="keyATM_base.html#checking-keywords">Base model</a>.</p>
 </div>
 <div id="fitting-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(    </span>
-<span id="cb5-2"><a href="#cb5-2"></a>              <span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>              <span class="dt">model             =</span> <span class="st">"covariates"</span>,   <span class="co"># select the model</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariates_data =</span> bills_cov),</span>
-<span id="cb5-7"><a href="#cb5-7"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
-<span id="cb5-8"><a href="#cb5-8"></a>             )</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(    </span>
+<span id="cb3-2"><a href="#cb3-2"></a>              <span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>              <span class="dt">model             =</span> <span class="st">"covariates"</span>,   <span class="co"># select the model</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariates_data =</span> bills_cov),</span>
+<span id="cb3-7"><a href="#cb3-7"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
+<span id="cb3-8"><a href="#cb3-8"></a>             )</span></code></pre></div>
 <p>The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options.</p>
 </div>
 <div id="saving-the-model" class="section level2">
@@ -157,7 +137,7 @@
 <div id="checking-top-words" class="section level2">
 <h2 class="hasAnchor">
 <a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
 <pre><code>##      1_Education        2_Law    3_Health        4_Drug    Other_1
 ## 1           loan    court [✓] program [✓]      drug [✓]    section
 ## 2      child [✓]       action  public [✓]   information      shall
@@ -189,8 +169,6 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#preparing-documents-and-covariates">Preparing documents and covariates</a></li>
-      <li><a href="#keywords">Keywords</a></li>
-      <li><a href="#checking-keywords">Checking keywords</a></li>
       <li><a href="#fitting-the-model">Fitting the model</a></li>
       <li><a href="#saving-the-model">Saving the model</a></li>
       <li><a href="#checking-top-words">Checking top words</a></li>
