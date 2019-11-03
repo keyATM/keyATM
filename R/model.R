@@ -327,6 +327,7 @@ save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 #'   \item{call}{details of the function call}
 #' } 
 #'
+#' @export
 keyATM_fit <- function(docs, model, no_keyword_topics,
                        keywords = list(), model_settings = list(),
                        priors = list(), options = list()) 
