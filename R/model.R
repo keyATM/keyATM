@@ -294,7 +294,7 @@ summary.keyATM_viz <- function(x)
 #' @export
 save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 {
-  save(x, file = file, compress="xz", compression_level = 3)
+  saveRDS(x, file = file)
 }
 
 
@@ -511,7 +511,7 @@ summary.keyATM_model <- function(x)
 #' @export
 save.keyATM_model <- function(x, file = stop("'file' must be specified"))
 {
-  save(x, file = file, compress="xz", compression_level = 3)
+  saveRDS(x, file = file)
 }
 
 
@@ -555,7 +555,7 @@ summary.keyATM_fitted <- function(x)
 #' @export
 save.keyATM_fitted <- function(x, file = stop("'file' must be specified"))
 {
-  save(x, file = file, compress="xz", compression_level = 3)
+  saveRDS(x, file = file)
 }
 
 
