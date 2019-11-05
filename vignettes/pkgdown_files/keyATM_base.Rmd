@@ -48,9 +48,9 @@ Once you fit the model, you can save the model with `save()` for replication.
 save(out, file="SAVENAME.rds")
 ```
 
-To load the model, you can use `load()` function.
+To load the model, you can use `readRDS()` function.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
-out <- load(file="SAVENAME.rds")
+out <- readRDS(file="SAVENAME.rds")
 ```
 
 ## Checking top words

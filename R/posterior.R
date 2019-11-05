@@ -308,7 +308,7 @@ summary.keyATM_output <- function(x)
 #' @export
 save.keyATM_output <- function(x, file = stop("'file' must be specified"))
 {
-  save(x, file = file, compress="xz", compression_level = 3)
+  saveRDS(x, file = file)
 }
 
 

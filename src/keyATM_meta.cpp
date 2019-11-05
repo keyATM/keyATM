@@ -333,16 +333,14 @@ int keyATMmeta::sample_x(VectorXd &alpha, int &z, int &x,
 
   numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
     ( n_x1_k(k) + prior_gamma(k, 0) );
-  denominator = ((double)keywords_num[k] * beta_s + n_x1_k(k) ) *
-    (n_x1_k(k) + prior_gamma(k, 0) + n_x0_k(k) + prior_gamma(k, 1));
+  denominator = ((double)keywords_num[k] * beta_s + n_x1_k(k) );
   x1_prob = numerator / denominator;
 
   // newprob_x0()
   numerator = (beta + n_x0_kv(k, w)) *
     (n_x0_k(k) + prior_gamma(k, 1));
 
-  denominator = ((double)num_vocab * beta + n_x0_k(k) ) *
-    (n_x1_k(k) + prior_gamma(k, 0) + n_x0_k(k) + prior_gamma(k, 1));
+  denominator = ((double)num_vocab * beta + n_x0_k(k) );
   x0_prob = numerator / denominator;
 
   // Normalize
