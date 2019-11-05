@@ -206,7 +206,7 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
 
   dplyr::right_join(data, keywords_df, by = "Word") %>%
     dplyr::group_by(Topic) %>%
-    dplyr::arrange(desc(`Proportion(%)`)) %>%
+    dplyr::arrange(desc(WordCount)) %>%
     dplyr::mutate(Ranking  =  1:(dplyr::n())) %>%
     dplyr::arrange(Topic, Ranking) -> temp
 
