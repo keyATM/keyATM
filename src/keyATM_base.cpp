@@ -137,6 +137,7 @@ double keyATMbase::alpha_loglik(int &k)
 
   for (int d = 0; d < num_doc; d++) {
     loglik += fixed_part;
+
     // second term numerator
     loglik += mylgamma(ndk_a(d,k));
 
