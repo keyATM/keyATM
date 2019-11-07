@@ -50,7 +50,7 @@ class keyATMbase : virtual public keyATMmeta
     virtual void iteration_single(int &it);
     void sample_parameters(int &it);
     void sample_alpha();
-    double alpha_loglik();
+    double alpha_loglik(int &k);
     virtual double loglik_total();
 };
 
