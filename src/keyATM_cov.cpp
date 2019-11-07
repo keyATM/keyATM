@@ -175,12 +175,12 @@ void keyATMcov::sample_lambda_slice()
 
         newlikelihood = newlambdallk - std::log(A * new_p * (1.0 - new_p));
 
-        if (slice_ < newlikelihood){
+        if (slice_ < newlikelihood) {
           store_loglik = newlambdallk;
           break;
-        } else if (previous_p < new_p){
+        } else if (previous_p < new_p) {
           end = new_p;
-        } else if (new_p < previous_p){
+        } else if (new_p < previous_p) {
           start = new_p;
         } else {
           // Rcerr << "Something goes wrong in sample_lambda_slice()" << std::endl;

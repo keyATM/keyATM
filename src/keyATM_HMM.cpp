@@ -238,11 +238,11 @@ void keyATMhmm::sample_alpha_state(int &state, int &state_start, int &state_end)
   int k;
 
   alpha = alphas.row(state).transpose();  // select alpha to update
-  store_loglik = alpha_loglik(state_start, state_end);
 
   
   for (int i = 0; i < num_topics; i++) {
     k = topic_ids[i];
+    store_loglik = alpha_loglik(k, state_start, state_end);
     start = min_v / (1.0 + min_v); // shrinkp
     end = 1.0;
     // end = shrinkp(max_v);
@@ -254,11 +254,10 @@ void keyATMhmm::sample_alpha_state(int &state, int &state_start, int &state_end)
       new_p = sampler::slice_uniform(start, end); // <-- using R function above
       alpha(k) = new_p / (1.0 - new_p); // expandp
     
-      newalphallk = alpha_loglik(state_start, state_end);
+      newalphallk = alpha_loglik(k, state_start, state_end);
       newlikelihood = newalphallk - 2.0 * log(1.0 - new_p);
     
       if (slice_ < newlikelihood){
-        store_loglik = newalphallk;
         break;
       } else if (previous_p < new_p){
         end = new_p;
@@ -278,7 +277,7 @@ void keyATMhmm::sample_alpha_state(int &state, int &state_start, int &state_end)
 }
 
 
-double keyATMhmm::alpha_loglik(int &state_start, int &state_end)
+double keyATMhmm::alpha_loglik(int &k, int &state_start, int &state_end)
 {
 
   loglik = 0.0;
@@ -288,28 +287,24 @@ double keyATMhmm::alpha_loglik(int &state_start, int &state_end)
 
 
   fixed_part += mylgamma(alpha_sum_val); // first term numerator
-  for (int k = 0; k < num_topics; k++) {
-    fixed_part -= mylgamma(alpha(k)); // first term denominator
-    // Add prior
-    if (k < keyword_k) {
-      loglik += gammapdfln(alpha(k), eta_1, eta_2);
-    } else {
-      loglik += gammapdfln(alpha(k), eta_1_regular, eta_2_regular);
-    }
-
+  fixed_part -= mylgamma(alpha(k)); // first term denominator
+  // Add prior
+  if (k < keyword_k) {
+    loglik += gammapdfln(alpha(k), eta_1, eta_2);
+  } else {
+    loglik += gammapdfln(alpha(k), eta_1_regular, eta_2_regular);
   }
+
   for (int d = state_start; d <= state_end; d++) {
     loglik += fixed_part;
+
     // second term numerator
-    for (int k = 0; k < num_topics; k++) {
-      loglik += mylgamma(ndk_a(d,k));
-    }
+    loglik += mylgamma(ndk_a(d,k));
+
     // second term denominator
     loglik -= mylgamma(doc_each_len[d] + alpha_sum_val);
-
   }
   return loglik;
-
 }
 
 

@@ -85,7 +85,7 @@ class keyATMhmm : virtual public keyATMmeta
 
     void sample_alpha();
     void sample_alpha_state(int &state, int &state_start, int &state_end);
-    double alpha_loglik(int &state_start, int &state_end);
+    double alpha_loglik(int &k, int &state_start, int &state_end);
 
     void sample_forward();  // calculate Psk
     void sample_backward();  // sample S_est
