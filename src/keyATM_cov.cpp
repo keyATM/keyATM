@@ -11,7 +11,7 @@ void keyATMcov::read_data_specific()
 {
   // Covariate
   model_settings = model["model_settings"];
-  NumericMatrix C_r = model_settings["covariates_data"];
+  NumericMatrix C_r = model_settings["covariates_data_standardized"];
   C = Rcpp::as<Eigen::MatrixXd>(C_r);
   num_cov = C.cols();
 }

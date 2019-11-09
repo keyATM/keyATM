@@ -630,8 +630,6 @@ check_arg_model_settings <- function(obj, model, info)
       stop("Please provide `obj$covariates_data`.")  
     }
 
-    check_arg_type(obj$covariates_data, "matrix")
-
     if (nrow(obj$covariates_data) != info$num_doc) {
       stop("The row of `model_settings$covariates_data` should be the same as the number of documents.")  
     }
@@ -641,15 +639,38 @@ check_arg_model_settings <- function(obj, model, info)
     }
 
     if (is.null(obj$covariates_formula)) {
-      obj$covariates_formula <- NULL
-    }else if (is.formula(obj$covariates_formula)) {
+      obj$covariates_formula <- NULL  # do not need to change the matrix
+      obj$covariates_data_standardized <- as.matrix(obj$covariates_data) 
+    } else if (is.formula(obj$covariates_formula)) {
       message("Convert covariates data using `obj$covariates_formula`.")
-      obj$covariates_data <- stats::model.matrix(obj$covariates_formula, obj$covariates_data)
-    }else{
+      obj$covariates_data_standardized <- stats::model.matrix(obj$covariates_formula, obj$covariates_data)
+    } else {
       stop("Check `model_settings$covariates_formula`.")  
     }
 
-    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_formula")
+
+    if (is.null(obj$standardize)) {
+      obj$standardize <- TRUE 
+    }
+
+    # Check if it works as a valid regression 
+    temp <- as.data.frame(obj$covariates_data)
+    temp$y <- rnorm(nrow(obj$covariates_data))
+    fit <- lm(y ~ 0 + ., data = temp)
+
+    if(NA %in% fit$coefficients){
+      stop("Covariates are invalid.")    
+    }
+
+    if (obj$standardize) {
+      standardize <- function(x){return((x - mean(x)) / sd(x))}
+      obj$covariates_data_standardized <- cbind(obj$covariates_data[, 1, drop=FALSE],
+                                                apply(obj$covariates_data[, -1], 2, standardize) 
+                                               )
+    }
+
+    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_standardized",
+                           "covariates_formula", "standardize", "info")
   }
 
 
@@ -1016,6 +1037,21 @@ extract_full_model_name <- function(obj)
     return("ldahmm") 
   }
 
+}
+
+
+
+# a more than usually informative error message for handing in the
+# wrong type to a function
+check_arg_type <- function(arg, typename, message = NULL){
+  argname <- deparse(match.call()[['arg']])
+  if (!inherits(arg, typename)){
+    if (is.null(message)) {
+      stop(paste0('`', argname, '` is not a ', typename))
+    } else {
+      stop(message)
+    }
+  }
 }
 
 

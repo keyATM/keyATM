@@ -320,20 +320,6 @@ plot.keyATM_output <- function(x)
 }
 
 
-# a more than usually informative error message for handing in the
-# wrong type to a function
-check_arg_type <- function(arg, typename, message = NULL){
-  argname <- deparse(match.call()[['arg']])
-  if (!inherits(arg, typename)){
-    if (is.null(message)) {
-      stop(paste0('`', argname, '` is not a ', typename))
-    } else {
-      stop(message)
-    }
-  }
-}
-
-
 
 #' Show the top words for each topic
 #'
