@@ -604,7 +604,7 @@ plot_p <- function(x, show_topic = NULL)
 #' @import dplyr
 #' @import magrittr
 #' @export
-get_coefficients <- function(x, covariates_data, covariates_formula = NULL,
+estimate_coefficients <- function(x, covariates_data, covariates_formula = NULL,
                              thinning = 5, burn_in = NULL,
                              parallel = TRUE, mc.cores = NULL)
 {

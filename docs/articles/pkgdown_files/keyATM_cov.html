@@ -62,6 +62,9 @@
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
+      <a href="../../articles/pkgdown_files/estimate_coef.html">Estimate effects</a>
+    </li>
+    <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -125,9 +128,9 @@
 <span id="cb3-4"><a href="#cb3-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
 <span id="cb3-5"><a href="#cb3-5"></a>              <span class="dt">model             =</span> <span class="st">"covariates"</span>,   <span class="co"># select the model</span></span>
 <span id="cb3-6"><a href="#cb3-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariates_data =</span> bills_cov),</span>
-<span id="cb3-7"><a href="#cb3-7"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>, <span class="dt">store_theta =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb3-7"><a href="#cb3-7"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
 <span id="cb3-8"><a href="#cb3-8"></a>             )</span></code></pre></div>
-<p>The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options. If you want to regress covariates on the document topic proportion, please use <code>store_theta</code> option.</p>
+<p>The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options.</p>
 </div>
 <div id="saving-the-model" class="section level2">
 <h2 class="hasAnchor">
@@ -161,13 +164,6 @@
 ## 9     employee       refuge
 ## 10        time    secretary</code></pre>
 </div>
-<div id="regressing-covariates-on-document-topic-proportion" class="section level2">
-<h2 class="hasAnchor">
-<a href="#regressing-covariates-on-document-topic-proportion" class="anchor"></a>Regressing covariates on document topic proportion</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>coef &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/get_coefficients.html">get_coefficients</a></span>(out, <span class="dt">covariates_data =</span> bills_cov)</span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(coef, <span class="dt">topics =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">variables =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"RepParty"</span>))</span></code></pre></div>
-<p><img src="keyATM_cov_files/figure-html/unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;"></p>
-</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -179,7 +175,6 @@
       <li><a href="#fitting-the-model">Fitting the model</a></li>
       <li><a href="#saving-the-model">Saving the model</a></li>
       <li><a href="#checking-top-words">Checking top words</a></li>
-      <li><a href="#regressing-covariates-on-document-topic-proportion">Regressing covariates on document topic proportion</a></li>
       </ul>
 </div>
       </div>
