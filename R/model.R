@@ -658,7 +658,7 @@ check_arg_model_settings <- function(obj, model, info)
     temp$y <- rnorm(nrow(obj$covariates_data))
     fit <- lm(y ~ 0 + ., data = temp)
 
-    if(NA %in% fit$coefficients){
+    if (NA %in% fit$coefficients) {
       stop("Covariates are invalid.")    
     }
 
@@ -815,6 +815,12 @@ check_arg_options <- function(obj, model, info)
     obj$store_theta <- as.integer(obj$store_theta)  
     if (!obj$store_theta %in% c(0, 1)) {
       stop("An invalid value in `options$store_theta`")  
+    }
+  }
+
+  if (model %in% c("cov", "ldaov")) {
+    if (obj$store_theta == 0) {
+      warning("`options$store_theta` is FALSE. keyATM cannot estimate credible intervals.") 
     }
   }
 

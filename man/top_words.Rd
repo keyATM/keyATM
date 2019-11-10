@@ -8,7 +8,7 @@ top_words(x, n = 10, measure = c("probability", "lift"),
   show_keyword = TRUE)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM_output()})}
+\item{x}{the output from a keyATM model (see \code{keyATM()})}
 
 \item{n}{How many terms to show. Default: NULL, which shows all}
 
