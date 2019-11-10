@@ -1,5 +1,5 @@
 ---
-title: "Estimate the effect of covariates on document topic proportions"
+title: "Estimate the effect of document topic proportions on covariates"
 output: 
   html_document:
     toc: true
@@ -61,7 +61,7 @@ out3 <- keyATM(
               )
 ```
 
-## Regressing covariates on document topic proportion
+## Regressing document topic proportion on covariates
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 coef <- estimate_coefficients(out1, covariates_data = bills_cov)
 plot(coef, topics = 1:3, variables = c("RepParty"))
