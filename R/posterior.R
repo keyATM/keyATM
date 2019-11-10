@@ -643,7 +643,10 @@ get_coefficients <- function(x, covariates_data, covariates_formula = NULL,
 
   if (is.null(x$values_iter$theta_iter)) {
     warning("`options$store_theta` in `keyATM()` was FALSE. keyATM cannot calculate credible intervals.") 
-    res <- fit_regression(theta, covariates_data, covariates_data, formula, outcome_name, tname)
+    res <- fit_regression(x$theta, covariates_data, formula, outcome_name, tname)
+    obj <- list(res = res, topic_names = tname)
+    class(obj) <- c("keyATM_coefficients_point", class(obj))
+    return(obj)
   } else {
     # Run for stored theta
     used_iter <- x$values_iter$used_iter
@@ -737,6 +740,38 @@ plot.keyATM_coefficients <- function(obj, topics = NULL, prob_vec = c(0.05, 0.5,
 
   return(p)
 }
+
+
+#' @noRd
+#' @import magrittr
+#' @import ggplot2
+#' @export
+plot.keyATM_coefficients_point <- function(obj, topics = NULL, variables = NULL)
+{
+  warning("`options$store_theta` in `keyATM()` was FALSE. keyATM cannot calculate credible intervals.")
+  res <- obj$res
+  tnames <- obj$topic_names
+
+  if (is.null(variables)) {
+    variables <- unique(res$Variable) 
+  }
+
+  p <- ggplot() +
+            coord_flip() +
+            geom_point(data = res,
+                       aes(x = Variable, y = Coefficient,
+                           group = Topic, colour = Topic), 
+                       size=2.5, position = position_dodge(width = -1/2)) +
+            scale_x_discrete(limits = rev(variables)) +
+            geom_hline(aes(yintercept=0), linetype="dashed") +
+            xlab("Variable") + ylab("Value") + ggtitle("Coefficient") +
+            theme_bw() +
+            theme(plot.title = element_text(hjust = 0.5),
+                  text = element_text(size=12))
+
+  return(p)
+}
+
 
 
 #' @noRd
