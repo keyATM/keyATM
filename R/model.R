@@ -643,7 +643,8 @@ check_arg_model_settings <- function(obj, model, info)
       obj$covariates_data_standardized <- as.matrix(obj$covariates_data) 
     } else if (is.formula(obj$covariates_formula)) {
       message("Convert covariates data using `obj$covariates_formula`.")
-      obj$covariates_data_standardized <- stats::model.matrix(obj$covariates_formula, obj$covariates_data)
+      obj$covariates_data_standardized <- stats::model.matrix(obj$covariates_formula,
+                                                              as.data.frame(obj$covariates_data))
     } else {
       stop("Check `model_settings$covariates_formula`.")  
     }
@@ -1060,4 +1061,8 @@ check_arg_type <- function(arg, typename, message = NULL){
   }
 }
 
+
+is.formula <- function(x){
+  inherits(x,"formula")
+}
 

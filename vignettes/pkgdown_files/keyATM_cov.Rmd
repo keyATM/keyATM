@@ -43,7 +43,8 @@ out <- keyATM(
               no_keyword_topics = 3,              # number of topics without keywords
               keywords          = bills_keywords, # keywords
               model             = "covariates",   # select the model
-              model_settings    = list(covariates_data = bills_cov),
+              model_settings    = list(covariates_data = bills_cov,
+                                       covariates_formula = ~ RepParty),
               options           = list(seed = 100)
              )
 ```

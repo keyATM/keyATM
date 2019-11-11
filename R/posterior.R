@@ -605,8 +605,8 @@ plot_p <- function(x, show_topic = NULL)
 #' @import magrittr
 #' @export
 estimate_coefficients <- function(x, covariates_data, covariates_formula = NULL,
-                             thinning = 5, burn_in = NULL,
-                             parallel = TRUE, mc.cores = NULL)
+                                  burn_in = NULL,
+                                  parallel = TRUE, mc.cores = NULL)
 {
   # Check inputs
   if (nrow(covariates_data) != nrow(x$theta)) {
@@ -615,7 +615,7 @@ estimate_coefficients <- function(x, covariates_data, covariates_formula = NULL,
 
 
   if (is.null(covariates_formula)) {
-    formula <- as.formula("~ .")
+    covariates_formula <- as.formula("~ .")
   }
 
   if (is.null(burn_in)) {
@@ -643,7 +643,7 @@ estimate_coefficients <- function(x, covariates_data, covariates_formula = NULL,
 
   if (is.null(x$values_iter$theta_iter)) {
     warning("`options$store_theta` in `keyATM()` was FALSE. keyATM cannot calculate credible intervals.") 
-    res <- fit_regression(x$theta, covariates_data, formula, outcome_name, tname)
+    res <- fit_regression(x$theta, covariates_data, covariates_formula, outcome_name, tname)
     obj <- list(res = res, topic_names = tname)
     class(obj) <- c("keyATM_coefficients_point", class(obj))
     return(obj)
@@ -666,7 +666,7 @@ estimate_coefficients <- function(x, covariates_data, covariates_formula = NULL,
                    parallel::mclapply(1:length(used_iter), 
                                       function(i){
                                         return(fit_regression(x$values_iter$theta_iter[[i]], 
-                                                              covariates_data, formula,
+                                                              covariates_data, covariates_formula,
                                                               outcome_name, tname,
                                                               used_iter[i])) 
                                       },

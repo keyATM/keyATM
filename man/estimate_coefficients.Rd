@@ -5,7 +5,7 @@
 \title{Regress theta on covariates}
 \usage{
 estimate_coefficients(x, covariates_data, covariates_formula = NULL,
-  thinning = 5, burn_in = NULL, parallel = TRUE, mc.cores = NULL)
+  burn_in = NULL, parallel = TRUE, mc.cores = NULL)
 }
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}

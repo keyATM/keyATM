@@ -34,23 +34,25 @@ bills_keywords <- list(
 You can fit any of the three **keyATM** models. To get credible intervals, make sure to use `store_theta` option.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-out1 <- keyATM(docs              = keyATM_docs,    # text input
+out1 <- keyATM(
+               docs              = keyATM_docs,    # text input
                no_keyword_topics = 3,              # number of topics without keywords
                keywords          = bills_keywords, # keywords
                model             = "base",         # select the model
                options           = list(seed = 100, store_theta = TRUE)
               )
 
-out2 <- keyATM(    
+out2 <- keyATM(
                docs              = keyATM_docs,    # text input
                no_keyword_topics = 3,              # number of topics without keywords
                keywords          = bills_keywords, # keywords
                model             = "covariates",   # select the model
-               model_settings    = list(covariates_data = bills_cov),
+               model_settings    = list(covariates_data = bills_cov,
+                                        covariates_formula = ~ RepParty),
                options           = list(seed = 100, store_theta = TRUE)
               )
 
-out3 <- keyATM(    
+out3 <- keyATM(
                docs              = keyATM_docs,    # text input
                no_keyword_topics = 3,              # number of topics without keywords
                keywords          = bills_keywords, # keywords
@@ -63,19 +65,24 @@ out3 <- keyATM(
 
 ## Regressing document topic proportion on covariates
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-coef <- estimate_coefficients(out1, covariates_data = bills_cov)
+coef <- estimate_coefficients(out1, covariates_data = bills_cov,
+                              covariates_formula = ~ RepParty)
 plot(coef, topics = 1:3, variables = c("RepParty"))
 ```
 
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-coef <- estimate_coefficients(out2, covariates_data = bills_cov)
+coef <- estimate_coefficients(out2,
+                              covariates_data = bills_cov,
+                              covariates_formula = ~ RepParty)
 plot(coef, topics = 1:3, variables = c("RepParty"))
 ```
 
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-coef <- estimate_coefficients(out3, covariates_data = bills_cov)
+coef <- estimate_coefficients(out3,
+                              covariates_data = bills_cov,
+                              covariates_formula = ~ RepParty)
 plot(coef, topics = 1:3, variables = c("RepParty"))
 ```
 

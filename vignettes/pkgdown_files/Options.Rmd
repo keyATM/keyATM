@@ -10,7 +10,7 @@ pkgdown:
 
 
 # Options
-`keyATM_fit()` takes various options. You can set options through a list.
+`keyATM` takes various options. You can set options through a list.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 my_options <- list(seed        = 100,
                    iterations  = 1500,
@@ -52,7 +52,7 @@ $$
 This changes the sampling formula. Sampling topic with weights ($w_{di} =v$) would be
 $$
 \begin{align*}
-        p(z_{di}=k) = \frac{m(v) N_{dk}^{-di} + \beta }{\sum_v m(v) N_{dk}^{-di} + \beta} \cdot \frac{m(v) N_{vk}^{-di} + \alpha }{\sum_v m(v) N_{vj}^{-di} + \alpha}.
+        p(z_{di}=k) = \frac{m(v) N_{dk}^{-di} + \beta }{\sum_v m(v) N_{dk}^{-di} + \beta} \cdot \frac{m(v) N_{kv}^{-di} + \alpha }{\sum_v m(v) N_{kv}^{-di} + \alpha}.
 \end{align*}
 $$
 

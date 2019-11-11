@@ -127,9 +127,10 @@
 <span id="cb3-3"><a href="#cb3-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
 <span id="cb3-5"><a href="#cb3-5"></a>              <span class="dt">model             =</span> <span class="st">"covariates"</span>,   <span class="co"># select the model</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariates_data =</span> bills_cov),</span>
-<span id="cb3-7"><a href="#cb3-7"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
-<span id="cb3-8"><a href="#cb3-8"></a>             )</span></code></pre></div>
+<span id="cb3-6"><a href="#cb3-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariates_data =</span> bills_cov,</span>
+<span id="cb3-7"><a href="#cb3-7"></a>                                       <span class="dt">covariates_formula =</span> <span class="op">~</span><span class="st"> </span>RepParty),</span>
+<span id="cb3-8"><a href="#cb3-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
+<span id="cb3-9"><a href="#cb3-9"></a>             )</span></code></pre></div>
 <p>The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options.</p>
 </div>
 <div id="saving-the-model" class="section level2">

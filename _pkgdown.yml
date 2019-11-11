@@ -50,9 +50,10 @@ navbar:
 
 
 reference:
-- title: All functions
+- title: Functions
   desc: ~
   contents:
+  - '`estimate_coefficients`'
   - '`plot_alpha`'
   - '`plot_modelfit`'
   - '`plot_p`'
@@ -66,4 +67,3 @@ reference:
 
 toc:
   depth: 2
-
