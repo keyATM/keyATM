@@ -101,6 +101,7 @@ keyATM_output <- function(model)
              theta = theta, phi = phi,
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = info$doc_lens, vocab = model$vocab,
+             priors = model$priors,
              keywords_raw = model$keywords_raw,
              model_fit = modelfit, p = p_estimated,
              values_iter = values_iter)
@@ -187,6 +188,16 @@ keyATM_output_phi <- function(model, info)
   all_words <- model$vocab[as.integer(unlist(model$W, use.names = F)) + 1L]
   all_topics <- as.integer(unlist(model$Z, use.names = F))
   
+  obj <- keyATM_output_phi_calc(all_words, all_topics, 
+                                model$vocab, model$priors$beta, info$tnames)
+  
+  return(obj)
+}
+
+#' @noRd
+#' @import magrittr
+keyATM_output_phi_calc <- function(all_words, all_topics, vocab, priors, tnames)
+{
   res_tibble <- data.frame(
                         Word = all_words,
                         Topic = all_topics
@@ -195,16 +206,25 @@ keyATM_output_phi <- function(model, info)
                 dplyr::summarize(Count = dplyr::n())
   
   res_tibble %>%
-    tidyr::spread(key = Word, value = Count)  -> beta
-  beta <- apply(beta, 2, function(x){ifelse(is.na(x), 0, x)})
-  beta <- beta[, 2:ncol(beta)] + model$priors$beta
-  beta <- beta[, model$vocab]
+    tidyr::spread(key = Word, value = Count)  -> phi
+  phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
 
-  topic_counts <- Matrix::rowSums(beta)
-  word_counts <- Matrix::colSums(beta)
+  phi <- phi[, 2:ncol(phi)]
+  topic_counts <- Matrix::rowSums(phi)
+  word_counts <- Matrix::colSums(phi)
 
-  phi <- beta / topic_counts
-  rownames(phi) <- info$tnames
+  phi <- phi + priors
+
+  if (ncol(phi) == length(vocab)) {
+    phi <- phi[, vocab]
+  } else {
+    # This can happen in `calc_phi_by`
+    # Do nothing
+  }
+  
+
+  phi <- phi / topic_counts
+  rownames(phi) <- tnames
 
   return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
 }
@@ -339,7 +359,7 @@ plot.keyATM_output <- function(x)
 #' are suffixed with a check mark. Words from another seeded category
 #' are labeled with the name of that category.
 #'
-#' @param x the output from a keyATM model (see \code{keyATM()})
+#' @param x the output (see \code{keyATM()} and \code{calc_phi_by()})
 #' @param n How many terms to show. Default: NULL, which shows all
 #' @param measure How to sort the terms: 'probability' (default) or 'lift'
 #' @param show_keyword Mark keywords. (default: TRUE)
@@ -350,31 +370,69 @@ plot.keyATM_output <- function(x)
 top_words <- function(x, n = 10, measure = c("probability", "lift"),
                       show_keyword = TRUE)
 {
+  UseMethod("top_words")
+}
+
+
+#' @noRd
+#' @export
+top_words.calc_phi_by <- function(x, n = 10, measure = c("probability", "lift"),
+                                  show_keyword = TRUE)
+{
+
+  measure <- match.arg(measure)
+  top_words <- lapply(x$phi,  # list of phis
+                      function(obj){
+                       top_words_calc(
+                         n = n, measure = measure, show_keyword = show_keyword,
+                         theta = x$theta, phi = obj$phi,
+                         word_counts = obj$word_counts, keywords_raw = x$keywords_raw
+                       )
+                      })
+
+  return(top_words)
+}
+
+
+#' @noRd
+#' @export
+top_words.keyATM_output <- function(x, n = 10, measure = c("probability", "lift"),
+                                    show_keyword = TRUE)
+{
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
+  measure <- match.arg(measure)
 
   if (modelname %in% c("lda", "ldacov", "ldahmm"))
      show_keyword <- FALSE
+  
+  res <- top_words_calc(n, measure, show_keyword,
+                        theta = x$theta, phi = x$phi,
+                        word_conts = x$word_counts, keywords_raw = x$keywords_raw)
+}
 
+
+top_words_calc <- function(n, measure, show_keyword,
+                           theta, phi, word_counts, keywords_raw)
+{
   if (is.null(n))
-    n <- nrow(x$theta)
-  measure <- match.arg(measure)
+    n <- nrow(theta)
   if (measure == "probability") {
      measuref <- function(xrow){
-       colnames(x$phi)[order(xrow, decreasing = TRUE)[1:n]]
+       colnames(phi)[order(xrow, decreasing = TRUE)[1:n]]
      }
   } else if (measure == "lift") {
-     wfreq <- x$word_counts / sum(x$word_counts)
+     wfreq <- word_counts / sum(word_counts)
      measuref <- function(xrow){
-       colnames(x$phi)[order(xrow / wfreq, decreasing = TRUE)[1:n]]
+       colnames(phi)[order(xrow / wfreq, decreasing = TRUE)[1:n]]
      }
   }
-  res <- apply(x$phi, 1, measuref)
+  res <- apply(phi, 1, measuref)
 
   if (show_keyword) {
     for (i in 1:ncol(res)) {
-      for (j in 1:length(x$keywords_raw)) {
-         inds <- which(res[,i] %in% x$keywords_raw[[j]])
+      for (j in 1:length(keywords_raw)) {
+         inds <- which(res[,i] %in% keywords_raw[[j]])
          label <- ifelse(i == j,
                          paste0("[", "\U2713" ,"]"),
                          paste0("[", as.character(j), "]"))
@@ -834,4 +892,57 @@ print.summary.keyATM_coefficients <- function(obj)
 {
   print(data.frame(obj$coeff))
 }
+
+
+
+#' Estimate Subsetted Topic-Word distribution
+#'
+#' @param x the output from a keyATM model (see \code{keyATM()})
+#' @param keyATM_docs (see \code{keyATM_read()})
+#' @param by a vector whose length is the number of documents
+#'
+#' @return calc_phi_by object (a list)
+#' @import dplyr
+#' @import magrittr
+#' @export
+calc_phi_by <- function(x, keyATM_docs, by)
+{
+
+  # Check inputs
+  if (!is.vector(by)) {
+    stop("`by` should be a vector.") 
+  }
+
+  if (!"Z" %in% names(x$kept_values)) {
+    stop("`Z` is not kept in the output. Please check `keep` option.") 
+  }
+
+  if (length(keyATM_docs) != length(by)) {
+    stop("The length of `by` should be the same as the length of documents.") 
+  }
+
+
+  # Get unique values of `by`
+  unique_val <- unique(by)
+  tnames <- rownames(x$phi)
+
+  # Get phi for each
+  obj <- lapply(unique_val,
+                function(val){
+                  doc_index <- which(by == val) 
+                  all_words <- unlist(keyATM_docs[doc_index], use.names = F)
+                  all_topics <- as.integer(unlist(x$kept_values$Z[doc_index]), use.names = F)
+                  phi_obj <- keyATM_output_phi_calc(all_words, all_topics,
+                                                    x$vocab, x$priors$beta, tnames)
+                } 
+               )
+  names(obj) <- unique_val
+
+  res <- list(phi = obj, theta = x$theta, keywords_raw = x$keywords_raw)
+
+  class(res) <- c("calc_phi_by", class(res))
+  return(res)
+}
+
+
 
