@@ -7,6 +7,7 @@ articles:
   Options: pkgdown_files/Options.html
   Preparation: pkgdown_files/Preparation.html
   Weighted_LDA: pkgdown_files/Weighted_LDA.html
+  estimate_coef: pkgdown_files/estimate_coef.html
   keyATM_base: pkgdown_files/keyATM_base.html
   keyATM_cov: pkgdown_files/keyATM_cov.html
   keyATM_dynamic: pkgdown_files/keyATM_dynamic.html

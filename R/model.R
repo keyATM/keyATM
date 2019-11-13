@@ -630,8 +630,6 @@ check_arg_model_settings <- function(obj, model, info)
       stop("Please provide `obj$covariates_data`.")  
     }
 
-    check_arg_type(obj$covariates_data, "matrix")
-
     if (nrow(obj$covariates_data) != info$num_doc) {
       stop("The row of `model_settings$covariates_data` should be the same as the number of documents.")  
     }
@@ -641,15 +639,39 @@ check_arg_model_settings <- function(obj, model, info)
     }
 
     if (is.null(obj$covariates_formula)) {
-      obj$covariates_formula <- NULL
-    }else if (is.formula(obj$covariates_formula)) {
+      obj$covariates_formula <- NULL  # do not need to change the matrix
+      obj$covariates_data_standardized <- as.matrix(obj$covariates_data) 
+    } else if (is.formula(obj$covariates_formula)) {
       message("Convert covariates data using `obj$covariates_formula`.")
-      obj$covariates_data <- stats::model.matrix(obj$covariates_formula, obj$covariates_data)
-    }else{
+      obj$covariates_data_standardized <- stats::model.matrix(obj$covariates_formula,
+                                                              as.data.frame(obj$covariates_data))
+    } else {
       stop("Check `model_settings$covariates_formula`.")  
     }
 
-    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_formula")
+
+    if (is.null(obj$standardize)) {
+      obj$standardize <- TRUE 
+    }
+
+    # Check if it works as a valid regression 
+    temp <- as.data.frame(obj$covariates_data)
+    temp$y <- rnorm(nrow(obj$covariates_data))
+    fit <- lm(y ~ 0 + ., data = temp)
+
+    if (NA %in% fit$coefficients) {
+      stop("Covariates are invalid.")    
+    }
+
+    if (obj$standardize) {
+      standardize <- function(x){return((x - mean(x)) / sd(x))}
+      obj$covariates_data_standardized <- cbind(obj$covariates_data[, 1, drop=FALSE],
+                                                apply(obj$covariates_data[, -1], 2, standardize) 
+                                               )
+    }
+
+    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_standardized",
+                           "covariates_formula", "standardize", "info")
   }
 
 
@@ -794,6 +816,12 @@ check_arg_options <- function(obj, model, info)
     obj$store_theta <- as.integer(obj$store_theta)  
     if (!obj$store_theta %in% c(0, 1)) {
       stop("An invalid value in `options$store_theta`")  
+    }
+  }
+
+  if (model %in% c("cov", "ldaov")) {
+    if (obj$store_theta == 0) {
+      warning("`options$store_theta` is FALSE. keyATM cannot estimate credible intervals.") 
     }
   }
 
@@ -943,79 +971,5 @@ make_xz_lda <- function(W, info)
  return(list(X = list(), Z = Z))
 }
 
-
-full_model_name <- function(model = c("base", "covariates", "dynamic"),
-                            type = c("keyATM", "lda"))
-{
-  model <- measure <- match.arg(model)
-  type <- measure <- match.arg(type)
-
-  if (type == "keyATM") {
-
-    if (model == "base") {
-      return("base") 
-    } else if (model == "covariates") {
-      return("cov") 
-    } else if (model == "dynamic") {
-      return("hmm") 
-    } else {
-      stop("Please select a correct model.") 
-    }
-  
-  
-  } else if (type == "lda") {
-
-    if (model == "base") {
-      return("lda") 
-    } else if (model == "covariates") {
-      return("ldacov") 
-    } else if (model == "dynamic") {
-      return("ldahmm") 
-    } else {
-      stop("Please select a correct model.") 
-    }     
-  
-  } else {
-    stop("Please select a correct type") 
-  }
-
-
-}
-
-
-abb_model_name <- function(fullname)
-{
-  # Get abbribiation from the full name
-  if (fullname %in% c("base", "lda")) {
-    return("base") 
-  } else if (fullname %in% c("cov", "ldacov")) {
-    return("covariates") 
-  }else if (fullname %in% c("hmm", "ldahmm")) {
-    return("dynamic") 
-  }else{
-    stop("Invalid full model name.") 
-  }
-
-}
-
-
-extract_full_model_name <- function(obj)
-{
-  # Get model full name from S3 class
-  if ("base" %in% class(obj)) {
-    return("base") 
-  } else if ("cov" %in% class(obj)) {
-    return("cov") 
-  } else if ("hmm" %in% class(obj)) {
-    return("hmm") 
-  } else if ("lda" %in% class(obj)) {
-    return("lda") 
-  } else if ("ldacov" %in% class(obj)) {
-    return("ldacov") 
-  } else if ("ldahmm" %in% class(obj)) {
-    return("ldahmm") 
-  }
-
-}
 
 

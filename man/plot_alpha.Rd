@@ -8,7 +8,7 @@ plot_alpha(x, start = 0, show_topic = NULL, thinning = 5,
   scales = "fixed")
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM_output()})}
+\item{x}{the output from a keyATM model (see \code{keyATM()})}
 
 \item{start}{Slice iteration}
 

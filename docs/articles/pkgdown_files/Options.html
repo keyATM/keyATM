@@ -62,6 +62,9 @@
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
+      <a href="../../articles/pkgdown_files/estimate_coef.html">Estimate effects</a>
+    </li>
+    <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -108,7 +111,7 @@
 <div id="options" class="section level1">
 <h1 class="hasAnchor">
 <a href="#options" class="anchor"></a>Options</h1>
-<p><code><a href="../../reference/keyATM_fit.html">keyATM_fit()</a></code> takes various options. You can set options through a list.</p>
+<p><code>keyATM</code> takes various options. You can set options through a list.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>my_options &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed        =</span> <span class="dv">100</span>,</span>
 <span id="cb1-2"><a href="#cb1-2"></a>                   <span class="dt">iterations  =</span> <span class="dv">1500</span>,</span>
 <span id="cb1-3"><a href="#cb1-3"></a>                   <span class="dt">output_per  =</span> <span class="dv">10</span>,</span>
@@ -154,7 +157,7 @@
 \]</span></p>
 <p>This changes the sampling formula. Sampling topic with weights (<span class="math inline">\(w_{di} =v\)</span>) would be <span class="math display">\[
 \begin{align*}
-        p(z_{di}=k) = \frac{m(v) N_{dk}^{-di} + \beta }{\sum_v m(v) N_{dk}^{-di} + \beta} \cdot \frac{m(v) N_{vk}^{-di} + \alpha }{\sum_v m(v) N_{vj}^{-di} + \alpha}.
+        p(z_{di}=k) = \frac{m(v) N_{dk}^{-di} + \beta }{\sum_v m(v) N_{dk}^{-di} + \beta} \cdot \frac{m(v) N_{kv}^{-di} + \alpha }{\sum_v m(v) N_{kv}^{-di} + \alpha}.
 \end{align*}
 \]</span></p>
 <p>If you do not want to use weights, please set it to <code>0</code>.</p>

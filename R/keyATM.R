@@ -75,7 +75,7 @@ keyATM <- function(docs, model, no_keyword_topics,
   if (length(keep) != 0) {
     kept_values <- list()
     use_elements <- keep[keep %in% names(fitted)]
-    for(i in 1:length(use_elements)){
+    for (i in 1:length(use_elements)) {
       kept_values[use_elements[i]]  <- fitted[use_elements[i]]
     }
     out$kept_values <- kept_values
