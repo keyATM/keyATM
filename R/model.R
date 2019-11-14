@@ -723,9 +723,16 @@ check_arg_model_settings <- function(obj, model, info)
 
     if (obj$standardize) {
       standardize <- function(x){return((x - mean(x)) / sd(x))}
-      obj$covariates_data_use <- cbind(obj$covariates_data[, 1, drop=FALSE],
-                                       apply(obj$covariates_data[, -1], 2, standardize) 
-                                      )
+
+      if ("(Intercept)" %in% colnames(obj$covariates_data_use)) {
+        # Do not standardize the intercept
+        obj$covariates_data_use <- cbind(obj$covariates_data_use[, 1, drop=FALSE],
+                                         apply(as.matrix(obj$covariates_data_use[, -1]), 2,
+                                               standardize) 
+                                        )
+      } else {
+        obj$covariates_data_use <- apply(obj$covariates_data_use, 2, standardize)
+      }
     }
 
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",

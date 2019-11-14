@@ -30,18 +30,43 @@ bills_keywords <- list(
                       )
 ```
 
-## Fitting the model
-You can fit any of the three **keyATM** models. To get credible intervals, make sure to use `store_theta` option.
+## Topic-Word distribution by covariates
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+out <- keyATM(
+              docs              = keyATM_docs,    # text input
+              no_keyword_topics = 3,              # number of topics without keywords
+              keywords          = bills_keywords, # keywords
+              model             = "base",         # select the model
+              options           = list(seed = 100),
+              keep              = c("Z")          # You need to keep `Z`
+             )
+```
+
+We have a binary variable of the party ID of bill's proposer. `0` indicates Democrat and `1` indicates Republican.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+table(bills_cov[, "RepParty"])
+```
+
+`by_strata_TopicWord()` function calculates topic-word distribution subsetted by a vector provided.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+RepParty <- as.vector(bills_cov[, "RepParty"])  # the length should be the same as the number of documents
+strata_tw <- by_strata_TopicWord(out, keyATM_docs, by = RepParty)
+```
+
+You can get top words with `top_words()`.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+top_words(strata_tw, n = 5)
+```
+
+As long as the length is the same as the number of documents, you can use a character vector for `by` argument argument.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+RepParty_chr <- ifelse(bills_cov[, "RepParty"] == 0, "Democrat", "Republican")
+strata_tw_chr <- by_strata_TopicWord(out, keyATM_docs, RepParty_chr)
+top_words(strata_tw_chr)
+```
+
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-out1 <- keyATM(
-               docs              = keyATM_docs,    # text input
-               no_keyword_topics = 3,              # number of topics without keywords
-               keywords          = bills_keywords, # keywords
-               model             = "base",         # select the model
-               options           = list(seed = 100, store_theta = TRUE)
-              )
-
 out2 <- keyATM(
                docs              = keyATM_docs,    # text input
                no_keyword_topics = 3,              # number of topics without keywords

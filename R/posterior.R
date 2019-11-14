@@ -97,6 +97,11 @@ keyATM_output <- function(model)
     p_estimated <- NULL 
   }
 
+  # Rescale lambda
+  if (model$model %in% c("cov", "ldacov")) {
+    values_iter$Lambda_iter <- keyATM_output_rescale_Lambda(model, info) 
+  }
+
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
              V = length(model$vocab), N = length(model$Z),
@@ -233,6 +238,8 @@ keyATM_output_phi_calc <- function(all_words, all_topics, vocab, priors, tnames)
 }
 
 
+#' @noRd
+#' @import magrittr
 keyATM_output_theta_iter <- function(model, info)
 {
   if (model$model %in% c("cov", "ldacov")) {
@@ -292,6 +299,8 @@ keyATM_output_alpha_iter_base <- function(model, info)
 }
 
 
+#' @noRd
+#' @import magrittr
 keyATM_output_alpha_iter_hmm <- function(model, info)
 {
   topics <- paste0(1:(info$allK))
@@ -308,6 +317,38 @@ keyATM_output_alpha_iter_hmm <- function(model, info)
   return(alpha_iter)
 }
 
+
+#' @noRd
+#' @import magrittr
+keyATM_output_rescale_Lambda <- function(model, info)
+{
+  if (!model$model_settings$standardize) {
+    # If it is not standardized, no need to rescale 
+    return(model$stored_values$Lambda_iter)
+  }
+
+  # Prepare original_data (before standardization)
+  if (is.null(model$model_settings$covariates_formula)) {
+    original_data <- as.matrix(model$model_settings$covariates_data) 
+  } else if (is.formula(model$model_settings$covariates_formula)) {
+    original_data <- stats::model.matrix(obj$covariates_formula,
+                                         as.data.frame(obj$covariates_data))
+  }
+
+  standardized_data <- model$model_settings$covariates_data_use
+
+  # Get rescaled Lambda
+  Lambda <- lapply(model$stored_values$Lambda_iter,
+                   function(L_s){
+                     y <- Matrix::tcrossprod(standardized_data, L_s)  # x %*% t(y)
+                     L <- Matrix::solve(Matrix::crossprod(original_data),  # t(x) %*% x
+                                        Matrix::crossprod(original_data, y)  # t(x) %*% y
+                                       )
+                     return(t(L))  # L_s is K \times M
+                   }
+                  )
+  return(Lambda)
+}
 
 #' @noRd
 #' @export
@@ -411,7 +452,7 @@ top_words.keyATM_output <- function(x, n = 10, measure = c("probability", "lift"
   
   res <- top_words_calc(n, measure, show_keyword,
                         theta = x$theta, phi = x$phi,
-                        word_conts = x$word_counts, keywords_raw = x$keywords_raw)
+                        word_counts = x$word_counts, keywords_raw = x$keywords_raw)
 }
 
 
