@@ -472,9 +472,59 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
     stop("Please check `mode`.")  
   }
 
+
+  # If covariates are standardized, update output
+  # if (model %in% c("cov", "ldacov")) {
+    # key_model <- adjust_coefficients(key_model) 
+  # }
+
   class(key_model) <- c("keyATM_fitted", class(key_model))
   return(key_model)
 }
+
+
+# adjust_coefficients <- function(key_model)
+# {
+#   # If it is not standardized, there is no need to change
+#   if (!key_model$model_settings$standardize) {
+#     return(key_model) 
+#   }
+#
+#   # Get non-standardzed version of the estimates
+#   key_model$stored_values$Lambda_iter_standardized <- key_model$stored_values$Lambda_iter
+#   variables <- colnames(key_model$model_settings$covariates_data)
+#   num_variables <- length(variables)
+#   use_intercept <- FALSE
+#   sds <- list()
+#
+#   if ("(Intercept)" %in% variables)
+#     use_intercept <- TRUE
+#
+#   for (i in 1:num_variables) {
+#     variable <- variables[i]
+#     sds[[variable]] <- sd(key_model$model_settings$covariates_data[, variable])
+#
+#     if (use_intercept) {
+#       use_intercept[[variable]] <- sds[[variable]] * mean(key_model$model_settings$covariates_data[, variable])
+#     }
+#   }
+#
+#   # Fix values
+#   key_model$stored_values$Lambda_iter <-
+#     lapply(key_model$stored_values$Lambda_iter,
+#            function(Lambda_iter){
+#             for(i in 1:num_variables){
+#               
+#             } 
+#
+#             if (use_intercept) {
+#            
+#             }
+#            })
+#
+#
+#
+# }
 
 
 #' @noRd
@@ -639,12 +689,13 @@ check_arg_model_settings <- function(obj, model, info)
     }
 
     if (is.null(obj$covariates_formula)) {
+      warning("`covariates_formula` is not provided. keyATM uses the matrix as it is.")
       obj$covariates_formula <- NULL  # do not need to change the matrix
-      obj$covariates_data_standardized <- as.matrix(obj$covariates_data) 
+      obj$covariates_data_use <- as.matrix(obj$covariates_data) 
     } else if (is.formula(obj$covariates_formula)) {
       message("Convert covariates data using `obj$covariates_formula`.")
-      obj$covariates_data_standardized <- stats::model.matrix(obj$covariates_formula,
-                                                              as.data.frame(obj$covariates_data))
+      obj$covariates_data_use <- stats::model.matrix(obj$covariates_formula,
+                                                     as.data.frame(obj$covariates_data))
     } else {
       stop("Check `model_settings$covariates_formula`.")  
     }
@@ -655,22 +706,29 @@ check_arg_model_settings <- function(obj, model, info)
     }
 
     # Check if it works as a valid regression 
-    temp <- as.data.frame(obj$covariates_data)
-    temp$y <- rnorm(nrow(obj$covariates_data))
-    fit <- lm(y ~ 0 + ., data = temp)
+    temp <- as.data.frame(obj$covariates_data_use)
+    temp$y <- rnorm(nrow(obj$covariates_data_use))
 
-    if (NA %in% fit$coefficients) {
-      stop("Covariates are invalid.")    
+    if ("(Intercept)" %in% colnames(obj$covariates_data_use)){
+      fit <- lm(y ~ 0 + ., data = temp)
+      if (NA %in% fit$coefficients) {
+        stop("Covariates are invalid.")    
+      }    
+    } else {
+      fit <- lm(y ~ ., data = temp)
+      if (NA %in% fit$coefficients) {
+        stop("Covariates are invalid.")    
+      }    
     }
 
     if (obj$standardize) {
       standardize <- function(x){return((x - mean(x)) / sd(x))}
-      obj$covariates_data_standardized <- cbind(obj$covariates_data[, 1, drop=FALSE],
-                                                apply(obj$covariates_data[, -1], 2, standardize) 
-                                               )
+      obj$covariates_data_use <- cbind(obj$covariates_data[, 1, drop=FALSE],
+                                       apply(obj$covariates_data[, -1], 2, standardize) 
+                                      )
     }
 
-    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_standardized",
+    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
                            "covariates_formula", "standardize", "info")
   }
 
