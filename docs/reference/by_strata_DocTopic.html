@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Regress theta on covariates — get_coefficients • keyATM</title>
+<title>Estimate Document-Topic distribution by strata — by_strata_DocTopic • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Regress theta on covariates — get_coefficients" />
+<meta property="og:title" content="Estimate Document-Topic distribution by strata — by_strata_DocTopic" />
 
-<meta property="og:description" content="Regress theta on covariates" />
+<meta property="og:description" content="Estimate Document-Topic distribution by strata" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -95,6 +95,9 @@
       <a href="../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
+      <a href="../articles/pkgdown_files/Heterogeneity.html">Heterogeneity</a>
+    </li>
+    <li>
       <a href="../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -129,19 +132,19 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Regress theta on covariates</h1>
+    <h1>Estimate Document-Topic distribution by strata</h1>
     <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/posterior.R'><code>R/posterior.R</code></a></small>
-    <div class="hidden name"><code>get_coefficients.Rd</code></div>
+    <div class="hidden name"><code>by_strata_DocTopic.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Regress theta on covariates</p>
+    <p>Estimate Document-Topic distribution by strata</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>get_coefficients</span>(<span class='no'>x</span>, <span class='no'>covariates_data</span>, <span class='kw'>covariates_formula</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>thinning</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>burn_in</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>parallel</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>by_strata_DocTopic</span>(<span class='no'>x</span>, <span class='no'>by_name</span>, <span class='no'>by_values</span>, <span class='kw'>burn_in</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>parallel</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,18 +154,14 @@
       <td><p>the output from a keyATM model (see <code>keyATM()</code>)</p></td>
     </tr>
     <tr>
-      <th>covariates_data</th>
-      <td><p>matrix, data.frame, or tibble</p></td>
-    </tr>
-    <tr>
-      <th>covariates_formula</th>
-      <td></td>
+      <th>by</th>
+      <td><p>a vector whose length is the number of documents</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>keyATM_coefficients object</p>
+    <p>strata_topicword object (a list)</p>
     
 
   </div>

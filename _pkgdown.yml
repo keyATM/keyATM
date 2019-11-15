@@ -53,12 +53,13 @@ reference:
 - title: Functions
   desc: ~
   contents:
-  - '`estimate_coefficients`'
+  - '`by_strata_DocTopic`'
+  - '`by_strata_TopicWord`'
+  - '`keyATM`'
+  - '`keyATM_read`'
   - '`plot_alpha`'
   - '`plot_modelfit`'
   - '`plot_p`'
-  - '`keyATM`'
-  - '`keyATM_read`'
   - '`top_docs`'
   - '`top_words`'
   - '`top_topics`'

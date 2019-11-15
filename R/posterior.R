@@ -99,7 +99,7 @@ keyATM_output <- function(model)
 
   # Rescale lambda
   if (model$model %in% c("cov", "ldacov")) {
-    values_iter$Lambda_iter <- keyATM_output_rescale_Lambda(model, info) 
+    values_iter$Lambda_iter_rescaled <- keyATM_output_rescale_Lambda(model, info) 
   }
 
   # Make an object to return
@@ -143,7 +143,7 @@ keyATM_output_theta <- function(model, info)
 
   # Theta
   if (model$model %in% c("cov", "ldacov")) {
-    Alpha <- exp(model$model_settings$covariates_data %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
+    Alpha <- exp(model$model_settings$covariates_data_use %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
 
     posterior_z <- function(docid){
       zvec <- model$Z[[docid]]
@@ -246,7 +246,7 @@ keyATM_output_theta_iter <- function(model, info)
     posterior_theta <- function(x){
       Z_table <- model$stored_values$Z_tables[[x]]
       lambda <- model$stored_values$Lambda_iter[[x]]
-      Alpha <- exp(model$model_settings$covariates_data %*% t(lambda))
+      Alpha <- exp(model$model_settings$covariates_data_use %*% t(lambda))
 
       tt <- Z_table + Alpha
       row.names(tt) <- NULL
@@ -331,8 +331,8 @@ keyATM_output_rescale_Lambda <- function(model, info)
   if (is.null(model$model_settings$covariates_formula)) {
     original_data <- as.matrix(model$model_settings$covariates_data) 
   } else if (is.formula(model$model_settings$covariates_formula)) {
-    original_data <- stats::model.matrix(obj$covariates_formula,
-                                         as.data.frame(obj$covariates_data))
+    original_data <- stats::model.matrix(model$model_settings$covariates_formula,
+                                         as.data.frame(model$model_settings$covariates_data))
   }
 
   standardized_data <- model$model_settings$covariates_data_use
@@ -1024,22 +1024,12 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
   }
 
   
-  # Get raw covariates data
-  if (is.null(x$kept_values$model_settings$covariates_formula)) {
-    raw_data <- x$kept_values$model_settings$covariates_data 
-  } else {
-    raw_data <- stats::model.matrix(x$kept_values$model_settings$covariates_formula,
-                                    as.data.frame(x$kept_values$model_settings$covariates_data)
-                                   ) 
-  }
-
-  # Other info
-  standardize <- x$kept_values$model_settings$standardize
+  # Info
   used_iter <- x$values_iter$used_iter
   used_iter <- used_iter[used_iter > burn_in]
   use_index <- which(x$values_iter$used_iter %in% used_iter)
   tnames <- rownames(x$phi)
-  Lambda_iter <- x$kept_values$stored_values$Lambda_iter
+  Lambda_iter <- x$values_iter$Lambda_iter_rescaled
 
   res <- lapply(1:length(by_values),
                 function(i){
@@ -1047,19 +1037,14 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
                   new_data <- x$kept_values$model_settings$covariates_data_use
                   new_data[, by_name] <- value
 
-                  # Standardize following the original data
-                  if (standardize) {
-                    old_mu <- mean(x$kept_values$model_settings$covariates_data[, by_name])
-                    old_sd <- sd(x$kept_values$model_settings$covariates_data[, by_name])
-                    new_data[, by_name] <- (new_data[, by_name] - old_mu) / old_sd
-                  }
-
                   # Draw theta
                   obj <- do.call(dplyr::bind_rows,
                                  parallel::mclapply(1:length(use_index),
                                                     function(s){
-                                                      Alpha <- exp(new_data %*%
-                                                                   t(Lambda_iter[[use_index[s]]])) 
+                                                      Alpha <- exp(Matrix::tcrossprod(
+                                                                     new_data,
+                                                                     Lambda_iter[[use_index[s]]]
+                                                                   ))
                                                      
                                                       thetas <- t(apply(Alpha, 1, rdirichlet))
                                                       thetas <- Matrix::colMeans(thetas)

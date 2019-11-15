@@ -726,10 +726,12 @@ check_arg_model_settings <- function(obj, model, info)
 
       if ("(Intercept)" %in% colnames(obj$covariates_data_use)) {
         # Do not standardize the intercept
+        colnames_keep <- colnames(obj$covariates_data_use)
         obj$covariates_data_use <- cbind(obj$covariates_data_use[, 1, drop=FALSE],
                                          apply(as.matrix(obj$covariates_data_use[, -1]), 2,
                                                standardize) 
                                         )
+        colnames(obj$covariates_data_use) <- colnames_keep
       } else {
         obj$covariates_data_use <- apply(obj$covariates_data_use, 2, standardize)
       }
@@ -884,11 +886,11 @@ check_arg_options <- function(obj, model, info)
     }
   }
 
-  if (model %in% c("cov", "ldaov")) {
-    if (obj$store_theta == 0) {
-      warning("`options$store_theta` is FALSE. keyATM cannot estimate credible intervals.") 
-    }
-  }
+  # if (model %in% c("cov", "ldaov")) {
+  #   if (obj$store_theta == 0) {
+  #     warning("`options$store_theta` is FALSE. keyATM cannot estimate credible intervals.") 
+  #   }
+  # }
 
   # Estimate alpha
   if (model %in% c("base", "lda")) {
