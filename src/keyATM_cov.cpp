@@ -99,7 +99,7 @@ void keyATMcov::sample_lambda()
 
 
 
-double keyATMcov::likelihood_lambda()
+double keyATMcov::likelihood_lambda(int &k, int &t)
 {
   double loglik = 0.0;
   Alpha = (C * Lambda.transpose()).array().exp();
@@ -114,25 +114,17 @@ double keyATMcov::likelihood_lambda()
     loglik -= mylgamma( doc_each_len[d] + alpha.sum() ); 
         // the second term denoinator in the first square bracket
   
-    for (int k = 0; k < num_topics; k++) {
-      loglik -= mylgamma(alpha(k));
-        // the first term denominator in the first square bracket
-      loglik += mylgamma( n_dk(d, k) + alpha(k) );
-        // the second term numerator in the firist square bracket
-    }
+    loglik -= mylgamma(alpha(k));
+    // the first term denominator in the first square bracket
+    loglik += mylgamma( n_dk(d, k) + alpha(k) );
+    // the second term numerator in the firist square bracket
   }
 
   // Prior
-  double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
-  for (int k = 0; k < num_topics; k++) {
-    for (int t = 0; t < num_cov; t++) {
-      loglik += prior_fixedterm;
-      loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
-    }
-  }
+  loglik += -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
+  loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
 
   return loglik;
-
 }
 
 
@@ -149,7 +141,6 @@ void keyATMcov::sample_lambda_slice()
   int k, t;
   const double A = slice_A;
 
-  store_loglik = likelihood_lambda();
   newlambdallk = 0.0;
 
   for (int kk = 0; kk < num_topics; kk++) {
@@ -157,6 +148,7 @@ void keyATMcov::sample_lambda_slice()
 
     for (int tt = 0; tt < num_cov; tt++) {
       t = cov_ids[tt];
+      store_loglik = likelihood_lambda(k, t);
 
       start = 0.0; // shrink
       end = 1.0; // shrink
@@ -171,12 +163,11 @@ void keyATMcov::sample_lambda_slice()
         new_p = sampler::slice_uniform(start, end); // <-- using R function above
         Lambda(k,t) = expand(new_p, A); // expand
 
-        newlambdallk = likelihood_lambda();
+        newlambdallk = likelihood_lambda(k, t);
 
         newlikelihood = newlambdallk - std::log(A * new_p * (1.0 - new_p));
 
         if (slice_ < newlikelihood) {
-          store_loglik = newlambdallk;
           break;
         } else if (previous_p < new_p) {
           end = new_p;
