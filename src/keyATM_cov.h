@@ -57,12 +57,12 @@ class keyATMcov : virtual public keyATMmeta
     // Iteration
     virtual void iteration_single(int &it);
     void sample_parameters(int &it);
-    void sample_lambda(int &k, int &mt);
+    void sample_lambda();
     double alpha_loglik();
     virtual double loglik_total();
 
     void sample_lambda_slice();
-    double likelihood_lambda();
+    double likelihood_lambda(int &k, int &t);
     void proposal_lambda(int& k);
 
 };
