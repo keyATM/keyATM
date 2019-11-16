@@ -411,7 +411,13 @@ void keyATMhmm::sample_P()
   // sample P_est
   // iterate until index_state - 2
   for (int s = 0; s <= (num_states - 2); ++s) {
-    pii = R::rbeta(1 + S_count(s), 2);  
+    pii = R::rbeta(1 + S_count(s) - 1, 2);  
+      // S_count(s) - 1: the number of transitions from state
+      // s to state s in the sequence of state
+      // ----------------------------------------------------
+      // "-1" because the first count in S_count is
+      // the transition from s-1 to s
+      // prior is Beta(1,1)
 
     P_est(s, s) = pii;
     P_est(s, s + 1) = 1.0 - pii;
