@@ -311,7 +311,7 @@ double keyATMhmm::alpha_loglik(int &k, int &state_start, int &state_end)
 void keyATMhmm::sample_forward()
 { // Calculate Psk (num_doc, num_states)
 
-  // Psk = MatrixXd::Zero(num_doc, num_states);
+  // Psk = MatrixXd::Zero(num_time, num_states);
 
   for (int t = 0; t < num_time; t++) {
     if (t == 0) {
@@ -322,13 +322,17 @@ void keyATMhmm::sample_forward()
 
     // Prepare f in Eq.(6) of Chib (1998)
     for (int s = 0; s < num_states; s++) {
+      // f(y_t | ...) in the numerator
       alpha = alphas.row(s).transpose();
       logfy(s) = polyapdfln(t, alpha);
     }  
 
     // Prepare Pst
-    st_1l = Psk.row(t-1);  // previous observation
-    st_k = (st_1l.transpose() * P_est);
+    st_1l = Psk.row(t-1);  // previous time block
+    st_k = (st_1l.transpose() * P_est); 
+        // p(s_{t} = k), summation is done as matrix calculation
+        // Note that P has a lot of 0 elements
+        // This is a first term of the numerator in Eq.(6)
 
     // Format numerator and calculate denominator at the same time
     logsum = 0.0;
@@ -346,7 +350,7 @@ void keyATMhmm::sample_forward()
 
     for (int s = 0; s < num_states; s++) {
       if (st_k(s) != 0.0) {
-        Psk(t, s) = exp( logst_k(s) - logsum );  
+        Psk(t, s) = exp(logst_k(s) - logsum);  
       } else {
         Psk(t, s) = 0.0;  
       }  
