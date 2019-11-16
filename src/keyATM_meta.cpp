@@ -8,17 +8,21 @@ using namespace std;
 
 keyATMmeta::keyATMmeta(List model_, const int iter_, const int output_per_)
 {
+  // Constructor
   model = model_;
   iter = iter_;
   output_per = output_per_;
 }
 
-keyATMmeta::~keyATMmeta(){
+keyATMmeta::~keyATMmeta()
+{
+  // Destructor
   model["stored_values"] = stored_values;
 }
 
 void keyATMmeta::fit()
 {
+  // Read data, initialize the model and fit the model
   read_data();
   initialize();
   iteration();
@@ -26,6 +30,8 @@ void keyATMmeta::fit()
 
 void keyATMmeta::read_data()
 {
+  // `common` reads data required in all models
+  // `specific` reads model specific data
   read_data_common();
   read_data_specific();
 }
@@ -70,6 +76,8 @@ void keyATMmeta::read_data_common()
 
 void keyATMmeta::initialize()
 {
+  // `common`: common initialization
+  // `specific`: model specific initialization
   initialize_common();
   initialize_specific();
 }
@@ -183,12 +191,13 @@ void keyATMmeta::initialize_common()
 }
 
 
-// Iteration
 void keyATMmeta::iteration()
 {
+  // Iteration
   for (int it = 0; it < iter; it++) {
     iteration_single(it);
 
+    // Check storing values
     int r_index = it + 1;
     if (r_index % output_per == 0 || r_index == 1 || r_index == iter) {
       sampling_store(r_index);
@@ -410,6 +419,7 @@ double keyATMmeta::gammaln_frac(const double &value, const int &count){
 
 
 List keyATMmeta::return_model(){
+  // Return output to R
   return model;
 }
 

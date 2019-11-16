@@ -12,6 +12,12 @@ using namespace std;
 
 class keyATMmeta
 {
+  // This is a header file for "meta" class.
+  // keyATMmeta class includes variables and functions
+  // that appear throughout the keyATM models.
+  // Each model inherits keyATMmeta and adds model specific
+  // functions.
+
   public:
     //
     // Parameters

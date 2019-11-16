@@ -13,8 +13,10 @@ using namespace std;
 
 class LDAbase : virtual public keyATMmeta
 {
+  // Base function for the Weighted LDA models
+  // This inherits keyATMmeta class.
+  
   public:
-
     // Constructor
     LDAbase(List model_, const int iter_, const int output_per_) :
       keyATMmeta(model_, iter_, output_per_) {};
