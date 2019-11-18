@@ -45,7 +45,7 @@ out <- keyATM(
               model             = "covariates",   # select the model
               model_settings    = list(covariates_data = bills_cov,
                                        covariates_formula = ~ RepParty),
-              options           = list(seed = 100)
+              options           = list(seed = 50)
              )
 ```
 The default number of iterations is `1500`. Please check [this page](Options.html) for available options.
