@@ -93,7 +93,7 @@ keyATM_output <- function(model)
 
   # p
   if (model$model %in% c("base", "cov", "hmm")){
-    p_estimated <- keyATM_output_p(model$Z, model$X) 
+    p_estimated <- keyATM_output_p(model$Z, model$X, model$priors$gamma) 
   } else {
     p_estimated <- NULL 
   }
@@ -120,8 +120,12 @@ keyATM_output <- function(model)
 
 #' @noRd
 #' @import magrittr
-keyATM_output_p <- function(model_Z, model_X)
+keyATM_output_p <- function(model_Z, model_X, prior)
 {
+  # p(p | X=s, n, a, b) \propto Be(a+s, b+(n-s))
+  #   p(X=s | n, p) p(p | a, b)
+  # Expectation is (a+s) / (a+b+n)
+
   data <- tibble::tibble(Z = unlist(model_Z, use.names = F),
                          X = unlist(model_X, use.names = F))
   data %>%
@@ -129,9 +133,16 @@ keyATM_output_p <- function(model_Z, model_X)
     dplyr::select(-starts_with("Z")) %>%
     dplyr::group_by(Topic) %>%
     dplyr::summarize(count = (dplyr::n()), sumx = sum(X)) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(Proportion = sumx/count*100) %>%
-    dplyr::select(-sumx) -> p_estimated
+    dplyr::ungroup() -> temp
+
+  n <- temp$count
+  s <- temp$sumx
+  a <- prior[, 1]
+  b <- prior[, 2]
+  p <- (a + s) / (a + b + n) 
+  temp %>%
+    mutate(Proportion = p * 100) %>%
+    select(-sumx) -> p_estimated
 
   return(p_estimated)
 }
@@ -198,7 +209,7 @@ keyATM_output_phi <- function(model, info)
   all_topics <- as.integer(unlist(model$Z, use.names = F))
   
   if (model$model %in% c("base", "cov", "hmm")) {
-    p_estimated <- keyATM_output_p(model$Z, model$X)
+    p_estimated <- keyATM_output_p(model$Z, model$X, model$priors$gamma)
     all_x <- as.integer(unlist(model$X, use.names = F))
 
     obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_x, p_estimated,
@@ -898,7 +909,8 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
                   all_topics <- as.integer(unlist(x$kept_values$Z[doc_index]), use.names = F)
                   all_x <- as.integer(unlist(x$kept_values$X[doc_index]), use.names = F)
                   p_estimated <- keyATM_output_p(x$kept_values$Z[doc_index], 
-                                                 x$kept_values$X[doc_index])
+                                                 x$kept_values$X[doc_index],
+                                                 x$priors$gamma)
                   vocab <- sort(unique(all_words))
 
                   phi_obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_x, p_estimated,
