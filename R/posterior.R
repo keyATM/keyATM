@@ -93,7 +93,7 @@ keyATM_output <- function(model)
 
   # p
   if (model$model %in% c("base", "cov", "hmm")){
-    p_estimated <- keyATM_output_p(model) 
+    p_estimated <- keyATM_output_p(model$Z, model$X) 
   } else {
     p_estimated <- NULL 
   }
@@ -120,10 +120,10 @@ keyATM_output <- function(model)
 
 #' @noRd
 #' @import magrittr
-keyATM_output_p <- function(model)
+keyATM_output_p <- function(model_Z, model_X)
 {
-  data <- tibble::tibble(Z = unlist(model$Z, use.names = F),
-                         X = unlist(model$X, use.names = F))
+  data <- tibble::tibble(Z = unlist(model_Z, use.names = F),
+                         X = unlist(model_X, use.names = F))
   data %>%
     dplyr::mutate(Topic = Z+1L) %>%
     dplyr::select(-starts_with("Z")) %>%
@@ -197,17 +197,170 @@ keyATM_output_phi <- function(model, info)
   all_words <- model$vocab[as.integer(unlist(model$W, use.names = F)) + 1L]
   all_topics <- as.integer(unlist(model$Z, use.names = F))
   
-  obj <- keyATM_output_phi_calc(all_words, all_topics, 
-                                model$vocab, model$priors$beta, info$tnames)
+  if (model$model %in% c("base", "cov", "hmm")) {
+    p_estimated <- keyATM_output_p(model$Z, model$X)
+    all_x <- as.integer(unlist(model$X, use.names = F))
+
+    obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_x, p_estimated,
+                                      model$keywords_raw,
+                                      model$vocab, model$priors, info$tnames)  
+  } else if (model$model %in% c("lda", "ldacov", "ldahmm")) {
+    obj <- keyATM_output_phi_calc_lda(all_words, all_topics, 
+                                      model$vocab, model$priors$beta, info$tnames)
+  }
   
   
   return(obj)
 }
 
 
+
 #' @noRd
 #' @import magrittr
-keyATM_output_phi_calc <- function(all_words, all_topics, vocab, priors, tnames)
+keyATM_output_phi_calc_key <- function(all_words, all_topics, all_x, p_estimated,
+                                       keywords_raw, vocab, priors, tnames)
+{
+  res_tibble <- tibble::tibble(
+                        Word = all_words,
+                        Topic = all_topics,
+                        Switch = all_x
+                       )
+
+  prob1 <- p_estimated %>% dplyr::pull(Proportion) / 100
+  prob0 <- 1 - prob1 
+  vocab_sorted <- sort(vocab)
+
+  get_phi <- function(res_tibble, switch_val)
+  {
+    if (switch_val == 0) {
+      # Use no-keyword topic-word dist
+      prior <- priors$beta
+    } else if (switch_val == 1) {
+      # Use keyword topic-word dist
+      prior <- priors$beta_s
+    }
+
+    temp <- res_tibble %>%
+              dplyr::filter(Switch == switch_val) %>%
+              dplyr::group_by(Topic, Word) %>%
+              dplyr::summarize(Count = dplyr::n())  
+  
+    temp %>%
+      tidyr::spread(key = Word, value = Count) -> phi
+    phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
+
+    phi <- phi[, 2:ncol(phi)]
+    topic_counts <- Matrix::rowSums(phi)
+
+
+    rownames(phi) <- tnames[1:nrow(phi)]
+
+    if (switch_val == 1) {
+      # keyword topic-word dist
+
+      all_keywords <- unique(unlist(keywords_raw, use.names = F))
+      phi_ <- matrix(0, nrow = length(tnames), 
+                     ncol = length(all_keywords))
+      colnames(phi_) <- sort(all_keywords)
+      phi <- phi[, sort(colnames(phi))]
+      rownames(phi_) <- tnames
+
+      # phi with all keywords
+      phi_[1:nrow(phi), which(colnames(phi_) %in% colnames(phi))] <- 
+            phi[, which(colnames(phi) %in% colnames(phi_))]
+
+      for (k in 1:length(keywords_raw)) {
+        # Keywords in topic k should have positive probability
+        phi_[k, ][which(colnames(phi_) %in% keywords_raw[[k]])] <- 
+                            phi_[k, ][which(colnames(phi_) %in% keywords_raw[[k]])] + prior
+      }
+      phi <- phi_
+      phi <- phi[, sort(colnames(phi))]
+      phi <- phi / Matrix::rowSums(phi)
+      phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
+
+      # keyword topic-word dist should have the same dimension as no-keyword dist
+      # for marginilization, but no-keyword elements are 0
+      phi_ <- matrix(0, nrow = length(tnames), 
+                     ncol = length(vocab))
+      colnames(phi_) <- vocab_sorted
+      phi_[1:nrow(phi), which(colnames(phi_) %in% colnames(phi))] <- 
+          phi[, which(colnames(phi) %in% colnames(phi_))]
+      phi <- phi_
+
+
+    } else {
+
+      # no-keyword topic-word dist
+
+      # Should have the same dimension as vocab
+      phi_ <- matrix(0, nrow = length(tnames), 
+                     ncol = length(vocab))
+      colnames(phi_) <- vocab_sorted
+      phi <- phi[, sort(colnames(phi))]
+      rownames(phi_) <- tnames
+
+      # phi with all words
+      phi_[, which(colnames(phi_) %in% colnames(phi))] <- 
+            phi[, which(colnames(phi) %in% colnames(phi_))]
+
+      phi <- phi_ + prior
+      phi <- phi / Matrix::rowSums(phi)
+    }
+
+    return(phi)
+  }
+
+
+  # Regular
+  phi0 <- get_phi(res_tibble, switch_val = 0)
+
+  # Keyword
+  phi1 <- get_phi(res_tibble, switch_val = 1)
+
+  # Marginal out switch
+  blank_vec <- rep(0, length(vocab))
+  names(blank_vec) <- vocab_sorted
+
+  phi <- sapply(1:length(tnames),
+                function(k){
+                  regular <- blank_vec
+                  regular[colnames(phi0)] <- phi0[k, ]
+
+                  key <- blank_vec
+                  key[colnames(phi1)] <- phi1[k, ]
+
+                  res <- regular * prob0[k] + key * prob1[k]
+                  return(res)
+                }) %>% t()
+  colnames(phi) <- vocab_sorted  # same as colnames(phi0), colnames(phi1)
+  rownames(phi) <- tnames
+
+  topic_counts <- res_tibble %>%
+                    dplyr::group_by(Topic) %>%
+                    dplyr::summarize(Count = dplyr::n()) %>%
+                    dplyr::pull(Count)
+
+  word_counts <- res_tibble %>%
+                    dplyr::group_by(Word) %>%
+                    dplyr::summarize(Count = dplyr::n()) %>%
+                    dplyr::arrange(match(Word, vocab)) %>%  # same order as vocab
+                    dplyr::pull(Count)
+
+  if (ncol(phi) == length(vocab)) {
+    phi <- phi[, vocab]
+  } else {
+    # This can happen in `by_strata_TopicWord`
+    # Do nothing
+  }
+  
+  return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
+}
+
+
+#' @noRd
+#' @import magrittr
+keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tnames)
 {
   res_tibble <- data.frame(
                         Word = all_words,
@@ -217,7 +370,7 @@ keyATM_output_phi_calc <- function(all_words, all_topics, vocab, priors, tnames)
                 dplyr::summarize(Count = dplyr::n())
   
   res_tibble %>%
-    tidyr::spread(key = Word, value = Count)  -> phi
+    tidyr::spread(key = Word, value = Count) -> phi
   phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
 
   phi <- phi[, 2:ncol(phi)]
@@ -234,7 +387,7 @@ keyATM_output_phi_calc <- function(all_words, all_topics, vocab, priors, tnames)
   }
   
 
-  phi <- phi / topic_counts
+  phi <- phi / Matrix::rowSums(phi)
   rownames(phi) <- tnames
 
   return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
@@ -456,6 +609,7 @@ top_words.keyATM_output <- function(x, n = 10, measure = c("probability", "lift"
   res <- top_words_calc(n, measure, show_keyword,
                         theta = x$theta, phi = x$phi,
                         word_counts = x$word_counts, keywords_raw = x$keywords_raw)
+  return(res)
 }
 
 
@@ -699,6 +853,8 @@ plot_p <- function(x, show_topic = NULL)
 }
 
 
+
+
 #' Estimate Subsetted Topic-Word distribution
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
@@ -718,7 +874,11 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
   }
 
   if (!"Z" %in% names(x$kept_values)) {
-    stop("`Z` is not kept in the output. Please check `keep` option.") 
+    stop("`Z` and `X` should be in the output. Please check `keep` option in `keyATM()`.") 
+  }
+
+  if (!"X" %in% names(x$kept_values)) {
+    stop("`Z` and `X` should be in the output. Please check `keep` option in `keyATM()`.") 
   }
 
   if (length(keyATM_docs) != length(by)) {
@@ -736,8 +896,14 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
                   doc_index <- which(by == val) 
                   all_words <- unlist(keyATM_docs[doc_index], use.names = F)
                   all_topics <- as.integer(unlist(x$kept_values$Z[doc_index]), use.names = F)
-                  phi_obj <- keyATM_output_phi_calc(all_words, all_topics,
-                                                    x$vocab, x$priors$beta, tnames)
+                  all_x <- as.integer(unlist(x$kept_values$X[doc_index]), use.names = F)
+                  p_estimated <- keyATM_output_p(x$kept_values$Z[doc_index], 
+                                                 x$kept_values$X[doc_index])
+                  vocab <- sort(unique(all_words))
+
+                  phi_obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_x, p_estimated,
+                                                        x$keywords_raw,
+                                                        vocab, x$priors, tnames)
                 } 
                )
   names(obj) <- unique_val

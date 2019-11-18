@@ -38,7 +38,7 @@ out <- keyATM(
               keywords          = bills_keywords, # keywords
               model             = "base",         # select the model
               options           = list(seed = 100),
-              keep              = c("Z")          # You need to keep `Z`
+              keep              = c("Z", "X")     # You need to keep `Z` and `X`
              )
 ```
 
