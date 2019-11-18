@@ -109,10 +109,10 @@ summary.keyATM_docs <- function(x)
               length(x), " documents",
               ".\n",
               "Length of documents:",
-              "\n  Avg: ", round(mean(doc_len),3),
-              "\n  Min: ", round(min(doc_len),3),
-              "\n  Max: ", round(max(doc_len),3),
-              "\n   SD: ", round(sd(doc_len),3),
+              "\n  Avg: ", round(mean(doc_len), 3),
+              "\n  Min: ", round(min(doc_len), 3),
+              "\n  Max: ", round(max(doc_len), 3),
+              "\n   SD: ", round(sd(doc_len), 3),
               "\n"
              )  
          )
@@ -472,59 +472,11 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
     stop("Please check `mode`.")  
   }
 
-
-  # If covariates are standardized, update output
-  # if (model %in% c("cov", "ldacov")) {
-    # key_model <- adjust_coefficients(key_model) 
-  # }
-
   class(key_model) <- c("keyATM_fitted", class(key_model))
   return(key_model)
 }
 
 
-# adjust_coefficients <- function(key_model)
-# {
-#   # If it is not standardized, there is no need to change
-#   if (!key_model$model_settings$standardize) {
-#     return(key_model) 
-#   }
-#
-#   # Get non-standardzed version of the estimates
-#   key_model$stored_values$Lambda_iter_standardized <- key_model$stored_values$Lambda_iter
-#   variables <- colnames(key_model$model_settings$covariates_data)
-#   num_variables <- length(variables)
-#   use_intercept <- FALSE
-#   sds <- list()
-#
-#   if ("(Intercept)" %in% variables)
-#     use_intercept <- TRUE
-#
-#   for (i in 1:num_variables) {
-#     variable <- variables[i]
-#     sds[[variable]] <- sd(key_model$model_settings$covariates_data[, variable])
-#
-#     if (use_intercept) {
-#       use_intercept[[variable]] <- sds[[variable]] * mean(key_model$model_settings$covariates_data[, variable])
-#     }
-#   }
-#
-#   # Fix values
-#   key_model$stored_values$Lambda_iter <-
-#     lapply(key_model$stored_values$Lambda_iter,
-#            function(Lambda_iter){
-#             for(i in 1:num_variables){
-#               
-#             } 
-#
-#             if (use_intercept) {
-#            
-#             }
-#            })
-#
-#
-#
-# }
 
 
 #' @noRd
@@ -693,7 +645,7 @@ check_arg_model_settings <- function(obj, model, info)
       obj$covariates_formula <- NULL  # do not need to change the matrix
       obj$covariates_data_use <- as.matrix(obj$covariates_data) 
     } else if (is.formula(obj$covariates_formula)) {
-      message("Convert covariates data using `obj$covariates_formula`.")
+      message("Convert covariates data using `model_settings$covariates_formula`.")
       obj$covariates_data_use <- stats::model.matrix(obj$covariates_formula,
                                                      as.data.frame(obj$covariates_data))
     } else {
@@ -885,12 +837,6 @@ check_arg_options <- function(obj, model, info)
       stop("An invalid value in `options$store_theta`")  
     }
   }
-
-  # if (model %in% c("cov", "ldaov")) {
-  #   if (obj$store_theta == 0) {
-  #     warning("`options$store_theta` is FALSE. keyATM cannot estimate credible intervals.") 
-  #   }
-  # }
 
   # Estimate alpha
   if (model %in% c("base", "lda")) {
