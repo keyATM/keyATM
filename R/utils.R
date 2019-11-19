@@ -20,8 +20,8 @@ is.formula <- function(x){
 full_model_name <- function(model = c("base", "covariates", "dynamic"),
                             type = c("keyATM", "lda"))
 {
-  model <- measure <- match.arg(model)
-  type <- measure <- match.arg(type)
+  model <- match.arg(model)
+  type <- match.arg(type)
 
   if (type == "keyATM") {
 

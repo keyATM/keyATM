@@ -154,7 +154,7 @@ summary.keyATM_docs <- function(x)
 #'    # Or: `keyATM_viz$figure`
 #' 
 #'  # Save a figure 
-#'  ggsave(filename, keyATM_viz$figure)
+#'  save_fig(keyATM_viz, filename)
 #'
 #' }
 #'
@@ -295,6 +295,14 @@ summary.keyATM_viz <- function(x)
 save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 {
   saveRDS(x, file = file)
+}
+
+
+#' @noRd
+#' @export
+save_fig.keyATM_viz <- function(x, file = stop("'file' must be specified"))
+{
+  ggplot2::ggsave(x$figure, file = file)
 }
 
 
@@ -662,15 +670,15 @@ check_arg_model_settings <- function(obj, model, info)
     temp$y <- rnorm(nrow(obj$covariates_data_use))
 
     if ("(Intercept)" %in% colnames(obj$covariates_data_use)){
-      fit <- lm(y ~ 0 + ., data = temp)
-      if (NA %in% fit$coefficients) {
-        stop("Covariates are invalid.")    
-      }    
-    } else {
       fit <- lm(y ~ ., data = temp)
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
       }    
+    } else {
+      fit <- lm(y ~ 0 + ., data = temp)
+      if (NA %in% fit$coefficients) {
+        stop("Covariates are invalid.")    
+      }
     }
 
     if (obj$standardize) {
