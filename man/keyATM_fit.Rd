@@ -26,7 +26,7 @@ keyATM_fit(docs, model, no_keyword_topics, keywords = list(),
 keyATM_model object, which is a list containing \describe{
   \item{W}{a list of vectors of word indexes}
   \item{Z}{a list of vectors of topic indicators isomorphic to W}
-  \item{X}{a list}
+  \item{S}{a list}
   \item{model}{the name of the model}
   \item{keywords}{}
   \item{keywords_raw}{}

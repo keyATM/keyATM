@@ -6,7 +6,7 @@ using namespace std;
 
 void LDAhmm::iteration_single(int &it)
 {
-  x_ = -1;  // we do not use x_ in LDA HMM
+  s_ = -1;  // we do not use x_ in LDA HMM
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
   for (int ii = 0; ii < num_doc; ii++) {
@@ -23,7 +23,7 @@ void LDAhmm::iteration_single(int &it)
       w_position = token_indexes[jj];
       z_ = doc_z[w_position], w_ = doc_w[w_position];
     
-      new_z = sample_z(alpha, z_, x_, w_, doc_id_);
+      new_z = sample_z(alpha, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
     }
     
@@ -61,7 +61,7 @@ double LDAhmm::loglik_total()
 
   // HMM part
   for (int t = 0; t < num_time; t++) {
-    state_id = S_est(t);
+    state_id = R_est(t);
     loglik += log( P_est(state_id, state_id) );
   }
 

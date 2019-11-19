@@ -93,7 +93,7 @@ keyATM_output <- function(model)
 
   # p
   if (model$model %in% c("base", "cov", "hmm")){
-    p_estimated <- keyATM_output_p(model$Z, model$X, model$priors$gamma) 
+    p_estimated <- keyATM_output_p(model$Z, model$S, model$priors$gamma) 
   } else {
     p_estimated <- NULL 
   }
@@ -120,29 +120,29 @@ keyATM_output <- function(model)
 
 #' @noRd
 #' @import magrittr
-keyATM_output_p <- function(model_Z, model_X, prior)
+keyATM_output_p <- function(model_Z, model_S, prior)
 {
-  # p(p | X=s, n, a, b) \propto Be(a+s, b+(n-s))
-  #   p(X=s | n, p) p(p | a, b)
+  # p(p | S=s, n, a, b) \propto Be(a+s, b+(n-s))
+  #   p(S=s | n, p) p(p | a, b)
   # Expectation is (a+s) / (a+b+n)
 
   data <- tibble::tibble(Z = unlist(model_Z, use.names = F),
-                         X = unlist(model_X, use.names = F))
+                         S = unlist(model_S, use.names = F))
   data %>%
     dplyr::mutate(Topic = Z+1L) %>%
     dplyr::select(-starts_with("Z")) %>%
     dplyr::group_by(Topic) %>%
-    dplyr::summarize(count = (dplyr::n()), sumx = sum(X)) %>%
+    dplyr::summarize(count = (dplyr::n()), sums = sum(S)) %>%
     dplyr::ungroup() -> temp
 
   n <- temp$count
-  s <- temp$sumx
+  s <- temp$sums
   a <- prior[, 1]
   b <- prior[, 2]
   p <- (a + s) / (a + b + n) 
   temp %>%
     mutate(Proportion = p * 100) %>%
-    select(-sumx) -> p_estimated
+    select(-sums) -> p_estimated
 
   return(p_estimated)
 }
@@ -209,10 +209,10 @@ keyATM_output_phi <- function(model, info)
   all_topics <- as.integer(unlist(model$Z, use.names = F))
   
   if (model$model %in% c("base", "cov", "hmm")) {
-    p_estimated <- keyATM_output_p(model$Z, model$X, model$priors$gamma)
-    all_x <- as.integer(unlist(model$X, use.names = F))
+    p_estimated <- keyATM_output_p(model$Z, model$S, model$priors$gamma)
+    all_s <- as.integer(unlist(model$S, use.names = F))
 
-    obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_x, p_estimated,
+    obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, p_estimated,
                                       model$keywords_raw,
                                       model$vocab, model$priors, info$tnames)  
   } else if (model$model %in% c("lda", "ldacov", "ldahmm")) {
@@ -228,13 +228,13 @@ keyATM_output_phi <- function(model, info)
 
 #' @noRd
 #' @import magrittr
-keyATM_output_phi_calc_key <- function(all_words, all_topics, all_x, p_estimated,
+keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, p_estimated,
                                        keywords_raw, vocab, priors, tnames)
 {
   res_tibble <- tibble::tibble(
                         Word = all_words,
                         Topic = all_topics,
-                        Switch = all_x
+                        Switch = all_s
                        )
 
   prob1 <- p_estimated %>% dplyr::pull(Proportion) / 100
@@ -423,10 +423,10 @@ keyATM_output_theta_iter <- function(model, info)
   } else if (model$model %in% c("hmm", "ldahmm")) {
     posterior_theta <- function(x){
       Z_table <- model$stored_values$Z_tables[[x]]
-      S <- model$stored_values$S_iter[[x]] + 1L  # adjust index for R
-      S <- S[model$model_settings$time_index]  # retrieve doc level state info
+      R <- model$stored_values$R_iter[[x]] + 1L  # adjust index for R
+      R <- R[model$model_settings$time_index]  # retrieve doc level state info
 
-      alphas <- matrix(model$stored_values$alpha_iter[[x]][S],
+      alphas <- matrix(model$stored_values$alpha_iter[[x]][R],
                        nrow = length(model$Z), ncol = info$allK)
     
       tt <- Z_table + alphas
@@ -885,11 +885,11 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
   }
 
   if (!"Z" %in% names(x$kept_values)) {
-    stop("`Z` and `X` should be in the output. Please check `keep` option in `keyATM()`.") 
+    stop("`Z` and `S` should be in the output. Please check `keep` option in `keyATM()`.") 
   }
 
-  if (!"X" %in% names(x$kept_values)) {
-    stop("`Z` and `X` should be in the output. Please check `keep` option in `keyATM()`.") 
+  if (!"S" %in% names(x$kept_values)) {
+    stop("`Z` and `S` should be in the output. Please check `keep` option in `keyATM()`.") 
   }
 
   if (length(keyATM_docs) != length(by)) {
@@ -907,13 +907,13 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
                   doc_index <- which(by == val) 
                   all_words <- unlist(keyATM_docs[doc_index], use.names = F)
                   all_topics <- as.integer(unlist(x$kept_values$Z[doc_index]), use.names = F)
-                  all_x <- as.integer(unlist(x$kept_values$X[doc_index]), use.names = F)
+                  all_s <- as.integer(unlist(x$kept_values$S[doc_index]), use.names = F)
                   p_estimated <- keyATM_output_p(x$kept_values$Z[doc_index], 
-                                                 x$kept_values$X[doc_index],
+                                                 x$kept_values$S[doc_index],
                                                  x$priors$gamma)
                   vocab <- sort(unique(all_words))
 
-                  phi_obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_x, p_estimated,
+                  phi_obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, p_estimated,
                                                         x$keywords_raw,
                                                         vocab, x$priors, tnames)
                 } 

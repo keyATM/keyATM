@@ -323,7 +323,7 @@ save_fig.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 #' @return keyATM_model object, which is a list containing \describe{
 #'   \item{W}{a list of vectors of word indexes}
 #'   \item{Z}{a list of vectors of topic indicators isomorphic to W}
-#'   \item{X}{a list}
+#'   \item{S}{a list}
 #'   \item{model}{the name of the model}
 #'   \item{keywords}{}
 #'   \item{keywords_raw}{}
@@ -393,15 +393,15 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   keywords_raw <- keywords  # keep raw keywords (not word_id)
   keywords_id <- lapply(keywords, function(x){ as.integer(info$wd_map$find(x)) })
 
-  # Assign X and Z
+  # Assign S and Z
   if (model %in% info$models_keyATM) {
-    res <- make_xz_key(W, keywords, info)
-    X <- res$X
+    res <- make_sz_key(W, keywords, info)
+    S <- res$S
     Z <- res$Z
   }else{
     # LDA based models
-    res <- make_xz_lda(W, info)
-    X <- res$X
+    res <- make_sz_lda(W, info)
+    S <- res$S
     Z <- res$Z
   }
   rm(res)
@@ -425,7 +425,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   }
 
   if (model %in% c("hmm", "ldahmm")) {
-    stored_values$S_iter <- list()
+    stored_values$R_iter <- list()
 
     if (options$store_transition_matrix) {
       stored_values$P_iter <- list()  
@@ -436,7 +436,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
     stored_values$Z_tables <- list()
 
   key_model <- list(
-                    W = W, Z = Z, X = X,
+                    W = W, Z = Z, S = S,
                     model = abb_model_name(model),
                     keywords = keywords_id, keywords_raw = keywords_raw,
                     no_keyword_topics = no_keyword_topics,
@@ -670,12 +670,12 @@ check_arg_model_settings <- function(obj, model, info)
     temp$y <- rnorm(nrow(obj$covariates_data_use))
 
     if ("(Intercept)" %in% colnames(obj$covariates_data_use)){
-      fit <- lm(y ~ ., data = temp)
+      fit <- lm(y ~ 0 + ., data = temp)  # data.frame alreayd includes the intercept
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
       }    
     } else {
-      fit <- lm(y ~ 0 + ., data = temp)
+      fit <- lm(y ~ ., data = temp)
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
       }
@@ -906,9 +906,9 @@ check_arg_options <- function(obj, model, info)
 }
 
 
-make_xz_key <- function(W, keywords, info)
+make_sz_key <- function(W, keywords, info)
 {
-  # zx_assigner maps keywords to category ids
+  # zs_assigner maps keywords to category ids
   key_wdids <- unlist(lapply(keywords, function(x){ info$wd_map$find(x) }))
   cat_ids <- rep(1:(info$keyword_k) - 1L, unlist(lapply(keywords, length)))
 
@@ -916,12 +916,12 @@ make_xz_key <- function(W, keywords, info)
     #
     # No keyword appears more than once
     #
-    zx_assigner <- hashmap::hashmap(as.integer(key_wdids), as.integer(cat_ids))
+    zs_assigner <- hashmap::hashmap(as.integer(key_wdids), as.integer(cat_ids))
 
     # if the word is a keyword, assign the appropriate (0 start) Z, else a random Z
     topicvec <- 1:(info$total_k) - 1L
-    make_z <- function(x, topicvec){
-      zz <- zx_assigner[[x]] # if it is a keyword word, we already know the topic
+    make_z <- function(s, topicvec){
+      zz <- zs_assigner[[s]] # if it is a keyword word, we already know the topic
       zz[is.na(zz)] <- sample(topicvec,
                               sum(is.na(zz)),
                               replace = TRUE)
@@ -937,10 +937,10 @@ make_xz_key <- function(W, keywords, info)
                         function(x){
                           paste(as.character(keys_df[keys_df$wid == x, "cat"]), collapse=",")
                         })
-    zx_hashtable <- hashmap::hashmap(as.integer(unique(key_wdids)), keys_char)
+    zs_hashtable <- hashmap::hashmap(as.integer(unique(key_wdids)), keys_char)
 
-    zx_assigner <- function(x){
-      topic <- zx_hashtable[[x]]
+    zs_assigner <- function(s){
+      topic <- zs_hashtable[[s]]
       topic <- strsplit(topic, split=",")
       topic <- lapply(topic, sample, 1)
       topic <- as.integer(unlist(topic))
@@ -949,8 +949,8 @@ make_xz_key <- function(W, keywords, info)
 
     # if the word is a seed, assign the appropriate (0 start) Z, else a random Z
     topicvec <- 1:(info$total_k) - 1L
-    make_z <- function(x, topicvec){
-      zz <- zx_assigner(x) # if it is a seed word, we already know the topic
+    make_z <- function(s, topicvec){
+      zz <- zs_assigner(s) # if it is a seed word, we already know the topic
       zz[is.na(zz)] <- sample(topicvec,
                               sum(is.na(zz)),
                               replace = TRUE)
@@ -959,24 +959,24 @@ make_xz_key <- function(W, keywords, info)
   }
 
 
-  ## xx indicates whether the word comes from a seed topic-word distribution or not
-  make_x <- function(x){
-    key <- as.numeric(x %in% key_wdids) # 1 if they're a seed
-    # Use x structure
-    x[key == 0] <- 0L # non-keyword words have x = 0
-    x[key == 1] <- sample(0:1, length(x[key == 1]), prob = c(0.3, 0.7), replace = TRUE)
+  ## ss indicates whether the word comes from a seed topic-word distribution or not
+  make_s <- function(s){
+    key <- as.numeric(s %in% key_wdids) # 1 if they're a seed
+    # Use s structure
+    s[key == 0] <- 0L # non-keyword words have s = 0
+    s[key == 1] <- sample(0:1, length(s[key == 1]), prob = c(0.3, 0.7), replace = TRUE)
       # keywords have x = 1 probabilistically
-    return(x)
+    return(s)
   }
 
- X <- lapply(W, make_x)
+ S <- lapply(W, make_s)
  Z <- lapply(W, make_z, topicvec)
 
- return(list(X = X, Z = Z))
+ return(list(S = S, Z = Z))
 }
 
 
-make_xz_lda <- function(W, info)
+make_sz_lda <- function(W, info)
 {
   topicvec <- 1:(info$total_k) - 1L
   make_z <- function(x, topicvec){
@@ -989,7 +989,7 @@ make_xz_lda <- function(W, info)
 
  Z <- lapply(W, make_z, topicvec)
 
- return(list(X = list(), Z = Z))
+ return(list(S = list(), Z = Z))
 }
 
 
