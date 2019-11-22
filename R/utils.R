@@ -20,8 +20,8 @@ is.formula <- function(x){
 full_model_name <- function(model = c("base", "covariates", "dynamic"),
                             type = c("keyATM", "lda"))
 {
-  model <- measure <- match.arg(model)
-  type <- measure <- match.arg(type)
+  model <- match.arg(model)
+  type <- match.arg(type)
 
   if (type == "keyATM") {
 
@@ -91,3 +91,10 @@ extract_full_model_name <- function(obj)
 
 }
 
+
+rdirichlet <- function(alpha, n = 1) {
+  l <- length(alpha)
+  x <- matrix(rgamma(l*n, alpha), ncol = l, byrow = TRUE)
+  sm <- x %*% rep(1,l)
+  return(x / as.vector(sm))
+}

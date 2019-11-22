@@ -16,6 +16,8 @@
 #'     \item{word_counts}{Number of times each word type appears}
 #'     \item{doc_lens}{Length of each document in tokens}
 #'     \item{vocab}{Words in the vocabulary}
+#'     \item{priors}{Priors used}
+#'     \item{options}{Model options}
 #'     \item{model_fit}{Perplexity and log-likelihood}
 #'     \item{p}{Estimated p}
 #'     \item{values_iter}{Organized values stored during iterations}
@@ -37,6 +39,7 @@ keyATM_output <- function(model)
   info$V <- length(model$vocab)
   info$N <- length(model$Z)
   info$doc_lens <- sapply(model$Z, length)
+  info$model <- model$model
 
   if (model$no_keyword_topics > 0 & length(model$keywords) != 0) {
     info$tnames <- c(names(model$keywords_raw), paste0("Other_", 1:model$no_keyword_topics))
@@ -55,10 +58,11 @@ keyATM_output <- function(model)
   # theta iter
   if (model$options$store_theta) {
     values_iter$theta_iter <- keyATM_output_theta_iter(model, info)  
-    total_iter <- 1:(model$options$iterations)
-    thinning <- model$options$thinning
-    values_iter$used_iter <- total_iter[(total_iter %% thinning == 0) | (total_iter == 1) | total_iter == max(total_iter)]
   }
+  # used_iter is useful quantity
+  total_iter <- 1:(model$options$iterations)
+  thinning <- model$options$thinning
+  values_iter$used_iter <- total_iter[(total_iter %% thinning == 0) | (total_iter == 1) | total_iter == max(total_iter)]
 
   # Phi (topic-word distribution)
   res <- keyATM_output_phi(model, info)
@@ -89,9 +93,14 @@ keyATM_output <- function(model)
 
   # p
   if (model$model %in% c("base", "cov", "hmm")){
-    p_estimated <- keyATM_output_p(model) 
+    p_estimated <- keyATM_output_p(model$Z, model$X, model$priors$gamma) 
   } else {
     p_estimated <- NULL 
+  }
+
+  # Rescale lambda
+  if (model$model %in% c("cov", "ldacov")) {
+    values_iter$Lambda_iter_rescaled <- keyATM_output_rescale_Lambda(model, info) 
   }
 
   # Make an object to return
@@ -101,7 +110,7 @@ keyATM_output <- function(model)
              theta = theta, phi = phi,
              topic_counts = topic_counts, word_counts = word_counts,
              doc_lens = info$doc_lens, vocab = model$vocab,
-             priors = model$priors,
+             priors = model$priors, options = model$options,
              keywords_raw = model$keywords_raw,
              model_fit = modelfit, p = p_estimated,
              values_iter = values_iter)
@@ -111,18 +120,29 @@ keyATM_output <- function(model)
 
 #' @noRd
 #' @import magrittr
-keyATM_output_p <- function(model)
+keyATM_output_p <- function(model_Z, model_X, prior)
 {
-  data <- tibble::tibble(Z = unlist(model$Z, use.names = F),
-                         X = unlist(model$X, use.names = F))
+  # p(p | X=s, n, a, b) \propto Be(a+s, b+(n-s))
+  #   p(X=s | n, p) p(p | a, b)
+  # Expectation is (a+s) / (a+b+n)
+
+  data <- tibble::tibble(Z = unlist(model_Z, use.names = F),
+                         X = unlist(model_X, use.names = F))
   data %>%
     dplyr::mutate(Topic = Z+1L) %>%
     dplyr::select(-starts_with("Z")) %>%
     dplyr::group_by(Topic) %>%
     dplyr::summarize(count = (dplyr::n()), sumx = sum(X)) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(Proportion = sumx/count*100) %>%
-    dplyr::select(-sumx) -> p_estimated
+    dplyr::ungroup() -> temp
+
+  n <- temp$count
+  s <- temp$sumx
+  a <- prior[, 1]
+  b <- prior[, 2]
+  p <- (a + s) / (a + b + n) 
+  temp %>%
+    mutate(Proportion = p * 100) %>%
+    select(-sumx) -> p_estimated
 
   return(p_estimated)
 }
@@ -135,7 +155,7 @@ keyATM_output_theta <- function(model, info)
 
   # Theta
   if (model$model %in% c("cov", "ldacov")) {
-    Alpha <- exp(model$model_settings$covariates_data %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
+    Alpha <- exp(model$model_settings$covariates_data_use %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
 
     posterior_z <- function(docid){
       zvec <- model$Z[[docid]]
@@ -188,15 +208,170 @@ keyATM_output_phi <- function(model, info)
   all_words <- model$vocab[as.integer(unlist(model$W, use.names = F)) + 1L]
   all_topics <- as.integer(unlist(model$Z, use.names = F))
   
-  obj <- keyATM_output_phi_calc(all_words, all_topics, 
-                                model$vocab, model$priors$beta, info$tnames)
+  if (model$model %in% c("base", "cov", "hmm")) {
+    p_estimated <- keyATM_output_p(model$Z, model$X, model$priors$gamma)
+    all_x <- as.integer(unlist(model$X, use.names = F))
+
+    obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_x, p_estimated,
+                                      model$keywords_raw,
+                                      model$vocab, model$priors, info$tnames)  
+  } else if (model$model %in% c("lda", "ldacov", "ldahmm")) {
+    obj <- keyATM_output_phi_calc_lda(all_words, all_topics, 
+                                      model$vocab, model$priors$beta, info$tnames)
+  }
+  
   
   return(obj)
 }
 
+
+
 #' @noRd
 #' @import magrittr
-keyATM_output_phi_calc <- function(all_words, all_topics, vocab, priors, tnames)
+keyATM_output_phi_calc_key <- function(all_words, all_topics, all_x, p_estimated,
+                                       keywords_raw, vocab, priors, tnames)
+{
+  res_tibble <- tibble::tibble(
+                        Word = all_words,
+                        Topic = all_topics,
+                        Switch = all_x
+                       )
+
+  prob1 <- p_estimated %>% dplyr::pull(Proportion) / 100
+  prob0 <- 1 - prob1 
+  vocab_sorted <- sort(vocab)
+
+  get_phi <- function(res_tibble, switch_val)
+  {
+    if (switch_val == 0) {
+      # Use no-keyword topic-word dist
+      prior <- priors$beta
+    } else if (switch_val == 1) {
+      # Use keyword topic-word dist
+      prior <- priors$beta_s
+    }
+
+    temp <- res_tibble %>%
+              dplyr::filter(Switch == switch_val) %>%
+              dplyr::group_by(Topic, Word) %>%
+              dplyr::summarize(Count = dplyr::n())  
+  
+    temp %>%
+      tidyr::spread(key = Word, value = Count) -> phi
+    phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
+
+    phi <- phi[, 2:ncol(phi)]
+    topic_counts <- Matrix::rowSums(phi)
+
+
+    rownames(phi) <- tnames[1:nrow(phi)]
+
+    if (switch_val == 1) {
+      # keyword topic-word dist
+
+      all_keywords <- unique(unlist(keywords_raw, use.names = F))
+      phi_ <- matrix(0, nrow = length(tnames), 
+                     ncol = length(all_keywords))
+      colnames(phi_) <- sort(all_keywords)
+      phi <- phi[, sort(colnames(phi))]
+      rownames(phi_) <- tnames
+
+      # phi with all keywords
+      phi_[1:nrow(phi), which(colnames(phi_) %in% colnames(phi))] <- 
+            phi[, which(colnames(phi) %in% colnames(phi_))]
+
+      for (k in 1:length(keywords_raw)) {
+        # Keywords in topic k should have positive probability
+        phi_[k, ][which(colnames(phi_) %in% keywords_raw[[k]])] <- 
+                            phi_[k, ][which(colnames(phi_) %in% keywords_raw[[k]])] + prior
+      }
+      phi <- phi_
+      phi <- phi[, sort(colnames(phi))]
+      phi <- phi / Matrix::rowSums(phi)
+      phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
+
+      # keyword topic-word dist should have the same dimension as no-keyword dist
+      # for marginilization, but no-keyword elements are 0
+      phi_ <- matrix(0, nrow = length(tnames), 
+                     ncol = length(vocab))
+      colnames(phi_) <- vocab_sorted
+      phi_[1:nrow(phi), which(colnames(phi_) %in% colnames(phi))] <- 
+          phi[, which(colnames(phi) %in% colnames(phi_))]
+      phi <- phi_
+
+
+    } else {
+
+      # no-keyword topic-word dist
+
+      # Should have the same dimension as vocab
+      phi_ <- matrix(0, nrow = length(tnames), 
+                     ncol = length(vocab))
+      colnames(phi_) <- vocab_sorted
+      phi <- phi[, sort(colnames(phi))]
+      rownames(phi_) <- tnames
+
+      # phi with all words
+      phi_[, which(colnames(phi_) %in% colnames(phi))] <- 
+            phi[, which(colnames(phi) %in% colnames(phi_))]
+
+      phi <- phi_ + prior
+      phi <- phi / Matrix::rowSums(phi)
+    }
+
+    return(phi)
+  }
+
+
+  # Regular
+  phi0 <- get_phi(res_tibble, switch_val = 0)
+
+  # Keyword
+  phi1 <- get_phi(res_tibble, switch_val = 1)
+
+  # Marginal out switch
+  blank_vec <- rep(0, length(vocab))
+  names(blank_vec) <- vocab_sorted
+
+  phi <- sapply(1:length(tnames),
+                function(k){
+                  regular <- blank_vec
+                  regular[colnames(phi0)] <- phi0[k, ]
+
+                  key <- blank_vec
+                  key[colnames(phi1)] <- phi1[k, ]
+
+                  res <- regular * prob0[k] + key * prob1[k]
+                  return(res)
+                }) %>% t()
+  colnames(phi) <- vocab_sorted  # same as colnames(phi0), colnames(phi1)
+  rownames(phi) <- tnames
+
+  topic_counts <- res_tibble %>%
+                    dplyr::group_by(Topic) %>%
+                    dplyr::summarize(Count = dplyr::n()) %>%
+                    dplyr::pull(Count)
+
+  word_counts <- res_tibble %>%
+                    dplyr::group_by(Word) %>%
+                    dplyr::summarize(Count = dplyr::n()) %>%
+                    dplyr::arrange(match(Word, vocab)) %>%  # same order as vocab
+                    dplyr::pull(Count)
+
+  if (ncol(phi) == length(vocab)) {
+    phi <- phi[, vocab]
+  } else {
+    # This can happen in `by_strata_TopicWord`
+    # Do nothing
+  }
+  
+  return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
+}
+
+
+#' @noRd
+#' @import magrittr
+keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tnames)
 {
   res_tibble <- data.frame(
                         Word = all_words,
@@ -206,7 +381,7 @@ keyATM_output_phi_calc <- function(all_words, all_topics, vocab, priors, tnames)
                 dplyr::summarize(Count = dplyr::n())
   
   res_tibble %>%
-    tidyr::spread(key = Word, value = Count)  -> phi
+    tidyr::spread(key = Word, value = Count) -> phi
   phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
 
   phi <- phi[, 2:ncol(phi)]
@@ -218,25 +393,27 @@ keyATM_output_phi_calc <- function(all_words, all_topics, vocab, priors, tnames)
   if (ncol(phi) == length(vocab)) {
     phi <- phi[, vocab]
   } else {
-    # This can happen in `calc_phi_by`
+    # This can happen in `by_strata_TopicWord`
     # Do nothing
   }
   
 
-  phi <- phi / topic_counts
+  phi <- phi / Matrix::rowSums(phi)
   rownames(phi) <- tnames
 
   return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
 }
 
 
+#' @noRd
+#' @import magrittr
 keyATM_output_theta_iter <- function(model, info)
 {
   if (model$model %in% c("cov", "ldacov")) {
     posterior_theta <- function(x){
       Z_table <- model$stored_values$Z_tables[[x]]
       lambda <- model$stored_values$Lambda_iter[[x]]
-      Alpha <- exp(model$model_settings$covariates_data %*% t(lambda))
+      Alpha <- exp(model$model_settings$covariates_data_use %*% t(lambda))
 
       tt <- Z_table + Alpha
       row.names(tt) <- NULL
@@ -289,6 +466,8 @@ keyATM_output_alpha_iter_base <- function(model, info)
 }
 
 
+#' @noRd
+#' @import magrittr
 keyATM_output_alpha_iter_hmm <- function(model, info)
 {
   topics <- paste0(1:(info$allK))
@@ -305,6 +484,38 @@ keyATM_output_alpha_iter_hmm <- function(model, info)
   return(alpha_iter)
 }
 
+
+#' @noRd
+#' @import magrittr
+keyATM_output_rescale_Lambda <- function(model, info)
+{
+  if (!model$model_settings$standardize) {
+    # If it is not standardized, no need to rescale 
+    return(model$stored_values$Lambda_iter)
+  }
+
+  # Prepare original_data (before standardization)
+  if (is.null(model$model_settings$covariates_formula)) {
+    original_data <- as.matrix(model$model_settings$covariates_data) 
+  } else if (is.formula(model$model_settings$covariates_formula)) {
+    original_data <- stats::model.matrix(model$model_settings$covariates_formula,
+                                         as.data.frame(model$model_settings$covariates_data))
+  }
+
+  standardized_data <- model$model_settings$covariates_data_use
+
+  # Get rescaled Lambda
+  Lambda <- lapply(model$stored_values$Lambda_iter,
+                   function(L_s){
+                     y <- Matrix::tcrossprod(standardized_data, L_s)  # x %*% t(y)
+                     L <- Matrix::solve(Matrix::crossprod(original_data),  # t(x) %*% x
+                                        Matrix::crossprod(original_data, y)  # t(x) %*% y
+                                       )
+                     return(t(L))  # L_s is K \times M
+                   }
+                  )
+  return(Lambda)
+}
 
 #' @noRd
 #' @export
@@ -359,7 +570,7 @@ plot.keyATM_output <- function(x)
 #' are suffixed with a check mark. Words from another seeded category
 #' are labeled with the name of that category.
 #'
-#' @param x the output (see \code{keyATM()} and \code{calc_phi_by()})
+#' @param x the output (see \code{keyATM()} and \code{by_strata_TopicWord()})
 #' @param n How many terms to show. Default: NULL, which shows all
 #' @param measure How to sort the terms: 'probability' (default) or 'lift'
 #' @param show_keyword Mark keywords. (default: TRUE)
@@ -376,7 +587,7 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
 
 #' @noRd
 #' @export
-top_words.calc_phi_by <- function(x, n = 10, measure = c("probability", "lift"),
+top_words.strata_topicword <- function(x, n = 10, measure = c("probability", "lift"),
                                   show_keyword = TRUE)
 {
 
@@ -408,7 +619,8 @@ top_words.keyATM_output <- function(x, n = 10, measure = c("probability", "lift"
   
   res <- top_words_calc(n, measure, show_keyword,
                         theta = x$theta, phi = x$phi,
-                        word_conts = x$word_counts, keywords_raw = x$keywords_raw)
+                        word_counts = x$word_counts, keywords_raw = x$keywords_raw)
+  return(res)
 }
 
 
@@ -652,247 +864,6 @@ plot_p <- function(x, show_topic = NULL)
 }
 
 
-#' Regress theta on covariates
-#'
-#' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param covariates_data matrix, data.frame, or tibble
-#' @param covariates_formula
-#'
-#' @return keyATM_coefficients object
-#' @import dplyr
-#' @import magrittr
-#' @export
-estimate_coefficients <- function(x, covariates_data, covariates_formula = NULL,
-                                  burn_in = NULL,
-                                  parallel = TRUE, mc.cores = NULL)
-{
-  # Check inputs
-  if (nrow(covariates_data) != nrow(x$theta)) {
-    stop("The row of `covariates_data` should be the same as the number of documents.")  
-  }
-
-
-  if (is.null(covariates_formula)) {
-    covariates_formula <- as.formula("~ .")
-  }
-
-  if (is.null(burn_in)) {
-    burn_in <- floor(max(x$model_fit$Iteration) / 2) 
-  }
-
-  # Check if it works as a valid regression 
-  temp <- as.data.frame(covariates_data)
-  temp$y <- rnorm(nrow(covariates_data))
-  fit <- lm(y ~ 0 + ., data = temp)
-
-  if (NA %in% fit$coefficients) {
-    stop("Covariates are invalid.")    
-  }
-
-
-  # Run regression
-  message("Fitting regression...") 
-  outcome_name <- paste0("Y_",
-                         as.character(format(Sys.time(), "%x%X")))  # unique name
-  outcome_name <- gsub("/", "_", outcome_name)
-  outcome_name <- gsub(":", "_", outcome_name)
-  tname <- colnames(x$theta)
-  covariates_data <- as.data.frame(covariates_data)
-
-  if (is.null(x$values_iter$theta_iter)) {
-    warning("`options$store_theta` in `keyATM()` was FALSE. keyATM cannot calculate credible intervals.") 
-    res <- fit_regression(x$theta, covariates_data, covariates_formula, outcome_name, tname)
-    obj <- list(res = res, topic_names = tname)
-    class(obj) <- c("keyATM_coefficients_point", class(obj))
-    return(obj)
-  } else {
-    # Run for stored theta
-    used_iter <- x$values_iter$used_iter
-    used_iter <- used_iter[used_iter > burn_in]
-
-    if (parallel) {
-      if (is.null(mc.cores)){
-        num_core <- parallel::detectCores(all.tests = FALSE, logical = T) - 2L
-      } else {
-        num_core <- mc.cores 
-      }
-    } else {
-      num_core <- 1L
-    }
-
-    res <- do.call(dplyr::bind_rows,
-                   parallel::mclapply(1:length(used_iter), 
-                                      function(i){
-                                        return(fit_regression(x$values_iter$theta_iter[[i]], 
-                                                              covariates_data, covariates_formula,
-                                                              outcome_name, tname,
-                                                              used_iter[i])) 
-                                      },
-                                      mc.cores = num_core
-                                      ))
-  }
-
-  obj <- list(res = res, topic_names = tname)
-  
-  class(obj) <- c("keyATM_coefficients", class(obj))
-  return(obj)
-
-}
-
-#' @noRd
-#' @import magrittr
-fit_regression <- function(theta, cov, formula, outcome_name, tname, iter = NULL)
-{
-  theta <- as.data.frame(theta)
-  num_topics <- ncol(theta)
-
-  res <- sapply(1:num_topics,
-                function(k){
-                   cov[, outcome_name] <- theta[, k]
-                   fit <- lm(as.formula(paste(c(outcome_name, as.character(formula)), collapse = " ")),
-                             data = cov)
-                   return(fit$coefficients)
-                })
-  colnames(res) <- tname
-  res %>%
-    tibble::as_tibble() %>%
-    dplyr::mutate(Variable = row.names(res)) %>%
-    tidyr::gather(key = Topic, value = Coefficient, -Variable) -> res
-
-  if (!is.null(iter)) {
-    res$Iteration <- iter 
-  }
-
-  return(res)
-}
-
-
-#' @noRd
-#' @import magrittr
-#' @import ggplot2
-#' @export
-plot.keyATM_coefficients <- function(obj, topics = NULL, prob_vec = c(0.05, 0.5, 0.95), variables = NULL)
-{
-
-  res <- obj$res
-  tnames <- obj$topic_names
-
-  coeff <- summary.keyATM_coefficients(obj, topics, prob_vec)$coeff
-
-  if (is.null(variables)) {
-    variables <- unique(coeff$Variable) 
-  }
-
-  p <- ggplot() +
-            coord_flip() +
-            geom_linerange(data = coeff,
-                            aes(x = Variable, ymin = Lower, ymax = Upper,
-                                group = Topic, colour = Topic), 
-                            size=1.0, position = position_dodge(width = -1/2)) +
-            scale_x_discrete(limits = rev(variables)) +
-            geom_hline(aes(yintercept=0), linetype="dashed") +
-            xlab("Variable") + ylab("Value") + ggtitle("Coefficient") +
-            theme_bw() +
-            theme(plot.title = element_text(hjust = 0.5),
-                  text = element_text(size=12))
-
-  return(p)
-}
-
-
-#' @noRd
-#' @import magrittr
-#' @import ggplot2
-#' @export
-plot.keyATM_coefficients_point <- function(obj, topics = NULL, variables = NULL)
-{
-  warning("`options$store_theta` in `keyATM()` was FALSE. keyATM cannot calculate credible intervals.")
-  res <- obj$res
-  tnames <- obj$topic_names
-
-  if (is.null(variables)) {
-    variables <- unique(res$Variable) 
-  }
-
-  p <- ggplot() +
-            coord_flip() +
-            geom_point(data = res,
-                       aes(x = Variable, y = Coefficient,
-                           group = Topic, colour = Topic), 
-                       size=2.5, position = position_dodge(width = -1/2)) +
-            scale_x_discrete(limits = rev(variables)) +
-            geom_hline(aes(yintercept=0), linetype="dashed") +
-            xlab("Variable") + ylab("Value") + ggtitle("Coefficient") +
-            theme_bw() +
-            theme(plot.title = element_text(hjust = 0.5),
-                  text = element_text(size=12))
-
-  return(p)
-}
-
-
-
-#' @noRd
-#' @import magrittr
-#' @export
-summary.keyATM_coefficients <- function(obj, topics = NULL, prob_vec = c(0.05, 0.5, 0.95))
-{
-  res <- obj$res
-  if (is.null(topics)) {
-    topics <- 1:length(unique(res$Topic)) 
-  }
-
-  if (min(prob_vec) < 0) {
-    stop("Check `prob_vec`. The minimum should not be smaller than 0.") 
-  }
-
-  if (max(prob_vec) > 1) {
-    stop("Check `prob_vec`. The maximum shouhld not be greater than 1.") 
-  }
-
-  if (length(prob_vec) != 3) {
-    stop("Check `prob_vec`. The length should be 3.") 
-  }
-
-  tnames <- obj$topic_names
-
-  coeff <- do.call(dplyr::bind_rows,
-                   lapply(topics,
-                          function(k){
-                             res %>%
-                               dplyr::filter(Topic == tnames[k]) %>%
-                               dplyr::select(-Topic) %>%
-                               tidyr::spread(key = Variable, value = Coefficient) -> temp
-                         
-                             if ("(Intercept)" %in% colnames(temp)) {
-                               temp %>% dplyr::rename(Intercept = `(Intercept)`) -> temp
-                             }
-
-                             temp <- data.frame(apply(temp[, 2:ncol(temp)], 2, quantile, prob = prob_vec))
-                             temp$Percentile <- c("Lower", "Point", "Upper")
-                             temp %>% 
-                               tidyr::gather(key = Variable, value = Value, -Percentile) %>%
-                               tidyr::spread(key = Percentile, value = Value) %>%
-                               dplyr::mutate(Topic = tnames[k]) %>%
-                               tibble::as_tibble() -> temp
-                          })
-                   )
-
-  obj <- list(coeff = coeff, topics = topics)
-
-  class(obj) <- c("summary.keyATM_coefficients", class(obj))
-  return(obj)
-}
-
-
-#' @noRd
-#' @import magrittr
-#' @export
-print.summary.keyATM_coefficients <- function(obj)
-{
-  print(data.frame(obj$coeff))
-}
-
 
 
 #' Estimate Subsetted Topic-Word distribution
@@ -901,11 +872,11 @@ print.summary.keyATM_coefficients <- function(obj)
 #' @param keyATM_docs (see \code{keyATM_read()})
 #' @param by a vector whose length is the number of documents
 #'
-#' @return calc_phi_by object (a list)
+#' @return strata_topicword object (a list)
 #' @import dplyr
 #' @import magrittr
 #' @export
-calc_phi_by <- function(x, keyATM_docs, by)
+by_strata_TopicWord <- function(x, keyATM_docs, by)
 {
 
   # Check inputs
@@ -914,7 +885,11 @@ calc_phi_by <- function(x, keyATM_docs, by)
   }
 
   if (!"Z" %in% names(x$kept_values)) {
-    stop("`Z` is not kept in the output. Please check `keep` option.") 
+    stop("`Z` and `X` should be in the output. Please check `keep` option in `keyATM()`.") 
+  }
+
+  if (!"X" %in% names(x$kept_values)) {
+    stop("`Z` and `X` should be in the output. Please check `keep` option in `keyATM()`.") 
   }
 
   if (length(keyATM_docs) != length(by)) {
@@ -932,16 +907,163 @@ calc_phi_by <- function(x, keyATM_docs, by)
                   doc_index <- which(by == val) 
                   all_words <- unlist(keyATM_docs[doc_index], use.names = F)
                   all_topics <- as.integer(unlist(x$kept_values$Z[doc_index]), use.names = F)
-                  phi_obj <- keyATM_output_phi_calc(all_words, all_topics,
-                                                    x$vocab, x$priors$beta, tnames)
+                  all_x <- as.integer(unlist(x$kept_values$X[doc_index]), use.names = F)
+                  p_estimated <- keyATM_output_p(x$kept_values$Z[doc_index], 
+                                                 x$kept_values$X[doc_index],
+                                                 x$priors$gamma)
+                  vocab <- sort(unique(all_words))
+
+                  phi_obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_x, p_estimated,
+                                                        x$keywords_raw,
+                                                        vocab, x$priors, tnames)
                 } 
                )
   names(obj) <- unique_val
 
   res <- list(phi = obj, theta = x$theta, keywords_raw = x$keywords_raw)
 
-  class(res) <- c("calc_phi_by", class(res))
+  class(res) <- c("strata_topicword", class(res))
   return(res)
+}
+
+
+#' Estimate Document-Topic distribution by strata 
+#'
+#' @param x the output from a keyATM model (see \code{keyATM()})
+#' @param by a vector whose length is the number of documents
+#'
+#' @return strata_topicword object (a list)
+#' @import dplyr
+#' @import magrittr
+#' @export
+by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
+                               parallel = TRUE, mc.cores = NULL)
+{
+  # Check inputs
+  variables <- colnames(x$kept_values$model_settings$covariates_data)
+  if (!by_name %in% variables)
+    stop(paste0(by_name, " is not in the set of covariates in keyATM model. ",
+                "Covariates provided are: ", 
+                paste(colnames(x$kept_values$model_settings$covariates_data), collapse=" , ")))
+
+  if (is.null(burn_in)) {
+    burn_in <- floor(max(x$model_fit$Iteration) / 2) 
+  }
+  
+  # Get info for parallelization
+  if (parallel) {
+    if (is.null(mc.cores)){
+      num_core <- parallel::detectCores(all.tests = FALSE, logical = T) - 2L
+    } else {
+      num_core <- mc.cores 
+    }
+  } else {
+    num_core <- 1L
+  }
+
+  
+  # Info
+  used_iter <- x$values_iter$used_iter
+  used_iter <- used_iter[used_iter > burn_in]
+  use_index <- which(x$values_iter$used_iter %in% used_iter)
+  tnames <- rownames(x$phi)
+  Lambda_iter <- x$values_iter$Lambda_iter_rescaled
+
+  res <- lapply(1:length(by_values),
+                function(i){
+                  value <- by_values[i] 
+                  new_data <- x$kept_values$model_settings$covariates_data_use
+                  new_data[, by_name] <- value
+
+                  # Draw theta
+                  obj <- do.call(dplyr::bind_rows,
+                                 parallel::mclapply(1:length(use_index),
+                                                    function(s){
+                                                      Alpha <- exp(Matrix::tcrossprod(
+                                                                     new_data,
+                                                                     Lambda_iter[[use_index[s]]]
+                                                                   ))
+                                                     
+                                                      thetas <- t(apply(Alpha, 1, rdirichlet))
+                                                      thetas <- Matrix::colMeans(thetas)
+                                                      thetas <- t(as.data.frame(thetas))
+                                                      thetas <- as.data.frame(thetas)
+                                                      colnames(thetas) <- tnames
+                                                      thetas$Iteration <- used_iter[s]
+                                                      return(thetas)
+                                                    },
+                                                    mc.cores = num_core
+                                                   )
+                                )
+
+                })
+  names(res) <- by_values
+
+  obj <- list(theta = tibble::as_tibble(res), by_values = by_values, by_name = by_name)
+  class(obj) <- c("strata_doctopic", class(obj)) 
+
+  return(obj)
+}
+
+
+
+
+#' Plot Document-Topic distribution by strata 
+#'
+#' @param x the output from a keyATM model (see \code{by_strata_DocTopic()})
+#'
+#' @return ggplot2 object
+#' @import ggplot2
+#' @import magrittr
+#' @export
+plot.strata_doctopic <- function(x, topics = NULL, prob_vec = c(0.05, 0.5, 0.95))
+{
+  tables <- summary.strata_doctopic(x, prob_vec = prob_vec)
+  by_name <- x$by_name
+  by_values <- x$by_values
+
+  if (is.null(topics)) {
+    topics <- 1:nrow(tables[[1]]) 
+  }
+
+  tables <- dplyr::bind_rows(tables) %>%
+              dplyr::filter(TopicId %in% topics)
+
+  variables <- unique(tables$by)
+
+
+  p <- ggplot(tables) +
+        geom_linerange(aes(x = by,
+                           ymin = Lower, ymax = Upper,
+                           group = Topic, colour = Topic),
+                       position = position_dodge(width = -1/2)) +
+        coord_flip() +
+        scale_x_discrete(limits = rev(variables)) +
+        xlab(paste0("Value of ", by_name)) +
+        ylab(expression(paste("Mean of ", theta))) +
+        theme_bw()
+
+  return(p)
+}
+
+
+summary.strata_doctopic <- function(x, prob_vec = c(0.05, 0.5, 0.95))
+{
+  tables <- lapply(1:length(x$by_values),
+                  function(index){
+                     theta <- x$theta[[index]]
+                     theta_ <- theta[, 1:(ncol(theta)-2)]
+                     q <- as.data.frame(apply(theta_, 2, quantile, prob_vec))
+                     q$Percentile <- c("Lower", "Point", "Upper")
+                     q %>% 
+                       tidyr::gather(key = Topic, value = Value, -Percentile) %>%
+                       tidyr::spread(key = Percentile, value = Value) %>%
+                       dplyr::mutate(TopicId = 1:(dplyr::n()),
+                                     by = as.character(x$by_values[index])) %>%
+                       tibble::as_tibble() -> temp
+                  })
+
+  return(tables)
 }
 
 

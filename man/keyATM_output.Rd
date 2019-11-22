@@ -22,6 +22,8 @@ A keyATM_output containing:
     \item{word_counts}{Number of times each word type appears}
     \item{doc_lens}{Length of each document in tokens}
     \item{vocab}{Words in the vocabulary}
+    \item{priors}{Priors used}
+    \item{options}{Model options}
     \item{model_fit}{Perplexity and log-likelihood}
     \item{p}{Estimated p}
     \item{values_iter}{Organized values stored during iterations}

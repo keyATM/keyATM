@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Regress theta on covariates — estimate_coefficients • keyATM</title>
+<title>Plot Document-Topic distribution by strata — plot.strata_doctopic • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Regress theta on covariates — estimate_coefficients" />
+<meta property="og:title" content="Plot Document-Topic distribution by strata — plot.strata_doctopic" />
 
-<meta property="og:description" content="Regress theta on covariates" />
+<meta property="og:description" content="Plot Document-Topic distribution by strata" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -95,7 +95,7 @@
       <a href="../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_files/estimate_coef.html">Estimate effects</a>
+      <a href="../articles/pkgdown_files/Heterogeneity.html">Heterogeneity</a>
     </li>
     <li>
       <a href="../articles/pkgdown_files/Options.html">Options</a>
@@ -132,40 +132,33 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Regress theta on covariates</h1>
+    <h1>Plot Document-Topic distribution by strata</h1>
     <small class="dont-index">Source: <a href='https://github.com/Shusei-E/keyATM/blob/master/R/posterior.R'><code>R/posterior.R</code></a></small>
-    <div class="hidden name"><code>estimate_coefficients.Rd</code></div>
+    <div class="hidden name"><code>plot.strata_doctopic.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Regress theta on covariates</p>
+    <p>Plot Document-Topic distribution by strata</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>estimate_coefficients</span>(<span class='no'>x</span>, <span class='no'>covariates_data</span>, <span class='kw'>covariates_formula</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>burn_in</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>parallel</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for strata_doctopic</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>topics</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>prob_vec</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>0.05</span>,
+  <span class='fl'>0.5</span>, <span class='fl'>0.95</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>the output from a keyATM model (see <code>keyATM()</code>)</p></td>
-    </tr>
-    <tr>
-      <th>covariates_data</th>
-      <td><p>matrix, data.frame, or tibble</p></td>
-    </tr>
-    <tr>
-      <th>covariates_formula</th>
-      <td></td>
+      <td><p>the output from a keyATM model (see <code><a href='by_strata_DocTopic.html'>by_strata_DocTopic()</a></code>)</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>keyATM_coefficients object</p>
+    <p>ggplot2 object</p>
     
 
   </div>

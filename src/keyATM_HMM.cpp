@@ -311,7 +311,7 @@ double keyATMhmm::alpha_loglik(int &k, int &state_start, int &state_end)
 void keyATMhmm::sample_forward()
 { // Calculate Psk (num_doc, num_states)
 
-  // Psk = MatrixXd::Zero(num_doc, num_states);
+  // Psk = MatrixXd::Zero(num_time, num_states);
 
   for (int t = 0; t < num_time; t++) {
     if (t == 0) {
@@ -322,13 +322,17 @@ void keyATMhmm::sample_forward()
 
     // Prepare f in Eq.(6) of Chib (1998)
     for (int s = 0; s < num_states; s++) {
+      // f(y_t | ...) in the numerator
       alpha = alphas.row(s).transpose();
       logfy(s) = polyapdfln(t, alpha);
     }  
 
     // Prepare Pst
-    st_1l = Psk.row(t-1);  // previous observation
-    st_k = (st_1l.transpose() * P_est);
+    st_1l = Psk.row(t-1);  // previous time block
+    st_k = (st_1l.transpose() * P_est); 
+        // p(s_{t} = k), summation is done as matrix calculation
+        // Note that P has a lot of 0 elements
+        // This is a first term of the numerator in Eq.(6)
 
     // Format numerator and calculate denominator at the same time
     logsum = 0.0;
@@ -346,7 +350,7 @@ void keyATMhmm::sample_forward()
 
     for (int s = 0; s < num_states; s++) {
       if (st_k(s) != 0.0) {
-        Psk(t, s) = exp( logst_k(s) - logsum );  
+        Psk(t, s) = exp(logst_k(s) - logsum);  
       } else {
         Psk(t, s) = 0.0;  
       }  
@@ -358,7 +362,7 @@ void keyATMhmm::sample_forward()
 
 
 double keyATMhmm::polyapdfln(int &t, VectorXd &alpha)
-{ // Polya distribution log-likelihood
+{ // Polya distribution: log-likelihood
   loglik = 0.0;
 
   int doc_start, doc_end;
@@ -385,10 +389,10 @@ void keyATMhmm::sample_backward()
   S_count = VectorXi::Zero(num_states); // reset counter
 
   // Last document
-  S_est(num_time-1) = index_states;
+  S_est(num_time - 1) = index_states;
   S_count(index_states) += 1;  // last document
 
-  for (int t=(num_time-2); 0<= t; --t) {
+  for (int t = (num_time - 2); 0 <= t; --t) {
     state_id = S_est(t + 1);
 
     state_prob_vec.array() = Psk.row(t).transpose().array() * P_est.col(state_id).array(); 
@@ -407,7 +411,14 @@ void keyATMhmm::sample_P()
   // sample P_est
   // iterate until index_state - 2
   for (int s = 0; s <= (num_states - 2); ++s) {
-    pii = R::rbeta(1 + S_count(s), 1);  
+    pii = R::rbeta(S_count(s), 2);  
+      // First value is 1 + S_count(s) - 1. 
+      // S_count(s) - 1: the number of transitions from state
+      // s to state s in the sequence of state
+      // ----------------------------------------------------
+      // "-1" because the first count in S_count is
+      // the transition from s-1 to s
+      // prior is Beta(1,1)
 
     P_est(s, s) = pii;
     P_est(s, s + 1) = 1.0 - pii;

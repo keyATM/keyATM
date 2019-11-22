@@ -8,7 +8,7 @@ top_words(x, n = 10, measure = c("probability", "lift"),
   show_keyword = TRUE)
 }
 \arguments{
-\item{x}{the output (see \code{keyATM()} and \code{calc_phi_by()})}
+\item{x}{the output (see \code{keyATM()} and \code{by_strata_TopicWord()})}
 
 \item{n}{How many terms to show. Default: NULL, which shows all}
 

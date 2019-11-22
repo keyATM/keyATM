@@ -35,7 +35,7 @@ out <- keyATM(docs              = keyATM_docs,    # text input
               no_keyword_topics = 3,              # number of topics without keywords
               keywords          = bills_keywords, # keywords
               model             = "base",         # select the model
-              options           = list(seed = 100)
+              options           = list(seed = 50)
              )
 ```
 The default number of iterations is `1500`. Please check [this page](Options.html) for available options.

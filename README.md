@@ -11,7 +11,6 @@ status](https://www.r-pkg.org/badges/version/keyATM)](https://CRAN.R-project.org
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/keyATM)](https://cran.r-project.org/package=keyATM)
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2019--11--11-yellowgreen.svg)](/commits/master)
 <!-- badges: end -->
 
 # Website

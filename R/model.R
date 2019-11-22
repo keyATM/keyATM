@@ -109,10 +109,10 @@ summary.keyATM_docs <- function(x)
               length(x), " documents",
               ".\n",
               "Length of documents:",
-              "\n  Avg: ", round(mean(doc_len),3),
-              "\n  Min: ", round(min(doc_len),3),
-              "\n  Max: ", round(max(doc_len),3),
-              "\n   SD: ", round(sd(doc_len),3),
+              "\n  Avg: ", round(mean(doc_len), 3),
+              "\n  Min: ", round(min(doc_len), 3),
+              "\n  Max: ", round(max(doc_len), 3),
+              "\n   SD: ", round(sd(doc_len), 3),
               "\n"
              )  
          )
@@ -154,7 +154,7 @@ summary.keyATM_docs <- function(x)
 #'    # Or: `keyATM_viz$figure`
 #' 
 #'  # Save a figure 
-#'  ggsave(filename, keyATM_viz$figure)
+#'  save_fig(keyATM_viz, filename)
 #'
 #' }
 #'
@@ -295,6 +295,14 @@ summary.keyATM_viz <- function(x)
 save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 {
   saveRDS(x, file = file)
+}
+
+
+#' @noRd
+#' @export
+save_fig.keyATM_viz <- function(x, file = stop("'file' must be specified"))
+{
+  ggplot2::ggsave(x$figure, file = file)
 }
 
 
@@ -477,6 +485,8 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 }
 
 
+
+
 #' @noRd
 #' @export
 print.keyATM_model <- function(x)
@@ -639,12 +649,13 @@ check_arg_model_settings <- function(obj, model, info)
     }
 
     if (is.null(obj$covariates_formula)) {
+      warning("`covariates_formula` is not provided. keyATM uses the matrix as it is.")
       obj$covariates_formula <- NULL  # do not need to change the matrix
-      obj$covariates_data_standardized <- as.matrix(obj$covariates_data) 
+      obj$covariates_data_use <- as.matrix(obj$covariates_data) 
     } else if (is.formula(obj$covariates_formula)) {
-      message("Convert covariates data using `obj$covariates_formula`.")
-      obj$covariates_data_standardized <- stats::model.matrix(obj$covariates_formula,
-                                                              as.data.frame(obj$covariates_data))
+      message("Convert covariates data using `model_settings$covariates_formula`.")
+      obj$covariates_data_use <- stats::model.matrix(obj$covariates_formula,
+                                                     as.data.frame(obj$covariates_data))
     } else {
       stop("Check `model_settings$covariates_formula`.")  
     }
@@ -655,22 +666,38 @@ check_arg_model_settings <- function(obj, model, info)
     }
 
     # Check if it works as a valid regression 
-    temp <- as.data.frame(obj$covariates_data)
-    temp$y <- rnorm(nrow(obj$covariates_data))
-    fit <- lm(y ~ 0 + ., data = temp)
+    temp <- as.data.frame(obj$covariates_data_use)
+    temp$y <- rnorm(nrow(obj$covariates_data_use))
 
-    if (NA %in% fit$coefficients) {
-      stop("Covariates are invalid.")    
+    if ("(Intercept)" %in% colnames(obj$covariates_data_use)){
+      fit <- lm(y ~ ., data = temp)
+      if (NA %in% fit$coefficients) {
+        stop("Covariates are invalid.")    
+      }    
+    } else {
+      fit <- lm(y ~ 0 + ., data = temp)
+      if (NA %in% fit$coefficients) {
+        stop("Covariates are invalid.")    
+      }
     }
 
     if (obj$standardize) {
       standardize <- function(x){return((x - mean(x)) / sd(x))}
-      obj$covariates_data_standardized <- cbind(obj$covariates_data[, 1, drop=FALSE],
-                                                apply(obj$covariates_data[, -1], 2, standardize) 
-                                               )
+
+      if ("(Intercept)" %in% colnames(obj$covariates_data_use)) {
+        # Do not standardize the intercept
+        colnames_keep <- colnames(obj$covariates_data_use)
+        obj$covariates_data_use <- cbind(obj$covariates_data_use[, 1, drop=FALSE],
+                                         apply(as.matrix(obj$covariates_data_use[, -1]), 2,
+                                               standardize) 
+                                        )
+        colnames(obj$covariates_data_use) <- colnames_keep
+      } else {
+        obj$covariates_data_use <- apply(obj$covariates_data_use, 2, standardize)
+      }
     }
 
-    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_standardized",
+    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
                            "covariates_formula", "standardize", "info")
   }
 
@@ -816,12 +843,6 @@ check_arg_options <- function(obj, model, info)
     obj$store_theta <- as.integer(obj$store_theta)  
     if (!obj$store_theta %in% c(0, 1)) {
       stop("An invalid value in `options$store_theta`")  
-    }
-  }
-
-  if (model %in% c("cov", "ldaov")) {
-    if (obj$store_theta == 0) {
-      warning("`options$store_theta` is FALSE. keyATM cannot estimate credible intervals.") 
     }
   }
 
