@@ -22,7 +22,7 @@
 #'
 #' @import magrittr
 #' @export
-keyATM_read <- function(texts, encoding = "UTF-8")
+keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
 {
 
   # Detect input
@@ -82,6 +82,11 @@ keyATM_read <- function(texts, encoding = "UTF-8")
   }
 
   W_raw <- text_df %>% dplyr::pull(text_split)
+
+  if (check) {
+    check_vocabulary(unique(unlist(W_raw, use.names = F, recursive = F))) 
+  }
+
   class(W_raw) <- c("keyATM_docs", class(W_raw))
 
   return(W_raw)
@@ -920,6 +925,14 @@ check_vocabulary <- function(vocab)
 
   if (sum(stringr::str_detect(vocab, "^[:upper:]+$")) != 0) {
     warning('Upper case letters are used. Please review preprocessing steps.')  
+  }
+
+  if (sum(stringr::str_detect(vocab, "\t")) != 0) {
+    warning('Tab is detected in the vocabulary. Please review preprocessing steps.')  
+  }
+
+  if (sum(stringr::str_detect(vocab, "\n")) != 0) {
+    warning('A line break is detected in the vocabulary. Please review preprocessing steps.')  
   }
 }
 

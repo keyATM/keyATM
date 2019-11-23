@@ -134,10 +134,11 @@
 <span id="cb1-13"><a href="#cb1-13"></a>                     <span class="dt">remove_separators =</span> <span class="ot">TRUE</span>,</span>
 <span id="cb1-14"><a href="#cb1-14"></a>                     <span class="dt">remove_url =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
 <span id="cb1-15"><a href="#cb1-15"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_tolower.html">tokens_tolower</a></span>() <span class="op">%&gt;%</span></span>
-<span id="cb1-16"><a href="#cb1-16"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_select.html">tokens_remove</a></span>(<span class="kw"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"english"</span>))</span>
-<span id="cb1-17"><a href="#cb1-17"></a></span>
-<span id="cb1-18"><a href="#cb1-18"></a>key_dfm &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(key_tokens) <span class="op">%&gt;%</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a><span class="st">             </span><span class="kw"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="dt">min_termfreq =</span> <span class="dv">5</span>, <span class="dt">min_docfreq =</span> <span class="dv">2</span>)</span></code></pre></div>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_select.html">tokens_remove</a></span>(<span class="kw"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"english"</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_select.html">tokens_select</a></span>(<span class="dt">min_nchar =</span> <span class="dv">3</span>)</span>
+<span id="cb1-18"><a href="#cb1-18"></a></span>
+<span id="cb1-19"><a href="#cb1-19"></a>key_dfm &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(key_tokens) <span class="op">%&gt;%</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a><span class="st">             </span><span class="kw"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="dt">min_termfreq =</span> <span class="dv">5</span>, <span class="dt">min_docfreq =</span> <span class="dv">2</span>)</span></code></pre></div>
 <p>You can also use <code><a href="https://www.rdocumentation.org/packages/base/topics/c">c(stopwords("english"), "your", "stopwords")</a></code> if you want to add corpus specific stopwords.</p>
 </div>
 <div id="using-data-frame-or-tibble" class="section level3">
