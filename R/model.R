@@ -187,17 +187,21 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
     dplyr::arrange(desc(WordCount)) %>%
     dplyr::mutate(Ranking = 1:(dplyr::n())) -> data
 
-  names(keywords) <- paste0("Topic", 1:length(keywords))
   keywords <- lapply(keywords, function(x){unlist(strsplit(x," "))})
   ext_k <- length(keywords)
   max_num_words <- max(unlist(lapply(keywords, function(x){length(x)}), use.names = F))
 
   # Make keywords_df
   keywords_df <- data.frame(Topic = 1, Word = 1)
+  tnames <- names(keywords)
   for(k in 1:ext_k){
     words <- keywords[[k]]
     numwords <- length(words)
-    topicname <- paste0("Topic", k)
+    if (is.null(tnames)) {
+      topicname <- paste0("Topic", k)
+    } else {
+      topicname <- paste0(k, "_", tnames[k]) 
+    }
     for(w in 1:numwords){
       keywords_df <- rbind(keywords_df, data.frame(Topic = topicname, Word = words[w]))
     }
