@@ -42,7 +42,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
     files <- NULL
     text_df <- NULL
   } else if (class(texts) == "character") {
-    message("Reading from files.")
+    warning("Reading from files. Please make sure files are preprocessed.")
     text_dfm <- NULL
     files <- texts
     text_df <- NULL
