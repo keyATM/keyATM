@@ -202,7 +202,8 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
     } else {
       topicname <- paste0(k, "_", tnames[k]) 
     }
-    for(w in 1:numwords){
+
+    for(w in 1:numwords) {
       keywords_df <- rbind(keywords_df, data.frame(Topic = topicname, Word = words[w]))
     }
   }
