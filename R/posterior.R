@@ -213,8 +213,10 @@ keyATM_output_phi <- function(model, info)
     all_s <- as.integer(unlist(model$S, use.names = F))
 
     obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, p_estimated,
-                                      model$keywords_raw,
-                                      model$vocab, model$priors, info$tnames)  
+                                      keywords_raw = model$keywords_raw,
+                                      vocab = model$vocab, 
+                                      priors = model$priors, 
+                                      tnames = info$tnames)  
   } else if (model$model %in% c("lda", "ldacov", "ldahmm")) {
     obj <- keyATM_output_phi_calc_lda(all_words, all_topics, 
                                       model$vocab, model$priors$beta, info$tnames)
@@ -260,9 +262,12 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, p_estimated
       tidyr::spread(key = Word, value = Count) -> phi
     phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
 
-    phi <- phi[, 2:ncol(phi)]
-    topic_counts <- Matrix::rowSums(phi)
-
+    if (!is.matrix(phi)) {
+      phi <- t(phi) 
+    }
+    
+    phi <- phi[, 2:ncol(phi), drop = FALSE]
+    topic_counts <- Matrix::rowSums(phi) 
 
     rownames(phi) <- tnames[1:nrow(phi)]
 
@@ -273,7 +278,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, p_estimated
       phi_ <- matrix(0, nrow = length(tnames), 
                      ncol = length(all_keywords))
       colnames(phi_) <- sort(all_keywords)
-      phi <- phi[, sort(colnames(phi))]
+      phi <- phi[, sort(colnames(phi)), drop = FALSE]
       rownames(phi_) <- tnames
 
       # phi with all keywords
@@ -286,7 +291,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, p_estimated
                             phi_[k, ][which(colnames(phi_) %in% keywords_raw[[k]])] + prior
       }
       phi <- phi_
-      phi <- phi[, sort(colnames(phi))]
+      phi <- phi[, sort(colnames(phi)), drop = FALSE]
       phi <- phi / Matrix::rowSums(phi)
       phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
 
@@ -308,7 +313,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, p_estimated
       phi_ <- matrix(0, nrow = length(tnames), 
                      ncol = length(vocab))
       colnames(phi_) <- vocab_sorted
-      phi <- phi[, sort(colnames(phi))]
+      phi <- phi[, sort(colnames(phi)), drop = FALSE]
       rownames(phi_) <- tnames
 
       # phi with all words

@@ -378,12 +378,9 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 
   # W
   info$wd_names <- unique(unlist(docs, use.names = F, recursive = F))
-  if (" " %in% info$wd_names) {
-    stop("A space is recognized as a vocabulary.
-          Please remove an empty document or consider using quanteda::dfm.")  
-  }
+  check_vocabulary(info$wd_names)
 
-  info$wd_map <- hashmap::hashmap(info$wd_names, as.integer(1:length(info$wd_names) - 1L))
+  info$wd_map <- hashmap::hashmap(info$wd_names, 1:length(info$wd_names) - 1L)
   W <- lapply(docs, function(x){ info$wd_map[[x]] })
 
 
@@ -760,7 +757,7 @@ check_arg_priors <- function(obj, model, info)
 
     if (info$keyword_k < info$total_k) {
       # Regular topics are used in keyATM models
-      # Priors of regular topics should be 0
+      # Priors for regular topics should be 0
       if (sum(obj$gamma[(info$keyword_k+1):info$total_k, ]) != 0) {
         obj$gamma[(info$keyword_k+1):info$total_k, ] <- 0
       }
@@ -783,8 +780,8 @@ check_arg_priors <- function(obj, model, info)
   }
 
 
+  # alpha
   if (model %in% c("base", "lda")) {
-    # alpha
     if (is.null(obj$alpha)) {
       obj$alpha <- rep(1/info$total_k, info$total_k)
     }
@@ -903,6 +900,22 @@ check_arg_options <- function(obj, model, info)
   # Check unused arguments
   show_unused_arguments(obj, "`options`", allowed_arguments)
   return(obj)
+}
+
+
+check_vocabulary <- function(vocab)
+{
+  if (" " %in% vocab) {
+    stop("A space is recognized as a vocabulary. Please remove an empty document or consider using quanteda::dfm.")  
+  }
+
+  if ("" %in% vocab) {
+    stop('A blank `""` is recognized as a vocabulary. Please review preprocessing steps.')  
+  }
+
+  if (sum(stringr::str_detect(vocab, "^[:upper:]+$")) != 0) {
+    warning('Upper case letters are used. Please review preprocessing steps.')  
+  }
 }
 
 
