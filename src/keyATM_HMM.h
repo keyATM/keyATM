@@ -28,11 +28,11 @@ class keyATMhmm : virtual public keyATMmeta
     int num_states;
     int index_states;  // num_states - 1
     int store_transition_matrix;
-    MatrixXd Psk;    // (num_time, num_states)
-    VectorXi S_est;  // stores state index, (num_time)
-    VectorXi S_count;  // stores the count of each state
+    MatrixXd Prk;    // (num_time, num_states)
+    VectorXi R_est;  // stores state index, (num_time)
+    VectorXi R_count;  // stores the count of each state
       // Sec 2.3 in Chib (1998)
-      // "the elements of p_ij of P may be simulated from P|S_n
+      // "the elements of p_ij of P may be simulated from P|R_n
       // without regard to the sampling model for the data"
       // so we just store the count of each state
     MatrixXd P_est;  // (num_states, num_states)
@@ -47,9 +47,9 @@ class keyATMhmm : virtual public keyATMmeta
     // During sampling
       // sample_forward()
       VectorXd logfy;  // (num_states)
-      VectorXd st_1l;
-      VectorXd st_k;
-      VectorXd logst_k;
+      VectorXd rt_1l;
+      VectorXd rt_k;
+      VectorXd logrt_k;
       double logsum;
       int added;
 
@@ -87,10 +87,10 @@ class keyATMhmm : virtual public keyATMmeta
     void sample_alpha_state(int &state, int &state_start, int &state_end);
     double alpha_loglik(int &k, int &state_start, int &state_end);
 
-    void sample_forward();  // calculate Psk
-    void sample_backward();  // sample S_est
+    void sample_forward();  // calculate Prk
+    void sample_backward();  // sample R_est
     void sample_P();  // sample P_est
-    void store_S_est();
+    void store_R_est();
     void store_P_est();
 
     double polyapdfln(int &t, VectorXd &alpha);

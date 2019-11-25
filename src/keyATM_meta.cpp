@@ -39,7 +39,7 @@ void keyATMmeta::read_data()
 void keyATMmeta::read_data_common()
 {
   // Read data
-  W = model["W"]; Z = model["Z"]; X = model["X"];
+  W = model["W"]; Z = model["Z"]; S = model["S"];
   vocab = model["vocab"];
   regular_k = model["no_keyword_topics"];
   keywords_list = model["keywords"];
@@ -120,19 +120,19 @@ void keyATMmeta::initialize_common()
   }
 
   // storage for sufficient statistics and their margins
-  // n_x0_kv.resize(num_topics, num_vocab);
-  n_x0_kv = MatrixXd::Zero(num_topics, num_vocab);
-  n_x1_kv.resize(num_topics, num_vocab);
+  // n_s0_kv.resize(num_topics, num_vocab);
+  n_s0_kv = MatrixXd::Zero(num_topics, num_vocab);
+  n_s1_kv.resize(num_topics, num_vocab);
   n_dk = MatrixXd::Zero(num_doc, num_topics);
-  n_x0_k = VectorXd::Zero(num_topics);
-  n_x0_k_noWeight = VectorXd::Zero(num_topics);
-  n_x1_k = VectorXd::Zero(num_topics);
-  n_x1_k_noWeight = VectorXd::Zero(num_topics);
+  n_s0_k = VectorXd::Zero(num_topics);
+  n_s0_k_noWeight = VectorXd::Zero(num_topics);
+  n_s1_k = VectorXd::Zero(num_topics);
+  n_s1_k_noWeight = VectorXd::Zero(num_topics);
   vocab_weights = VectorXd::Constant(num_vocab, 1.0);
 
-  int x, z, w;
+  int s, z, w;
   int doc_len;
-  IntegerVector doc_x, doc_z, doc_w;
+  IntegerVector doc_s, doc_z, doc_w;
 
 
   // Construct vocab weights
@@ -159,30 +159,30 @@ void keyATMmeta::initialize_common()
 
 
   // Construct data matrices
-  vector<Triplet> trip_x1;   
+  vector<Triplet> trip_s1;   
   
   for (int doc_id = 0; doc_id < num_doc; doc_id++) {
-    doc_x = X[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
+    doc_s = S[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
 
     for (int w_position = 0; w_position < doc_len; w_position++) {
-      x = doc_x[w_position], z = doc_z[w_position], w = doc_w[w_position];
-      if (x == 0){
-        n_x0_kv(z, w) += vocab_weights(w);
-        // trip_x0.push_back(Triplet(z, w, vocab_weights(w)));
-        n_x0_k(z) += vocab_weights(w);
-        n_x0_k_noWeight(z) += 1.0;
+      s = doc_s[w_position], z = doc_z[w_position], w = doc_w[w_position];
+      if (s == 0){
+        n_s0_kv(z, w) += vocab_weights(w);
+        // trip_s0.push_back(Triplet(z, w, vocab_weights(w)));
+        n_s0_k(z) += vocab_weights(w);
+        n_s0_k_noWeight(z) += 1.0;
       } else {
-        // n_x1_kv(z, w) += vocab_weights(w);
-        trip_x1.push_back(Triplet(z, w, vocab_weights(w)));
-        n_x1_k(z) += vocab_weights(w);
-        n_x1_k_noWeight(z) += 1.0;
+        // n_s1_kv(z, w) += vocab_weights(w);
+        trip_s1.push_back(Triplet(z, w, vocab_weights(w)));
+        n_s1_k(z) += vocab_weights(w);
+        n_s1_k_noWeight(z) += 1.0;
       }
       n_dk(doc_id, z) += 1.0;
     }
   }
-  // n_x0_kv.setFromTriplets(trip_x0.begin(), trip_x0.end());
-  n_x1_kv.setFromTriplets(trip_x1.begin(), trip_x1.end());
+  // n_s0_kv.setFromTriplets(trip_s0.begin(), trip_s0.end());
+  n_s1_kv.setFromTriplets(trip_s1.begin(), trip_s1.end());
   
 
   // Use during the iteration
@@ -243,18 +243,18 @@ void keyATMmeta::verbose_special(int &r_index){
 }
 
 // Sampling
-int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &x,
+int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
                          int &w, int &doc_id)
 {
   // remove data
-  if (x == 0){
-    n_x0_kv(z, w) -= vocab_weights(w);
-    n_x0_k(z) -= vocab_weights(w);
-    n_x0_k_noWeight(z) -= 1.0;
-  } else if (x == 1) {
-    n_x1_kv.coeffRef(z, w) -= vocab_weights(w);
-    n_x1_k(z) -= vocab_weights(w);
-    n_x1_k_noWeight(z) -= 1.0;
+  if (s == 0){
+    n_s0_kv(z, w) -= vocab_weights(w);
+    n_s0_k(z) -= vocab_weights(w);
+    n_s0_k_noWeight(z) -= 1.0;
+  } else if (s == 1) {
+    n_s1_kv.coeffRef(z, w) -= vocab_weights(w);
+    n_s1_k(z) -= vocab_weights(w);
+    n_s1_k_noWeight(z) -= 1.0;
   } else {
     Rcerr << "Error at sample_z, remove" << std::endl;
   }
@@ -262,15 +262,15 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &x,
   n_dk(doc_id, z) -= 1;
 
   new_z = -1; // debug
-  if (x == 0){
+  if (s == 0){
     for (int k = 0; k < num_topics; ++k){
 
-      numerator = (beta + n_x0_kv(k, w)) *
-        (n_x0_k(k) + prior_gamma(k, 1)) *
+      numerator = (beta + n_s0_kv(k, w)) *
+        (n_s0_k(k) + prior_gamma(k, 1)) *
         (n_dk(doc_id, k) + alpha(k));
 
-      denominator = ((double)num_vocab * beta + n_x0_k(k)) *
-        (n_x1_k(k) + prior_gamma(k, 0) + n_x0_k(k) + prior_gamma(k, 1));
+      denominator = ((double)num_vocab * beta + n_s0_k(k)) *
+        (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
     }
@@ -284,12 +284,12 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &x,
         z_prob_vec(k) = 0.0;
         continue;
       } else { 
-        numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
-          (n_x1_k(k) + prior_gamma(k, 0)) *
+        numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
+          (n_s1_k(k) + prior_gamma(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
       }
-      denominator = ((double)keywords_num[k] * beta_s + n_x1_k(k) ) *
-        (n_x1_k(k) + prior_gamma(k, 0) + n_x0_k(k) + prior_gamma(k, 1));
+      denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) ) *
+        (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
     }
@@ -301,14 +301,14 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &x,
   }
 
   // add back data counts
-  if (x == 0){
-    n_x0_kv(new_z, w) += vocab_weights(w);
-    n_x0_k(new_z) += vocab_weights(w);
-    n_x0_k_noWeight(new_z) += 1.0;
-  } else if (x == 1) {
-    n_x1_kv.coeffRef(new_z, w) += vocab_weights(w);
-    n_x1_k(new_z) += vocab_weights(w);
-    n_x1_k_noWeight(new_z) += 1.0;
+  if (s == 0){
+    n_s0_kv(new_z, w) += vocab_weights(w);
+    n_s0_k(new_z) += vocab_weights(w);
+    n_s0_k_noWeight(new_z) += 1.0;
+  } else if (s == 1) {
+    n_s1_kv.coeffRef(new_z, w) += vocab_weights(w);
+    n_s1_k(new_z) += vocab_weights(w);
+    n_s1_k_noWeight(new_z) += 1.0;
   } else {
     Rcerr << "Error at sample_z, add" << std::endl;
   }
@@ -318,58 +318,58 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &x,
 }
 
 
-int keyATMmeta::sample_x(VectorXd &alpha, int &z, int &x,
+int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
                  int &w, int &doc_id)
 {
       
   // If a word is not a keyword, no need to sample
   if (keywords[z].find(w) == keywords[z].end())
-    return x;
+    return s;
   
   // remove data
-  if (x == 0){
-    n_x0_kv(z, w) -= vocab_weights(w);
-    n_x0_k(z) -= vocab_weights(w);
-    n_x0_k_noWeight(z) -= 1.0;
+  if (s == 0){
+    n_s0_kv(z, w) -= vocab_weights(w);
+    n_s0_k(z) -= vocab_weights(w);
+    n_s0_k_noWeight(z) -= 1.0;
   } else {
-    n_x1_kv.coeffRef(z, w) -= vocab_weights(w);
-    n_x1_k(z) -= vocab_weights(w);
-    n_x1_k_noWeight(z) -= 1.0;
+    n_s1_kv.coeffRef(z, w) -= vocab_weights(w);
+    n_s1_k(z) -= vocab_weights(w);
+    n_s1_k_noWeight(z) -= 1.0;
   }
 
-  // newprob_x1()
+  // newprob_s1()
   k = z;
 
-  numerator = (beta_s + n_x1_kv.coeffRef(k, w)) *
-    ( n_x1_k(k) + prior_gamma(k, 0) );
-  denominator = ((double)keywords_num[k] * beta_s + n_x1_k(k) );
-  x1_prob = numerator / denominator;
+  numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
+    ( n_s1_k(k) + prior_gamma(k, 0) );
+  denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) );
+  s1_prob = numerator / denominator;
 
-  // newprob_x0()
-  numerator = (beta + n_x0_kv(k, w)) *
-    (n_x0_k(k) + prior_gamma(k, 1));
+  // newprob_s0()
+  numerator = (beta + n_s0_kv(k, w)) *
+    (n_s0_k(k) + prior_gamma(k, 1));
 
-  denominator = ((double)num_vocab * beta + n_x0_k(k) );
-  x0_prob = numerator / denominator;
+  denominator = ((double)num_vocab * beta + n_s0_k(k) );
+  s0_prob = numerator / denominator;
 
   // Normalize
-  sum = x0_prob + x1_prob;
+  sum = s0_prob + s1_prob;
 
-  x1_prob = x1_prob / sum;
-  new_x = R::runif(0,1) <= x1_prob;  //new_x = Bern(x0_prob, x1_prob);
+  s1_prob = s1_prob / sum;
+  new_s = R::runif(0,1) <= s1_prob;  //new_s = Bern(s0_prob, s1_prob);
 
   // add back data counts
-  if (new_x == 0){
-    n_x0_kv(z, w) += vocab_weights(w);
-    n_x0_k(z) += vocab_weights(w);
-    n_x0_k_noWeight(z) += 1.0;
+  if (new_s == 0){
+    n_s0_kv(z, w) += vocab_weights(w);
+    n_s0_k(z) += vocab_weights(w);
+    n_s0_k_noWeight(z) += 1.0;
   } else {
-    n_x1_kv.coeffRef(z, w) += vocab_weights(w);
-    n_x1_k(z) += vocab_weights(w);
-    n_x1_k_noWeight(z) += 1.0;
+    n_s1_kv.coeffRef(z, w) += vocab_weights(w);
+    n_s1_k(z) += vocab_weights(w);
+    n_s1_k_noWeight(z) += 1.0;
   }
 
-  return new_x;
+  return new_s;
 }
 
 

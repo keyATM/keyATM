@@ -38,7 +38,7 @@ bills_keywords <- list(
 
 ## Fitting the model
 ```{r, warning=FALSE, message=FALSE, fig.align='center', results="hide"}
-out <- keyATM(    
+out <- keyATM(
               docs              = keyATM_docs,    # text input
               no_keyword_topics = 3,              # number of topics without keywords
               keywords          = bills_keywords, # keywords

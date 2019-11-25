@@ -117,7 +117,7 @@
 <span id="cb1-4"><a href="#cb1-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
 <span id="cb1-5"><a href="#cb1-5"></a>              <span class="dt">model             =</span> <span class="st">"base"</span>,         <span class="co"># select the model</span></span>
 <span id="cb1-6"><a href="#cb1-6"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>),</span>
-<span id="cb1-7"><a href="#cb1-7"></a>              <span class="dt">keep              =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Z"</span>, <span class="st">"X"</span>)     <span class="co"># You need to keep `Z` and `X`</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>              <span class="dt">keep              =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Z"</span>, <span class="st">"S"</span>)     <span class="co"># You need to keep `Z` and `S`</span></span>
 <span id="cb1-8"><a href="#cb1-8"></a>             )</span></code></pre></div>
 <p>We have a binary variable of the party ID of bill’s proposer. <code>0</code> indicates Democrat and <code>1</code> indicates Republican.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/table">table</a></span>(bills_cov[, <span class="st">"RepParty"</span>])</span></code></pre></div>

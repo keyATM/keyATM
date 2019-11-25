@@ -8,7 +8,7 @@ using namespace std;
 
 void LDAcov::iteration_single(int &it)
 { // Single iteration
-  x_ = -1;
+  s_ = -1;
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
   // Create Alpha for this iteration
@@ -29,7 +29,7 @@ void LDAcov::iteration_single(int &it)
       w_position = token_indexes[jj];
       z_ = doc_z[w_position], w_ = doc_w[w_position];
     
-      new_z = sample_z(alpha, z_, x_, w_, doc_id_);
+      new_z = sample_z(alpha, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
     }
     
