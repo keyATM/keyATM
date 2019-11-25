@@ -44,7 +44,7 @@ This function visualizes the proportion of keywords in the documents.
    # Or: `keyATM_viz$figure`
 
  # Save a figure 
- ggsave(filename, keyATM_viz$figure)
+ save_fig(keyATM_viz, filename)
 
 }
 

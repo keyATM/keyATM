@@ -34,7 +34,8 @@ key_tokens <- tokens(key_corpus,
                      remove_separators = TRUE,
                      remove_url = TRUE) %>%
                 tokens_tolower() %>%
-                tokens_remove(stopwords("english"))
+                tokens_remove(stopwords("english")) %>%
+                tokens_select(min_nchar = 3)
 
 key_dfm <- dfm(key_tokens) %>%
              dfm_trim(min_termfreq = 5, min_docfreq = 2)

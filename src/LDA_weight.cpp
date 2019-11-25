@@ -8,7 +8,7 @@ using namespace std;
 void LDAweight::iteration_single(int &it)
 { // Single iteration
 
-  x_ = -1;  // we do not use x_ in LDA weight
+  s_ = -1;  // we do not use x_ in LDA weight
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
   for (int ii = 0; ii < num_doc; ii++) {
@@ -23,7 +23,7 @@ void LDAweight::iteration_single(int &it)
       w_position = token_indexes[jj];
       z_ = doc_z[w_position], w_ = doc_w[w_position];
     
-      new_z = sample_z(alpha, z_, x_, w_, doc_id_);
+      new_z = sample_z(alpha, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
     }
     
