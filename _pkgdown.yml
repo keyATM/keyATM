@@ -34,6 +34,8 @@ navbar:
           href: articles/pkgdown_files/keyATM_dynamic.html
         - text: "Weighted LDA"
           href: articles/pkgdown_files/Weighted_LDA.html
+        - text: "Heterogeneity"
+          href: articles/pkgdown_files/Heterogeneity.html
         - text: "Options"
           href: articles/pkgdown_files/Options.html
     - text: "FAQ"
@@ -48,14 +50,16 @@ navbar:
 
 
 reference:
-- title: All functions
+- title: Functions
   desc: ~
   contents:
+  - '`by_strata_DocTopic`'
+  - '`by_strata_TopicWord`'
+  - '`keyATM`'
+  - '`keyATM_read`'
   - '`plot_alpha`'
   - '`plot_modelfit`'
   - '`plot_p`'
-  - '`keyATM`'
-  - '`keyATM_read`'
   - '`top_docs`'
   - '`top_words`'
   - '`top_topics`'
@@ -64,4 +68,3 @@ reference:
 
 toc:
   depth: 2
-

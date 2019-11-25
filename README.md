@@ -9,8 +9,15 @@
 status](https://www.r-pkg.org/badges/version/keyATM)](https://CRAN.R-project.org/package=keyATM)
 [![metacran
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/keyATM)](https://cran.r-project.org/package=keyATM)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2019--08--25-yellowgreen.svg)](/commits/master)
+[![Lifecycle:
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
 # Website
 Please visit our website for a complete reference.
+
+# Installation
+To install **keyATM** from GitHub, please use `devtools`.
+```
+devtools::install_github("Shusei-E/keyATM")
+```

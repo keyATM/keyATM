@@ -110,7 +110,7 @@ void LDAbase::initialize_common()
 }
 
 
-int LDAbase::sample_z(VectorXd &alpha, int &z, int &x, int &w, int &doc_id)
+int LDAbase::sample_z(VectorXd &alpha, int &z, int &s, int &w, int &doc_id)
 {
   // remove data
   n_kv(z, w) -= vocab_weights(w);

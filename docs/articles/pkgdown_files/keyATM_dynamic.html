@@ -62,6 +62,9 @@
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
+      <a href="../../articles/pkgdown_files/Heterogeneity.html">Heterogeneity</a>
+    </li>
+    <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -134,7 +137,7 @@
 <span id="cb5-5"><a href="#cb5-5"></a>              <span class="dt">model             =</span> <span class="st">"dynamic"</span>,          <span class="co"># select the model</span></span>
 <span id="cb5-6"><a href="#cb5-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">time_index =</span> bills_time_index,</span>
 <span id="cb5-7"><a href="#cb5-7"></a>                                       <span class="dt">num_states =</span> <span class="dv">5</span>),</span>
-<span id="cb5-8"><a href="#cb5-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
+<span id="cb5-8"><a href="#cb5-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">50</span>)</span>
 <span id="cb5-9"><a href="#cb5-9"></a>             )</span></code></pre></div>
 </div>
 <div id="saving-the-model" class="section level2">
@@ -147,27 +150,27 @@
 <a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
 <pre><code>##      1_Education        2_Law    3_Health        4_Drug       Other_1
-## 1           loan      law [✓] program [✓]     secretary       project
-## 2      child [✓]        state   secretary      drug [✓]         water
-## 3         school       person  public [✓]       veteran      wildlife
-## 4  education [✓]    court [✓]    national        report  conservation
-## 5    student [✓]       action       grant         human       coastal
-## 6       borrower      general    research       medical          fish
-## 7    educational         code  health [✓] treatment [✓] administrator
-## 8         direct        class      fiscal    health [3]        refuge
-## 9        federal attorney [✓]        fund     substance        system
-## 10          rate        crime       carry          code           air
-##          Other_2    Other_3
-## 1    information    section
-## 2         safety        act
-## 3         entity      shall
-## 4        patient      state
-## 5     technology subsection
-## 6        product        sec
-## 7    corporation  paragraph
-## 8  communication        may
-## 9           work      title
-## 10       protect     united</code></pre>
+## 1           loan      law [✓] program [✓]      drug [✓]     secretary
+## 2      child [✓]    court [✓]   secretary administrator       veteran
+## 3  education [✓]       action  health [✓]         water       service
+## 4         school        state       grant       coastal       medical
+## 5        federal       person    research treatment [✓] communication
+## 6    student [✓]        class    national     substance    commercial
+## 7       borrower attorney [✓]      fiscal           air      security
+## 8    educational        crime    activity    recreation     emergency
+## 9           rate       safety        fund      standard    commission
+## 10        direct     district      center        indoor     frequency
+##         Other_2    Other_3
+## 1        system    section
+## 2      wildlife      shall
+## 3           use        act
+## 4          fish      state
+## 5    government subsection
+## 6      national        may
+## 7  conservation        sec
+## 8        refuge  paragraph
+## 9       protect     united
+## 10       entity      title</code></pre>
 </div>
   </div>
 

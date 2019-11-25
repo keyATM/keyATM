@@ -43,6 +43,8 @@ bills_keywords <- list(
 
 
 ## Fitting the model
+Researchers need to specify the number of states in addition to keywords.
+
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(    
               docs              = keyATM_docs,    # text input
@@ -50,8 +52,8 @@ out <- keyATM(
               keywords          = bills_keywords, # keywords
               model             = "dynamic",          # select the model
               model_settings    = list(time_index = bills_time_index,
-                                       num_states = 5),
-              options           = list(seed = 100)
+                                       num_states = 5), # number of (latent) states in the model 
+              options           = list(seed = 50)
              )
 ```
 

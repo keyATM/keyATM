@@ -7,7 +7,7 @@
 plot_modelfit(x, start = 1)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM_output()})}
+\item{x}{the output from a keyATM model (see \code{keyATM()})}
 
 \item{start}{}
 }

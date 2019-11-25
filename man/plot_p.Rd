@@ -7,7 +7,7 @@
 plot_p(x, show_topic = NULL)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM_output()})}
+\item{x}{the output from a keyATM model (see \code{keyATM()})}
 
 \item{show_topic}{A vector to indicate topics to visualize}
 }

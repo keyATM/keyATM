@@ -4,7 +4,7 @@
 \alias{keyATM_read}
 \title{Read Texts}
 \usage{
-keyATM_read(texts, encoding = "UTF-8")
+keyATM_read(texts, encoding = "UTF-8", check = TRUE)
 }
 \arguments{
 \item{texts}{Input. keyATM takes dfm, data.frame, tibble, and a vector of file paths.}

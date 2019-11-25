@@ -62,6 +62,9 @@
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
+      <a href="../../articles/pkgdown_files/Heterogeneity.html">Heterogeneity</a>
+    </li>
+    <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -154,28 +157,28 @@
 <span id="cb5-4"><a href="#cb5-4"></a>                   <span class="dt">model_settings   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariates_data =</span> bills_cov),</span>
 <span id="cb5-5"><a href="#cb5-5"></a>                   <span class="dt">options          =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
 <span id="cb5-6"><a href="#cb5-6"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##        Topic_1   Topic_2  Topic_3  Topic_4   Topic_5       Topic_6
-## 1      federal    health    state     loan    action       program
-## 2  information     child    court  federal     class      national
-## 3          use   program   person    water   federal         grant
-## 4       safety      care   united wildlife      rule      research
-## 5       system   veteran attorney  coastal    member        center
-## 6       entity provision      law calendar qualified           use
-## 7       report   medical    crime  student     court      activity
-## 8   regulation    relate     code borrower     civil       project
-## 9         work     pilot  chapter     fish     claim          fund
-## 10  government     minor district     plan      file administrator
-##       Topic_7
-## 1     section
-## 2       shall
-## 3         act
-## 4       state
-## 5  subsection
-## 6   secretary
-## 7         may
-## 8         sec
-## 9        year
-## 10  paragraph</code></pre>
+<pre><code>##     Topic_1     Topic_2    Topic_3     Topic_4     Topic_5  Topic_6
+## 1     court      health    section        loan      person  program
+## 2    action     service      shall     federal       child national
+## 3     state      entity        act  commission        drug    grant
+## 4     order     program      state      direct       state research
+## 5  district        care subsection    borrower         law   center
+## 6    united information        may        fish       class     fund
+## 7   federal      system        sec corporation    attorney  project
+## 8   chapter     patient  paragraph        rate       crime director
+## 9      rule    security      title    interest enforcement   fiscal
+## 10     case   secretary     united      amount       abuse activity
+##         Topic_7
+## 1     secretary
+## 2       veteran
+## 3        system
+## 4       service
+## 5      wildlife
+## 6  conservation
+## 7        refuge
+## 8          code
+## 9    commercial
+## 10        space</code></pre>
 </div>
 <div id="weighted-lda-dynamic" class="section level1">
 <h1 class="hasAnchor">
@@ -193,28 +196,28 @@
 <span id="cb8-5"><a href="#cb8-5"></a>                                              <span class="dt">num_states =</span> <span class="dv">5</span>),</span>
 <span id="cb8-6"><a href="#cb8-6"></a>                      <span class="dt">options          =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
 <span id="cb8-7"><a href="#cb8-7"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##        Topic_1   Topic_2  Topic_3  Topic_4   Topic_5       Topic_6
-## 1      federal    health    state     loan    action       program
-## 2  information     child    court  federal     class      national
-## 3          use   program   person    water   federal         grant
-## 4       safety      care   united wildlife      rule      research
-## 5       system   veteran attorney  coastal    member        center
-## 6       entity provision      law calendar qualified           use
-## 7       report   medical    crime  student     court      activity
-## 8   regulation    relate     code borrower     civil       project
-## 9         work     pilot  chapter     fish     claim          fund
-## 10  government     minor district     plan      file administrator
-##       Topic_7
-## 1     section
-## 2       shall
-## 3         act
-## 4       state
-## 5  subsection
-## 6   secretary
-## 7         may
-## 8         sec
-## 9        year
-## 10  paragraph</code></pre>
+<pre><code>##     Topic_1     Topic_2    Topic_3     Topic_4     Topic_5  Topic_6
+## 1     court      health    section        loan      person  program
+## 2    action     service      shall     federal       child national
+## 3     state      entity        act  commission        drug    grant
+## 4     order     program      state      direct       state research
+## 5  district        care subsection    borrower         law   center
+## 6    united information        may        fish       class     fund
+## 7   federal      system        sec corporation    attorney  project
+## 8   chapter     patient  paragraph        rate       crime director
+## 9      rule    security      title    interest enforcement   fiscal
+## 10     case   secretary     united      amount       abuse activity
+##         Topic_7
+## 1     secretary
+## 2       veteran
+## 3        system
+## 4       service
+## 5      wildlife
+## 6  conservation
+## 7        refuge
+## 8          code
+## 9    commercial
+## 10        space</code></pre>
 </div>
   </div>
 

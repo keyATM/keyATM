@@ -12,6 +12,12 @@ using namespace std;
 
 class keyATMmeta
 {
+  // This is a header file for "meta" class.
+  // keyATMmeta class includes variables and functions
+  // that appear throughout the keyATM models.
+  // Each model inherits keyATMmeta and adds model specific
+  // functions.
+
   public:
     //
     // Parameters
@@ -30,7 +36,7 @@ class keyATMmeta
 
     // Data
     List model;
-    List W, Z, X;
+    List W, Z, S;
     StringVector vocab;
     NumericVector nv_alpha;
     MatrixXd prior_gamma;
@@ -58,14 +64,14 @@ class keyATMmeta
     std::vector<int> keywords_num;
 
     // Latent Variables
-    MatrixXd n_x0_kv;
-    SparseMatrix<double,RowMajor> n_x1_kv;
+    MatrixXd n_s0_kv;
+    SparseMatrix<double,RowMajor> n_s1_kv;
     typedef Eigen::Triplet<double> Triplet;
     MatrixXd n_dk;
-    VectorXd n_x0_k;
-    VectorXd n_x0_k_noWeight;
-    VectorXd n_x1_k;
-    VectorXd n_x1_k_noWeight;
+    VectorXd n_s0_k;
+    VectorXd n_s0_k_noWeight;
+    VectorXd n_s1_k;
+    VectorXd n_s1_k_noWeight;
     VectorXd vocab_weights;
 
     // Use during the iteration
@@ -73,11 +79,11 @@ class keyATMmeta
       std::vector<int> doc_indexes;
       int doc_id_;
       std::vector<int> token_indexes;
-      IntegerVector doc_x, doc_z, doc_w;
+      IntegerVector doc_s, doc_z, doc_w;
       int w_position;
-      int x_, z_, w_;
+      int s_, z_, w_;
       int doc_length;
-      // int new_z, new_x;  // defined in sample_z and sample_x
+      // int new_z, new_s;  // defined in sample_z and sample_s
   
       // sample_z
       VectorXd z_prob_vec;
@@ -85,10 +91,10 @@ class keyATMmeta
       double numerator, denominator;
       double sum;
 
-      // sample_x
-      int new_x;
-      double x0_prob;
-      double x1_prob;
+      // sample_s
+      int new_s;
+      double s0_prob;
+      double s1_prob;
       int k;
 
       // sample alpha
@@ -122,9 +128,9 @@ class keyATMmeta
     virtual void iteration_single(int &it) = 0;
     virtual void sample_parameters(int &it) = 0;
 
-    virtual int sample_z(VectorXd &alpha, int &z, int &x,
+    virtual int sample_z(VectorXd &alpha, int &z, int &s,
                          int &w, int &doc_id);
-    int sample_x(VectorXd &alpha, int &z, int &x,
+    int sample_s(VectorXd &alpha, int &z, int &s,
                    int &w, int &doc_id);
 
     void sampling_store(int &r_index);

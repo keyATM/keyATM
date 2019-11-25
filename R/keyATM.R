@@ -72,16 +72,38 @@ keyATM <- function(docs, model, no_keyword_topics,
   out <- keyATM_output(fitted)
 
   # Keep some objects if specified
+  keep <- check_arg_keep(keep, model)
   if (length(keep) != 0) {
     kept_values <- list()
     use_elements <- keep[keep %in% names(fitted)]
-    for(i in 1:length(use_elements)){
+    for (i in 1:length(use_elements)) {
       kept_values[use_elements[i]]  <- fitted[use_elements[i]]
     }
     out$kept_values <- kept_values
   }
 
+  # A bit of clean up
+  if (fitted$options$store_theta && "stored_values" %in% keep) {
+    # The same information
+    out$kept_values$stored_values$Z_tables <- NULL
+  }
+
+
   return(out)
+}
+
+
+check_arg_keep <- function(obj, model)
+{
+  if (model %in% c("cov", "ldacov")) {
+    if (!"stored_values" %in% obj)
+      obj <- c("stored_values", obj) 
+
+    if (!"model_settings" %in% obj)
+      obj <- c("model_settings", obj) 
+  }
+
+  return(obj)
 }
 
 

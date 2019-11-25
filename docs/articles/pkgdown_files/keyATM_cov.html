@@ -62,6 +62,9 @@
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
+      <a href="../../articles/pkgdown_files/Heterogeneity.html">Heterogeneity</a>
+    </li>
+    <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -109,7 +112,7 @@
 <h2 class="hasAnchor">
 <a href="#preparing-documents-and-covariates" class="anchor"></a>Preparing documents and covariates</h2>
 <p>Please read <a href="Preparation.html">Preparation</a> for the reading of documents and creating a list of keywords. We use bills data we prapared (<a href="Preparation.html#reading-documents-into-keyatm">documents</a> and <a href="Preparation.html#preparing-keywords">keywords</a>).</p>
-<p><strong>keyATM</strong> takes <code>matrix</code> type covariates data. If you have <span class="math inline">\(D\)</span> documents and <span class="math inline">\(C\)</span> covariates, the matrix should be <span class="math inline">\(D \times C\)</span>. In this example, we have a dummy variable that indicates …</p>
+<p><strong>keyATM</strong> takes <code>matrix</code> or <code>data.frame</code> (<code>tibble</code>) type covariates data. If you have <span class="math inline">\(D\)</span> documents and <span class="math inline">\(M\)</span> covariates, the matrix should be <span class="math inline">\(D \times M\)</span>. In this example, we have a dummy variable that indicates …</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(keyATM)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(keyATM_data_bills)</span>
 <span id="cb1-3"><a href="#cb1-3"></a>bills_cov &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>cov</span>
@@ -119,14 +122,15 @@
 <div id="fitting-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(    </span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>out &lt;-<span class="st"> </span><span class="kw">keyATM</span>(</span>
 <span id="cb3-2"><a href="#cb3-2"></a>              <span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></span>
 <span id="cb3-3"><a href="#cb3-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
 <span id="cb3-5"><a href="#cb3-5"></a>              <span class="dt">model             =</span> <span class="st">"covariates"</span>,   <span class="co"># select the model</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariates_data =</span> bills_cov),</span>
-<span id="cb3-7"><a href="#cb3-7"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
-<span id="cb3-8"><a href="#cb3-8"></a>             )</span></code></pre></div>
+<span id="cb3-6"><a href="#cb3-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariates_data =</span> bills_cov,</span>
+<span id="cb3-7"><a href="#cb3-7"></a>                                       <span class="dt">covariates_formula =</span> <span class="op">~</span><span class="st"> </span>RepParty),</span>
+<span id="cb3-8"><a href="#cb3-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">50</span>)</span>
+<span id="cb3-9"><a href="#cb3-9"></a>             )</span></code></pre></div>
 <p>The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options.</p>
 </div>
 <div id="saving-the-model" class="section level2">
@@ -139,27 +143,27 @@
 <a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
 <pre><code>##      1_Education        2_Law    3_Health        4_Drug    Other_1
-## 1           loan    court [✓] program [✓]      drug [✓]    section
-## 2      child [✓]       action  public [✓]   information      shall
-## 3         school        state    national        entity        act
-## 4  education [✓]        class       grant           use      state
-## 5        federal attorney [✓]    research treatment [✓] subsection
-## 6        patient        crime   secretary         abuse        sec
-## 7         safety     district      fiscal     community     united
-## 8    student [✓]      chapter  health [✓]     substance  paragraph
-## 9         direct    violation      center    government        may
-## 10          rate        right      system    prevention      title
-##        Other_2      Other_3
-## 1      veteran      project
-## 2  corporation        water
-## 3       period conservation
-## 4     security          use
-## 5    emergency      coastal
-## 6   individual         fish
-## 7        space         fund
-## 8      medical   management
-## 9     employee       refuge
-## 10        time    secretary</code></pre>
+## 1           loan      law [✓] program [✓]       project    section
+## 2      child [✓]        state  health [✓]      drug [✓]      shall
+## 3  education [✓]    court [✓]       grant         water        act
+## 4         school       person    research           use      state
+## 5    student [✓]       action     include       coastal subsection
+## 6        federal        class    national treatment [✓]        may
+## 7       borrower attorney [✓]      fiscal         abuse        sec
+## 8         direct        crime      center     secretary  paragraph
+## 9    educational  enforcement    activity          fund      title
+## 10          rate      patient appropriate     community  secretary
+##          Other_2     Other_3
+## 1     commission      system
+## 2        foreign    wildlife
+## 3  communication    national
+## 4      frequency information
+## 5        service        fish
+## 6         person      refuge
+## 7      president      entity
+## 8       identify         use
+## 9          alien  commercial
+## 10        victim       space</code></pre>
 </div>
   </div>
 

@@ -7,7 +7,7 @@
 top_topics(x, n = 2)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM_output()})}
+\item{x}{the output from a keyATM model (see \code{keyATM()})}
 
 \item{n}{How many topics to show. Default: 2}
 }
