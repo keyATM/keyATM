@@ -942,7 +942,7 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 #' @import magrittr
 #' @export
 by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
-                               parallel = TRUE, mc.cores = NULL)
+                               parallel = TRUE, mc.cores = NULL, posterior_mean = FALSE)
 {
   # Check inputs
   variables <- colnames(x$kept_values$model_settings$covariates_data)
@@ -974,34 +974,64 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
   tnames <- rownames(x$phi)
   Lambda_iter <- x$values_iter$Lambda_iter_rescaled
 
-  res <- lapply(1:length(by_values),
-                function(i){
-                  value <- by_values[i] 
-                  new_data <- x$kept_values$model_settings$covariates_data_use
-                  new_data[, by_name] <- value
+  if (posterior_mean) {
+    res <- lapply(1:length(by_values),
+                  function(i){
+                    value <- by_values[i]
+                    new_data <- x$kept_values$model_settings$covariates_data_use
+                    new_data[, by_name] <- value
 
-                  # Draw theta
-                  obj <- do.call(dplyr::bind_rows,
-                                 parallel::mclapply(1:length(use_index),
-                                                    function(s){
-                                                      Alpha <- exp(Matrix::tcrossprod(
-                                                                     new_data,
-                                                                     Lambda_iter[[use_index[s]]]
-                                                                   ))
-                                                     
-                                                      thetas <- t(apply(Alpha, 1, rdirichlet))
-                                                      thetas <- Matrix::colMeans(thetas)
-                                                      thetas <- t(as.data.frame(thetas))
-                                                      thetas <- as.data.frame(thetas)
-                                                      colnames(thetas) <- tnames
-                                                      thetas$Iteration <- used_iter[s]
-                                                      return(thetas)
-                                                    },
-                                                    mc.cores = num_core
-                                                   )
-                                )
+                    # Draw theta
+                    obj <- do.call(dplyr::bind_rows,
+                                   parallel::mclapply(1:length(use_index),
+                                                      function(s){
+                                                        Alpha <- exp(Matrix::tcrossprod(
+                                                                       new_data,
+                                                                       Lambda_iter[[use_index[s]]]
+                                                                     ))
 
-                })
+                                                        rowsum <- Matrix::rowSums(Alpha)
+                                                        thetas <- Alpha / rowsum
+                                                        thetas <- as.data.frame(thetas)
+                                                        colnames(thetas) <- tnames
+                                                        thetas$Iteration <- used_iter[s]
+                                                        return(thetas)
+                                                      },
+                                                      mc.cores = num_core
+                                                     )
+                                  )
+
+                  })  
+  } else { 
+    res <- lapply(1:length(by_values),
+                  function(i){
+                    value <- by_values[i] 
+                    new_data <- x$kept_values$model_settings$covariates_data_use
+                    new_data[, by_name] <- value
+
+                    # Draw theta
+                    obj <- do.call(dplyr::bind_rows,
+                                   parallel::mclapply(1:length(use_index),
+                                                      function(s){
+                                                        Alpha <- exp(Matrix::tcrossprod(
+                                                                       new_data,
+                                                                       Lambda_iter[[use_index[s]]]
+                                                                     ))
+                                                       
+                                                        thetas <- t(apply(Alpha, 1, rdirichlet))
+                                                        thetas <- Matrix::colMeans(thetas)
+                                                        thetas <- t(as.data.frame(thetas))
+                                                        thetas <- as.data.frame(thetas)
+                                                        colnames(thetas) <- tnames
+                                                        thetas$Iteration <- used_iter[s]
+                                                        return(thetas)
+                                                      },
+                                                      mc.cores = num_core
+                                                     )
+                                  )
+
+                  })
+  }
   names(res) <- by_values
 
   obj <- list(theta = tibble::as_tibble(res), by_values = by_values, by_name = by_name)
