@@ -213,13 +213,13 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
     }
   }
   keywords_df <- keywords_df[2:nrow(keywords_df), ]
+  keywords_df$Topic <- factor(keywords_df$Topic, levels = unique(keywords_df$Topic))
 
   dplyr::right_join(data, keywords_df, by = "Word") %>%
     dplyr::group_by(Topic) %>%
     dplyr::arrange(desc(WordCount)) %>%
     dplyr::mutate(Ranking  =  1:(dplyr::n())) %>%
     dplyr::arrange(Topic, Ranking) -> temp
-
 
   # Visualize
   visualize_keywords <- 
