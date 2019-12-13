@@ -279,6 +279,14 @@ check_keywords <- function(unique_words, keywords, prune)
 
   }
 
+  # Check there is at least one keywords in each topic
+  num_keywords <- unlist(lapply(keywords, length))
+  check_zero <- which(as.vector(num_keywords) == 0)
+
+  if (length(check_zero) != 0) {
+    zero_names <- names(keywords)[check_zero]
+    stop(paste0("All keywords are pruned. Please check: ", paste(zero_names, collapse = ", ")))
+  }
 
   return(keywords)
 }
