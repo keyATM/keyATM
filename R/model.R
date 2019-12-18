@@ -690,7 +690,7 @@ check_arg_model_settings <- function(obj, model, info)
         stop("Covariates are invalid.")    
       }    
     } else {
-      fit <- lm(y ~ ., data = temp)
+      fit <- lm(y ~ 0 + ., data = temp)
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
       }
