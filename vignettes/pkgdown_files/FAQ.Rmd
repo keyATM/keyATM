@@ -43,15 +43,6 @@ If you want to speed up fitting, the first thing you can do is to review preproc
 
 
 
-
-## How to select keywords?
-
-
-## How to select the number of regular topics?
-
-
-
-
 ## Can I run keyATM on cloud computing services?
 Yes! For example, [Professor Louis Aslett](http://www.louisaslett.com/) provides an easy to use Amazon Machine Image of RStudio [here](http://www.louisaslett.com/RStudio_AMI/). When you select an instance, please note that **keyATM** does not need multiple cores (one or two cores would be enough because we cannot parallelize Collapsed Gibbs Sampling), but make sure the memory can handle your data.
 

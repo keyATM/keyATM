@@ -36,7 +36,7 @@ out <- keyATM(
               docs              = keyATM_docs,    # text input
               no_keyword_topics = 3,              # number of topics without keywords
               keywords          = bills_keywords, # keywords
-              model             = "base",         # select the model
+              model             = "base",         # base, covariates, or dynamic
               options           = list(seed = 100),
               keep              = c("Z", "S")     # You need to keep `Z` and `S`
              )

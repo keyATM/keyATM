@@ -834,7 +834,7 @@ check_arg_options <- function(obj, model, info)
 
   # thinning
   if (is.null(obj$thinning))
-    obj$thinning <- 1L
+    obj$thinning <- 5L
 
   if (!is.numeric(obj$thinning) | obj$thinning < 0| obj$thinning%%1 != 0) {
       stop("An invalid value in `options$thinning`")  
