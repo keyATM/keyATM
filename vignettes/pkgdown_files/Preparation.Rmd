@@ -86,7 +86,7 @@ keyATM_docs <- keyATM_read(bills_dfm)
 ## Preparing keywords
 
 ### Keywords list
-Keywords should be in a list. For example, we prepare four keyword-topics. Keywrods should be stored in a list. Each element in the list is a character vector, which corresponds to a single keyword-topic. The number of keywords can vary between topics. Please also check [FAQ](FAQ.html#how-to-select-keywords) to see how to select keywords that help models.
+Keywords should be in a list. For example, we prepare four keyword-topics. Keywrods should be stored in a list. Each element in the list is a character vector, which corresponds to a single keyword-topic. The number of keywords can vary between topics. 
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 bills_keywords <- list(
@@ -102,6 +102,7 @@ bills_keywords <- list(
 ```{r, warning=FALSE, message=FALSE, fig.align='center', height=3, width=3}
 visualize_keywords(keyATM_docs, bills_keywords)
 ```
+The figure helps you to check the frequency of keywords. Including low-frequency keywords do not help the model in general. **keyATM** automatically prune keywords that do not appear in the documents.
 
 
 ## Next Step

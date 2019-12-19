@@ -28,6 +28,8 @@ bills_time_index <- as.integer(bills_time_index - 100)
 table(bills_time_index)
 ```
 
+Please make sure that **the order of time index is the same as the order of documents**.
+
 ```{r, include = F, warning=FALSE, message=FALSE, fig.align='center'}
 library(quanteda)
 bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda object

@@ -180,7 +180,7 @@
 <div id="keywords-list" class="section level3">
 <h3 class="hasAnchor">
 <a href="#keywords-list" class="anchor"></a>Keywords list</h3>
-<p>Keywords should be in a list. For example, we prepare four keyword-topics. Keywrods should be stored in a list. Each element in the list is a character vector, which corresponds to a single keyword-topic. The number of keywords can vary between topics. Please also check <a href="FAQ.html#how-to-select-keywords">FAQ</a> to see how to select keywords that help models.</p>
+<p>Keywords should be in a list. For example, we prepare four keyword-topics. Keywrods should be stored in a list. Each element in the list is a character vector, which corresponds to a single keyword-topic. The number of keywords can vary between topics.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>bills_keywords &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</span>
 <span id="cb5-2"><a href="#cb5-2"></a>                       <span class="dt">Education =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"education"</span>, <span class="st">"child"</span>, <span class="st">"student"</span>),</span>
 <span id="cb5-3"><a href="#cb5-3"></a>                       <span class="dt">Law       =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"court"</span>, <span class="st">"law"</span>, <span class="st">"attorney"</span>),</span>
@@ -192,7 +192,7 @@
 <h3 class="hasAnchor">
 <a href="#checking-keywords" class="anchor"></a>Checking keywords</h3>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw"><a href="../../reference/visualize_keywords.html">visualize_keywords</a></span>(keyATM_docs, bills_keywords)</span></code></pre></div>
-<p><img src="Preparation_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
+<p><img src="Preparation_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"> The figure helps you to check the frequency of keywords. Including low-frequency keywords do not help the model in general. <strong>keyATM</strong> automatically prune keywords that do not appear in the documents.</p>
 </div>
 </div>
 <div id="next-step" class="section level2">
