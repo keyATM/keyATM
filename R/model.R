@@ -213,13 +213,13 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
     }
   }
   keywords_df <- keywords_df[2:nrow(keywords_df), ]
+  keywords_df$Topic <- factor(keywords_df$Topic, levels = unique(keywords_df$Topic))
 
   dplyr::right_join(data, keywords_df, by = "Word") %>%
     dplyr::group_by(Topic) %>%
     dplyr::arrange(desc(WordCount)) %>%
     dplyr::mutate(Ranking  =  1:(dplyr::n())) %>%
     dplyr::arrange(Topic, Ranking) -> temp
-
 
   # Visualize
   visualize_keywords <- 
@@ -279,6 +279,14 @@ check_keywords <- function(unique_words, keywords, prune)
 
   }
 
+  # Check there is at least one keywords in each topic
+  num_keywords <- unlist(lapply(keywords, length))
+  check_zero <- which(as.vector(num_keywords) == 0)
+
+  if (length(check_zero) != 0) {
+    zero_names <- names(keywords)[check_zero]
+    stop(paste0("All keywords are pruned. Please check: ", paste(zero_names, collapse = ", ")))
+  }
 
   return(keywords)
 }
@@ -682,7 +690,7 @@ check_arg_model_settings <- function(obj, model, info)
         stop("Covariates are invalid.")    
       }    
     } else {
-      fit <- lm(y ~ ., data = temp)
+      fit <- lm(y ~ 0 + ., data = temp)
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
       }

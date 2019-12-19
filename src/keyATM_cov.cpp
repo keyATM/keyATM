@@ -33,9 +33,7 @@ void keyATMcov::initialize_specific()
       Lambda(k, i) = R::rnorm(0.0, 0.3);
     }
   }
-
 }
-
 
 
 void keyATMcov::iteration_single(int &it)
@@ -92,13 +90,6 @@ void keyATMcov::sample_parameters(int &it)
 }
 
 
-void keyATMcov::sample_lambda()
-{
-  sample_lambda_slice();
-}
-
-
-
 double keyATMcov::likelihood_lambda(int &k, int &t)
 {
   double loglik = 0.0;
@@ -129,44 +120,93 @@ double keyATMcov::likelihood_lambda(int &k, int &t)
 
 
 
+void keyATMcov::sample_lambda()
+{
+  // sample_lambda_mh();  
+  sample_lambda_slice();
+}
+
+
+void keyATMcov::sample_lambda_mh()
+{
+  topic_ids = sampler::shuffled_indexes(num_topics);
+  cov_ids = sampler::shuffled_indexes(num_cov);
+  double Lambda_current = 0.0;
+  double llk_current = 0.0;
+  double llk_proposal = 0.0;
+  double diffllk = 0.0;
+  double r = 0.0; 
+  double u = 0.0;
+  double mh_sigma = 0.4;
+  int k, t;
+
+  for(int kk = 0; kk < num_topics; kk++){
+    k = topic_ids[kk];
+    
+    for(int tt = 0; tt < num_cov; tt++){
+      t = cov_ids[tt];
+    
+      Lambda_current = Lambda(k, t);
+      
+      // Current llk
+      llk_current = likelihood_lambda(k, t);
+      
+      // Proposal
+      Lambda(k, t) += R::rnorm(0.0, mh_sigma);
+      llk_proposal = likelihood_lambda(k, t);
+      
+      diffllk = llk_proposal - llk_current;
+      r = std::min(0.0, diffllk);
+      u = log(unif_rand());
+      
+      if (u < r) {
+        // accepted
+      } else {
+        // Put back original values
+        Lambda(k, t) = Lambda_current;
+      }
+    }
+  }
+}
+
+
 void keyATMcov::sample_lambda_slice()
 {
-  // Slice sampling for Lambda
-
-  start = 0.0; end = 0.0;
+  start = 0.0; 
+  end = 0.0;
   previous_p = 0.0; new_p = 0.0;
   newlikelihood = 0.0; slice_ = 0.0; current_lambda = 0.0;
   topic_ids = sampler::shuffled_indexes(num_topics);
   cov_ids = sampler::shuffled_indexes(num_cov);
   int k, t;
   const double A = slice_A;
-
+  
   newlambdallk = 0.0;
-
+  
   for (int kk = 0; kk < num_topics; kk++) {
     k = topic_ids[kk];
-
+  
     for (int tt = 0; tt < num_cov; tt++) {
       t = cov_ids[tt];
       store_loglik = likelihood_lambda(k, t);
-
+  
       start = 0.0; // shrink
       end = 1.0; // shrink
-
+  
       current_lambda = Lambda(k,t);
       previous_p = shrink(current_lambda, A);
       slice_ = store_loglik - std::log(A * previous_p * (1.0 - previous_p)) 
               + log(unif_rand()); // <-- using R random uniform
-
-
+  
+  
       for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
         new_p = sampler::slice_uniform(start, end); // <-- using R function above
         Lambda(k,t) = expand(new_p, A); // expand
-
+  
         newlambdallk = likelihood_lambda(k, t);
-
+  
         newlikelihood = newlambdallk - std::log(A * new_p * (1.0 - new_p));
-
+  
         if (slice_ < newlikelihood) {
           break;
         } else if (previous_p < new_p) {
@@ -179,9 +219,9 @@ void keyATMcov::sample_lambda_slice()
           Lambda(k,t) = current_lambda;
           break;
         }
-
+  
       } // for loop for shrink time
-
+  
     } // for loop for num_cov
   } // for loop for num_topics
 }
