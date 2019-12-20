@@ -9,7 +9,7 @@ plot_modelfit(x, start = 1)
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}
 
-\item{start}{}
+\item{start}{starting value of the plot}
 }
 \value{
 ggplot2 object

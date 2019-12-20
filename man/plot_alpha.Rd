@@ -5,7 +5,7 @@
 \title{Show a diagnosis plot of alpha}
 \usage{
 plot_alpha(x, start = 0, show_topic = NULL, thinning = 5,
-  scales = "fixed")
+  scale = "fixed")
 }
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}

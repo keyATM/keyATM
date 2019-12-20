@@ -95,7 +95,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
 
 #' @noRd
 #' @export
-print.keyATM_docs <- function(x)
+print.keyATM_docs <- function(x, ...)
 {
   cat(paste0("keyATM_docs object of ",
                  length(x), " documents",
@@ -107,7 +107,7 @@ print.keyATM_docs <- function(x)
 
 #' @noRd
 #' @export
-summary.keyATM_docs <- function(x)
+summary.keyATM_docs <- function(x, ...)
 {
   doc_len <- sapply(x, length)
   cat(paste0("keyATM_docs object of: ",
@@ -294,7 +294,7 @@ check_keywords <- function(unique_words, keywords, prune)
 
 #' @noRd
 #' @export
-print.keyATM_viz <- function(x)
+print.keyATM_viz <- function(x, ...)
 {
   print(x$figure)  
 }
@@ -302,7 +302,7 @@ print.keyATM_viz <- function(x)
 
 #' @noRd
 #' @export
-summary.keyATM_viz <- function(x)
+summary.keyATM_viz <- function(x, ...)
 {
   return(x$values)  
 }
@@ -504,7 +504,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 
 #' @noRd
 #' @export
-print.keyATM_model <- function(x)
+print.keyATM_model <- function(x, ...)
 {
   cat(
       paste0(
@@ -519,7 +519,7 @@ print.keyATM_model <- function(x)
 
 #' @noRd
 #' @export
-summary.keyATM_model <- function(x)
+summary.keyATM_model <- function(x, ...)
 {
   cat(
       paste0(
@@ -542,7 +542,7 @@ save.keyATM_model <- function(x, file = stop("'file' must be specified"))
 
 #' @noRd
 #' @export
-print.keyATM_fitted <- function(x)
+print.keyATM_fitted <- function(x, ...)
 {
   cat(
       paste0(
@@ -560,7 +560,7 @@ print.keyATM_fitted <- function(x)
 
 #' @noRd
 #' @export
-summary.keyATM_fitted <- function(x)
+summary.keyATM_fitted <- function(x, ...)
 {
   cat(
       paste0(
@@ -682,22 +682,22 @@ check_arg_model_settings <- function(obj, model, info)
 
     # Check if it works as a valid regression 
     temp <- as.data.frame(obj$covariates_data_use)
-    temp$y <- rnorm(nrow(obj$covariates_data_use))
+    temp$y <- stats::rnorm(nrow(obj$covariates_data_use))
 
     if ("(Intercept)" %in% colnames(obj$covariates_data_use)){
-      fit <- lm(y ~ 0 + ., data = temp)  # data.frame alreayd includes the intercept
+      fit <- stats::lm(y ~ 0 + ., data = temp)  # data.frame alreayd includes the intercept
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
       }    
     } else {
-      fit <- lm(y ~ 0 + ., data = temp)
+      fit <- stats::lm(y ~ 0 + ., data = temp)
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
       }
     }
 
     if (obj$standardize) {
-      standardize <- function(x){return((x - mean(x)) / sd(x))}
+      standardize <- function(x){return((x - mean(x)) / stats::sd(x))}
 
       if ("(Intercept)" %in% colnames(obj$covariates_data_use)) {
         # Do not standardize the intercept
@@ -842,7 +842,7 @@ check_arg_options <- function(obj, model, info)
 
   # seed
   if (is.null(obj$seed))
-    obj$seed <- floor(runif(1)*1e5)
+    obj$seed <- floor(stats::runif(1)*1e5)
 
   # iterations
   if (is.null(obj$iterations))

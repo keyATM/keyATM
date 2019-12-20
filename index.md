@@ -12,7 +12,7 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 **We are still updating this website. Please use the [website](https://github.com/Shusei-E/keyATM/labels/website) label in [GitHub Issues](https://github.com/Shusei-E/keyATM/issues) if you find any error or have suggestions!**
 
 
-## How to Use
+## How to use
 * [Installation](articles/pkgdown_files/Installation.html)
 * [Preparation](articles/pkgdown_files/Preparation.html)
 * [keyATM Base](articles/pkgdown_files/keyATM_base.html)
@@ -20,6 +20,11 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 * [keyATM Dynamic](articles/pkgdown_files/keyATM_dynamic.html)
 * [Weighted LDA models](articles/pkgdown_files/Weighted_LDA.html)
 * [FAQ](articles/pkgdown_files/FAQ.html)
+
+## How to cite
+```
+Eshima, Shusei, Kosuke Imai, Tomoya Sasaki. ``Keyword Assisted Topic Models.''
+```
 
 ## How to report a bug
 We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/Shusei-E/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format. 

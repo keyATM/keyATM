@@ -94,7 +94,7 @@ extract_full_model_name <- function(obj)
 
 rdirichlet <- function(alpha, n = 1) {
   l <- length(alpha)
-  x <- matrix(rgamma(l*n, alpha), ncol = l, byrow = TRUE)
+  x <- matrix(stats::rgamma(l*n, alpha), ncol = l, byrow = TRUE)
   sm <- x %*% rep(1,l)
   return(x / as.vector(sm))
 }
