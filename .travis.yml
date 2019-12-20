@@ -9,6 +9,14 @@ cache: packages
 sudo: true
 warnings_are_errors: true
 os: linux
+  env: COMPILER_NAME=gcc CXX=g++-5 CC=gcc-5
+  addons:
+    apt:
+      packages:
+        - g++-5
+      sources: &sources
+        - llvm-toolchain-precise-3.8
+        - ubuntu-toolchain-r-test
 dist: trusty
 latex: false
 
