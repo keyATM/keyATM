@@ -7,8 +7,8 @@ Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", ro
     person("Kosuke", "Imai", email = "imai@harvard.edu", role = c("aut")))
 Description: keyATM fits Keyword Assisted Topic Models
 Maintainer: Shusei Eshima <shuseieshima@g.harvard.edu>
-BugReports: https://github.com/Shusei-E/keyATM/issues
-URL: https://shusei-e.github.io/keyATM/
+BugReports: https://github.com/keyATM/keyATM/issues
+URL: https://keyatm.github.io/keyATM/
 Depends: R (>= 3.5.3)
 License: GPL-3
 Encoding: UTF-8
