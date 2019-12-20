@@ -6,12 +6,11 @@ using namespace std;
 
 # define PI_V   3.14159265358979323846  /* pi */
 
-keyATMmeta::keyATMmeta(List model_, const int iter_, const int output_per_)
+keyATMmeta::keyATMmeta(List model_, const int iter_)
 {
   // Constructor
   model = model_;
   iter = iter_;
-  output_per = output_per_;
 }
 
 keyATMmeta::~keyATMmeta()
@@ -59,6 +58,8 @@ void keyATMmeta::read_data_common()
   slice_A = options_list["slice_shape"];
   store_theta = options_list["store_theta"];
   thinning = options_list["thinning"];
+  llk_per = options_list["llk_per"];
+  verbose = options_list["verbose"];
 
   // Priors
   priors_list = model["priors"];
@@ -194,12 +195,14 @@ void keyATMmeta::initialize_common()
 void keyATMmeta::iteration()
 {
   // Iteration
+  Progress progress_bar(iter, !(bool)verbose);
+
   for (int it = 0; it < iter; it++) {
     iteration_single(it);
 
     // Check storing values
     int r_index = it + 1;
-    if (r_index % output_per == 0 || r_index == 1 || r_index == iter) {
+    if (r_index % llk_per == 0 || r_index == 1 || r_index == iter) {
       sampling_store(r_index);
       verbose_special(r_index);
     }
@@ -208,6 +211,10 @@ void keyATMmeta::iteration()
         store_theta_iter(r_index);
     }
 
+    // Progress bar
+    progress_bar.increment();
+
+    // Check keybord interruption to cancel the iteration
     checkUserInterrupt();
   }
 
@@ -226,8 +233,10 @@ void keyATMmeta::sampling_store(int &r_index)
   model_fit_vec.push_back(perplexity);
   model_fit.push_back(model_fit_vec);
   
-  Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
-           " (perplexity: " << perplexity << ")" << std::endl;
+  if (verbose) {
+    Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
+             " (perplexity: " << perplexity << ")" << std::endl;
+  }
 }
 
 void keyATMmeta::store_theta_iter(int &r_index)

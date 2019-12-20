@@ -40,10 +40,10 @@ class LDAweight : public LDAbase, public keyATMbase
     //
 
     // Constructor
-    LDAweight(List model_, const int iter_, const int output_per_) :
-      keyATMmeta(model_, iter_, output_per_),
-      LDAbase(model_, iter_, output_per_),
-      keyATMbase(model_, iter_, output_per_) {};
+    LDAweight(List model_, const int iter_) :
+      keyATMmeta(model_, iter_),
+      LDAbase(model_, iter_),
+      keyATMbase(model_, iter_) {};
 
     // Iteration
     void iteration_single(int &it) final;
