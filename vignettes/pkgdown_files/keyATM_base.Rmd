@@ -1,0 +1,61 @@
+---
+title: "keyATM Base"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r setup II, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(eval = T, echo = TRUE)
+```
+
+## Preparing documents and keywords
+Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. We use bills data we prapared ([documents](Preparation.html#reading-documents-into-keyatm) and [keywords](Preparation.html#preparing-keywords)).
+
+```{r, include = F, warning=FALSE, message=FALSE, fig.align='center'}
+library(keyATM)
+data(keyATM_data_bills)
+
+bills_keywords <- list(
+                       Education = c("education", "child", "student"),
+                       Law       = c("court", "law", "attorney"),
+                       Health    = c("public", "health", "program"),
+                       Drug      = c("drug", "treatment")
+                      )
+
+library(quanteda)
+bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda object
+keyATM_docs <- keyATM_read(bills_dfm)
+```
+
+
+## Fitting the model
+```{r, warning=FALSE, message=FALSE, fig.align='center', results="hide"}
+out <- keyATM(docs              = keyATM_docs,    # text input
+              no_keyword_topics = 3,              # number of topics without keywords
+              keywords          = bills_keywords, # keywords
+              model             = "base",         # select the model
+              options           = list(seed = 50)
+             )
+```
+The default number of iterations is `1500`. Please check [this page](Options.html) for available options.
+
+
+## Saving the model
+
+Once you fit the model, you can save the model with `save()` for replication.
+```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+save(out, file="SAVENAME.rds")
+```
+
+To load the model, you can use `readRDS()` function.
+```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+out <- readRDS(file="SAVENAME.rds")
+```
+
+## Checking top words
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+top_words(out)
+```
+
+

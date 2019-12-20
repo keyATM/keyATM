@@ -1,0 +1,18 @@
+---
+title: "Installation"
+output: 
+  html_document:
+    toc: false
+---
+
+You can install **keyATM** from either CRAN or GitHub. CRAN has a stable version while GitHub stores the latest version and developing version.
+
+```{r, eval = FALSE}
+# Install release version from CRAN
+install.packages("keyATM")
+
+# Install development version from GitHub
+devtools::install_github("Shusei-E/keyATM")
+```
+
+
