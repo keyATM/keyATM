@@ -1,6 +1,4 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 <a href = "https://shusei-e.github.io/keyATM/"><img src="docs/reference/figures/keyATM_logoFull.svg" alt="keyATM: Keyword Assisted Topic Models" width="290"/></a>
 
 <!-- badges: start -->
