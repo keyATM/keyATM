@@ -27,7 +27,7 @@ using namespace std;
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
-//' @export
+//' @keywords internal
 // [[Rcpp::export]]
 List keyATM_fit_base(List model, int iter = 0, int output_per = 10)
 {
@@ -44,7 +44,7 @@ List keyATM_fit_base(List model, int iter = 0, int output_per = 10)
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
-//' @export
+//' @keywords internal
 // [[Rcpp::export]]
 List keyATM_fit_cov(List model, int iter = 0, int output_per = 10)
 {
@@ -61,7 +61,7 @@ List keyATM_fit_cov(List model, int iter = 0, int output_per = 10)
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
-//' @export
+//' @keywords internal
 // [[Rcpp::export]]
 List keyATM_fit_HMM(List model, int iter = 0, int output_per = 10)
 {
@@ -78,7 +78,7 @@ List keyATM_fit_HMM(List model, int iter = 0, int output_per = 10)
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
-//' @export
+//' @keywords internal
 // [[Rcpp::export]]
 List keyATM_fit_LDA(List model, int iter = 0, int output_per = 10)
 {
@@ -95,7 +95,7 @@ List keyATM_fit_LDA(List model, int iter = 0, int output_per = 10)
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
-//' @export
+//' @keywords internal
 // [[Rcpp::export]]
 List keyATM_fit_LDAcov(List model, int iter = 0, int output_per = 10)
 {
@@ -114,7 +114,7 @@ List keyATM_fit_LDAcov(List model, int iter = 0, int output_per = 10)
 //' @param iter Required number of iterations
 //' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
-//' @export
+//' @keywords internal
 // [[Rcpp::export]]
 List keyATM_fit_LDAHMM(List model, int iter = 0, int output_per = 10)
 {

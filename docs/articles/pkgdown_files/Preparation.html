@@ -112,7 +112,7 @@
 <div id="preparing-texts" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preparing-texts" class="anchor"></a>Preparing Texts</h2>
-<p>To fit topic models with <strong>keyATM</strong>, uesrs need to prepare texts for <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code>. <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code> has three ways to input texts.</p>
+<p>To fit topic models with <strong>keyATM</strong>, uesrs need to prepare texts for <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code>. <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code> has three ways to input texts. If you want to check an example with a built-in dataset, please proceed to <a href="Preparation.html#reading-documents-into-keyatm">the next section</a>.</p>
 <div id="using-quanteda-dfm-recommended" class="section level3">
 <h3 class="hasAnchor">
 <a href="#using-quanteda-dfm-recommended" class="anchor"></a>Using quanteda dfm (recommended)</h3>
@@ -193,13 +193,13 @@
 <h3 class="hasAnchor">
 <a href="#checking-keywords" class="anchor"></a>Checking keywords</h3>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw"><a href="../../reference/visualize_keywords.html">visualize_keywords</a></span>(keyATM_docs, bills_keywords)</span></code></pre></div>
-<p><img src="Preparation_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"> The figure helps you to check the frequency of keywords. Including low-frequency keywords do not help the model in general. <strong>keyATM</strong> automatically prune keywords that do not appear in the documents.</p>
+<p><img src="Preparation_files/figure-html/unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;"> The figure helps you to check the frequency of keywords. Including low-frequency keywords do not help the model in general. <strong>keyATM</strong> automatically prune keywords that do not appear in the documents.</p>
 </div>
 </div>
 <div id="next-step" class="section level2">
 <h2 class="hasAnchor">
 <a href="#next-step" class="anchor"></a>Next Step</h2>
-<p>Now you have texts and keywords! The next step is to prepare a model object with <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code>. <strong>keyATM</strong> has three models:</p>
+<p>Now you have texts and keywords! The next step is to fit a model <code>keyATM()</code>. <strong>keyATM</strong> has three models:</p>
 <ul>
 <li>
 <a href="keyATM_base.html">keyATM Base</a>

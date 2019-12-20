@@ -24,8 +24,8 @@ out <- keyATM(docs      = keyATM_docs,    # text input
               regular_k = 3,              # number of regular topics
               keywords  = bills_keywords, # keywords
               model     = "basic",        # select the model
-              options   = my_options,
-              keep = c("Z")
+              options   = my_options,     # Use your own option list
+              keep = c("Z")               # keep a specific object in the output
              )
 ```
 
