@@ -1,9 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<img src="images/keyATM_logo.svg" alt="keyATM: Keyword Assisted Topic Models" width="230"/>
-
-# keyATM: Keyword Assisted Topic Models
+<img src="images/keyATM_logoFull.svg" alt="keyATM: Keyword Assisted Topic Models" width="250"/>
 
 <!-- badges: start -->
 
