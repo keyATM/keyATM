@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-[![keyATM: Keyword Assisted Topic Models](images/keyATM_logo.svg)](http://xxxx.xxxx)
+<img src="images/keyATM_logo.svg" alt="keyATM: Keyword Assisted Topic Models" width="200"/>
 
 # keyATM: Keyword Assisted Topic Models
 
