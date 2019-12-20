@@ -16,3 +16,4 @@ keyATM_fit_cov(model, iter = 0L, output_per = 10L)
 \description{
 Run the Collapsed Gibbs sampler for the keyATM covariates
 }
+\keyword{internal}

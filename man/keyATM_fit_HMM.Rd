@@ -16,3 +16,4 @@ keyATM_fit_HMM(model, iter = 0L, output_per = 10L)
 \description{
 Run the Collapsed Gibbs sampler for the keyATM Dynamic
 }
+\keyword{internal}
