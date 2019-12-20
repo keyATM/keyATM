@@ -14,6 +14,7 @@
 
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::depends(RcppProgress)]]
 
 
 using namespace Eigen;
@@ -25,13 +26,12 @@ using namespace std;
 //'
 //' @param model A initialized model
 //' @param iter Required number of iterations
-//' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_base(List model, int iter = 0, int output_per = 10)
+List keyATM_fit_base(List model, int iter = 0)
 {
-  keyATMbase keyATMbase_model(model, iter, output_per);
+  keyATMbase keyATMbase_model(model, iter);
   keyATMbase_model.fit();
   model = keyATMbase_model.return_model();
   return model;
@@ -42,13 +42,12 @@ List keyATM_fit_base(List model, int iter = 0, int output_per = 10)
 //'
 //' @param model A initialized model
 //' @param iter Required number of iterations
-//' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_cov(List model, int iter = 0, int output_per = 10)
+List keyATM_fit_cov(List model, int iter = 0)
 {
-  keyATMcov keyATMcov_model(model, iter, output_per);
+  keyATMcov keyATMcov_model(model, iter);
   keyATMcov_model.fit();
   model = keyATMcov_model.return_model();
   return model;
@@ -59,13 +58,12 @@ List keyATM_fit_cov(List model, int iter = 0, int output_per = 10)
 //'
 //' @param model A initialized model
 //' @param iter Required number of iterations
-//' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_HMM(List model, int iter = 0, int output_per = 10)
+List keyATM_fit_HMM(List model, int iter = 0)
 {
-  keyATMhmm hmm_model(model, iter, output_per);
+  keyATMhmm hmm_model(model, iter);
   hmm_model.fit();
   model = hmm_model.return_model();
   return model;
@@ -76,13 +74,12 @@ List keyATM_fit_HMM(List model, int iter = 0, int output_per = 10)
 //'
 //' @param model A initialized model
 //' @param iter Required number of iterations
-//' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_LDA(List model, int iter = 0, int output_per = 10)
+List keyATM_fit_LDA(List model, int iter = 0)
 {
-  LDAweight LDAweight_model(model, iter, output_per);
+  LDAweight LDAweight_model(model, iter);
   LDAweight_model.fit();
   model = LDAweight_model.return_model();
   return model;
@@ -93,13 +90,12 @@ List keyATM_fit_LDA(List model, int iter = 0, int output_per = 10)
 //'
 //' @param model A initialized model
 //' @param iter Required number of iterations
-//' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_LDAcov(List model, int iter = 0, int output_per = 10)
+List keyATM_fit_LDAcov(List model, int iter = 0)
 {
-  LDAcov ldacov_model(model, iter, output_per);
+  LDAcov ldacov_model(model, iter);
   ldacov_model.fit();
   model = ldacov_model.return_model();
   return model;
@@ -112,13 +108,12 @@ List keyATM_fit_LDAcov(List model, int iter = 0, int output_per = 10)
 //'
 //' @param model A initialized model
 //' @param iter Required number of iterations
-//' @param output_per Show log-likelihood and perplexity per this number during the iteration
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_LDAHMM(List model, int iter = 0, int output_per = 10)
+List keyATM_fit_LDAHMM(List model, int iter = 0)
 {
-  LDAhmm ldahmm_model(model, iter, output_per);
+  LDAhmm ldahmm_model(model, iter);
   ldahmm_model.fit();
   model = ldahmm_model.return_model();
   return model;

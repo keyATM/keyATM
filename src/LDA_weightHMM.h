@@ -16,10 +16,10 @@ class LDAhmm : public LDAbase, public keyATMhmm
 {
   public:
     // Constructor
-    LDAhmm(List model_, const int iter_, const int output_per_) :
-      keyATMmeta(model_, iter_, output_per_),
-      LDAbase(model_, iter_, output_per_),
-      keyATMhmm(model_, iter_, output_per_) {};
+    LDAhmm(List model_, const int iter_) :
+      keyATMmeta(model_, iter_),
+      LDAbase(model_, iter_),
+      keyATMhmm(model_, iter_) {};
 
     // Functions
     void iteration_single(int &it) final;

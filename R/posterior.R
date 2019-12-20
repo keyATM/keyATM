@@ -1058,7 +1058,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
 #' @import ggplot2
 #' @import magrittr
 #' @export
-plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0.95))
+plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
 {
   tables <- summary.strata_doctopic(x, quantile_vec = quantile_vec)
   by_name <- x$by_name
@@ -1091,8 +1091,9 @@ plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0
 
 #' @noRd
 #' @export
-summary.strata_doctopic <- function(x, quantile_vec = c(0.05, 0.5, 0.95))
+summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95))
 {
+  x <- object
   tables <- lapply(1:length(x$by_values),
                   function(index){
                      theta <- x$theta[[index]]

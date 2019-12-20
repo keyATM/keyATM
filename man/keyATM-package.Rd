@@ -5,12 +5,12 @@
 \alias{keyATM-package}
 \title{keyATM: Keyword Assisted Topic Models}
 \description{
-Fits topic models with keywords.
+keyATM fits Keyword Assisted Topic Models
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/Shusei-E/keyATM/}
+  \item \url{https://shusei-e.github.io/keyATM/}
   \item Report bugs at \url{https://github.com/Shusei-E/keyATM/issues}
 }
 

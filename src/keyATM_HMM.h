@@ -41,8 +41,8 @@ class keyATMhmm : virtual public keyATMmeta
     double fixed_part;
 
     // Constructor
-    keyATMhmm(List model_, const int iter_, const int output_per_) :
-      keyATMmeta(model_, iter_, output_per_) {};
+    keyATMhmm(List model_, const int iter_) :
+      keyATMmeta(model_, iter_) {};
 
     // During sampling
       // sample_forward()

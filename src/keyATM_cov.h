@@ -45,8 +45,8 @@ class keyATMcov : virtual public keyATMmeta
     //
 
     // Constructor
-    keyATMcov(List model_, const int iter_, const int output_per_) :
-      keyATMmeta(model_, iter_, output_per_) {};
+    keyATMcov(List model_, const int iter_) :
+      keyATMmeta(model_, iter_) {};
 
     // Read data
     void read_data_specific() final;

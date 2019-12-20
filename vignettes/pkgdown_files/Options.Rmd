@@ -14,7 +14,8 @@ pkgdown:
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 my_options <- list(seed        = 100,
                    iterations  = 1500,
-                   output_per  = 10,
+                   verbose     = FALSE,
+                   llk_per     = 10,
                    use_weights = TRUE,
                    prune       = TRUE,
                    thinning    = 5,
@@ -24,7 +25,7 @@ out <- keyATM(docs      = keyATM_docs,    # text input
               regular_k = 3,              # number of regular topics
               keywords  = bills_keywords, # keywords
               model     = "basic",        # select the model
-              options   = my_options,     # Use your own option list
+              options   = my_options,     # use your own option list
               keep = c("Z")               # keep a specific object in the output
              )
 ```
@@ -32,11 +33,17 @@ out <- keyATM(docs      = keyATM_docs,    # text input
 ### `seed`
 This is a seed used to generate random numbers. The same seed is used for initialization and fitting the model (`set.seed()` is executed before both initialization and fitting). If you do not provide `seed`, **keyATM** randomly selects a seed for you.
 
-### `output_per`
-**keyATM** calculates, shows, and stores the log-likelihood and perplexity. The default value is `10`. 
 
 ### `iterations`
 The  default value is `1500`.
+
+
+### `verbose`
+Default is `FALSE`. If it is true, it shows values of log-likelihood and perplexity.
+
+
+### `llk_per`
+**keyATM** calculates and stores the log-likelihood and perplexity. The default value is `10`. 
 
 
 ### `use_weights`

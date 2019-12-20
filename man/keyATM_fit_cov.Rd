@@ -4,14 +4,12 @@
 \alias{keyATM_fit_cov}
 \title{Run the Collapsed Gibbs sampler for the keyATM covariates}
 \usage{
-keyATM_fit_cov(model, iter = 0L, output_per = 10L)
+keyATM_fit_cov(model, iter = 0L)
 }
 \arguments{
 \item{model}{A initialized model}
 
 \item{iter}{Required number of iterations}
-
-\item{output_per}{Show log-likelihood and perplexity per this number during the iteration}
 }
 \description{
 Run the Collapsed Gibbs sampler for the keyATM covariates

@@ -5,7 +5,7 @@
 \title{Plot Document-Topic distribution by strata}
 \usage{
 \method{plot}{strata_doctopic}(x, topics = NULL, quantile_vec = c(0.05,
-  0.5, 0.95))
+  0.5, 0.95), ...)
 }
 \arguments{
 \item{x}{the output from a keyATM model (see \code{by_strata_DocTopic()})}

@@ -6,6 +6,10 @@
 #include <unordered_set>
 #include "sampler.h"
 
+// RcppProgress
+#include <progress.hpp>
+#include <progress_bar.hpp>
+
 using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
@@ -23,7 +27,8 @@ class keyATMmeta
     // Parameters
     //
     int iter;
-    int output_per;
+    int llk_per;
+    int verbose;
     double eta_1;
     double eta_2;
     double eta_1_regular;
@@ -110,7 +115,7 @@ class keyATMmeta
     //
     // Functions
     //
-    keyATMmeta(List model_, const int iter_, const int output_per_);
+    keyATMmeta(List model_, const int iter_);
     ~keyATMmeta();
     void fit();
 

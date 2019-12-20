@@ -107,11 +107,11 @@ print.keyATM_docs <- function(x, ...)
 
 #' @noRd
 #' @export
-summary.keyATM_docs <- function(x, ...)
+summary.keyATM_docs <- function(object, ...)
 {
-  doc_len <- sapply(x, length)
+  doc_len <- sapply(object, length)
   cat(paste0("keyATM_docs object of: ",
-              length(x), " documents",
+              length(object), " documents",
               ".\n",
               "Length of documents:",
               "\n  Avg: ", round(mean(doc_len), 3),
@@ -302,9 +302,9 @@ print.keyATM_viz <- function(x, ...)
 
 #' @noRd
 #' @export
-summary.keyATM_viz <- function(x, ...)
+summary.keyATM_viz <- function(object, ...)
 {
-  return(x$values)  
+  return(object$values)  
 }
 
 
@@ -480,17 +480,17 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   set.seed(options$seed)
 
   if (model == "base") {
-    key_model <- keyATM_fit_base(key_model, iter = options$iterations, output_per = options$output_per)
+    key_model <- keyATM_fit_base(key_model, iter = options$iterations)
   } else if (model == "cov") {
-    key_model <- keyATM_fit_cov(key_model, iter = options$iteration, output_per = options$output_per)
+    key_model <- keyATM_fit_cov(key_model, iter = options$iteration)
   } else if (model == "hmm") {
-    key_model <- keyATM_fit_HMM(key_model, iter = options$iteration, output_per = options$output_per)  
+    key_model <- keyATM_fit_HMM(key_model, iter = options$iteration)  
   } else if (model == "lda") {
-    key_model <- keyATM_fit_LDA(key_model, iter = options$iteration, output_per = options$output_per)
+    key_model <- keyATM_fit_LDA(key_model, iter = options$iteration)
   } else if (model == "ldacov") {
-    key_model <- keyATM_fit_LDAcov(key_model, iter = options$iteration, output_per = options$output_per)
+    key_model <- keyATM_fit_LDAcov(key_model, iter = options$iteration)
   } else if (model == "ldahmm") {
-    key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration, output_per = options$output_per)  
+    key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration)  
   } else {
     stop("Please check `mode`.")  
   }
@@ -519,12 +519,12 @@ print.keyATM_model <- function(x, ...)
 
 #' @noRd
 #' @export
-summary.keyATM_model <- function(x, ...)
+summary.keyATM_model <- function(object, ...)
 {
   cat(
       paste0(
              "keyATM_model object for the ",
-             x$model,
+             object$model,
              " model.",
              "\n"
             )
@@ -560,16 +560,16 @@ print.keyATM_fitted <- function(x, ...)
 
 #' @noRd
 #' @export
-summary.keyATM_fitted <- function(x, ...)
+summary.keyATM_fitted <- function(object, ...)
 {
   cat(
       paste0(
              "keyATM_model object for the ",
-             x$model,
+             object$model,
              " model. ",
-             x$options$iterations, " iterations.\n",
-             length(x$W), " documents | ",
-             length(x$keywords), " keyword topics",
+             object$options$iterations, " iterations.\n",
+             length(object$W), " documents | ",
+             length(object$keywords), " keyword topics",
              "\n"
       )
      )
@@ -819,17 +819,28 @@ check_arg_priors <- function(obj, model, info)
 check_arg_options <- function(obj, model, info)
 {
   check_arg_type(obj, "list")
-  allowed_arguments <- c("seed", "output_per", "thinning",
-                         "iterations",
+  allowed_arguments <- c("seed", "llk_per", "thinning",
+                         "iterations", "verbose",
                          "use_weights", "prune",
                          "store_theta", "slice_shape")
 
-  # Output per
-  if (is.null(obj$output_per))
-    obj$output_per <- 10L
+  # llk_per
+  if (is.null(obj$llk_per))
+    obj$llk_per <- 10L
 
-  if (!is.numeric(obj$output_per) | obj$output_per < 0 | obj$output_per%%1 != 0) {
-      stop("An invalid value in `options$output_per`")  
+  if (!is.numeric(obj$llk_per) | obj$llk_per < 0 | obj$llk_per%%1 != 0) {
+      stop("An invalid value in `options$llk_per`")  
+  }
+
+
+  # verbose
+  if (is.null(obj$verbose)) {
+    obj$verbose <- 0L 
+  } else {
+    obj$verbose <- as.integer(obj$verbose)
+    if (!obj$verbose %in% c(0, 1)) {
+      stop("An invalid value in `options$verbose`")  
+    }
   }
 
   # thinning
