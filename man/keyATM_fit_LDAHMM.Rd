@@ -16,3 +16,4 @@ keyATM_fit_LDAHMM(model, iter = 0L, output_per = 10L)
 \description{
 Run the Collapsed Gibbs sampler for the weighted LDA with HMM model
 }
+\keyword{internal}
