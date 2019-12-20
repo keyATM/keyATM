@@ -1,8 +1,31 @@
 pull_request_rules:
+  - name: Automatic merge on CI success and review
+    conditions:
+      - status-success=continuous-integration/travis-ci/pr
+      - "#approved-reviews-by>=1"
+      - "#review-requested=0"
+      - "#commented-reviews-by=0"
+      - "#changes-requested-reviews-by=0"
+      - base=master
+      - label=auto-merge
+      - label!=no-auto-merge
+    actions:
+      merge:
+        method: merge
   - name: Automatic merge by Shusei
     conditions:
       - status-success=continuous-integration/travis-ci/pr
       - author=Shusei-E
+      - base=master
+      - label=auto-merge
+      - label!=no-auto-merge
+    actions:
+      merge:
+        method: merge
+  - name: Automatic merge by Tomoya
+    conditions:
+      - status-success=continuous-integration/travis-ci/pr
+      - author=tomoya-sasaki
       - base=master
       - label=auto-merge
       - label!=no-auto-merge
