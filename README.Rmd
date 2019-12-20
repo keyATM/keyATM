@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-<img src="images/keyATM_logoFull.svg" alt="keyATM: Keyword Assisted Topic Models" width="290"/>
+<img src="https://shusei-e.github.io/keyATM/images/keyATM_logoFull.svg" alt="keyATM: Keyword Assisted Topic Models" width="290"/>
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/keyATM)](https://CRAN.R-project.org/package=keyATM)
