@@ -15,4 +15,4 @@ latex: false
 before_install:
   - sudo add-apt-repository -y ppa:cran/poppler
   - sudo sudo apt-get install -y libpoppler-cpp-dev
-    - Rscript -e 'install.packages(c("devtools", "ndjson"))'
+  - Rscript -e 'install.packages(c("devtools", "ndjson"))'
