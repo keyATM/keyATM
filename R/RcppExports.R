@@ -7,7 +7,7 @@
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
-#' @export
+#' @keywords internal
 keyATM_fit_base <- function(model, iter = 0L, output_per = 10L) {
     .Call('_keyATM_keyATM_fit_base', PACKAGE = 'keyATM', model, iter, output_per)
 }
@@ -18,7 +18,7 @@ keyATM_fit_base <- function(model, iter = 0L, output_per = 10L) {
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
-#' @export
+#' @keywords internal
 keyATM_fit_cov <- function(model, iter = 0L, output_per = 10L) {
     .Call('_keyATM_keyATM_fit_cov', PACKAGE = 'keyATM', model, iter, output_per)
 }
@@ -29,7 +29,7 @@ keyATM_fit_cov <- function(model, iter = 0L, output_per = 10L) {
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
-#' @export
+#' @keywords internal
 keyATM_fit_HMM <- function(model, iter = 0L, output_per = 10L) {
     .Call('_keyATM_keyATM_fit_HMM', PACKAGE = 'keyATM', model, iter, output_per)
 }
@@ -40,7 +40,7 @@ keyATM_fit_HMM <- function(model, iter = 0L, output_per = 10L) {
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
-#' @export
+#' @keywords internal
 keyATM_fit_LDA <- function(model, iter = 0L, output_per = 10L) {
     .Call('_keyATM_keyATM_fit_LDA', PACKAGE = 'keyATM', model, iter, output_per)
 }
@@ -51,7 +51,7 @@ keyATM_fit_LDA <- function(model, iter = 0L, output_per = 10L) {
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
-#' @export
+#' @keywords internal
 keyATM_fit_LDAcov <- function(model, iter = 0L, output_per = 10L) {
     .Call('_keyATM_keyATM_fit_LDAcov', PACKAGE = 'keyATM', model, iter, output_per)
 }
@@ -62,7 +62,7 @@ keyATM_fit_LDAcov <- function(model, iter = 0L, output_per = 10L) {
 #' @param iter Required number of iterations
 #' @param output_per Show log-likelihood and perplexity per this number during the iteration
 #'
-#' @export
+#' @keywords internal
 keyATM_fit_LDAHMM <- function(model, iter = 0L, output_per = 10L) {
     .Call('_keyATM_keyATM_fit_LDAHMM', PACKAGE = 'keyATM', model, iter, output_per)
 }
