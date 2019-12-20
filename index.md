@@ -1,18 +1,15 @@
----
-output: github_document
----
-
-<img src="https://shusei-e.github.io/keyATM/images/keyATM_logoFull.svg" alt="keyATM: Keyword Assisted Topic Models" width="290"/>
+<img src="https://shusei-e.github.io/keyATM/reference/figures/keyATM_logoFull.svg" alt="keyATM: Keyword Assisted Topic Models" width="290"/>
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/keyATM)](https://CRAN.R-project.org/package=keyATM)
 [![metacran downloads](https://cranlogs.r-pkg.org/badges/grand-total/keyATM)](https://cran.r-project.org/package=keyATM)
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![Travis-CI Build Status](https://travis-ci.com/Shusei-E/keyATM.svg?branch=master)](https://travis-ci.com/Shusei-E/keyATM)
 [![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
 <!-- badges: end -->
 
-
+<br>
 **We are still updating this website. Please use the [website](https://github.com/Shusei-E/keyATM/labels/website) label in [GitHub Issues](https://github.com/Shusei-E/keyATM/issues) if you find any error or have suggestions!**
 
 
