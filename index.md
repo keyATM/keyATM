@@ -1,7 +1,3 @@
----
-output: github_document
----
-
 <img src="https://shusei-e.github.io/keyATM/reference/figures/keyATM_logoFull.svg" alt="keyATM: Keyword Assisted Topic Models" width="290"/>
 
 <!-- badges: start -->
@@ -13,7 +9,7 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 [![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
 <!-- badges: end -->
 
-
+<br>
 **We are still updating this website. Please use the [website](https://github.com/Shusei-E/keyATM/labels/website) label in [GitHub Issues](https://github.com/Shusei-E/keyATM/issues) if you find any error or have suggestions!**
 
 
