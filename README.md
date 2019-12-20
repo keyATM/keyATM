@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<img src="docs/images/keyATM_logoFull.svg" alt="keyATM: Keyword Assisted Topic Models" width="290"/>
+<a href = "https://shusei-e.github.io/keyATM/"><img src="docs/images/keyATM_logoFull.svg" alt="keyATM: Keyword Assisted Topic Models" width="290"/></a>
 
 <!-- badges: start -->
 
@@ -14,7 +14,7 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 <!-- badges: end -->
 
 # Website
-Please visit our website for a complete reference.
+Please visit [our website](https://shusei-e.github.io/keyATM/) for a complete reference.
 
 # Installation
 To install **keyATM** from GitHub, please use `devtools`.
