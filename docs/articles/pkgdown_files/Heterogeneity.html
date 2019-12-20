@@ -131,18 +131,18 @@
 <p>You can get top words with <code><a href="../../reference/top_words.html">top_words()</a></code>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(strata_tw, <span class="dt">n =</span> <span class="dv">5</span>)</span></code></pre></div>
 <pre><code>## $`0`
-##     1_Education        2_Law    3_Health     4_Drug     Other_1
-## 1          loan      law [✓] program [✓]    section corporation
-## 2     child [✓]        state  health [✓]      shall   frequency
-## 3 education [✓] attorney [✓]  public [✓]        act  public [3]
-## 4   program [3]     juvenile       grant      state  commission
-## 5         abuse        crime        care subsection    wildlife
-##       Other_2   Other_3
-## 1      safety  research
-## 2      entity    center
-## 3     product  national
-## 4        work   project
-## 5 information secretary
+##     1_Education        2_Law    3_Health     4_Drug     Other_1     Other_2
+## 1          loan      law [✓] program [✓]    section corporation      safety
+## 2     child [✓]        state  health [✓]      shall   frequency      entity
+## 3 education [✓] attorney [✓]  public [✓]        act  public [3]     product
+## 4   program [3]     juvenile       grant      state  commission        work
+## 5         abuse        crime        care subsection    wildlife information
+##     Other_3
+## 1  research
+## 2    center
+## 3  national
+## 4   project
+## 5 secretary
 ## 
 ## $`1`
 ##     1_Education     2_Law    3_Health     4_Drug    Other_1     Other_2
@@ -162,24 +162,16 @@
 <span id="cb7-2"><a href="#cb7-2"></a>strata_tw_chr &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span>(out, keyATM_docs, RepParty_chr)</span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(strata_tw_chr, <span class="dt">n =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## $Democrat
-##     1_Education        2_Law    3_Health  4_Drug     Other_1 Other_2
-## 1          loan      law [✓] program [✓] section corporation  safety
-## 2     child [✓]        state  health [✓]   shall   frequency  entity
-## 3 education [✓] attorney [✓]  public [✓]     act  public [3] product
-##    Other_3
-## 1 research
-## 2   center
-## 3 national
+##     1_Education        2_Law    3_Health  4_Drug     Other_1 Other_2  Other_3
+## 1          loan      law [✓] program [✓] section corporation  safety research
+## 2     child [✓]        state  health [✓]   shall   frequency  entity   center
+## 3 education [✓] attorney [✓]  public [✓]     act  public [3] product national
 ## 
 ## $Republican
-##     1_Education     2_Law   3_Health  4_Drug    Other_1     Other_2
-## 1        school     state public [✓] section   wildlife information
-## 2     child [✓]   law [✓] health [✓]   shall     refuge    security
-## 3 education [✓] court [✓]      grant     act commission      entity
-##    Other_3
-## 1 national
-## 2 research
-## 3     fund</code></pre>
+##     1_Education     2_Law   3_Health  4_Drug    Other_1     Other_2  Other_3
+## 1        school     state public [✓] section   wildlife information national
+## 2     child [✓]   law [✓] health [✓]   shall     refuge    security research
+## 3 education [✓] court [✓]      grant     act commission      entity     fund</code></pre>
 </div>
 <div id="document-topic-distribution-by-covariates" class="section level2">
 <h2 class="hasAnchor">
