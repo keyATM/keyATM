@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Options / Priors / Keep • keyATM</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
 <script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
 <meta property="og:title" content="Options / Priors / Keep">
 <meta property="og:description" content="">
@@ -96,6 +97,7 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
@@ -113,7 +115,7 @@
 <h1 class="hasAnchor">
 <a href="#options" class="anchor"></a>Options</h1>
 <p><code>keyATM</code> takes various options. You can set options through a list.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>my_options &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed        =</span> <span class="dv">100</span>,</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>my_options &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed        =</span> <span class="dv">100</span>,</span>
 <span id="cb1-2"><a href="#cb1-2"></a>                   <span class="dt">iterations  =</span> <span class="dv">1500</span>,</span>
 <span id="cb1-3"><a href="#cb1-3"></a>                   <span class="dt">output_per  =</span> <span class="dv">10</span>,</span>
 <span id="cb1-4"><a href="#cb1-4"></a>                   <span class="dt">use_weights =</span> <span class="ot">TRUE</span>,</span>
@@ -126,13 +128,13 @@
 <span id="cb1-11"><a href="#cb1-11"></a>              <span class="dt">keywords  =</span> bills_keywords, <span class="co"># keywords</span></span>
 <span id="cb1-12"><a href="#cb1-12"></a>              <span class="dt">model     =</span> <span class="st">"basic"</span>,        <span class="co"># select the model</span></span>
 <span id="cb1-13"><a href="#cb1-13"></a>              <span class="dt">options   =</span> my_options,     <span class="co"># Use your own option list</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a>              <span class="dt">keep =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Z"</span>)               <span class="co"># keep a specific object in the output</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>              <span class="dt">keep =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Z"</span>)               <span class="co"># keep a specific object in the output</span></span>
 <span id="cb1-15"><a href="#cb1-15"></a>             )</span></code></pre></div>
 <div id="seed" class="section level3">
 <h3 class="hasAnchor">
 <a href="#seed" class="anchor"></a><code>seed</code>
 </h3>
-<p>This is a seed used to generate random numbers. The same seed is used for initialization and fitting the model (<code><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed()</a></code> is executed before both initialization and fitting). If you do not provide <code>seed</code>, <strong>keyATM</strong> randomly selects a seed for you.</p>
+<p>This is a seed used to generate random numbers. The same seed is used for initialization and fitting the model (<code><a href="https://rdrr.io/r/base/Random.html">set.seed()</a></code> is executed before both initialization and fitting). If you do not provide <code>seed</code>, <strong>keyATM</strong> randomly selects a seed for you.</p>
 </div>
 <div id="output_per" class="section level3">
 <h3 class="hasAnchor">
@@ -222,17 +224,20 @@
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by <a href="https://shusei-e.github.io">Shusei Eshima</a>, <a href="https://polisci.mit.edu/people/tomoya-sasaki">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

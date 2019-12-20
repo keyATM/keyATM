@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heterogeneity • keyATM</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
 <script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
 <meta property="og:title" content="Heterogeneity">
 <meta property="og:description" content="">
@@ -96,6 +97,7 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
@@ -117,16 +119,16 @@
 <span id="cb1-3"><a href="#cb1-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
 <span id="cb1-4"><a href="#cb1-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
 <span id="cb1-5"><a href="#cb1-5"></a>              <span class="dt">model             =</span> <span class="st">"base"</span>,         <span class="co"># base, covariates, or dynamic</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>),</span>
-<span id="cb1-7"><a href="#cb1-7"></a>              <span class="dt">keep              =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Z"</span>, <span class="st">"S"</span>)     <span class="co"># You need to keep `Z` and `S`</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>),</span>
+<span id="cb1-7"><a href="#cb1-7"></a>              <span class="dt">keep              =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Z"</span>, <span class="st">"S"</span>)     <span class="co"># You need to keep `Z` and `S`</span></span>
 <span id="cb1-8"><a href="#cb1-8"></a>             )</span></code></pre></div>
 <p>We have a binary variable of the party ID of bill’s proposer. <code>0</code> indicates Democrat and <code>1</code> indicates Republican.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/table">table</a></span>(bills_cov[, <span class="st">"RepParty"</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(bills_cov[, <span class="st">"RepParty"</span>])</span></code></pre></div>
 <pre><code>## 
 ##  0  1 
 ## 57 83</code></pre>
 <p><code><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord()</a></code> function calculates topic-word distribution subsetted by a vector provided.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>RepParty &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(bills_cov[, <span class="st">"RepParty"</span>])  <span class="co"># the length should be the same as the number of documents</span></span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>RepParty &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(bills_cov[, <span class="st">"RepParty"</span>])  <span class="co"># the length should be the same as the number of documents</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>strata_tw &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span>(out, keyATM_docs, <span class="dt">by =</span> RepParty)</span></code></pre></div>
 <p>You can get top words with <code><a href="../../reference/top_words.html">top_words()</a></code>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(strata_tw, <span class="dt">n =</span> <span class="dv">5</span>)</span></code></pre></div>
@@ -158,7 +160,7 @@
 ## 4     project
 ## 5 program [3]</code></pre>
 <p>As long as the length is the same as the number of documents, you can use a character vector for <code>by</code> argument argument.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>RepParty_chr &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ifelse">ifelse</a></span>(bills_cov[, <span class="st">"RepParty"</span>] <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="st">"Democrat"</span>, <span class="st">"Republican"</span>)</span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>RepParty_chr &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(bills_cov[, <span class="st">"RepParty"</span>] <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="st">"Democrat"</span>, <span class="st">"Republican"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2"></a>strata_tw_chr &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span>(out, keyATM_docs, RepParty_chr)</span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(strata_tw_chr, <span class="dt">n =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## $Democrat
@@ -182,13 +184,13 @@
 <span id="cb9-3"><a href="#cb9-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
 <span id="cb9-4"><a href="#cb9-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
 <span id="cb9-5"><a href="#cb9-5"></a>              <span class="dt">model             =</span> <span class="st">"covariates"</span>,   <span class="co"># select the model</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariates_data =</span> bills_cov,</span>
+<span id="cb9-6"><a href="#cb9-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariates_data =</span> bills_cov,</span>
 <span id="cb9-7"><a href="#cb9-7"></a>                                       <span class="dt">covariates_formula =</span> <span class="op">~</span><span class="st"> </span>RepParty),</span>
-<span id="cb9-8"><a href="#cb9-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
+<span id="cb9-8"><a href="#cb9-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
 <span id="cb9-9"><a href="#cb9-9"></a>             )</span></code></pre></div>
 <p>Now let’s calculate the mean of theta for two different values of <code>RepParty</code>. The figure shows 90% credible intervals.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>strata_topic &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span>(out, <span class="dt">by_name =</span> <span class="st">"RepParty"</span>, <span class="dt">by_values =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(strata_topic, <span class="dt">topics =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">5</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>strata_topic &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span>(out, <span class="dt">by_name =</span> <span class="st">"RepParty"</span>, <span class="dt">by_values =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(strata_topic, <span class="dt">topics =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">5</span>))</span></code></pre></div>
 <p><img src="Heterogeneity_files/figure-html/unnamed-chunk-8-1.png" width="700" style="display: block; margin: auto;"></p>
 </div>
   </div>
@@ -207,17 +209,20 @@
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by <a href="https://shusei-e.github.io">Shusei Eshima</a>, <a href="https://polisci.mit.edu/people/tomoya-sasaki">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>
