@@ -524,7 +524,7 @@ keyATM_output_rescale_Lambda <- function(model, info)
 
 #' @noRd
 #' @export
-print.keyATM_output <- function(x)
+print.keyATM_output <- function(x, ...)
 {
   cat(
       paste0(
@@ -539,7 +539,7 @@ print.keyATM_output <- function(x)
 
 #' @noRd
 #' @export
-summary.keyATM_output <- function(x)
+summary.keyATM_output <- function(x, ...)
 {
   cat(
       paste0(
@@ -562,9 +562,9 @@ save.keyATM_output <- function(x, file = stop("'file' must be specified"))
 
 #' @noRd
 #' @export
-plot.keyATM_output <- function(x)
+plot.keyATM_output <- function(x, ...)
 {
-  print(plot_modelfit(x))
+  print(plot_modelfit(x, ...))
 }
 
 
@@ -732,7 +732,7 @@ top_docs <- function(x, n = 10)
 #' @export
 plot_alpha <- function(x, start = 0, show_topic = NULL,
                        thinning = 5,
-                       scales = "fixed")
+                       scale = "fixed")
 {
 
   check_arg_type(x, "keyATM_output")
@@ -787,7 +787,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
 #' Show a diagnosis plot of log-likelihood and perplexity
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param start 
+#' @param start starting value of the plot
 #'
 #' @return ggplot2 object
 #' @import ggplot2
@@ -935,7 +935,12 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 #' Estimate Document-Topic distribution by strata 
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param by a vector whose length is the number of documents
+#' @param by_name the name of the variable
+#' @param by_values the values of the variable specified in `by_name`
+#' @param burn_in burn_in period to use. If not specified, it is the half of samples.
+#' @param parallel parallelization for speeding up
+#' @param mc.cores the number of cores to use
+#' @param posterior_mean the quantity of interest is the posterior mean
 #'
 #' @return strata_topicword object (a list)
 #' @import dplyr
@@ -1046,14 +1051,16 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
 #' Plot Document-Topic distribution by strata 
 #'
 #' @param x the output from a keyATM model (see \code{by_strata_DocTopic()})
+#' @param topics topics to show
+#' @param quantile_vec quantiles to show
 #'
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import magrittr
 #' @export
-plot.strata_doctopic <- function(x, topics = NULL, prob_vec = c(0.05, 0.5, 0.95))
+plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0.95))
 {
-  tables <- summary.strata_doctopic(x, prob_vec = prob_vec)
+  tables <- summary.strata_doctopic(x, quantile_vec = quantile_vec)
   by_name <- x$by_name
   by_values <- x$by_values
 
@@ -1082,13 +1089,15 @@ plot.strata_doctopic <- function(x, topics = NULL, prob_vec = c(0.05, 0.5, 0.95)
 }
 
 
-summary.strata_doctopic <- function(x, prob_vec = c(0.05, 0.5, 0.95))
+#' @noRd
+#' @export
+summary.strata_doctopic <- function(x, quantile_vec = c(0.05, 0.5, 0.95))
 {
   tables <- lapply(1:length(x$by_values),
                   function(index){
                      theta <- x$theta[[index]]
                      theta_ <- theta[, 1:(ncol(theta)-2)]
-                     q <- as.data.frame(apply(theta_, 2, quantile, prob_vec))
+                     q <- as.data.frame(apply(theta_, 2, stats::quantile, quantile_vec))
                      q$Percentile <- c("Lower", "Point", "Upper")
                      q %>% 
                        tidyr::gather(key = Topic, value = Value, -Percentile) %>%

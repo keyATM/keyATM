@@ -10,7 +10,17 @@ by_strata_DocTopic(x, by_name, by_values, burn_in = NULL,
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}
 
-\item{by}{a vector whose length is the number of documents}
+\item{by_name}{the name of the variable}
+
+\item{by_values}{the values of the variable specified in `by_name`}
+
+\item{burn_in}{burn_in period to use. If not specified, it is the half of samples.}
+
+\item{parallel}{parallelization for speeding up}
+
+\item{mc.cores}{the number of cores to use}
+
+\item{posterior_mean}{the quantity of interest is the posterior mean}
 }
 \value{
 strata_topicword object (a list)

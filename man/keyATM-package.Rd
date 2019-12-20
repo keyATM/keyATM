@@ -2,7 +2,6 @@
 % Please edit documentation in R/keyATM-package.R
 \docType{package}
 \name{keyATM-package}
-\alias{keyATM}
 \alias{keyATM-package}
 \title{keyATM: Keyword Assisted Topic Models}
 \description{
@@ -31,4 +30,3 @@ Other contributors:
 }
 
 }
-\keyword{internal}
