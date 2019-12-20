@@ -6,6 +6,7 @@
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![Travis-CI Build Status](https://travis-ci.com/Shusei-E/keyATM.svg?branch=master)](https://travis-ci.com/Shusei-E/keyATM)
+[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/Shusei-E/keyATM&style=flat)](https://mergify.io)
 <!-- badges: end -->
 
 <br>
