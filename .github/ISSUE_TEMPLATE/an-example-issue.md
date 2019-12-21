@@ -1,5 +1,5 @@
 ---
-name: An Example Issue
+name: An issue template
 about: Create a report to help us improve
 title: ''
 labels: ''
