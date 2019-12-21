@@ -10,8 +10,8 @@ keyATM fits Keyword Assisted Topic Models
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://shusei-e.github.io/keyATM/}
-  \item Report bugs at \url{https://github.com/Shusei-E/keyATM/issues}
+  \item \url{https://keyatm.github.io/keyATM/}
+  \item Report bugs at \url{https://github.com/keyATM/keyATM/issues}
 }
 
 }

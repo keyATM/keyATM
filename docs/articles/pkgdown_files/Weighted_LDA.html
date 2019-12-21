@@ -114,113 +114,113 @@
 <div id="weighted-lda" class="section level1">
 <h1 class="hasAnchor">
 <a href="#weighted-lda" class="anchor"></a>Weighted LDA</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</span>
-<span id="cb1-3"><a href="#cb1-3"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda object</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs             =</span> keyATM_docs,  <span class="co"># text input</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>                   <span class="dt">number_of_topics =</span> <span class="dv">7</span>,            <span class="co"># number of topics</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>                   <span class="dt">model            =</span> <span class="st">"base"</span>,       <span class="co"># select the model</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>                   <span class="dt">options          =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##        Topic_1    Topic_2     Topic_3       Topic_4  Topic_5     Topic_6
-## 1  information    section    research       project    state        drug
-## 2      federal      shall    national         water    court       grant
-## 3         loan        act      person      wildlife   action   substance
-## 4       safety      state     science administrator   person         use
-## 5       entity subsection  technology  conservation      law     control
-## 6          use  secretary information       coastal   united   community
-## 7      patient    program      change    management    class corporation
-## 8   commission        may  scientific          fish attorney  prevention
-## 9      product       year      global           use    crime    practice
-## 10      direct  paragraph    undersea        refuge  federal     alcohol
-##       Topic_7
-## 1       child
-## 2  regulation
-## 3      permit
-## 4     license
-## 5       minor
-## 6  commercial
-## 7       space
-## 8     require
-## 9     foreign
-## 10      abuse</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda object</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs             =</span> keyATM_docs,  <span class="co"># text input</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">                   <span class="dt">number_of_topics =</span> <span class="dv">7</span>,            <span class="co"># number of topics</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">                   <span class="dt">model            =</span> <span class="st">"base"</span>,       <span class="co"># select the model</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">                   <span class="dt">options          =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</a></code></pre></div>
+<pre><code>##         Topic_1    Topic_2   Topic_3    Topic_4    Topic_5       Topic_6
+## 1        system    section   program      court      child   information
+## 2      wildlife      state  national     action      grant       federal
+## 3  conservation        act  research      class    program         water
+## 4        safety      shall secretary   district  treatment           use
+## 5       patient subsection    fiscal    federal      abuse       coastal
+## 6          fish     united  activity      civil  substance        entity
+## 7          plan  paragraph      fund     member       drug communication
+## 8       product        may    center    chapter prevention    commission
+## 9         pilot      title      year      claim  community    government
+## 10       refuge     report     shall proceeding   practice    recreation
+##      Topic_7
+## 1       loan
+## 2    federal
+## 3   borrower
+## 4  qualified
+## 5     direct
+## 6      minor
+## 7   interest
+## 8  education
+## 9       rate
+## 10    amount</code></pre>
 </div>
 <div id="weighted-lda-covariates" class="section level1">
 <h1 class="hasAnchor">
 <a href="#weighted-lda-covariates" class="anchor"></a>Weighted LDA Covariates</h1>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</span>
-<span id="cb4-3"><a href="#cb4-3"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda object</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>bills_cov &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>cov</span>
-<span id="cb4-5"><a href="#cb4-5"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs             =</span> keyATM_docs,   <span class="co"># text input</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>                   <span class="dt">number_of_topics =</span> <span class="dv">7</span>,             <span class="co"># number of topics</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>                   <span class="dt">model            =</span> <span class="st">"covariates"</span>,  <span class="co"># select the model</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>                   <span class="dt">model_settings   =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariates_data =</span> bills_cov),</span>
-<span id="cb5-5"><a href="#cb5-5"></a>                   <span class="dt">options          =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##     Topic_1     Topic_2    Topic_3     Topic_4     Topic_5  Topic_6
-## 1     court      health    section        loan      person  program
-## 2    action     service      shall     federal       child national
-## 3     state      entity        act  commission        drug    grant
-## 4     order     program      state      direct       state research
-## 5  district        care subsection    borrower         law   center
-## 6    united information        may        fish       class     fund
-## 7   federal      system        sec corporation    attorney  project
-## 8   chapter     patient  paragraph        rate       crime director
-## 9      rule    security      title    interest enforcement   fiscal
-## 10     case   secretary     united      amount       abuse activity
-##         Topic_7
-## 1     secretary
-## 2       veteran
-## 3        system
-## 4       service
-## 5      wildlife
-## 6  conservation
-## 7        refuge
-## 8          code
-## 9    commercial
-## 10        space</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda object</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">bills_cov &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>cov</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs             =</span> keyATM_docs,   <span class="co"># text input</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">                   <span class="dt">number_of_topics =</span> <span class="dv">7</span>,             <span class="co"># number of topics</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">                   <span class="dt">model            =</span> <span class="st">"covariates"</span>,  <span class="co"># select the model</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">                   <span class="dt">model_settings   =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariates_data =</span> bills_cov),</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">                   <span class="dt">options          =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</a></code></pre></div>
+<pre><code>##          Topic_1  Topic_2      Topic_3     Topic_4     Topic_5   Topic_6
+## 1         health    state     wildlife        loan     federal   program
+## 2        program    court      patient     federal      entity  national
+## 3          child   action       safety      direct      system     grant
+## 4  administrator      sec      product    borrower information  research
+## 5           care    class         fish corporation      agency secretary
+## 6        veteran attorney       refuge        rate  government    fiscal
+## 7         school    crime       system  commission     private      fund
+## 8            sec   person      charter    interest development       sec
+## 9          water  federal         work         sec  department    center
+## 10       service      law organization   education     protect      year
+##       Topic_7
+## 1     section
+## 2       shall
+## 3         act
+## 4       state
+## 5  subsection
+## 6         may
+## 7   paragraph
+## 8      united
+## 9      report
+## 10      title</code></pre>
 </div>
 <div id="weighted-lda-dynamic" class="section level1">
 <h1 class="hasAnchor">
 <a href="#weighted-lda-dynamic" class="anchor"></a>Weighted LDA Dynamic</h1>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</span>
-<span id="cb7-3"><a href="#cb7-3"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda object</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>bills_time_index &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>time_index</span>
-<span id="cb7-5"><a href="#cb7-5"></a>bills_time_index &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span>(bills_time_index <span class="op">-</span><span class="st"> </span><span class="dv">100</span>)</span>
-<span id="cb7-6"><a href="#cb7-6"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>fitted &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs             =</span> keyATM_docs,  <span class="co"># text input</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a>                      <span class="dt">number_of_topics =</span> <span class="dv">7</span>,            <span class="co"># number of topics</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>                      <span class="dt">model            =</span> <span class="st">"dynamic"</span>,    <span class="co"># select the model</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a>                      <span class="dt">model_settings   =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">time_index =</span> bills_time_index, </span>
-<span id="cb8-5"><a href="#cb8-5"></a>                                              <span class="dt">num_states =</span> <span class="dv">5</span>),</span>
-<span id="cb8-6"><a href="#cb8-6"></a>                      <span class="dt">options          =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##     Topic_1     Topic_2    Topic_3     Topic_4     Topic_5  Topic_6
-## 1     court      health    section        loan      person  program
-## 2    action     service      shall     federal       child national
-## 3     state      entity        act  commission        drug    grant
-## 4     order     program      state      direct       state research
-## 5  district        care subsection    borrower         law   center
-## 6    united information        may        fish       class     fund
-## 7   federal      system        sec corporation    attorney  project
-## 8   chapter     patient  paragraph        rate       crime director
-## 9      rule    security      title    interest enforcement   fiscal
-## 10     case   secretary     united      amount       abuse activity
-##         Topic_7
-## 1     secretary
-## 2       veteran
-## 3        system
-## 4       service
-## 5      wildlife
-## 6  conservation
-## 7        refuge
-## 8          code
-## 9    commercial
-## 10        space</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda object</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">bills_time_index &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>time_index</a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">bills_time_index &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span>(bills_time_index <span class="op">-</span><span class="st"> </span><span class="dv">100</span>)</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">fitted &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/weightedLDA.html">weightedLDA</a></span>(<span class="dt">docs             =</span> keyATM_docs,  <span class="co"># text input</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">                      <span class="dt">number_of_topics =</span> <span class="dv">7</span>,            <span class="co"># number of topics</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">                      <span class="dt">model            =</span> <span class="st">"dynamic"</span>,    <span class="co"># select the model</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">                      <span class="dt">model_settings   =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">time_index =</span> bills_time_index, </a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">                                              <span class="dt">num_states =</span> <span class="dv">5</span>),</a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">                      <span class="dt">options          =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</a>
+<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</a></code></pre></div>
+<pre><code>##          Topic_1  Topic_2      Topic_3     Topic_4     Topic_5   Topic_6
+## 1         health    state     wildlife        loan     federal   program
+## 2        program    court      patient     federal      entity  national
+## 3          child   action       safety      direct      system     grant
+## 4  administrator      sec      product    borrower information  research
+## 5           care    class         fish corporation      agency secretary
+## 6        veteran attorney       refuge        rate  government    fiscal
+## 7         school    crime       system  commission     private      fund
+## 8            sec   person      charter    interest development       sec
+## 9          water  federal         work         sec  department    center
+## 10       service      law organization   education     protect      year
+##       Topic_7
+## 1     section
+## 2       shall
+## 3         act
+## 4       state
+## 5  subsection
+## 6         may
+## 7   paragraph
+## 8      united
+## 9      report
+## 10      title</code></pre>
 </div>
   </div>
 

@@ -4,5 +4,5 @@
   packageStartupMessage(pkgname, " v", pd$Version, 
 												" successfully loaded.",
 												"\n Papers, examples, resources, and other materials are at",
-                        "\n https://shusei-e.github.io/keyATM/");
+                        "\n https://keyatm.github.io/keyATM/");
 }
