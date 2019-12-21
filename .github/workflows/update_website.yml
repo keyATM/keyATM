@@ -13,8 +13,9 @@ jobs:
         uses: actions/checkout@v1
         
       - name: Publish generated content to GitHub Pages
-        uses: tsunematsu21/actions-publish-gh-pages@v1.0.0
+        uses: crazy-max/ghaction-github-pages@v1
         with:
-          dir: docs
-          branch: gh-pages
-          token: ${{ secrets.ACCESS_TOKEN }}
+          target_branch: gh-pages
+          build_dir: docs
+        env:
+          GITHUB_PAT: ${{ secrets.ACCESS_TOKEN }}
