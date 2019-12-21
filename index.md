@@ -28,9 +28,7 @@ Eshima, Shusei, Kosuke Imai, Tomoya Sasaki. ``Keyword Assisted Topic Models.''
 ```
 
 ## How to report a bug
-We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/keyATM/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format. 
-
-Please check [an example issue](https://github.com/keyATM/keyATM/issues/46).
+We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/keyATM/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format (it will appear as a template in GitHub Issue). 
 
 ```
 ## Problem summary (required):
@@ -46,10 +44,10 @@ Please wrap output with triple backticks.
 ## Expected output (it helps us a lot):
 Please wrap output with triple backticks.
 
-## Minimal and reproducible example with less than 50 lines (it helps us a lot):
+## A minimal reproducible example or a reprex (it helps us a lot):
 Please wrap your code with triple backticks.
-
 ```
+If you've never heard of a [reprex](http://reprex.tidyverse.org/) before, start by reading [this reference](https://www.tidyverse.org/help/#reprex).
 
 
 

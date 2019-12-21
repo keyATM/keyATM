@@ -33,7 +33,7 @@ Error: Command failed (1)
 ## Expected output (it helps us a lot):
 Successful installation.
 
-## Minimal and reproducible example with less than 50 lines (it helps us a lot):
+## A minimal reproducible example or a reprex (it helps us a lot):
 ```
 devtools::install_github("keyATM/keyATM")
 ```
