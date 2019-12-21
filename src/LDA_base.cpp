@@ -26,6 +26,8 @@ void LDAbase::read_data_common()
   slice_A = options_list["slice_shape"];
   store_theta = options_list["store_theta"];
   thinning = options_list["thinning"];
+  llk_per = options_list["llk_per"];
+  verbose = options_list["verbose"];
 
   // Priors
   priors_list = model["priors"];
