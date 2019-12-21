@@ -83,7 +83,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Shusei-E/keyATM">
+  <a href="https://keyatm.github.io/keyATM/">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -114,87 +114,83 @@
 <div id="topic-word-distribution-by-covariates" class="section level2">
 <h2 class="hasAnchor">
 <a href="#topic-word-distribution-by-covariates" class="anchor"></a>Topic-Word distribution by covariates</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">              <span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">              <span class="dt">model             =</span> <span class="st">"base"</span>,         <span class="co"># base, covariates, or dynamic</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>),</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">              <span class="dt">keep              =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Z"</span>, <span class="st">"S"</span>)     <span class="co"># You need to keep `Z` and `S`</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">             )</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(</span>
+<span id="cb1-2"><a href="#cb1-2"></a>              <span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>              <span class="dt">model             =</span> <span class="st">"base"</span>,         <span class="co"># base, covariates, or dynamic</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>),</span>
+<span id="cb1-7"><a href="#cb1-7"></a>              <span class="dt">keep              =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Z"</span>, <span class="st">"S"</span>)     <span class="co"># You need to keep `Z` and `S`</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>             )</span></code></pre></div>
 <p>We have a binary variable of the party ID of bill’s proposer. <code>0</code> indicates Democrat and <code>1</code> indicates Republican.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(bills_cov[, <span class="st">"RepParty"</span>])</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(bills_cov[, <span class="st">"RepParty"</span>])</span></code></pre></div>
 <pre><code>## 
 ##  0  1 
 ## 57 83</code></pre>
 <p><code><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord()</a></code> function calculates topic-word distribution subsetted by a vector provided.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">RepParty &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(bills_cov[, <span class="st">"RepParty"</span>])  <span class="co"># the length should be the same as the number of documents</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">strata_tw &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span>(out, keyATM_docs, <span class="dt">by =</span> RepParty)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>RepParty &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(bills_cov[, <span class="st">"RepParty"</span>])  <span class="co"># the length should be the same as the number of documents</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>strata_tw &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span>(out, keyATM_docs, <span class="dt">by =</span> RepParty)</span></code></pre></div>
 <p>You can get top words with <code><a href="../../reference/top_words.html">top_words()</a></code>.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(strata_tw, <span class="dt">n =</span> <span class="dv">5</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(strata_tw, <span class="dt">n =</span> <span class="dv">5</span>)</span></code></pre></div>
 <pre><code>## $`0`
-##     1_Education        2_Law    3_Health      4_Drug    Other_1   Other_2
-## 1          loan      law [✓] program [✓]      safety      water   project
-## 2     child [✓]        state  public [✓]     patient    coastal       use
-## 3 education [✓] attorney [✓]  health [✓]      entity recreation    report
-## 4         abuse     juvenile    research information   wildlife      fund
-## 5        school        crime   secretary      report       fish frequency
-##      Other_3
-## 1    section
-## 2      shall
-## 3        act
-## 4      state
-## 5 subsection
+##     1_Education        2_Law    3_Health     4_Drug     Other_1     Other_2
+## 1          loan      law [✓] program [✓]    section corporation      safety
+## 2     child [✓]        state  health [✓]      shall   frequency      entity
+## 3 education [✓] attorney [✓]  public [✓]        act  public [3]     product
+## 4   program [3]     juvenile       grant      state  commission        work
+## 5         abuse        crime        care subsection    wildlife information
+##     Other_3
+## 1  research
+## 2    center
+## 3  national
+## 4   project
+## 5 secretary
 ## 
 ## $`1`
-##   1_Education     2_Law    3_Health      4_Drug       Other_1    Other_2
-## 1      school court [✓] program [✓] information        system    project
-## 2        loan     state  public [✓]    drug [✓]      wildlife       fund
-## 3   child [✓]    action  health [✓]      report        refuge     report
-## 4     charter   law [✓]    national         use administrator commission
-## 5 student [✓]    person       grant      entity         water        use
-##      Other_3
-## 1    section
-## 2      shall
-## 3        act
-## 4      state
-## 5 subsection</code></pre>
+##     1_Education     2_Law    3_Health     4_Drug    Other_1     Other_2
+## 1        school     state  public [✓]    section   wildlife information
+## 2     child [✓]   law [✓]  health [✓]      shall     refuge    security
+## 3 education [✓] court [✓]       grant        act commission      entity
+## 4          loan    action program [✓]      state       fish      system
+## 5       charter    person      system subsection       unit     protect
+##       Other_3
+## 1    national
+## 2    research
+## 3        fund
+## 4     project
+## 5 program [3]</code></pre>
 <p>As long as the length is the same as the number of documents, you can use a character vector for <code>by</code> argument argument.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">RepParty_chr &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(bills_cov[, <span class="st">"RepParty"</span>] <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="st">"Democrat"</span>, <span class="st">"Republican"</span>)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">strata_tw_chr &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span>(out, keyATM_docs, RepParty_chr)</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(strata_tw_chr, <span class="dt">n =</span> <span class="dv">3</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>RepParty_chr &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(bills_cov[, <span class="st">"RepParty"</span>] <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="st">"Democrat"</span>, <span class="st">"Republican"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>strata_tw_chr &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span>(out, keyATM_docs, RepParty_chr)</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(strata_tw_chr, <span class="dt">n =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## $Democrat
-##     1_Education        2_Law    3_Health  4_Drug    Other_1 Other_2
-## 1          loan      law [✓] program [✓]  safety      water project
-## 2     child [✓]        state  public [✓] patient    coastal     use
-## 3 education [✓] attorney [✓]  health [✓]  entity recreation  report
-##   Other_3
-## 1 section
-## 2   shall
-## 3     act
+##     1_Education        2_Law    3_Health  4_Drug     Other_1 Other_2  Other_3
+## 1          loan      law [✓] program [✓] section corporation  safety research
+## 2     child [✓]        state  health [✓]   shall   frequency  entity   center
+## 3 education [✓] attorney [✓]  public [✓]     act  public [3] product national
 ## 
 ## $Republican
-##   1_Education     2_Law    3_Health      4_Drug  Other_1 Other_2 Other_3
-## 1      school court [✓] program [✓] information   system project section
-## 2        loan     state  public [✓]    drug [✓] wildlife    fund   shall
-## 3   child [✓]    action  health [✓]      report   refuge  report     act</code></pre>
+##     1_Education     2_Law   3_Health  4_Drug    Other_1     Other_2  Other_3
+## 1        school     state public [✓] section   wildlife information national
+## 2     child [✓]   law [✓] health [✓]   shall     refuge    security research
+## 3 education [✓] court [✓]      grant     act commission      entity     fund</code></pre>
 </div>
 <div id="document-topic-distribution-by-covariates" class="section level2">
 <h2 class="hasAnchor">
 <a href="#document-topic-distribution-by-covariates" class="anchor"></a>Document-Topic distribution by covariates</h2>
 <p>With <strong>keyATM</strong> covariates, we can calculate the predicted posterior distribution of the document-topic distributions.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(    </a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">              <span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3">              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">              <span class="dt">model             =</span> <span class="st">"covariates"</span>,   <span class="co"># select the model</span></a>
-<a class="sourceLine" id="cb9-6" data-line-number="6">              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariates_data =</span> bills_cov,</a>
-<a class="sourceLine" id="cb9-7" data-line-number="7">                                       <span class="dt">covariates_formula =</span> <span class="op">~</span><span class="st"> </span>RepParty),</a>
-<a class="sourceLine" id="cb9-8" data-line-number="8">              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</a>
-<a class="sourceLine" id="cb9-9" data-line-number="9">             )</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(    </span>
+<span id="cb9-2"><a href="#cb9-2"></a>              <span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>              <span class="dt">model             =</span> <span class="st">"covariates"</span>,   <span class="co"># select the model</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariates_data =</span> bills_cov,</span>
+<span id="cb9-7"><a href="#cb9-7"></a>                                       <span class="dt">covariates_formula =</span> <span class="op">~</span><span class="st"> </span>RepParty),</span>
+<span id="cb9-8"><a href="#cb9-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>)</span>
+<span id="cb9-9"><a href="#cb9-9"></a>             )</span></code></pre></div>
 <p>Now let’s calculate the mean of theta for two different values of <code>RepParty</code>. The figure shows 90% credible intervals.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">strata_topic &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span>(out, <span class="dt">by_name =</span> <span class="st">"RepParty"</span>, <span class="dt">by_values =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>,<span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(strata_topic, <span class="dt">topics =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">5</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>strata_topic &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span>(out, <span class="dt">by_name =</span> <span class="st">"RepParty"</span>, <span class="dt">by_values =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(strata_topic, <span class="dt">topics =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">5</span>))</span></code></pre></div>
 <p><img src="Heterogeneity_files/figure-html/unnamed-chunk-8-1.png" width="700" style="display: block; margin: auto;"></p>
 </div>
   </div>
