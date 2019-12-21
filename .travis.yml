@@ -2,16 +2,16 @@
 
 language: r
 r:
-  - oldrel
+#  - oldrel
   - release
-  - devel
+#  - devel
 cache: packages
 sudo: true
 warnings_are_errors: false
 os:
   - linux
-#  - windows
-#  - osx
+  - windows
+  - osx
 dist: trusty
 latex: false
 
