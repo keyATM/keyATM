@@ -19,5 +19,5 @@ Please visit [our website](https://keyatm.github.io/keyATM/) for a complete refe
 # Installation
 To install **keyATM** from GitHub, please use `devtools`.
 ```
-devtools::install_github("Shusei-E/keyATM")
+devtools::install_github("keyATM/keyATM")
 ```
