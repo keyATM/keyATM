@@ -8,7 +8,10 @@ r:
 cache: packages
 sudo: true
 warnings_are_errors: false
-os: linux
+os:
+  - linux
+  - windows
+  - osx
 dist: trusty
 latex: false
 
