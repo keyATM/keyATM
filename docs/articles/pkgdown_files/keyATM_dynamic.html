@@ -83,7 +83,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Shusei-E/keyATM">
+  <a href="https://keyatm.github.io/keyATM/">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -116,16 +116,16 @@
 <a href="#preparing-documents-and-time-index" class="anchor"></a>Preparing documents and time index</h2>
 <p>Please read <a href="Preparation.html">Preparation</a> for the reading of documents and creating a list of keywords. We use bills data we prapared (<a href="Preparation.html#reading-documents-into-keyatm">documents</a> and <a href="Preparation.html#preparing-keywords">keywords</a>).</p>
 <p>HMM model needs a vector of time indexes. This is an “index” and not the actual time stamps (year and date). For example, <code>bills</code> data contain session information, which ranges from <code>101</code> to <code>114</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">bills_time_index &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>time_index</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(bills_time_index)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>bills_time_index &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>time_index</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(bills_time_index)</span></code></pre></div>
 <pre><code>## bills_time_index
 ## 101 102 103 104 105 106 107 108 109 110 111 112 113 114 
 ##  10  10  10  10  10  10  10  10  10  10  10  10  10  10</code></pre>
 <p>Time index should start from <code>1</code>, increment by <span class="math inline">\(1\)</span>, and have the same value if they are in the same time (for example the session of congress).</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">bills_time_index &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span>(bills_time_index <span class="op">-</span><span class="st"> </span><span class="dv">100</span>)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(bills_time_index)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>bills_time_index &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span>(bills_time_index <span class="op">-</span><span class="st"> </span><span class="dv">100</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(bills_time_index)</span></code></pre></div>
 <pre><code>## bills_time_index
 ##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 
 ## 10 10 10 10 10 10 10 10 10 10 10 10 10 10</code></pre>
@@ -135,15 +135,15 @@
 <h2 class="hasAnchor">
 <a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
 <p>Researchers need to specify the number of states in addition to keywords.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(    </a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">              <span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">              <span class="dt">model             =</span> <span class="st">"dynamic"</span>,          <span class="co"># select the model</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">time_index =</span> bills_time_index,</a>
-<a class="sourceLine" id="cb5-7" data-line-number="7">                                       <span class="dt">num_states =</span> <span class="dv">5</span>), <span class="co"># number of (latent) states in the model </span></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">50</span>)</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9">             )</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(    </span>
+<span id="cb5-2"><a href="#cb5-2"></a>              <span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>              <span class="dt">model             =</span> <span class="st">"dynamic"</span>,          <span class="co"># select the model</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">time_index =</span> bills_time_index,</span>
+<span id="cb5-7"><a href="#cb5-7"></a>                                       <span class="dt">num_states =</span> <span class="dv">5</span>), <span class="co"># number of (latent) states in the model </span></span>
+<span id="cb5-8"><a href="#cb5-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">50</span>)</span>
+<span id="cb5-9"><a href="#cb5-9"></a>             )</span></code></pre></div>
 </div>
 <div id="saving-the-model" class="section level2">
 <h2 class="hasAnchor">
@@ -153,29 +153,29 @@
 <div id="checking-top-words" class="section level2">
 <h2 class="hasAnchor">
 <a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</a></code></pre></div>
-<pre><code>##      1_Education        2_Law    3_Health     4_Drug      Other_1
-## 1           loan      law [✓] program [✓]    section       system
-## 2      child [✓]        state  public [✓]      shall     wildlife
-## 3        federal    court [✓]    national        act      project
-## 4         school       action       grant      state conservation
-## 5  education [✓]       person    research subsection          use
-## 6    student [✓]        class      fiscal        may         fish
-## 7         direct attorney [✓]        fund        sec       refuge
-## 8       borrower        crime   establish      title         plan
-## 9    corporation  enforcement      center  paragraph     resource
-## 10          rate       united    activity     report   management
-##      Other_2       Other_3
-## 1       care        safety
-## 2      minor   information
-## 3   security        entity
-## 4     social           use
-## 5   abortion       patient
-## 6   hospital       product
-## 7      force       federal
-## 8   recovery        system
-## 9   juvenile communication
-## 10 insurance       protect</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
+<pre><code>##      1_Education        2_Law    3_Health        4_Drug       Other_1
+## 1           loan      law [✓] program [✓]      drug [✓]     secretary
+## 2      child [✓]    court [✓]   secretary administrator       veteran
+## 3  education [✓]       action  health [✓]         water       service
+## 4         school        state       grant       coastal       medical
+## 5        federal       person    research treatment [✓] communication
+## 6    student [✓]        class    national     substance    commercial
+## 7       borrower attorney [✓]      fiscal           air      security
+## 8    educational        crime    activity    recreation     emergency
+## 9           rate       safety        fund      standard    commission
+## 10        direct     district      center        indoor     frequency
+##         Other_2    Other_3
+## 1        system    section
+## 2      wildlife      shall
+## 3           use        act
+## 4          fish      state
+## 5    government subsection
+## 6      national        may
+## 7  conservation        sec
+## 8        refuge  paragraph
+## 9       protect     united
+## 10       entity      title</code></pre>
 </div>
   </div>
 
