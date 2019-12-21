@@ -1,4 +1,4 @@
-name: Publish to GitHub Pages in Mergify merges a branch
+name: Publish to GitHub Pages when a branch is merged
 
 on:
   push:
