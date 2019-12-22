@@ -22,6 +22,8 @@ pull_request_rules:
       - label=auto-merge
       - label!=no-auto-merge
       - "#review-requested=0"
+      - "#commented-reviews-by=0"
+      - "#changes-requested-reviews-by=0"
     actions:
       merge:
         method: merge
@@ -33,6 +35,8 @@ pull_request_rules:
       - label=auto-merge
       - label!=no-auto-merge
       - "#review-requested=0"
+      - "#commented-reviews-by=0"
+      - "#changes-requested-reviews-by=0"
     actions:
       merge:
         method: merge
