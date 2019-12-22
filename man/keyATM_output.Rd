@@ -2,33 +2,11 @@
 % Please edit documentation in R/posterior.R
 \name{keyATM_output}
 \alias{keyATM_output}
-\title{Get posterior quantities from model output}
+\title{keyATM_fit() calls keyATM_output()}
 \usage{
 keyATM_output(model)
 }
-\arguments{
-\item{model}{a fitted keyATM model (an output of \code{keyATM_fit()})}
-}
-\value{
-A keyATM_output containing:
-  \describe{
-    \item{keyword_k}{Number of keyword topics}
-    \item{no_keyword_topics}{Number of regular unseeded topics}
-    \item{V}{Number of word types}
-    \item{N}{Number of documents}
-    \item{theta}{Normalized topic proportions for each document}
-    \item{phi}{Normalized topic specific word generation probabilities}
-    \item{topic_counts}{Number of tokens assigned to each topic}
-    \item{word_counts}{Number of times each word type appears}
-    \item{doc_lens}{Length of each document in tokens}
-    \item{vocab}{Words in the vocabulary}
-    \item{priors}{Priors used}
-    \item{options}{Model options}
-    \item{model_fit}{Perplexity and log-likelihood}
-    \item{p}{Estimated p}
-    \item{values_iter}{Organized values stored during iterations}
-  }
-}
 \description{
-\code{keyATM_output()} makes various quantities that help interpret the model.
+keyATM_fit() calls keyATM_output()
 }
+\keyword{internal}

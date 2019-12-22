@@ -7,9 +7,9 @@
 keyATM_read(texts, encoding = "UTF-8", check = TRUE)
 }
 \arguments{
-\item{texts}{Input. keyATM takes dfm, data.frame, tibble, or a vector of file paths.}
+\item{texts}{Input. keyATM takes dfm, data.frame, \pkg{tibble} tbl_df, or a vector of file paths.}
 
-\item{encoding}{A character. Only used when \code{texts} is a vector of file paths.}
+\item{encoding}{A character. Only used when `texts` is a vector of file paths.}
 
 \item{check}{If \code{TRUE}, check whether there is nothing wrong with the structure of texts.}
 }

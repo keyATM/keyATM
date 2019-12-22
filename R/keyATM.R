@@ -9,7 +9,9 @@
 #' @param keywords a list of keywords
 #' @param model_settings a list of model specific settings
 #' @param priors a list of priors of parameters
-#' @param options a list of options
+#' @param options a list of options \describe{
+#'      \item{seed}{a numeric value for random seed. If it is not provided, the package randomly selects a seed.}
+#' }
 #' @param keep a vector of the names of elements you want to keep in output
 #'
 #' @return A keyATM_output object containing:
@@ -29,6 +31,8 @@
 #'     \item{values_iter}{Organized values stored during iterations}
 #'     \item{kept_values}{Outputs you specified to store.}
 #'   }
+#'
+#' @seealso \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 #'
 #' @examples
 #' \dontrun{
