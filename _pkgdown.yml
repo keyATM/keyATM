@@ -50,22 +50,39 @@ navbar:
 
 
 reference:
-- title: Functions
+- title: Preparation
   desc: ~
   contents:
-  - '`by_strata_DocTopic`'
-  - '`by_strata_TopicWord`'
-  - '`keyATM`'
-  - '`keyATM_data_bills`'
   - '`keyATM_read`'
+  - '`visualize_keywords`'
+- title: Fitting models
+  desc: ~
+  contents:
+  - '`keyATM`'
+  - '`weightedLDA`'
+- title: Check results
+  desc: ~
+  contents:
   - '`plot_alpha`'
   - '`plot_modelfit`'
   - '`plot_p`'
   - '`top_docs`'
   - '`top_words`'
   - '`top_topics`'
-  - '`visualize_keywords`'
-  - '`weightedLDA`'
+- title: Additional analyses
+  desc: ~
+  contents:
+  - '`by_strata_DocTopic`'
+  - '`by_strata_TopicWord`'
+  - '`plot.strata_doctopic`'
+- title: Built-in data
+  desc: ~
+  contents:
+  - '`keyATM_data_bills`'
+- title: Package-level
+  desc: ~
+  contents:
+  - '`keyATM-package`'
 
 toc:
   depth: 2

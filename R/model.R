@@ -2,8 +2,8 @@
 #'
 #' This function reads texts and creates a keyATM_docs object, which is a list of texts.
 #'
-#' @param texts Input. keyATM takes dfm, data.frame, tibble, or a vector of file paths.
-#' @param encoding A character. Only used when \code{texts} is a vector of file paths.
+#' @param texts Input. keyATM takes dfm, data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
+#' @param encoding A character. Only used when `texts` is a vector of file paths.
 #' @param check If \code{TRUE}, check whether there is nothing wrong with the structure of texts.
 #'
 #' @return A list whose elements are splitted texts. The length of the list equals to the number of documents.
@@ -330,35 +330,8 @@ save_fig.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 }
 
 
-
-#' Fit keyATM model
-#'
-#' Select and specify one of the keyATM models and fit the model.
-#'
-#'
-#' @param docs texts read via \code{keyATM_read()}
-#' @param model keyATM model: "base", "covariates", and "dynamic"
-#' @param no_keyword_topics the number of regular topics
-#' @param keywords a list of keywords
-#' @param model_settings a list of model specific settings
-#' @param priors a list of priors of parameters
-#' @param options a list of options
-#'
-#' @return keyATM_model object, which is a list containing \describe{
-#'   \item{W}{a list of vectors of word indexes}
-#'   \item{Z}{a list of vectors of topic indicators isomorphic to W}
-#'   \item{S}{a list}
-#'   \item{model}{the name of the model}
-#'   \item{keywords}{}
-#'   \item{keywords_raw}{}
-#'   \item{no_keyword_topics}{the number of regular topics}
-#'   \item{model_settings}{a list of settings}
-#'   \item{priors}{a list of priors}
-#'   \item{options}{a list of options}
-#'   \item{stored_values}{a list of stored_values}
-#'   \item{call}{details of the function call}
-#' } 
-#'
+#' keyATM_fit is wrapped by keyATM() and weightedLDA()
+#' @keywords internal
 keyATM_fit <- function(docs, model, no_keyword_topics,
                        keywords = list(), model_settings = list(),
                        priors = list(), options = list()) 

@@ -1,28 +1,6 @@
-#' Get posterior quantities from model output
+#' keyATM_fit() calls keyATM_output()
 #'
-#' \code{keyATM_output()} makes various quantities that help interpret the model.
-#'
-#' @param model a fitted keyATM model (an output of \code{keyATM_fit()})
-#'
-#' @return A keyATM_output containing:
-#'   \describe{
-#'     \item{keyword_k}{Number of keyword topics}
-#'     \item{no_keyword_topics}{Number of regular unseeded topics}
-#'     \item{V}{Number of word types}
-#'     \item{N}{Number of documents}
-#'     \item{theta}{Normalized topic proportions for each document}
-#'     \item{phi}{Normalized topic specific word generation probabilities}
-#'     \item{topic_counts}{Number of tokens assigned to each topic}
-#'     \item{word_counts}{Number of times each word type appears}
-#'     \item{doc_lens}{Length of each document in tokens}
-#'     \item{vocab}{Words in the vocabulary}
-#'     \item{priors}{Priors used}
-#'     \item{options}{Model options}
-#'     \item{model_fit}{Perplexity and log-likelihood}
-#'     \item{p}{Estimated p}
-#'     \item{values_iter}{Organized values stored during iterations}
-#'   }
-#'
+#' @keywords internal
 #' @import magrittr
 #'
 keyATM_output <- function(model)
@@ -1050,7 +1028,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
 
 #' Plot Document-Topic distribution by strata 
 #'
-#' @param x the output from a keyATM model (see \code{by_strata_DocTopic()})
+#' @param x a strata_doctopic object (see \code{by_strata_DocTopic()})
 #' @param topics topics to show
 #' @param quantile_vec quantiles to show
 #'

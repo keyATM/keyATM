@@ -19,7 +19,9 @@ keyATM(docs, model, no_keyword_topics, keywords = list(),
 
 \item{priors}{a list of priors of parameters}
 
-\item{options}{a list of options}
+\item{options}{a list of options \describe{
+     \item{seed}{a numeric value for random seed. If it is not provided, the package randomly selects a seed.}
+}}
 
 \item{keep}{a vector of the names of elements you want to keep in output}
 
@@ -68,4 +70,7 @@ Run keyATM models.
 
 }
 
+}
+\seealso{
+\url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 }

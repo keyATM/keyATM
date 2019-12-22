@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get posterior quantities from model output — keyATM_output • keyATM</title>
+<title>keyATM_fit() calls keyATM_output() — keyATM_output • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -34,9 +34,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Get posterior quantities from model output — keyATM_output" />
+<meta property="og:title" content="keyATM_fit() calls keyATM_output() — keyATM_output" />
 
-<meta property="og:description" content="keyATM_output() makes various quantities that help interpret the model." />
+<meta property="og:description" content="keyATM_fit() calls keyATM_output()" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -138,59 +138,25 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get posterior quantities from model output</h1>
+    <h1>keyATM_fit() calls keyATM_output()</h1>
     
     <div class="hidden name"><code>keyATM_output.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>keyATM_output()</code> makes various quantities that help interpret the model.</p>
+    <p>keyATM_fit() calls keyATM_output()</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>keyATM_output</span>(<span class='no'>model</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>model</th>
-      <td><p>a fitted keyATM model (an output of <code><a href='keyATM_fit.html'>keyATM_fit()</a></code>)</p></td>
-    </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A keyATM_output containing:</p><dl class='dl-horizontal'>
-    <dt>keyword_k</dt><dd><p>Number of keyword topics</p></dd>
-    <dt>no_keyword_topics</dt><dd><p>Number of regular unseeded topics</p></dd>
-    <dt>V</dt><dd><p>Number of word types</p></dd>
-    <dt>N</dt><dd><p>Number of documents</p></dd>
-    <dt>theta</dt><dd><p>Normalized topic proportions for each document</p></dd>
-    <dt>phi</dt><dd><p>Normalized topic specific word generation probabilities</p></dd>
-    <dt>topic_counts</dt><dd><p>Number of tokens assigned to each topic</p></dd>
-    <dt>word_counts</dt><dd><p>Number of times each word type appears</p></dd>
-    <dt>doc_lens</dt><dd><p>Length of each document in tokens</p></dd>
-    <dt>vocab</dt><dd><p>Words in the vocabulary</p></dd>
-    <dt>priors</dt><dd><p>Priors used</p></dd>
-    <dt>options</dt><dd><p>Model options</p></dd>
-    <dt>model_fit</dt><dd><p>Perplexity and log-likelihood</p></dd>
-    <dt>p</dt><dd><p>Estimated p</p></dd>
-    <dt>values_iter</dt><dd><p>Organized values stored during iterations</p></dd>
-  
-</dl>
-
-    
+        
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>

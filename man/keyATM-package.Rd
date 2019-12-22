@@ -3,10 +3,16 @@
 \docType{package}
 \name{keyATM-package}
 \alias{keyATM-package}
-\title{keyATM: Keyword Assisted Topic Models}
+\title{Keyword Assisted Topic Models}
 \description{
 keyATM fits Keyword Assisted Topic Models
 }
+\section{Online documentation}{
+
+
+<https://keyatm.github.io/keyATM/>
+}
+
 \seealso{
 Useful links:
 \itemize{

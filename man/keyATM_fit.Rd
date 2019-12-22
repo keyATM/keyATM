@@ -2,42 +2,12 @@
 % Please edit documentation in R/model.R
 \name{keyATM_fit}
 \alias{keyATM_fit}
-\title{Fit keyATM model}
+\title{keyATM_fit is wrapped by keyATM() and weightedLDA()}
 \usage{
 keyATM_fit(docs, model, no_keyword_topics, keywords = list(),
   model_settings = list(), priors = list(), options = list())
 }
-\arguments{
-\item{docs}{texts read via \code{keyATM_read()}}
-
-\item{model}{keyATM model: "base", "covariates", and "dynamic"}
-
-\item{no_keyword_topics}{the number of regular topics}
-
-\item{keywords}{a list of keywords}
-
-\item{model_settings}{a list of model specific settings}
-
-\item{priors}{a list of priors of parameters}
-
-\item{options}{a list of options}
-}
-\value{
-keyATM_model object, which is a list containing \describe{
-  \item{W}{a list of vectors of word indexes}
-  \item{Z}{a list of vectors of topic indicators isomorphic to W}
-  \item{S}{a list}
-  \item{model}{the name of the model}
-  \item{keywords}{}
-  \item{keywords_raw}{}
-  \item{no_keyword_topics}{the number of regular topics}
-  \item{model_settings}{a list of settings}
-  \item{priors}{a list of priors}
-  \item{options}{a list of options}
-  \item{stored_values}{a list of stored_values}
-  \item{call}{details of the function call}
-}
-}
 \description{
-Select and specify one of the keyATM models and fit the model.
+keyATM_fit is wrapped by keyATM() and weightedLDA()
 }
+\keyword{internal}

@@ -8,7 +8,7 @@
   0.5, 0.95), ...)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{by_strata_DocTopic()})}
+\item{x}{a strata_doctopic object (see \code{by_strata_DocTopic()})}
 
 \item{topics}{topics to show}
 
