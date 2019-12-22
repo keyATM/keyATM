@@ -61,7 +61,7 @@ out <- keyATM(
 
 ## Saving the model
 
-Once you fit the model, you can save the model with `save()` for replication. This is the same as the [Base model](keyATM_basic.html#saving-the-model).
+Once you fit the model, you can save the model with `save()` for replication. This is the same as the [Base model](keyATM_base.html#saving-the-model).
 
 ## Checking top words
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
