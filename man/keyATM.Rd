@@ -9,6 +9,8 @@ keyATM(docs, model, no_keyword_topics, keywords = list(),
   keep = c())
 }
 \arguments{
+\item{docs}{texts read via \code{keyATM_read()}}
+
 \item{model}{keyATM model: "base", "covariates", and "dynamic"}
 
 \item{no_keyword_topics}{the number of regular topics}
@@ -24,8 +26,6 @@ keyATM(docs, model, no_keyword_topics, keywords = list(),
 }}
 
 \item{keep}{a vector of the names of elements you want to keep in output}
-
-\item{keyATM_docs}{texts read via \code{keyATM_read()}}
 }
 \value{
 A keyATM_output object containing:

@@ -1,5 +1,6 @@
 Package: keyATM
-Title: Keyword Assisted Topic Models
+Title: Keyword Assisted Topic Models. 
+Description: The implementation of the Base keyATM, the Covariate keyATM, and the Dynamic keyATM.
 Version: 0.1.0
 Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", role = c("aut","cre")),
     person("Tomoya", "Sasaki", email = "tomoyas@mit.edu", role = c("aut")),
