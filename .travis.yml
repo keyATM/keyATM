@@ -22,3 +22,8 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then echo "CXX14FLAGS=-O3 -mtune=native -march=native -Wno-unused-variable -Wno-unused-function  -Wno-macro-redefined" >> ~/.R/Makevars  ; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then echo "CXX14=g++ -std=c++1y -fext-numeric-literals -fPIC" >> ~/.R/Makevars  ; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then Rscript -e 'install.packages(c("devtools", "ndjson"))'  ; fi
+
+notifications:
+  slack: ${{ secrets.TRAVIS_SLACK }}
+  on_success: never
+  on_failure: always
