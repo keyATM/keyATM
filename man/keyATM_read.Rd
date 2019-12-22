@@ -7,30 +7,30 @@
 keyATM_read(texts, encoding = "UTF-8", check = TRUE)
 }
 \arguments{
-\item{texts}{Input. keyATM takes dfm, data.frame, tibble, and a vector of file paths.}
+\item{texts}{Input. keyATM takes dfm, data.frame, tibble, or a vector of file paths.}
 
 \item{encoding}{A character. Only used when \code{texts} is a vector of file paths.}
 
-\item{check}{if \code{TRUE}}
+\item{check}{If \code{TRUE}, check whether there is nothing wrong with the structure of texts.}
 }
 \value{
-A list whose elements are splitted texts.
+A list whose elements are splitted texts. The length of the list equals to the number of documents.
 }
 \description{
-This function read texts and creates a tibble.
+This function reads texts and creates a keyATM_docs object, which is a list of texts.
 }
 \examples{
 \dontrun{
- # Use quanteda dfm 
- keyATM_docs <- keyATM_read(quanteda_dfm) 
+ # Use quanteda dfm
+ keyATM_docs <- keyATM_read(texts = quanteda_dfm) 
   
  # Use data.frame or tibble (texts should be stored in a column named `text`)
- keyATM_docs <- keyATM_read(data_frame_object) 
- keyATM_docs <- keyATM_read(tibble_object) 
+ keyATM_docs <- keyATM_read(texts = data_frame_object) 
+ keyATM_docs <- keyATM_read(texts = tibble_object) 
 
- # Use a vector that stores full paths to the files  
+ # Use a vector that stores full paths to the text files  
  files <- list.files(doc_folder, pattern = "*.txt", full.names = T) 
- keyATM_docs <- keyATM_read(files) 
+ keyATM_docs <- keyATM_read(texts = files) 
 }
 
 }

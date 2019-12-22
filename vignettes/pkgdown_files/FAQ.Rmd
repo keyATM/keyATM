@@ -12,7 +12,7 @@ The table below summarizes keyATM models and other popular models based on the i
 
 |                                   | Keywords  | Covariate  | Time Structure |   
 |----------------------------------:|:---------:|:----------:|:--------------:|
-|[keyATM Basic](keyATM_basic.html)  |     ○    |     ×     |        ×      |
+|[keyATM Basic](keyATM_base.html)  |     ○    |     ×     |        ×      |
 |[keyATM Covariate](keyATM_cov.html)|     ○    |     ○     |        △      |
 |    [keyATM HMM](keyATM_hmm.html)  |     ○    |     ×     |        ○      |
 |            LDA Weighted           |     ×    |     ×     |        ×      |
@@ -26,7 +26,7 @@ The next table compares inference methods and speeds. CGS stands for Collapsed G
 
 |                                   |        Inference      |                  Speed                 |
 |----------------------------------:|:----------------------|:---------------------------------------|
-|[keyATM Basic](keyATM_basic.html)  |        CGS + SS       |                  Fast                  |
+|[keyATM Basic](keyATM_base.html)  |        CGS + SS       |                  Fast                  |
 |[keyATM Covariate](keyATM_cov.html)|        CGS + SS       | Moderate  (Depends on # of covariates) |
 |[keyATM HMM](keyATM_hmm.html)      |        CGS + SS       |                  Fast                  |
 |            LDA Weighted           |        CGS + SS       |                  Fast                  |
