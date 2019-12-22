@@ -8,6 +8,10 @@ keyATM_read(texts, encoding = "UTF-8", check = TRUE)
 }
 \arguments{
 \item{texts}{Input. keyATM takes dfm, data.frame, tibble, and a vector of file paths.}
+
+\item{encoding}{A character. Only used when \code{texts} is a vector of file paths.}
+
+\item{check}{if \code{TRUE}}
 }
 \value{
 A list whose elements are splitted texts.

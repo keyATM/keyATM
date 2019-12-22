@@ -3,6 +3,8 @@
 #' This function read texts and creates a tibble. 
 #'
 #' @param texts Input. keyATM takes dfm, data.frame, tibble, and a vector of file paths.
+#' @param encoding A character. Only used when \code{texts} is a vector of file paths.
+#' @param check If \code{TRUE}, check whether assigned keywords exist in the corpus.
 #'
 #' @return A list whose elements are splitted texts.
 #'
@@ -249,7 +251,7 @@ check_keywords <- function(unique_words, keywords, prune)
   keywords_flat <- unlist(keywords, use.names = F, recursive = F)
   non_existent <- keywords_flat[!keywords_flat %in% unique_words]
 
-  if (prune){
+  if (prune) {
     # Prune keywords 
     if (length(non_existent) != 0) {
      if (length(non_existent) == 1) {
