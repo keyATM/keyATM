@@ -539,7 +539,7 @@ print.keyATM_output <- function(x, ...)
 
 #' @noRd
 #' @export
-summary.keyATM_output <- function(x, ...)
+summary.keyATM_output <- function(object, ...)
 {
   cat(
       paste0(
@@ -657,7 +657,7 @@ top_words_calc <- function(n, measure, show_keyword,
       }
     }
   }
-  res <- as.data.frame(res)
+  res <- as.data.frame(res, stringsAsFactors = FALSE)
 
   return(res)
 }
@@ -1091,7 +1091,7 @@ plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0
 
 #' @noRd
 #' @export
-summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95))
+summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), ...)
 {
   x <- object
   tables <- lapply(1:length(x$by_values),

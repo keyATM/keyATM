@@ -2,6 +2,7 @@
 *.swp
 .DS_Store
 docs/articles/pkgdown_files/*/*/*.png
+*.png
 
 # History files
 .Rhistory
