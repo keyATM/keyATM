@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot Document-Topic distribution by strata — plot.strata_doctopic • keyATM</title>
+<title>Save a keyword plot — save_fig.keyATM_viz • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -34,9 +34,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Plot Document-Topic distribution by strata — plot.strata_doctopic" />
+<meta property="og:title" content="Save a keyword plot — save_fig.keyATM_viz" />
 
-<meta property="og:description" content="Plot Document-Topic distribution by strata" />
+<meta property="og:description" content="Save a keyword plot" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -138,45 +138,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot Document-Topic distribution by strata</h1>
+    <h1>Save a keyword plot</h1>
     
-    <div class="hidden name"><code>plot.strata_doctopic.Rd</code></div>
+    <div class="hidden name"><code>save_fig.keyATM_viz.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Plot Document-Topic distribution by strata</p>
+    <p>Save a keyword plot</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for strata_doctopic</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>topics</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>quantile_vec</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.05</span>,
-  <span class='fl'>0.5</span>, <span class='fl'>0.95</span>), <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>save_fig.keyATM_viz</span>(<span class='no'>x</span>, <span class='kw'>file</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span>(<span class='st'>"'file' must be specified"</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>a strata_doctopic object (see <code><a href='by_strata_DocTopic.html'>by_strata_DocTopic()</a></code>)</p></td>
+      <td><p>a keyATM_viz object (see <code><a href='visualize_keywords.html'>visualize_keywords()</a></code>)</p></td>
     </tr>
     <tr>
-      <th>topics</th>
-      <td><p>topics to show</p></td>
-    </tr>
-    <tr>
-      <th>quantile_vec</th>
-      <td><p>quantiles to show</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>additional arguments not used</p></td>
+      <th>file</th>
+      <td><p>a character</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>ggplot2 object</p>
     
 
   </div>
@@ -184,9 +170,7 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>

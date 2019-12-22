@@ -3,7 +3,7 @@
 #' Run keyATM models.
 #'
 #'
-#' @param keyATM_docs texts read via \code{keyATM_read()}
+#' @param docs texts read via \code{keyATM_read()}
 #' @param model keyATM model: "base", "covariates", and "dynamic"
 #' @param no_keyword_topics the number of regular topics
 #' @param keywords a list of keywords

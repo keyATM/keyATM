@@ -205,7 +205,6 @@ keyATM_output_phi <- function(model, info)
 }
 
 
-
 #' @noRd
 #' @import magrittr
 keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, p_estimated,
@@ -500,6 +499,7 @@ keyATM_output_rescale_Lambda <- function(model, info)
   return(Lambda)
 }
 
+
 #' @noRd
 #' @export
 print.keyATM_output <- function(x, ...)
@@ -530,7 +530,11 @@ summary.keyATM_output <- function(object, ...)
 }
 
 
-#' @noRd
+#' Save a keyATM_output object
+#'
+#' @param x a keyATM_output object (see \code{keyATM()})
+#' @param file a character
+#'
 #' @export
 save.keyATM_output <- function(x, file = stop("'file' must be specified"))
 {
@@ -544,7 +548,6 @@ plot.keyATM_output <- function(x, ...)
 {
   print(plot_modelfit(x, ...))
 }
-
 
 
 #' Show the top words for each topic
@@ -641,7 +644,6 @@ top_words_calc <- function(n, measure, show_keyword,
 }
 
 
-
 #' Show the top topics for each document
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
@@ -669,7 +671,6 @@ top_topics <- function(x, n = 2)
 }
 
 
-
 #' Show the top documents for each topic
 #'
 #' @param x the output from a keyATM model (see \code{keyATM_output()})
@@ -692,7 +693,6 @@ top_docs <- function(x, n = 10)
           tibble::as_tibble(.)
   return(res) 
 }
-
 
 
 #' Show a diagnosis plot of alpha
@@ -759,7 +759,6 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
   }
   return(p)
 }
-
 
 
 #' Show a diagnosis plot of log-likelihood and perplexity
@@ -845,8 +844,6 @@ plot_p <- function(x, show_topic = NULL)
 
   return(g)
 }
-
-
 
 
 #' Estimate Subsetted Topic-Word distribution
@@ -1024,13 +1021,12 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
 }
 
 
-
-
 #' Plot Document-Topic distribution by strata 
 #'
 #' @param x a strata_doctopic object (see \code{by_strata_DocTopic()})
 #' @param topics topics to show
 #' @param quantile_vec quantiles to show
+#' @param ... additional arguments not used
 #'
 #' @return ggplot2 object
 #' @import ggplot2
@@ -1088,6 +1084,4 @@ summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), .
 
   return(tables)
 }
-
-
 

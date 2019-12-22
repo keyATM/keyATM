@@ -13,6 +13,8 @@
 \item{topics}{topics to show}
 
 \item{quantile_vec}{quantiles to show}
+
+\item{...}{additional arguments not used}
 }
 \value{
 ggplot2 object

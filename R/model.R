@@ -314,7 +314,11 @@ summary.keyATM_viz <- function(object, ...)
 }
 
 
-#' @noRd
+#' Save a keyATM_viz object
+#'
+#' @param x a keyATM_viz object (see \code{visualize_keywords()})
+#' @param file a character
+#'
 #' @export
 save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 {
@@ -322,7 +326,11 @@ save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 }
 
 
-#' @noRd
+#' Save a keyword plot
+#'
+#' @param x a keyATM_viz object (see \code{visualize_keywords()})
+#' @param file a character
+#'
 #' @export
 save_fig.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 {
@@ -330,6 +338,8 @@ save_fig.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 }
 
 
+#' Fit a keyATM model 
+#' 
 #' keyATM_fit is wrapped by keyATM() and weightedLDA()
 #' @keywords internal
 keyATM_fit <- function(docs, model, no_keyword_topics,
@@ -479,8 +489,6 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 }
 
 
-
-
 #' @noRd
 #' @export
 print.keyATM_model <- function(x, ...)
@@ -489,77 +497,10 @@ print.keyATM_model <- function(x, ...)
       paste0(
              "keyATM_model object for the ",
              x$model,
-             " model.",
+             " model.\nThis is an initialized object without fitting the model.",
              "\n"
             )
      )
-}
-
-
-#' @noRd
-#' @export
-summary.keyATM_model <- function(object, ...)
-{
-  cat(
-      paste0(
-             "keyATM_model object for the ",
-             object$model,
-             " model.",
-             "\n"
-            )
-     )
-}
-
-
-#' @noRd
-#' @export
-save.keyATM_model <- function(x, file = stop("'file' must be specified"))
-{
-  saveRDS(x, file = file)
-}
-
-
-#' @noRd
-#' @export
-print.keyATM_fitted <- function(x, ...)
-{
-  cat(
-      paste0(
-             "keyATM_model object for the ",
-             x$model,
-             " model. ",
-             x$options$iterations, " iterations.\n",
-             length(x$W), " documents | ",
-             length(x$keywords), " keyword topics",
-             "\n"
-      )
-     )
-}
-
-
-#' @noRd
-#' @export
-summary.keyATM_fitted <- function(object, ...)
-{
-  cat(
-      paste0(
-             "keyATM_model object for the ",
-             object$model,
-             " model. ",
-             object$options$iterations, " iterations.\n",
-             length(object$W), " documents | ",
-             length(object$keywords), " keyword topics",
-             "\n"
-      )
-     )
-}
-
-
-#' @noRd
-#' @export
-save.keyATM_fitted <- function(x, file = stop("'file' must be specified"))
-{
-  saveRDS(x, file = file)
 }
 
 

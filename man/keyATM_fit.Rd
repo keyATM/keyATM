@@ -2,7 +2,7 @@
 % Please edit documentation in R/model.R
 \name{keyATM_fit}
 \alias{keyATM_fit}
-\title{keyATM_fit is wrapped by keyATM() and weightedLDA()}
+\title{Fit a keyATM model}
 \usage{
 keyATM_fit(docs, model, no_keyword_topics, keywords = list(),
   model_settings = list(), priors = list(), options = list())
