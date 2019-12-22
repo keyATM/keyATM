@@ -1,4 +1,5 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+# env option to avoid `Files in the 'vignettes' directory but no files in 'inst/doc'` warning
 
 language: r
 r:
@@ -13,6 +14,9 @@ os:
   - osx
 dist: trusty
 latex: false
+env:
+  global:
+    - R_CHECK_ARGS="--no-build-vignettes"
 
 # Manually install some packages and C++14
 before_install:
