@@ -2,7 +2,7 @@
 % Please edit documentation in R/posterior.R
 \name{by_strata_DocTopic}
 \alias{by_strata_DocTopic}
-\title{Estimate Document-Topic distribution by strata}
+\title{Estimate document-topic distribution by strata}
 \usage{
 by_strata_DocTopic(x, by_name, by_values, burn_in = NULL,
   parallel = TRUE, mc.cores = NULL, posterior_mean = FALSE)
@@ -26,5 +26,5 @@ by_strata_DocTopic(x, by_name, by_values, burn_in = NULL,
 strata_topicword object (a list)
 }
 \description{
-Estimate Document-Topic distribution by strata
+Estimate document-topic distribution by strata
 }

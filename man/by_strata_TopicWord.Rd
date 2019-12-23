@@ -2,7 +2,7 @@
 % Please edit documentation in R/posterior.R
 \name{by_strata_TopicWord}
 \alias{by_strata_TopicWord}
-\title{Estimate Subsetted Topic-Word distribution}
+\title{Estimate subsetted topic-word distribution}
 \usage{
 by_strata_TopicWord(x, keyATM_docs, by)
 }
@@ -17,5 +17,5 @@ by_strata_TopicWord(x, keyATM_docs, by)
 strata_topicword object (a list)
 }
 \description{
-Estimate Subsetted Topic-Word distribution
+Estimate subsetted topic-word distribution
 }

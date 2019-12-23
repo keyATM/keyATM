@@ -2,7 +2,7 @@
 % Please edit documentation in R/model.R
 \name{visualize_keywords}
 \alias{visualize_keywords}
-\title{Visualize texts}
+\title{Visualize keywords}
 \usage{
 visualize_keywords(docs, keywords, prune = TRUE, label_size = 3.2)
 }

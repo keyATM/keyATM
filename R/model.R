@@ -1,4 +1,4 @@
-#' Read Texts
+#' Read texts
 #'
 #' This function reads texts and creates a keyATM_docs object, which is a list of texts.
 #'
@@ -131,7 +131,7 @@ summary.keyATM_docs <- function(object, ...)
 }
 
 
-#' Visualize texts
+#' Visualize keywords
 #'
 #' This function visualizes the proportion of keywords in the documents.
 #'

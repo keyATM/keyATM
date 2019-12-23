@@ -1,4 +1,4 @@
-#' keyATM Main function
+#' keyATM main function
 #'
 #' Run keyATM models.
 #'
@@ -112,7 +112,7 @@ check_arg_keep <- function(obj, model)
 
 
 
-#' Weighted LDA Main function
+#' Weighted LDA main function
 #'
 #' Run weighted LDA models.
 #'

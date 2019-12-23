@@ -82,7 +82,7 @@ reference:
 - title: Package-level
   desc: ~
   contents:
-  - '`keyATM-packaget `'
+  - '`keyATM-package`'
 
 toc:
   depth: 2

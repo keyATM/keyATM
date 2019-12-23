@@ -2,7 +2,7 @@
 % Please edit documentation in R/keyATM.R
 \name{keyATM}
 \alias{keyATM}
-\title{keyATM Main function}
+\title{keyATM main function}
 \usage{
 keyATM(docs, model, no_keyword_topics, keywords = list(),
   model_settings = list(), priors = list(), options = list(),

@@ -2,7 +2,7 @@
 % Please edit documentation in R/model.R
 \name{keyATM_read}
 \alias{keyATM_read}
-\title{Read Texts}
+\title{Read texts}
 \usage{
 keyATM_read(texts, encoding = "UTF-8", check = TRUE)
 }
