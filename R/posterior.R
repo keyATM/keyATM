@@ -846,7 +846,7 @@ plot_p <- function(x, show_topic = NULL)
 }
 
 
-#' Estimate Subsetted Topic-Word distribution
+#' Estimate subsetted topic-word distribution
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param keyATM_docs (see \code{keyATM_read()})
@@ -907,7 +907,7 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 }
 
 
-#' Estimate Document-Topic distribution by strata 
+#' Estimate document-topic distribution by strata 
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param by_name the name of the variable
@@ -1021,7 +1021,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
 }
 
 
-#' Plot Document-Topic distribution by strata 
+#' Plot document-topic distribution by strata 
 #'
 #' @param x a strata_doctopic object (see \code{by_strata_DocTopic()})
 #' @param topics topics to show

@@ -5,7 +5,7 @@
 \alias{keyATM-package}
 \title{Keyword Assisted Topic Models}
 \description{
-keyATM fits Keyword Assisted Topic Models
+The implementation of the Base keyATM, the Covariate keyATM, and the Dynamic keyATM.
 }
 \section{Online documentation}{
 

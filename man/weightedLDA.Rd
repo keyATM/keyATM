@@ -2,7 +2,7 @@
 % Please edit documentation in R/keyATM.R
 \name{weightedLDA}
 \alias{weightedLDA}
-\title{Weighted LDA Main function}
+\title{Weighted LDA main function}
 \usage{
 weightedLDA(docs, model, number_of_topics, model_settings = list(),
   priors = list(), options = list(), keep = c())
