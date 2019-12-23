@@ -12,29 +12,26 @@ knitr::opts_chunk$set(eval = T, echo = TRUE)
 ## Preparing documents and covariates
 Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. We use bills data we prapared ([documents](Preparation.html#reading-documents-into-keyatm) and [keywords](Preparation.html#preparing-keywords)).
 
+```{r, include = T, warning=FALSE, message=FALSE, fig.align='center'}
+library(keyATM)
+library(quanteda)
+
+data(keyATM_data_bills)
+bills_keywords <- keyATM_data_bills$keywords
+bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda dfm object
+keyATM_docs <- keyATM_read(bills_dfm)
+```
+
 For the covariate data, we use the dummy variable which takes one if the bill is proposesd by the Republican party and zero otherwise (Adler and Wilkerson 2018). **keyATM** takes `matrix` or `data.frame` (`tibble`) type covariates data. If you have $D$ documents and $M$ covariates, the matrix should be $D \times M$. In this example, we have a dummy variable that indicates party identification.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-library(keyATM)
-data(keyATM_data_bills)
 bills_cov <- keyATM_data_bills$cov # dummy variable indicating the party proposed the bill
 dim(bills_cov)  # We have 140 documents and a single covariate for each document
 ```
 
 Please make sure that **the order of covariates is the same as the order of documents**.
 
-```{r, include = F, warning=FALSE, message=FALSE, fig.align='center'}
-library(quanteda)
-bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda object
-keyATM_docs <- keyATM_read(bills_dfm)
 
-bills_keywords <- list(
-                       Education = c("education", "child", "student"),
-                       Law       = c("court", "law", "attorney"),
-                       Health    = c("public", "health", "program"),
-                       Drug      = c("drug", "treatment")
-                      )
-```
 
 
 ## Fitting the model

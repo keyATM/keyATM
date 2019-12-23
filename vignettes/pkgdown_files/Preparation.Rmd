@@ -94,7 +94,7 @@ Before fitting the model, we need to read texts and keywords into **keyATM**. He
 library(quanteda)
 library(keyATM)
 data(keyATM_data_bills)
-bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda object
+bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda dfm object
 keyATM_docs <- keyATM_read(bills_dfm)
 ```
 
