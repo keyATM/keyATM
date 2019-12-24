@@ -9,7 +9,7 @@ Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", ro
 Maintainer: Shusei Eshima <shuseieshima@g.harvard.edu>
 BugReports: https://github.com/keyATM/keyATM/issues
 URL: https://keyatm.github.io/keyATM/
-Depends: R (>= 3.5.3)
+Depends: R (>= 3.5)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

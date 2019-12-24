@@ -12,7 +12,7 @@ pkgdown:
 # Options
 `keyATM` takes various options. You can set options through a list.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
-my_options <- list(seed        = 100,
+my_options <- list(seed        = NULL, # automatically generate random seed 
                    iterations  = 1500,
                    verbose     = FALSE,
                    llk_per     = 10,
@@ -26,7 +26,7 @@ out <- keyATM(docs      = keyATM_docs,    # text input
               keywords  = bills_keywords, # keywords
               model     = "basic",        # select the model
               options   = my_options,     # use your own option list
-              keep = c("Z")               # keep a specific object in the output
+              keep      = c("Z")          # keep a specific object in the output
              )
 ```
 
@@ -47,7 +47,7 @@ Default is `FALSE`. If it is true, it shows values of log-likelihood and perplex
 
 
 ### `use_weights`
-The default value is `TRUE` (use weights). We follow the weighting Scheme in Wilson \& Chew (2010). If you do not want to use weights, please set it to `0`. Please check our paper for details.
+The default value is `TRUE` (use weights). We follow the weighting Scheme in Wilson \& Chew (2010). If you do not want to use weights, please set it to `FALSE`. Please check our paper for details.
 
 
 ### `prune`
