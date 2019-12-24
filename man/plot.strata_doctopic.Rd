@@ -2,7 +2,7 @@
 % Please edit documentation in R/posterior.R
 \name{plot.strata_doctopic}
 \alias{plot.strata_doctopic}
-\title{Plot Document-Topic distribution by strata}
+\title{Plot document-topic distribution by strata}
 \usage{
 \method{plot}{strata_doctopic}(x, topics = NULL, quantile_vec = c(0.05,
   0.5, 0.95), ...)
@@ -20,5 +20,5 @@
 ggplot2 object
 }
 \description{
-Plot Document-Topic distribution by strata
+Plot document-topic distribution by strata
 }

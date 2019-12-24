@@ -22,10 +22,8 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 * [Weighted LDA models](articles/pkgdown_files/Weighted_LDA.html)
 * [FAQ](articles/pkgdown_files/FAQ.html)
 
-## How to cite
-```
-Eshima, Shusei, Kosuke Imai, Tomoya Sasaki. ``Keyword Assisted Topic Models.''
-```
+## How to cite this package
+Shusei Eshima, Tomoya Sasaki and Kosuke Imai (2019). keyATM: Keyword Assisted Topic Models. R package version 0.1.0. https://keyatm.github.io/keyATM/
 
 ## How to report a bug
 We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/keyATM/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format (it will appear as a template in GitHub Issue). 
