@@ -9,25 +9,24 @@
 #' @param keywords a list of keywords
 #' @param model_settings a list of model specific settings
 #' @param priors a list of priors of parameters
-#' @param options a list of options 
-#' \describe{
-#'      \item{seed}{A numeric value for random seed. If it is not provided, the package randomly selects a seed.}
-#'      \item{iterations}{An integer. Number of iterations. Default is 1500.}
-#'      \item{verbose}{If `TRUE` print loglikelihood and perplexity. Default is `FALSE`.}
-#'      \item{llk_per}{An integer. If the value is `j` **keyATM** stores loglikelihood and perplexity every `j` iteration. Default value is 10 per iterations}
-#'      \item{use_weights}{If `TRUE` use weight. Default is `TRUE`.}
-#'      \item{prune}{If `TRUE` rume keywords that do not appear in the corpus. Default is `TRUE`.}
-#'      \item{thinning}{An integer. If the value is `j` **keyATM** stores following parameters every `j` iteration. \itemize{
-#'            \item{theta}{For all models. If `store_theta` is `TRUE` document-level topic assignment is stored (sufficient statistics to calculate document-topic distributions `theta`).}
-#'            \item{alpha}{For the base and dynamic models. In the base model alpha is shared across all documents whereas each state has different alpha in the dynamic model.}
-#'            \item{lambda}{For the covariate model.}
-#'            \item{R}{For the dynamic model. The state each document belongs to.}
-#'            \item{P}{For the dynamic model. The state transition probability}
-#'            }
+#' @param options a list of options \itemize{
+#'      \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
+#'      \item \strong{iterations}: An integer. Number of iterations. Default is 1500.
+#'      \item \strong{verbose}: If \code{TRUE} print loglikelihood and perplexity. Default is \code{FALSE}.
+#'      \item \strong{llk_per}: An integer. If the value is \code{j} \strong{keyATM} stores loglikelihood and perplexity every \code{j} iteration. Default value is 10 per iterations
+#'      \item \strong{use_weights}: If \code{TRUE} use weight. Default is \code{TRUE}.
+#'      \item \strong{prune}: If \code{TRUE} rume keywords that do not appear in the corpus. Default is \code{TRUE}.
+#'      \item \strong{thinning}: An integer. If the value is \code{j} \strong{keyATM} stores following parameters every \code{j} iteration. \itemize{
+#'            \item \emph{theta}: For all models. If \code{store_theta} is \code{TRUE} document-level topic assignment is stored (sufficient statistics to calculate document-topic distributions \code{theta}).
+#'            \item \emph{alpha}: For the base and dynamic models. In the base model alpha is shared across all documents whereas each state has different alpha in the dynamic model.
+#'            \item \emph{lambda}: For the covariate model.
+#'            \item \emph{R}: For the dynamic model. The state each document belongs to.
+#'            \item \emph{P}: For the dynamic model. The state transition probability.
 #'      }
 #' }
+
 #' @param keep a vector of the names of elements you want to keep in output
-#'
+#' 
 #' @return A keyATM_output object containing:
 #'   \describe{
 #'     \item{keyword_k}{number of keyword topics}

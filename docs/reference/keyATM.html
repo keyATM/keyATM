@@ -182,22 +182,21 @@
     </tr>
     <tr>
       <th>options</th>
-      <td><p>a list of options</p><dl class='dl-horizontal'>
-     <dt>seed</dt><dd><p>A numeric value for random seed. If it is not provided, the package randomly selects a seed.</p></dd>
-     <dt>iterations</dt><dd><p>An integer. Number of iterations. Default is 1500.</p></dd>
-     <dt>verbose</dt><dd><p>If `TRUE` print loglikelihood and perplexity. Default is `FALSE`.</p></dd>
-     <dt>llk_per</dt><dd><p>An integer. If the value is `j` **keyATM** stores loglikelihood and perplexity every `j` iteration. Default value is 10 per iterations</p></dd>
-     <dt>use_weights</dt><dd><p>If `TRUE` use weight. Default is `TRUE`.</p></dd>
-     <dt>prune</dt><dd><p>If `TRUE` rume keywords that do not appear in the corpus. Default is `TRUE`.</p></dd>
-     <dt>thinning</dt><dd><p>An integer. If the value is `j` **keyATM** stores following parameters every `j` iteration. <ul>
-<li><p>thetaFor all models. If `store_theta` is `TRUE` document-level topic assignment is stored (sufficient statistics to calculate document-topic distributions `theta`).</p></li>
-<li><p>alphaFor the base and dynamic models. In the base model alpha is shared across all documents whereas each state has different alpha in the dynamic model.</p></li>
-<li><p>lambdaFor the covariate model.</p></li>
-<li><p>RFor the dynamic model. The state each document belongs to.</p></li>
-<li><p>PFor the dynamic model. The state transition probability</p></li>
-</ul></p></dd>
-
-</dl></td>
+      <td><p>a list of options</p><ul>
+<li><p><strong>seed</strong>: A numeric value for random seed. If it is not provided, the package randomly selects a seed.</p></li>
+<li><p><strong>iterations</strong>: An integer. Number of iterations. Default is 1500.</p></li>
+<li><p><strong>verbose</strong>: If <code>TRUE</code> print loglikelihood and perplexity. Default is <code>FALSE</code>.</p></li>
+<li><p><strong>llk_per</strong>: An integer. If the value is <code>j</code> <strong>keyATM</strong> stores loglikelihood and perplexity every <code>j</code> iteration. Default value is 10 per iterations</p></li>
+<li><p><strong>use_weights</strong>: If <code>TRUE</code> use weight. Default is <code>TRUE</code>.</p></li>
+<li><p><strong>prune</strong>: If <code>TRUE</code> rume keywords that do not appear in the corpus. Default is <code>TRUE</code>.</p></li>
+<li><p><strong>thinning</strong>: An integer. If the value is <code>j</code> <strong>keyATM</strong> stores following parameters every <code>j</code> iteration.</p><ul>
+<li><p><em>theta</em>: For all models. If <code>store_theta</code> is <code>TRUE</code> document-level topic assignment is stored (sufficient statistics to calculate document-topic distributions <code>theta</code>).</p></li>
+<li><p><em>alpha</em>: For the base and dynamic models. In the base model alpha is shared across all documents whereas each state has different alpha in the dynamic model.</p></li>
+<li><p><em>lambda</em>: For the covariate model.</p></li>
+<li><p><em>R</em>: For the dynamic model. The state each document belongs to.</p></li>
+<li><p><em>P</em>: For the dynamic model. The state transition probability.</p></li>
+</ul></li>
+</ul></td>
     </tr>
     <tr>
       <th>keep</th>
