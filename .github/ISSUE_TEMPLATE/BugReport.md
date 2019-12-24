@@ -12,7 +12,7 @@ This is an example to show how to report a bug.
 
 ## Environment information (required):
 ```
-> sessionInfo()  # please run this in R and copy&paste the output
+sessionInfo()  # please run this in R and copy&paste the output
 ```
 
 ## Actual output (required):
@@ -26,5 +26,5 @@ Please explain what you expected to happen.
 ## A minimal reproducible example or a reprex (it helps us a lot):
 Please paste minimal code that reproduces the bug. If possible, please upload the data file as `.rds`.
 ```
-devtools::install_github("keyATM/keyATM")
+# Please copy and paste the code. If possible, please upload the data file as `.rds`.
 ```
