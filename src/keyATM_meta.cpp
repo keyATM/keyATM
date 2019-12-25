@@ -16,7 +16,6 @@ keyATMmeta::keyATMmeta(List model_, const int iter_)
 keyATMmeta::~keyATMmeta()
 {
   // Destructor
-  model["stored_values"] = stored_values;
 }
 
 void keyATMmeta::fit()
@@ -429,6 +428,7 @@ double keyATMmeta::gammaln_frac(const double &value, const int &count){
 
 List keyATMmeta::return_model(){
   // Return output to R
+  model["stored_values"] = stored_values;
   return model;
 }
 
