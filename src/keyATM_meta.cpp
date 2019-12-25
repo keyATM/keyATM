@@ -271,11 +271,11 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
   n_dk(doc_id, z) -= 1;
 
   new_z = -1; // debug
-  if (s == 0){
-    for (int k = 0; k < num_topics; ++k){
+  if (s == 0) {
+    for (int k = 0; k < num_topics; ++k) {
 
       numerator = (beta + n_s0_kv(k, w)) *
-        (n_s0_k(k) + prior_gamma(k, 1)) *
+        (n_s0_k(k) + prior_gamma(k, 0)) *
         (n_dk(doc_id, k) + alpha(k));
 
       denominator = ((double)num_vocab * beta + n_s0_k(k)) *
@@ -288,13 +288,13 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
     new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
 
   } else {
-    for (int k = 0; k < num_topics; ++k){
-      if (keywords[k].find(w) == keywords[k].end()){
+    for (int k = 0; k < num_topics; ++k) {
+      if (keywords[k].find(w) == keywords[k].end()) {
         z_prob_vec(k) = 0.0;
         continue;
       } else { 
         numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
-          (n_s1_k(k) + prior_gamma(k, 0)) *
+          (n_s1_k(k) + prior_gamma(k, 1)) *
           (n_dk(doc_id, k) + alpha(k));
       }
       denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) ) *
@@ -310,7 +310,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
   }
 
   // add back data counts
-  if (s == 0){
+  if (s == 0) {
     n_s0_kv(new_z, w) += vocab_weights(w);
     n_s0_k(new_z) += vocab_weights(w);
     n_s0_k_noWeight(new_z) += 1.0;
@@ -336,7 +336,7 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
     return s;
   
   // remove data
-  if (s == 0){
+  if (s == 0) {
     n_s0_kv(z, w) -= vocab_weights(w);
     n_s0_k(z) -= vocab_weights(w);
     n_s0_k_noWeight(z) -= 1.0;
@@ -350,13 +350,13 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
   k = z;
 
   numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
-    ( n_s1_k(k) + prior_gamma(k, 0) );
+    ( n_s1_k(k) + prior_gamma(k, 1) );
   denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) );
   s1_prob = numerator / denominator;
 
   // newprob_s0()
   numerator = (beta + n_s0_kv(k, w)) *
-    (n_s0_k(k) + prior_gamma(k, 1));
+    (n_s0_k(k) + prior_gamma(k, 0));
 
   denominator = ((double)num_vocab * beta + n_s0_k(k) );
   s0_prob = numerator / denominator;
@@ -368,7 +368,7 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
   new_s = R::runif(0,1) <= s1_prob;  //new_s = Bern(s0_prob, s1_prob);
 
   // add back data counts
-  if (new_s == 0){
+  if (new_s == 0) {
     n_s0_kv(z, w) += vocab_weights(w);
     n_s0_k(z) += vocab_weights(w);
     n_s0_k_noWeight(z) += 1.0;
