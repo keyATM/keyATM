@@ -25,7 +25,10 @@
 #'      }
 #' }
 
-#' @param keep a vector of the names of elements you want to keep in output
+#' @param keep a vector of the names of elements you want to keep in output \itemize{
+#'      \item \strong{}
+#'      
+#' }
 #' 
 #' @return A keyATM_output object containing:
 #'   \describe{

@@ -37,7 +37,10 @@ keyATM(docs, model, no_keyword_topics, keywords = list(),
      }
 }}
 
-\item{keep}{a vector of the names of elements you want to keep in output}
+\item{keep}{a vector of the names of elements you want to keep in output \itemize{
+     \item \strong{}
+     
+}}
 }
 \value{
 A keyATM_output object containing:

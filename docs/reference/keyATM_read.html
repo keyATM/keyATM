@@ -36,7 +36,12 @@
   
 <meta property="og:title" content="Read texts — keyATM_read" />
 
-<meta property="og:description" content="This function reads texts and creates a keyATM_docs object, which is a list of texts." />
+<meta property="og:description" content="This function reads texts and creates a keyATM_docs object, which is a list of texts. The currently available sources are:
+a quanteda dfm object (recommended)
+a data.frame (or a tibble tbl_df) with texts contained in a column named text
+a vector of file paths to text source files
+
+" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -145,7 +150,12 @@
 
     <div class="ref-description">
     
-    <p>This function reads texts and creates a keyATM_docs object, which is a list of texts.</p>
+    <p>This function reads texts and creates a keyATM_docs object, which is a list of texts. The currently available sources are:</p><ul>
+<li><p>a quanteda dfm object (<strong>recommended</strong>)</p></li>
+<li><p>a data.frame (or a <span class="pkg">tibble</span> tbl_df) with texts contained in a column named <code>text</code></p></li>
+<li><p>a vector of file paths to text source files</p></li>
+</ul>
+
     
     </div>
 
@@ -156,26 +166,26 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>texts</th>
-      <td><p>Input. keyATM takes dfm, data.frame, <span class="pkg">tibble</span> tbl_df, or a vector of file paths.</p></td>
+      <td><p>Input. keyATM_read takes dfm, data.frame, <span class="pkg">tibble</span> tbl_df, or a vector of file paths.</p></td>
     </tr>
     <tr>
       <th>encoding</th>
-      <td><p>A character. Only used when `texts` is a vector of file paths.</p></td>
+      <td><p>A character. Only used when <code>texts</code> is a vector of file paths. Default is <code>UTF-8</code>.</p></td>
     </tr>
     <tr>
       <th>check</th>
-      <td><p>If <code>TRUE</code>, check whether there is nothing wrong with the structure of texts.</p></td>
+      <td><p>logical; If <code>TRUE</code>, check whether there are any problems in the structure of texts (e.g. extra spaces between texts). Default is <code>TRUE</code>.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list whose elements are splitted texts. The length of the list equals to the number of documents.</p>
+    <p>A keyATM_docs-class object. A list whose elements are splitted texts. The length of the list equals to the number of documents.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
- <span class='co'># Use quanteda dfm</span>
+ <span class='co'># Use quanteda dfm (recommended)</span>
  <span class='no'>keyATM_docs</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_read</span>(<span class='kw'>texts</span> <span class='kw'>=</span> <span class='no'>quanteda_dfm</span>)
 
  <span class='co'># Use data.frame or tibble (texts should be stored in a column named `text`)</span>
