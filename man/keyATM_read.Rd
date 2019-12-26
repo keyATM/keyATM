@@ -7,26 +7,21 @@
 keyATM_read(texts, encoding = "UTF-8", check = TRUE)
 }
 \arguments{
-\item{texts}{Input. keyATM_read takes dfm, data.frame, \pkg{tibble} tbl_df, or a vector of file paths.}
+\item{texts}{Input. keyATM takes dfm, data.frame, \pkg{tibble} tbl_df, or a vector of file paths.}
 
-\item{encoding}{A character. Only used when \code{texts} is a vector of file paths. Default is \code{UTF-8}.}
+\item{encoding}{A character. Only used when `texts` is a vector of file paths.}
 
-\item{check}{logical; If \code{TRUE}, check whether there are any problems in the structure of texts (e.g. extra spaces between texts). Default is \code{TRUE}.}
+\item{check}{If \code{TRUE}, check whether there is nothing wrong with the structure of texts.}
 }
 \value{
-A keyATM_docs-class object. A list whose elements are splitted texts. The length of the list equals to the number of documents.
+A list whose elements are splitted texts. The length of the list equals to the number of documents.
 }
 \description{
-This function reads texts and creates a keyATM_docs object, which is a list of texts. The currently available sources are: 
-\itemize{
-   \item a quanteda dfm object (\strong{recommended})
-   \item a data.frame (or a \pkg{tibble} tbl_df) with texts contained in a column named \code{text}
-   \item a vector of file paths to text source files
-   }
+This function reads texts and creates a keyATM_docs object, which is a list of texts.
 }
 \examples{
 \dontrun{
- # Use quanteda dfm (recommended)
+ # Use quanteda dfm
  keyATM_docs <- keyATM_read(texts = quanteda_dfm) 
   
  # Use data.frame or tibble (texts should be stored in a column named `text`)
