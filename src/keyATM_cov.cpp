@@ -252,9 +252,9 @@ double keyATMcov::loglik_total()
       loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
 
       // s
-      loglik += mylgamma( n_s0_k_noWeight(k) + prior_gamma(k, 0) ) 
+      loglik += mylgamma( n_s0_k_noWeight(k) + prior_gamma(k, 1) ) 
                 -  mylgamma(n_s1_k_noWeight(k) + prior_gamma(k, 0) + n_s0_k_noWeight(k) + prior_gamma(k, 1))
-                + mylgamma( n_s1_k_noWeight(k) + prior_gamma(k, 1) );  
+                + mylgamma( n_s1_k_noWeight(k) + prior_gamma(k, 0) );  
     }
   }
 

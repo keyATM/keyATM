@@ -1,5 +1,5 @@
 #' keyATM_fit() calls keyATM_output()
-#'
+#' 
 #' @keywords internal
 #' @import magrittr
 #'
