@@ -1,6 +1,6 @@
 #' keyATM_fit() calls keyATM_output()
-#'
-#' @keywords internal
+#' 
+#' @export
 #' @import magrittr
 #'
 keyATM_output <- function(model)
