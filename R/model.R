@@ -341,7 +341,7 @@ save_fig.keyATM_viz <- function(x, file = stop("'file' must be specified"))
 #' Fit a keyATM model 
 #' 
 #' keyATM_fit is wrapped by keyATM() and weightedLDA()
-#' @export
+#' @keywords internal
 keyATM_fit <- function(docs, model, no_keyword_topics,
                        keywords = list(), model_settings = list(),
                        priors = list(), options = list()) 

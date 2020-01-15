@@ -9,3 +9,4 @@ keyATM_output(model)
 \description{
 keyATM_fit() calls keyATM_output()
 }
+\keyword{internal}

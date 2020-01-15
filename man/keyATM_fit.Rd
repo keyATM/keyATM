@@ -10,3 +10,4 @@ keyATM_fit(docs, model, no_keyword_topics, keywords = list(),
 \description{
 keyATM_fit is wrapped by keyATM() and weightedLDA()
 }
+\keyword{internal}
