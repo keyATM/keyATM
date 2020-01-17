@@ -147,10 +147,27 @@ void keyATMmeta::initialize_common()
     }
   }
   total_words = (int)vocab_weights.sum();
-  vocab_weights = vocab_weights.array() / (double)total_words;
-  vocab_weights = vocab_weights.array().log();
-  vocab_weights = - vocab_weights.array() / log(2);
-  
+
+  String weights_type("norm-it");
+
+  if (weights_type == "inv-freq") {
+    // Inverse frequency
+    vocab_weights = (double)total_words / vocab_weights.array();
+  } else if (weights_type == "inf-theory") {
+    // Based on the information theory
+    vocab_weights = vocab_weights.array() / (double)total_words;
+    vocab_weights = vocab_weights.array().log();
+    vocab_weights = - vocab_weights.array() / log(2);
+  } else if (weights_type == "norm-it") {
+    // Normalized information theory 
+    vocab_weights = vocab_weights.array() / (double)total_words;
+    vocab_weights = vocab_weights.array().log();
+    vocab_weights = - vocab_weights.array() / log(2);  
+    vocab_weights = vocab_weights.array() * (double)total_words / vocab_weights.sum();
+  } else {
+    Rcpp::stop("Invalid weights type."); 
+  }
+    
 
   if (use_weight == 0) {
     cout << "Not using weights!! Check `options$use_weight`." << endl;
@@ -178,7 +195,7 @@ void keyATMmeta::initialize_common()
         n_s1_k(z) += vocab_weights(w);
         n_s1_k_noWeight(z) += 1.0;
       }
-      n_dk(doc_id, z) += 1.0;
+      n_dk(doc_id, z) += vocab_weights(w);
     }
   }
   // n_s0_kv.setFromTriplets(trip_s0.begin(), trip_s0.end());
@@ -267,7 +284,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
     Rcerr << "Error at sample_z, remove" << std::endl;
   }
 
-  n_dk(doc_id, z) -= 1;
+  n_dk(doc_id, z) -= vocab_weights(w);
 
   new_z = -1; // debug
   if (s == 0) {
@@ -320,7 +337,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
   } else {
     Rcerr << "Error at sample_z, add" << std::endl;
   }
-  n_dk(doc_id, new_z) += 1;
+  n_dk(doc_id, new_z) += vocab_weights(w);
 
   return new_z;
 }
