@@ -142,7 +142,7 @@ double keyATMbase::alpha_loglik(int &k)
     loglik += mylgamma(ndk_a(d,k));
 
     // second term denominator
-    loglik -= mylgamma(doc_each_len[d] + alpha_sum_val);
+    loglik -= mylgamma(n_dk.row(d).sum() + alpha_sum_val);
   }
 
   return loglik;
