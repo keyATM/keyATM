@@ -124,6 +124,7 @@ void keyATMmeta::initialize_common()
   n_s0_kv = MatrixXd::Zero(num_topics, num_vocab);
   n_s1_kv.resize(num_topics, num_vocab);
   n_dk = MatrixXd::Zero(num_doc, num_topics);
+  n_dk_noWeight = MatrixXd::Zero(num_doc, num_topics);
   n_s0_k = VectorXd::Zero(num_topics);
   n_s0_k_noWeight = VectorXd::Zero(num_topics);
   n_s1_k = VectorXd::Zero(num_topics);
@@ -153,21 +154,26 @@ void keyATMmeta::initialize_common()
   if (weights_type == "inv-freq") {
     // Inverse frequency
     vocab_weights = (double)total_words / vocab_weights.array();
-  } else if (weights_type == "inf-theory") {
-    // Based on the information theory
-    vocab_weights = vocab_weights.array() / (double)total_words;
-    vocab_weights = vocab_weights.array().log();
-    vocab_weights = - vocab_weights.array() / log(2);
   } else if (weights_type == "norm-it") {
     // Normalized information theory 
     vocab_weights = vocab_weights.array() / (double)total_words;
     vocab_weights = vocab_weights.array().log();
     vocab_weights = - vocab_weights.array() / log(2);  
-    vocab_weights = vocab_weights.array() * (double)total_words / vocab_weights.sum();
-  } else {
     Rcpp::stop("Invalid weights type."); 
   }
     
+  // Normalize weights
+  double total_weights = 0.0;
+  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+    doc_w = W[doc_id];
+    doc_len = doc_each_len[doc_id];
+
+    for (int w_position = 0; w_position < doc_len; w_position++) {
+      w = doc_w[w_position];
+      total_weights += vocab_weights(w);
+    }
+  }
+  vocab_weights = vocab_weights.array() * (double)total_words / total_weights;
 
   if (use_weight == 0) {
     cout << "Not using weights!! Check `options$use_weight`." << endl;
@@ -196,6 +202,7 @@ void keyATMmeta::initialize_common()
         n_s1_k_noWeight(z) += 1.0;
       }
       n_dk(doc_id, z) += vocab_weights(w);
+      n_dk_noWeight(doc_id, z) += 1.0;
     }
   }
   // n_s0_kv.setFromTriplets(trip_s0.begin(), trip_s0.end());
@@ -250,8 +257,8 @@ void keyATMmeta::sampling_store(int &r_index)
   model_fit.push_back(model_fit_vec);
   
   if (verbose) {
-    Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
-             " (perplexity: " << perplexity << ")" << std::endl;
+    // Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
+             // " (perplexity: " << perplexity << ")" << std::endl;
   }
 }
 
@@ -285,6 +292,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
   }
 
   n_dk(doc_id, z) -= vocab_weights(w);
+  n_dk_noWeight(doc_id, z) -= 1.0;
 
   new_z = -1; // debug
   if (s == 0) {
@@ -338,6 +346,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
     Rcerr << "Error at sample_z, add" << std::endl;
   }
   n_dk(doc_id, new_z) += vocab_weights(w);
+  n_dk_noWeight(doc_id, new_z) += 1.0;
 
   return new_z;
 }

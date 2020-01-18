@@ -73,6 +73,7 @@ class keyATMmeta
     SparseMatrix<double,RowMajor> n_s1_kv;
     typedef Eigen::Triplet<double> Triplet;
     MatrixXd n_dk;
+    MatrixXd n_dk_noWeight;
     VectorXd n_s0_k;
     VectorXd n_s0_k_noWeight;
     VectorXd n_s1_k;
