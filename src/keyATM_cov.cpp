@@ -102,7 +102,7 @@ double keyATMcov::likelihood_lambda(int &k, int &t)
   
     loglik += mylgamma(alpha.sum()); 
         // the first term numerator in the first square bracket
-    loglik -= mylgamma( doc_each_len[d] + alpha.sum() ); 
+    loglik -= mylgamma( doc_each_len_weighted[d] + alpha.sum() ); 
         // the second term denoinator in the first square bracket
   
     loglik -= mylgamma(alpha(k));
@@ -232,29 +232,29 @@ double keyATMcov::loglik_total()
   double loglik = 0.0;
   for (int k = 0; k < num_topics; k++){
     for (int v = 0; v < num_vocab; v++){ // word
-      loglik += mylgamma(beta + n_s0_kv(k, v) / vocab_weights(v) ) - mylgamma(beta);
+      loglik += mylgamma(beta + n_s0_kv(k, v)) - mylgamma(beta);
     }
 
     // word normalization
-    loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_s0_k_noWeight(k) );
+    loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_s0_k(k) );
 
     if (k < keyword_k) {
       // For keyword topics
 
       // n_s1_kv
-      for (SparseMatrix<double,RowMajor>::InnerIterator it(n_s1_kv, k); it; ++it){
-        loglik += mylgamma(beta_s + it.value() / vocab_weights(it.index()) ) - mylgamma(beta_s);
+      for (SparseMatrix<double,RowMajor>::InnerIterator it(n_s1_kv, k); it; ++it) {
+        loglik += mylgamma(beta_s + it.value()) - mylgamma(beta_s);
       }
-      loglik += mylgamma( beta_s * (double)keywords_num[k] ) - mylgamma(beta_s * (double)keywords_num[k] + n_s1_k_noWeight(k) );
+      loglik += mylgamma( beta_s * (double)keywords_num[k] ) - mylgamma(beta_s * (double)keywords_num[k] + n_s1_k(k) );
 
 
       // Normalization
       loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
 
       // s
-      loglik += mylgamma( n_s0_k_noWeight(k) + prior_gamma(k, 1) ) 
-                -  mylgamma(n_s1_k_noWeight(k) + prior_gamma(k, 0) + n_s0_k_noWeight(k) + prior_gamma(k, 1))
-                + mylgamma( n_s1_k_noWeight(k) + prior_gamma(k, 0) );  
+      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) ) 
+                - mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1))
+                + mylgamma( n_s1_k(k) + prior_gamma(k, 0) );  
     }
   }
 
@@ -266,7 +266,7 @@ double keyATMcov::loglik_total()
   for (int d = 0; d < num_doc; d++){
     alpha = Alpha.row(d).transpose(); // Doc alpha, column vector  
     
-    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
+    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
     }

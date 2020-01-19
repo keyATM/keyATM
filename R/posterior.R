@@ -96,6 +96,7 @@ keyATM_output <- function(model)
   return(ll)
 }
 
+
 #' @noRd
 #' @import magrittr
 keyATM_output_p <- function(model_Z, model_S, prior)
@@ -113,6 +114,16 @@ keyATM_output_p <- function(model_Z, model_S, prior)
     dplyr::summarize(count = (dplyr::n()), sums = sum(S)) %>%
     dplyr::ungroup() -> temp
 
+  # Check used topics
+  if (nrow(temp) != nrow(prior)) {
+    warning("Some of the topics are not used.")
+    missing <- setdiff(1:nrow(prior), temp$Topic)
+    temp %>%
+      add_row(Topic = missing, count = 0, sums = 0) %>%
+      arrange(Topic) -> temp
+  }
+
+  # Get p
   n <- temp$count
   s <- temp$sums
   a <- prior[, 1]
@@ -200,7 +211,6 @@ keyATM_output_phi <- function(model, info)
                                       model$vocab, model$priors$beta, info$tnames)
   }
   
-  
   return(obj)
 }
 
@@ -237,6 +247,17 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, p_estimated
   
     temp %>%
       tidyr::spread(key = Word, value = Count) -> phi
+
+    # Check unused topic
+    if (nrow(phi) != length(tnames)) {
+      missing <- setdiff(0:(length(tnames)-1L), phi$Topic)
+      phi %>%
+        ungroup() %>%
+        add_row(Topic = missing) %>%
+        arrange(Topic) -> phi
+    }
+
+    # Deal with NAs
     phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
 
     if (!is.matrix(phi)) {

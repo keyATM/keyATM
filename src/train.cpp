@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <unordered_set>
+#include <string>
 #include "sampler.h"
 #include "keyATM_base.h"
 #include "keyATM_cov.h"

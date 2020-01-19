@@ -24,7 +24,7 @@
 #'            \item \emph{P}: For the dynamic model. The state transition probability.
 #'      }
 #' }
-
+#'
 #' @param keep a vector of the names of elements you want to keep in output
 #' 
 #' @return A keyATM_output object containing:
