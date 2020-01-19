@@ -29,6 +29,8 @@ class keyATMmeta
     int iter;
     int llk_per;
     int verbose;
+    string weights_type;
+
     double eta_1;
     double eta_2;
     double eta_1_regular;
@@ -76,9 +78,7 @@ class keyATMmeta
     MatrixXd n_dk;
     MatrixXd n_dk_noWeight;
     VectorXd n_s0_k;
-    VectorXd n_s0_k_noWeight;
     VectorXd n_s1_k;
-    VectorXd n_s1_k_noWeight;
     VectorXd vocab_weights;
 
     // Use during the iteration

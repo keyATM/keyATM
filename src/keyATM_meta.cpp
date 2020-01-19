@@ -59,6 +59,7 @@ void keyATMmeta::read_data_common()
   thinning = options_list["thinning"];
   llk_per = options_list["llk_per"];
   verbose = options_list["verbose"];
+  weights_type = Rcpp::as<std::string>(options_list["weights_type"]);
 
   // Priors
   priors_list = model["priors"];
@@ -147,13 +148,11 @@ void keyATMmeta::initialize_common()
   }
   total_words = (int)vocab_weights.sum();
 
-  String weights_type("norm-it");
-
   if (weights_type == "inv-freq") {
     // Inverse frequency
     vocab_weights = (double)total_words / vocab_weights.array();
-  } else if (weights_type == "norm-it") {
-    // Normalized information theory 
+  } else if (weights_type == "information-theory") {
+    // Information theory 
     vocab_weights = vocab_weights.array() / (double)total_words;
     vocab_weights = vocab_weights.array().log();
     vocab_weights = - vocab_weights.array() / log(2);  
@@ -273,7 +272,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
                          int &w, int &doc_id)
 {
   // remove data
-  if (s == 0){
+  if (s == 0) {
     n_s0_kv(z, w) -= vocab_weights(w);
     n_s0_k(z) -= vocab_weights(w);
   } else if (s == 1) {

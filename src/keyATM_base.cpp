@@ -176,7 +176,7 @@ double keyATMbase::loglik_total()
       // s
       loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) ) 
                 - mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1))
-                + mylgamma( n_s1_k(k) + prior_gamma(k, 0) );  
+                + mylgamma(n_s1_k(k) + prior_gamma(k, 0));  
     }
   }
 

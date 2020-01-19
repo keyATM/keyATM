@@ -741,7 +741,8 @@ check_arg_options <- function(obj, model, info)
   check_arg_type(obj, "list")
   allowed_arguments <- c("seed", "llk_per", "thinning",
                          "iterations", "verbose",
-                         "use_weights", "prune",
+                         "use_weights", "weights_type", 
+                         "prune",
                          "store_theta", "slice_shape")
 
   # llk_per
@@ -822,6 +823,15 @@ check_arg_options <- function(obj, model, info)
     obj$use_weights <- as.integer(obj$use_weights)
     if (!obj$use_weights %in% c(0, 1)) {
       stop("An invalid value in `options$use_weights`")  
+    }
+  }
+
+  # Type of the weights
+  if (is.null(obj$weights_type)) {
+    obj$weights_type <- "information-theory" 
+  } else {
+    if (!obj$weights_type %in% c("information-theory", "inv-freq")) {
+      stop("An invalid value in `options$weights_type`") 
     }
   }
 
