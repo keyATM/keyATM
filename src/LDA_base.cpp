@@ -28,6 +28,7 @@ void LDAbase::read_data_common()
   thinning = options_list["thinning"];
   llk_per = options_list["llk_per"];
   verbose = options_list["verbose"];
+  weights_type = Rcpp::as<std::string>(options_list["weights_type"]);
 
   // Priors
   priors_list = model["priors"];
@@ -72,10 +73,29 @@ void LDAbase::initialize_common()
     }
   }
   total_words = (int)vocab_weights.sum();
-  vocab_weights = vocab_weights.array() / (double)total_words;
-  vocab_weights = vocab_weights.array().log();
-  vocab_weights = - vocab_weights.array() / log(2);
-  
+
+  if (weights_type == "inv-freq") {
+    // Inverse frequency
+    vocab_weights = (double)total_words / vocab_weights.array();
+  } else if (weights_type == "information-theory") {
+    // Information theory 
+    vocab_weights = vocab_weights.array() / (double)total_words;
+    vocab_weights = vocab_weights.array().log();
+    vocab_weights = - vocab_weights.array() / log(2);  
+  }
+    
+  // Normalize weights
+  double total_weights = 0.0;
+  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+    doc_w = W[doc_id];
+    doc_len = doc_each_len[doc_id];
+
+    for (int w_position = 0; w_position < doc_len; w_position++) {
+      w = doc_w[w_position];
+      total_weights += vocab_weights(w);
+    }
+  }
+  vocab_weights = vocab_weights.array() * (double)total_words / total_weights;
 
   if (use_weight == 0) {
     cout << "Not using weights!! Check `options$use_weight`." << endl;
@@ -87,8 +107,8 @@ void LDAbase::initialize_common()
 
   n_kv = MatrixXd::Zero(num_topics, num_vocab);
   n_dk = MatrixXd::Zero(num_doc, num_topics);
+  n_dk_noWeight = MatrixXd::Zero(num_doc, num_topics);
   n_k = VectorXd::Zero(num_topics);
-  n_k_noWeight = VectorXd::Zero(num_topics);
 
   // Construct data matrices
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
@@ -100,9 +120,11 @@ void LDAbase::initialize_common()
 
       n_kv(z, w) += vocab_weights(w);
       n_k(z) += vocab_weights(w);
-      n_k_noWeight(z) += 1.0;
-      n_dk(doc_id, z) += 1.0;
+      n_dk(doc_id, z) += vocab_weights(w);
+      n_dk_noWeight(doc_id, z) += 1.0;
     }
+
+    doc_each_len_weighted.push_back(n_dk.row(doc_id).sum());
   }
   
 
@@ -117,8 +139,8 @@ int LDAbase::sample_z(VectorXd &alpha, int &z, int &s, int &w, int &doc_id)
   // remove data
   n_kv(z, w) -= vocab_weights(w);
   n_k(z) -= vocab_weights(w);
-  n_k_noWeight(z) -= 1.0;
-  n_dk(doc_id, z) -= 1;
+  n_dk(doc_id, z) -= vocab_weights(w);
+  n_dk_noWeight(doc_id, z) -= 1;
 
   new_z = -1; // debug
 
@@ -140,8 +162,8 @@ int LDAbase::sample_z(VectorXd &alpha, int &z, int &s, int &w, int &doc_id)
   // add back data counts
   n_kv(new_z, w) += vocab_weights(w);
   n_k(new_z) += vocab_weights(w);
-  n_k_noWeight(new_z) += 1.0;
-  n_dk(doc_id, new_z) += 1;
+  n_dk(doc_id, new_z) += vocab_weights(w);
+  n_dk_noWeight(doc_id, new_z) += 1;
 
   return new_z;
 }
