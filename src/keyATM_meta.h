@@ -50,6 +50,7 @@ class keyATMmeta
     List keywords_list;
     List model_fit;
     std::vector<int> doc_each_len;
+    std::vector<double> doc_each_len_weighted;
     
     int num_vocab, num_doc, total_words;
 

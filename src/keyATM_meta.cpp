@@ -126,9 +126,7 @@ void keyATMmeta::initialize_common()
   n_dk = MatrixXd::Zero(num_doc, num_topics);
   n_dk_noWeight = MatrixXd::Zero(num_doc, num_topics);
   n_s0_k = VectorXd::Zero(num_topics);
-  n_s0_k_noWeight = VectorXd::Zero(num_topics);
   n_s1_k = VectorXd::Zero(num_topics);
-  n_s1_k_noWeight = VectorXd::Zero(num_topics);
   vocab_weights = VectorXd::Constant(num_vocab, 1.0);
 
   int s, z, w;
@@ -159,7 +157,6 @@ void keyATMmeta::initialize_common()
     vocab_weights = vocab_weights.array() / (double)total_words;
     vocab_weights = vocab_weights.array().log();
     vocab_weights = - vocab_weights.array() / log(2);  
-    Rcpp::stop("Invalid weights type."); 
   }
     
   // Normalize weights
@@ -182,7 +179,7 @@ void keyATMmeta::initialize_common()
 
 
   // Construct data matrices
-  vector<Triplet> trip_s1;   
+  vector<Triplet> trip_s1;  // for a sparse matrix
   
   for (int doc_id = 0; doc_id < num_doc; doc_id++) {
     doc_s = S[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
@@ -192,20 +189,17 @@ void keyATMmeta::initialize_common()
       s = doc_s[w_position], z = doc_z[w_position], w = doc_w[w_position];
       if (s == 0){
         n_s0_kv(z, w) += vocab_weights(w);
-        // trip_s0.push_back(Triplet(z, w, vocab_weights(w)));
         n_s0_k(z) += vocab_weights(w);
-        n_s0_k_noWeight(z) += 1.0;
       } else {
-        // n_s1_kv(z, w) += vocab_weights(w);
         trip_s1.push_back(Triplet(z, w, vocab_weights(w)));
         n_s1_k(z) += vocab_weights(w);
-        n_s1_k_noWeight(z) += 1.0;
       }
       n_dk(doc_id, z) += vocab_weights(w);
       n_dk_noWeight(doc_id, z) += 1.0;
     }
+
+    doc_each_len_weighted.push_back(n_dk.row(doc_id).sum());
   }
-  // n_s0_kv.setFromTriplets(trip_s0.begin(), trip_s0.end());
   n_s1_kv.setFromTriplets(trip_s1.begin(), trip_s1.end());
   
 
@@ -257,15 +251,15 @@ void keyATMmeta::sampling_store(int &r_index)
   model_fit.push_back(model_fit_vec);
   
   if (verbose) {
-    // Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
-             // " (perplexity: " << perplexity << ")" << std::endl;
+    Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
+             " (perplexity: " << perplexity << ")" << std::endl;
   }
 }
 
 void keyATMmeta::store_theta_iter(int &r_index)
 {
   Z_tables = stored_values["Z_tables"];
-  NumericMatrix Z_table = Rcpp::wrap(n_dk);
+  NumericMatrix Z_table = Rcpp::wrap(n_dk_noWeight);
   Z_tables.push_back(Z_table);
   stored_values["Z_tables"] = Z_tables;
 }
@@ -282,11 +276,9 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
   if (s == 0){
     n_s0_kv(z, w) -= vocab_weights(w);
     n_s0_k(z) -= vocab_weights(w);
-    n_s0_k_noWeight(z) -= 1.0;
   } else if (s == 1) {
     n_s1_kv.coeffRef(z, w) -= vocab_weights(w);
     n_s1_k(z) -= vocab_weights(w);
-    n_s1_k_noWeight(z) -= 1.0;
   } else {
     Rcerr << "Error at sample_z, remove" << std::endl;
   }
@@ -337,11 +329,9 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
   if (s == 0) {
     n_s0_kv(new_z, w) += vocab_weights(w);
     n_s0_k(new_z) += vocab_weights(w);
-    n_s0_k_noWeight(new_z) += 1.0;
   } else if (s == 1) {
     n_s1_kv.coeffRef(new_z, w) += vocab_weights(w);
     n_s1_k(new_z) += vocab_weights(w);
-    n_s1_k_noWeight(new_z) += 1.0;
   } else {
     Rcerr << "Error at sample_z, add" << std::endl;
   }
@@ -364,11 +354,9 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
   if (s == 0) {
     n_s0_kv(z, w) -= vocab_weights(w);
     n_s0_k(z) -= vocab_weights(w);
-    n_s0_k_noWeight(z) -= 1.0;
   } else {
     n_s1_kv.coeffRef(z, w) -= vocab_weights(w);
     n_s1_k(z) -= vocab_weights(w);
-    n_s1_k_noWeight(z) -= 1.0;
   }
 
   // newprob_s1()
@@ -396,11 +384,9 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
   if (new_s == 0) {
     n_s0_kv(z, w) += vocab_weights(w);
     n_s0_k(z) += vocab_weights(w);
-    n_s0_k_noWeight(z) += 1.0;
   } else {
     n_s1_kv.coeffRef(z, w) += vocab_weights(w);
     n_s1_k(z) += vocab_weights(w);
-    n_s1_k_noWeight(z) += 1.0;
   }
 
   return new_s;
