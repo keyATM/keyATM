@@ -604,13 +604,13 @@ check_arg_model_settings <- function(obj, model, info)
     temp <- as.data.frame(obj$covariates_data_use)
     temp$y <- stats::rnorm(nrow(obj$covariates_data_use))
 
-    if ("(Intercept)" %in% colnames(obj$covariates_data_use)){
-      fit <- stats::lm(y ~ 0 + ., data = temp)  # data.frame alreayd includes the intercept
+    if ("(Intercept)" %in% colnames(obj$covariates_data_use)) {
+      fit <- stats::lm(y ~ 0 + ., data = temp)  # data.frame already includes the intercept
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
       }    
     } else {
-      fit <- stats::lm(y ~ 0 + ., data = temp)
+      fit <- stats::lm(y ~ ., data = temp)  # data.frame does not have an itercept
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
       }
