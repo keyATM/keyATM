@@ -289,6 +289,7 @@ void keyATMmeta::iteration()
   model["model_fit"] = model_fit;
 }
 
+
 void keyATMmeta::sampling_store(int &r_index)
 {
 
@@ -307,6 +308,7 @@ void keyATMmeta::sampling_store(int &r_index)
   }
 }
 
+
 void keyATMmeta::store_theta_iter(int &r_index)
 {
   Z_tables = stored_values["Z_tables"];
@@ -315,9 +317,11 @@ void keyATMmeta::store_theta_iter(int &r_index)
   stored_values["Z_tables"] = Z_tables;
 }
 
+
 void keyATMmeta::verbose_special(int &r_index){
   // If there is anything special to show or store, write here.
 }
+
 
 // Sampling
 int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
