@@ -121,7 +121,6 @@ void keyATMmeta::initialize_common()
   }
 
   // storage for sufficient statistics and their margins
-  // n_s0_kv.resize(num_topics, num_vocab);
   n_s0_kv = MatrixXd::Zero(num_topics, num_vocab);
   n_s1_kv.resize(num_topics, num_vocab);
   n_dk = MatrixXd::Zero(num_doc, num_topics);
@@ -135,7 +134,9 @@ void keyATMmeta::initialize_common()
   IntegerVector doc_s, doc_z, doc_w;
 
 
+  //
   // Construct vocab weights
+  //
   for (int doc_id = 0; doc_id < num_doc; doc_id++) {
     doc_w = W[doc_id];
     doc_len = doc_w.size();
@@ -173,8 +174,10 @@ void keyATMmeta::initialize_common()
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
 
-
+  
+  //
   // Construct data matrices
+  // 
   vector<Triplet> trip_s1;  // for a sparse matrix
   
   for (int doc_id = 0; doc_id < num_doc; doc_id++) {
