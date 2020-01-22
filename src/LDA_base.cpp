@@ -60,8 +60,10 @@ void LDAbase::initialize_common()
   int doc_len;
   IntegerVector doc_z, doc_w;
 
-
+  
+  //
   // Construct vocab weights
+  //
   for (int doc_id = 0; doc_id < num_doc; doc_id++) {
     doc_w = W[doc_id];
     doc_len = doc_w.size();
@@ -74,43 +76,40 @@ void LDAbase::initialize_common()
   }
   total_words = (int)vocab_weights.sum();
 
-  if (weights_type == "inv-freq") {
+  if (weights_type == "inv-freq" || weights_type == "inv-freq-raw") {
     // Inverse frequency
-    vocab_weights = (double)total_words / vocab_weights.array();
-  } else if (weights_type == "information-theory") {
+    weights_invfreq(); 
+  } else if (weights_type == "information-theory" || weights_type == "information-theory-raw") {
     // Information theory 
-    vocab_weights = vocab_weights.array() / (double)total_words;
-    vocab_weights = vocab_weights.array().log();
-    vocab_weights = - vocab_weights.array() / log(2);  
+    weights_inftheory();
+  } else if (weights_type == "tf-idf" || weights_type == "tf-idf-raw") {
+    weights_tfidf(); 
   }
     
   // Normalize weights
-  double total_weights = 0.0;
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
-    doc_w = W[doc_id];
-    doc_len = doc_each_len[doc_id];
+  if (weights_type == "inv-freq" || weights_type == "information-theory") {
+    weights_normalize_total(); 
+  } 
 
-    for (int w_position = 0; w_position < doc_len; w_position++) {
-      w = doc_w[w_position];
-      total_weights += vocab_weights(w);
-    }
+  if (weights_type == "weights_tfidf") {
+    weights_normalize_doc(); 
   }
-  vocab_weights = vocab_weights.array() * (double)total_words / total_weights;
 
+  // Do you want to use weights?
   if (use_weight == 0) {
     cout << "Not using weights!! Check `options$use_weight`." << endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
 
 
-  // Initialization for LDA weights 
-
+  //
+  // Construct data matrices
+  //
   n_kv = MatrixXd::Zero(num_topics, num_vocab);
   n_dk = MatrixXd::Zero(num_doc, num_topics);
   n_dk_noWeight = MatrixXd::Zero(num_doc, num_topics);
   n_k = VectorXd::Zero(num_topics);
 
-  // Construct data matrices
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
     doc_z = Z[doc_id], doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
