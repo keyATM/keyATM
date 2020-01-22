@@ -148,29 +148,26 @@ void keyATMmeta::initialize_common()
   }
   total_words = (int)vocab_weights.sum();
 
-  if (weights_type == "inv-freq") {
+  if (weights_type == "inv-freq" || weights_type == "inv-freq-raw") {
     // Inverse frequency
-    vocab_weights = (double)total_words / vocab_weights.array();
-  } else if (weights_type == "information-theory") {
+    weights_invfreq(); 
+  } else if (weights_type == "information-theory" || weights_type == "information-theory-raw") {
     // Information theory 
-    vocab_weights = vocab_weights.array() / (double)total_words;
-    vocab_weights = vocab_weights.array().log();
-    vocab_weights = - vocab_weights.array() / log(2);  
+    weights_inftheory();
+  } else if (weights_type == "tf-idf" || weights_type == "tf-idf-raw") {
+    weights_tfidf(); 
   }
     
   // Normalize weights
-  double total_weights = 0.0;
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
-    doc_w = W[doc_id];
-    doc_len = doc_each_len[doc_id];
+  if (weights_type == "inv-freq" || weights_type == "information-theory") {
+    weights_normalize_total(); 
+  } 
 
-    for (int w_position = 0; w_position < doc_len; w_position++) {
-      w = doc_w[w_position];
-      total_weights += vocab_weights(w);
-    }
+  if (weights_type == "weights_tfidf") {
+    weights_normalize_doc(); 
   }
-  vocab_weights = vocab_weights.array() * (double)total_words / total_weights;
 
+  // Do you want to use weights?
   if (use_weight == 0) {
     cout << "Not using weights!! Check `options$use_weight`." << endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
@@ -205,6 +202,58 @@ void keyATMmeta::initialize_common()
   // Use during the iteration
   z_prob_vec = VectorXd::Zero(num_topics);
   
+}
+
+
+void keyATMmeta::weights_invfreq()
+{
+  // Inverse frequency
+  vocab_weights = (double)total_words / vocab_weights.array();
+}
+
+
+void keyATMmeta::weights_inftheory()
+{
+  // Information Theory
+  vocab_weights = vocab_weights.array() / (double)total_words;
+  vocab_weights = vocab_weights.array().log();
+  vocab_weights = - vocab_weights.array() / log(2);  
+}
+
+
+void keyATMmeta::weights_tfidf()
+{
+  // TF-IDF
+
+}
+
+
+void keyATMmeta::weights_normalize_total()
+{
+  // Normalize weights so that the total weighted count
+  // is the same as the total length of documents
+
+  double total_weights = 0.0;
+  int doc_len;
+  int w;
+  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+    doc_w = W[doc_id];
+    doc_len = doc_each_len[doc_id];
+
+    for (int w_position = 0; w_position < doc_len; w_position++) {
+      w = doc_w[w_position];
+      total_weights += vocab_weights(w);
+    }
+  }
+  vocab_weights = vocab_weights.array() * (double)total_words / total_weights;
+}
+
+
+void keyATMmeta::weights_normalize_doc()
+{
+  // Normalize weights so that the document-level weighted count
+  // is the same as the length of the document
+
 }
 
 
@@ -394,21 +443,25 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
 
 
 // Utilities
-double keyATMmeta::gammapdfln(const double &x, const double &a, const double &b){
+double keyATMmeta::gammapdfln(const double &x, const double &a, const double &b)
+{
   // a: shape, b: scale
   return - a * log(b) - mylgamma(a) + (a-1.0) * log(x) - x/b;
 }
 
 
-double keyATMmeta::betapdf(const double &x, const double &a, const double &b){
+double keyATMmeta::betapdf(const double &x, const double &a, const double &b)
+{
   return tgamma(a+b) / (tgamma(a) * tgamma(b)) * pow(x, a-1) * pow(1-x, b-1);
 }
 
-double keyATMmeta::betapdfln(const double &x, const double &a, const double &b){
+double keyATMmeta::betapdfln(const double &x, const double &a, const double &b)
+{
   return (a-1)*log(x) + (b-1)*log(1.0-x) + mylgamma(a+b) - mylgamma(a) - mylgamma(b);
 }
 
-NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int& num_topics){
+NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int& num_topics)
+{
   NumericVector alpha_rvec(num_topics);
 
   for (int i = 0; i < num_topics; ++i) {
@@ -419,7 +472,8 @@ NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int& num_topics){
 }
 
 
-double keyATMmeta::gammaln_frac(const double &value, const int &count){
+double keyATMmeta::gammaln_frac(const double &value, const int &count)
+{
   // Calculate \log \frac{\gamma(value + count)}{\gamma(\value)}
   // Not very fast
   
@@ -437,7 +491,8 @@ double keyATMmeta::gammaln_frac(const double &value, const int &count){
 }
 
 
-List keyATMmeta::return_model(){
+List keyATMmeta::return_model()
+{
   // Return output to R
   model["stored_values"] = stored_values;
   return model;

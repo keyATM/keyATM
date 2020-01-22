@@ -130,6 +130,12 @@ class keyATMmeta
     virtual void initialize_common();
     virtual void initialize_specific() = 0;
 
+    void weights_invfreq();
+    void weights_inftheory();
+    void weights_tfidf();
+    void weights_normalize_total();
+    void weights_normalize_doc();
+
     // Sampling
     void iteration();
     virtual void iteration_single(int &it) = 0;
