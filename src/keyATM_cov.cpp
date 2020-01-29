@@ -209,15 +209,16 @@ void keyATMcov::sample_lambda_slice()
   
         if (slice_ < newlikelihood) {
           break;
+        } else if (abs(end - start) < 1e-9) {
+          Rcerr << "Shrinked too much. Using a current value." << std::endl;  
+          Lambda(k,t) = current_lambda;
+          break;
         } else if (previous_p < new_p) {
           end = new_p;
         } else if (new_p < previous_p) {
           start = new_p;
         } else {
-          // Rcerr << "Something goes wrong in sample_lambda_slice()" << std::endl;
           Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
-          Lambda(k,t) = current_lambda;
-          break;
         }
   
       } // for loop for shrink time
