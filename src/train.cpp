@@ -71,6 +71,16 @@ List keyATM_fit_HMM(List model, int iter = 0)
 }
 
 
+// Run the collapsed Gibss sampler for the keyATM label
+// List keyATM_fit_label(List model, int iter = 0)
+// {
+//   keyATMlabel keyATMlabel_model(model, iter);
+//   keyATMlabel_model.fit();
+//   model = keyATMlabel_model.return_model();
+//   return model;
+// }
+
+
 //' Run the Collapsed Gibbs sampler for weighted LDA
 //'
 //' @param model A initialized model
@@ -103,8 +113,6 @@ List keyATM_fit_LDAcov(List model, int iter = 0)
 }
 
 
-
-
 //' Run the Collapsed Gibbs sampler for the weighted LDA with HMM model
 //'
 //' @param model A initialized model
@@ -119,6 +127,3 @@ List keyATM_fit_LDAHMM(List model, int iter = 0)
   model = ldahmm_model.return_model();
   return model;
 }
-
-
-

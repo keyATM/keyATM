@@ -480,6 +480,8 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
     key_model <- keyATM_fit_LDAcov(key_model, iter = options$iteration)
   } else if (model == "ldahmm") {
     key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration)  
+  # } else if (model == "label") {
+  #   key_model <- keyATM_fit_label(key_model, iter = options$iteration)
   } else {
     stop("Please check `mode`.")  
   }
@@ -666,6 +668,23 @@ check_arg_model_settings <- function(obj, model, info)
     allowed_arguments <- c(allowed_arguments, "num_states", "time_index")
     
   }
+
+  # check model settings for label
+  # if (model %in% "label"){
+  #   if (is.null(obj$label)){
+  #     stop("`model_settings$label` is not provided.")
+  #   }
+  #   if (length(obj$label) != info$num_doc){
+  #     stop("The length of `model_settings$label` does not match with the number of documents")
+  #   }
+  #   if (!isTRUE(all(obj$label == floor(obj$label)))) {
+  #     stop("'model_settings$label' must only contain integer values")
+  #   }
+  #   if (!isTRUE(all(obj$label == floor(obj$label))) | max(obj$label) != info$keyword_k | min(obje$label) >= -1){
+  #     stop("`model_settings$label` must only contain integer values less than the total number of the keywords and larger than -1")
+  #   }
+  #   obj$label <- as.integer(obj$label)
+  # }
 
   show_unused_arguments(obj, "`model_settings`", allowed_arguments)
 
