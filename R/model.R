@@ -357,12 +357,12 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 
   no_keyword_topics <- as.integer(no_keyword_topics)
 
-  if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm")) {
+  if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm", "label")) {
     stop("Please select a correct model.")  
   }
 
   info <- list(
-                models_keyATM = c("base", "cov", "hmm"),
+                models_keyATM = c("base", "cov", "hmm", "label"),
                 models_lda = c("lda", "ldacov", "ldahmm")
               )
   keywords <- check_arg(keywords, "keywords", model, info)
@@ -669,20 +669,18 @@ check_arg_model_settings <- function(obj, model, info)
     
   }
 
-  # check model settings for label
-  # if (model %in% "label"){
-  #   if (is.null(obj$label)){
+  # # check model settings for label
+  # if (model %in% "label") {
+  #   if (is.null(obj$label)) {
   #     stop("`model_settings$label` is not provided.")
   #   }
-  #   if (length(obj$label) != info$num_doc){
+  #   if (length(obj$label) != info$num_doc) {
   #     stop("The length of `model_settings$label` does not match with the number of documents")
   #   }
-  #   if (!isTRUE(all(obj$label == floor(obj$label)))) {
-  #     stop("'model_settings$label' must only contain integer values")
+  #   if (max(obj$label) != info$keyword_k | min(obj$label) > 0) {
+  #     stop("`model_settings$label` must only contain integer values less than the total number of the keywords and `NA` should be assigned to non-labeled documents.")
   #   }
-  #   if (!isTRUE(all(obj$label == floor(obj$label))) | max(obj$label) != info$keyword_k | min(obje$label) >= -1){
-  #     stop("`model_settings$label` must only contain integer values less than the total number of the keywords and larger than -1")
-  #   }
+  #  
   #   obj$label <- as.integer(obj$label)
   # }
 

@@ -9,7 +9,9 @@ void keyATMlabel::read_data_specific()
 {
   nv_alpha = priors_list["alpha"];
   alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
-  MatrixXd label_dk;
+
+  // read label data
+  label_vec = model_settings["label"];
 
   estimate_alpha = options_list["estimate_alpha"];
   if (estimate_alpha == 0) {
@@ -22,9 +24,17 @@ void keyATMlabel::read_data_specific()
 
 void keyATMlabel::initialize_specific()
 {
-  // No additional initialization
-}
+  // Initialize label information
+  label_dk = MatrixXd::Zero(num_doc, num_topics);
+  for (int i = 0; i < num_doc; i++) {
+    doc_label = label_vec[i];
+    label_dk(i, doc_label) = log(doc_each_len[i]);
+  }
 
+  // Alpha to store during the iteration
+  alpha_ = VectorXd::Zero(num_topics);
+
+}
 
 void keyATMlabel::iteration_single(int &it)
 { // Single iteration
@@ -35,8 +45,8 @@ void keyATMlabel::iteration_single(int &it)
     doc_id_ = doc_indexes[ii];
     doc_s = S[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
-    doc_label_ = label[doc_id_];
-    
+
+    alpha_ = alpha + label_dk.row(doc_id_).transpose();
     token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
     
     // Iterate each word in the document
@@ -44,12 +54,12 @@ void keyATMlabel::iteration_single(int &it)
       w_position = token_indexes[jj];
       s_ = doc_s[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
     
-      new_z = sample_z_label(alpha, z_, s_, w_, doc_id_);
+      new_z = sample_z(alpha_, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
     
   
       z_ = doc_z[w_position]; // use updated z
-      new_s = sample_s(alpha, z_, s_, w_, doc_id_);
+      new_s = sample_s(alpha_, z_, s_, w_, doc_id_);
       doc_s[w_position] = new_s;
     }
     
@@ -60,11 +70,10 @@ void keyATMlabel::iteration_single(int &it)
 
 }
 
-
 void keyATMlabel::sample_parameters(int &it)
 {
   if (estimate_alpha)
-    sample_alpha_label();
+    sample_alpha();
 
   // Store alpha
   if (store_alpha){
@@ -79,81 +88,7 @@ void keyATMlabel::sample_parameters(int &it)
 }
 
 
-// Sampling z with label
-int keyATMmeta::sample_z_label(VectorXd &alpha, int &z, int &s,
-                         int &w, int &doc_id)
-{
-  // remove data
-  if (s == 0) {
-    n_s0_kv(z, w) -= vocab_weights(w);
-    n_s0_k(z) -= vocab_weights(w);
-  } else if (s == 1) {
-    n_s1_kv.coeffRef(z, w) -= vocab_weights(w);
-    n_s1_k(z) -= vocab_weights(w);
-  } else {
-    Rcerr << "Error at sample_z, remove" << std::endl;
-  }
-
-  n_dk(doc_id, z) -= vocab_weights(w);
-  n_dk_noWeight(doc_id, z) -= 1.0;
-
-  new_z = -1; // debug
-  if (s == 0) {
-    for (int k = 0; k < num_topics; ++k) {
-
-      numerator = (beta + n_s0_kv(k, w)) *
-        (n_s0_k(k) + prior_gamma(k, 1)) *
-        (n_dk(doc_id, k) + alpha(k) + label_dk(doc_id, k) );
-
-      denominator = ((double)num_vocab * beta + n_s0_k(k)) *
-        (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
-
-      z_prob_vec(k) = numerator / denominator;
-    }
-
-    sum = z_prob_vec.sum(); // normalize
-    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
-
-  } else {
-    for (int k = 0; k < num_topics; ++k) {
-      if (keywords[k].find(w) == keywords[k].end()) {
-        z_prob_vec(k) = 0.0;
-        continue;
-      } else { 
-        numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
-          (n_s1_k(k) + prior_gamma(k, 0)) *
-          (n_dk(doc_id, k) + alpha(k));
-      }
-      denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) ) *
-        (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
-
-      z_prob_vec(k) = numerator / denominator;
-    }
-
-
-    sum = z_prob_vec.sum();
-    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
-
-  }
-
-  // add back data counts
-  if (s == 0) {
-    n_s0_kv(new_z, w) += vocab_weights(w);
-    n_s0_k(new_z) += vocab_weights(w);
-  } else if (s == 1) {
-    n_s1_kv.coeffRef(new_z, w) += vocab_weights(w);
-    n_s1_k(new_z) += vocab_weights(w);
-  } else {
-    Rcerr << "Error at sample_z, add" << std::endl;
-  }
-  n_dk(doc_id, new_z) += vocab_weights(w);
-  n_dk_noWeight(doc_id, new_z) += 1.0;
-
-  return new_z;
-}
-
-
-void keyATMlabel::sample_alpha_label()
+void keyATMlabel::sample_alpha()
 {
 
   // start, end, previous_p, new_p, newlikelihood, slice_;
@@ -164,7 +99,7 @@ void keyATMlabel::sample_alpha_label()
 
   for (int i = 0; i < num_topics; i++) {
     k = topic_ids[i];
-    store_loglik = alpha_loglik_label(k);
+    store_loglik = alpha_loglik(k);
     start = min_v / (1.0 + min_v); // shrinkp
     end = 1.0;
     // end = shrinkp(max_v);
@@ -195,7 +130,7 @@ void keyATMlabel::sample_alpha_label()
 }
 
 
-double keyATMlabel::alpha_loglik_label(int &k)
+double keyATMlabel::alpha_loglik(int &k)
 {
   loglik = 0.0;
   
@@ -217,10 +152,10 @@ double keyATMlabel::alpha_loglik_label(int &k)
     loglik += fixed_part;
 
     // second term numerator
-    loglik += mylgamma(ndk_a(d,k) + label_dk(d, k));
+    loglik += mylgamma(ndk_a(d,k));
 
     // second term denominator
-    loglik -= mylgamma(doc_each_len_weighted[d] + alpha_sum_val + label_dk.rowwise(d) );
+    loglik -= mylgamma(doc_each_len_weighted[d] + alpha_sum_val);
   }
 
   return loglik;

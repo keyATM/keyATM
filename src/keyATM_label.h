@@ -20,7 +20,6 @@ class keyATMlabel : virtual public keyATMmeta
     int estimate_alpha;
     int store_alpha;
 
-    // During the sampling
     double start, end, previous_p, new_p, newlikelihood, slice_;
     std::vector<int> topic_ids;
     VectorXd keep_current_param;
@@ -29,11 +28,16 @@ class keyATMlabel : virtual public keyATMmeta
 
     double loglik;
     double fixed_part;
-    // contain weight based on label
-    // NumericMatrix label_dk;
+
+    // use during initialization
+    int doc_label;
+    int label_vec;
 
       // in alpha_loglik
       MatrixXd ndk_a;
+      MatrixXd Alpha;
+      MatrixXd label_dk;
+      VectorXd alpha_;
     
     //
     // Functions
