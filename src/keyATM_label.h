@@ -31,7 +31,8 @@ class keyATMlabel : virtual public keyATMmeta
 
     // use during initialization
     int doc_label;
-    int label_vec;
+    // std::vector<int> label_vec;
+    IntegerVector label_vec;
 
       // in alpha_loglik
       MatrixXd ndk_a;
