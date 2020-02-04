@@ -180,6 +180,8 @@ void keyATMcov::sample_lambda_slice()
   cov_ids = sampler::shuffled_indexes(num_cov);
   int k, t;
   const double A = slice_A;
+  double start_val = -10.0;
+  double end_val = 10.0;
   
   newlambdallk = 0.0;
   
@@ -190,8 +192,8 @@ void keyATMcov::sample_lambda_slice()
       t = cov_ids[tt];
       store_loglik = likelihood_lambda(k, t);
   
-      start = 0.0; // shrink
-      end = 1.0; // shrink
+      start = shrink(start_val, A); // shrink
+      end = shrink(end_val, A); // shrink
   
       current_lambda = Lambda(k,t);
       previous_p = shrink(current_lambda, A);
