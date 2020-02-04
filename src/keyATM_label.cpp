@@ -32,7 +32,8 @@ void keyATMlabel::initialize_specific()
   }
 
   // Alpha to store during the iteration
-  alpha_ = VectorXd::Zero(num_topics);
+  // alpha_ = VectorXd::Zero(num_topics);
+  Alpha = MatrixXd::Zero(num_doc, num_topics);
 
 }
 
@@ -40,13 +41,16 @@ void keyATMlabel::iteration_single(int &it)
 { // Single iteration
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
+  Alpha = label_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
 
   for (int ii = 0; ii < num_doc; ii++){
     doc_id_ = doc_indexes[ii];
     doc_s = S[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
 
-    alpha_ = alpha + label_dk.row(doc_id_).transpose();
+    // alpha_ = alpha + label_dk.row(doc_id_).transpose();
+
+    alpha_ = Alpha.row(doc_id_).transpose(); // chooose document specific alpha
     token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
     
     // Iterate each word in the document
@@ -94,12 +98,13 @@ void keyATMlabel::sample_alpha()
   // start, end, previous_p, new_p, newlikelihood, slice_;
   keep_current_param = alpha;
   topic_ids = sampler::shuffled_indexes(num_topics);
+
   newalphallk = 0.0;
   int k;
 
   for (int i = 0; i < num_topics; i++) {
     k = topic_ids[i];
-    store_loglik = alpha_loglik(k);
+    store_loglik = alpha_loglik_label(k);
     start = min_v / (1.0 + min_v); // shrinkp
     end = 1.0;
     // end = shrinkp(max_v);
@@ -111,7 +116,7 @@ void keyATMlabel::sample_alpha()
       new_p = sampler::slice_uniform(start, end); // <-- using R function above
       alpha(k) = new_p / (1.0 - new_p); // expandp
 
-      newalphallk = alpha_loglik(k);
+      newalphallk = alpha_loglik_label(k);
       newlikelihood = newalphallk - 2.0 * log(1.0 - new_p);
 
       if (slice_ < newlikelihood){
@@ -130,17 +135,23 @@ void keyATMlabel::sample_alpha()
 }
 
 
-double keyATMlabel::alpha_loglik(int &k)
+double keyATMlabel::alpha_loglik_label(int &k)
 {
   loglik = 0.0;
   
   fixed_part = 0.0;
-  ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
-  alpha_sum_val = alpha.sum();
-  
-  
-  fixed_part += mylgamma(alpha_sum_val); // first term numerator
-  fixed_part -= mylgamma(alpha(k)); // first term denominator
+  Alpha = label_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
+  // Alpha = alpha.transpose() + label_dk.rowwise(); // this does not work
+  // ndk_a = n_dk.rowwise() + Alpha.rowwise(); // Use Eigen Broadcasting
+  ndk_a = n_dk + Alpha; // Adding two matrices
+  // alpha_sum_val = alpha.sum();
+
+  Alpha_sum_vec = Alpha.colwise().sum(); 
+
+
+  // No fixed part this time 
+  // fixed_part += mylgamma(alpha_sum_val); // first term numerator
+  // fixed_part -= mylgamma(alpha(k)); // first term denominator
   // Add prior
   if (k < keyword_k) {
     loglik += gammapdfln(alpha(k), eta_1, eta_2);
@@ -149,13 +160,15 @@ double keyATMlabel::alpha_loglik(int &k)
   }
 
   for (int d = 0; d < num_doc; d++) {
-    loglik += fixed_part;
+    // loglik += fixed_part;
+    loglik += mylgamma(Alpha_sum_vec(d)); // first term numerator
+    loglik -= mylgamma(Alpha(d, k)); // first term denominator
 
     // second term numerator
     loglik += mylgamma(ndk_a(d,k));
 
     // second term denominator
-    loglik -= mylgamma(doc_each_len_weighted[d] + alpha_sum_val);
+    loglik -= mylgamma(doc_each_len_weighted[d] + Alpha_sum_vec(d));
   }
 
   return loglik;

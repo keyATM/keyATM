@@ -480,8 +480,8 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
     key_model <- keyATM_fit_LDAcov(key_model, iter = options$iteration)
   } else if (model == "ldahmm") {
     key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration)  
-  # } else if (model == "label") {
-  #   key_model <- keyATM_fit_label(key_model, iter = options$iteration)
+  } else if (model == "label") {
+    key_model <- keyATM_fit_label(key_model, iter = options$iteration)
   } else {
     stop("Please check `mode`.")  
   }
@@ -680,9 +680,13 @@ check_arg_model_settings <- function(obj, model, info)
   #   if (max(obj$label) != info$keyword_k | min(obj$label) > 0) {
   #     stop("`model_settings$label` must only contain integer values less than the total number of the keywords and `NA` should be assigned to non-labeled documents.")
   #   }
-  #  
+   
   #   obj$label <- as.integer(obj$label)
   # }
+  if (model %in% "label") {
+    allowed_arguments <- c(allowed_arguments, "label")
+  }
+
 
   show_unused_arguments(obj, "`model_settings`", allowed_arguments)
 

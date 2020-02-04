@@ -28,18 +28,20 @@ class keyATMlabel : virtual public keyATMmeta
 
     double loglik;
     double fixed_part;
+          // 
+    MatrixXd Alpha;
+    MatrixXd label_dk;
+    VectorXd alpha_;
+    VectorXd Alpha_sum_vec;
+
 
     // use during initialization
     int doc_label;
     // std::vector<int> label_vec;
     IntegerVector label_vec;
 
-      // in alpha_loglik
-      MatrixXd ndk_a;
-      MatrixXd Alpha;
-      MatrixXd label_dk;
-      VectorXd alpha_;
-    
+    // in alpha_loglik
+    MatrixXd ndk_a;
     //
     // Functions
     //
@@ -58,7 +60,7 @@ class keyATMlabel : virtual public keyATMmeta
     virtual void iteration_single(int &it);
     void sample_parameters(int &it);
     void sample_alpha();
-    double alpha_loglik(int &k);
+    double alpha_loglik_label(int &k);
     virtual double loglik_total();
 };
 
