@@ -36,9 +36,13 @@ class keyATMcov : virtual public keyATMmeta
       double r, u;
 
       // Slice sampling
-      double start, end, previous_p, new_p, newlikelihood, slice_, current_lambda;
+      double start, end;
+      double previous_p, new_p;
+      double newlikelihood, slice_, current_lambda;
       double store_loglik;
       double newlambdallk;
+      double val_min;
+      double val_max;
     
     //
     // Functions

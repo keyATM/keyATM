@@ -632,7 +632,25 @@ check_arg_model_settings <- function(obj, model, info)
       }
     }
 
+    # Slice Sampling Settings
+    if (is.null(obj$slice_min)) {
+      if (!is.numeric(obj$slice_min)) {
+        stop("`model_settings$slice_min` should be a numeric value.")
+      }
+    } else {
+      obj$slice_min <- -5.0 
+    }
+
+    if (is.null(obj$slice_max)) {
+      if (!is.numeric(obj$slice_max)) {
+        stop("`model_settings$slice_max` should be a numeric value.")
+      }
+    } else {
+      obj$slice_max <- 5.0 
+    }
+
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
+                           "slice_min", "slice_max",
                            "covariates_formula", "standardize", "info")
   }
 

@@ -14,10 +14,15 @@ void keyATMcov::read_data_specific()
   NumericMatrix C_r = model_settings["covariates_data_use"];
   C = Rcpp::as<Eigen::MatrixXd>(C_r);
   num_cov = C.cols();
+
+  // Slice Sampling
+  val_min = model_settings["slice_min"];
+  val_max = model_settings["slice_max"];
 }
 
 void keyATMcov::initialize_specific()
 {
+  // Metropolis-Hastings
   mu = 0.0;
   sigma = 50.0;
   
@@ -180,8 +185,6 @@ void keyATMcov::sample_lambda_slice()
   cov_ids = sampler::shuffled_indexes(num_cov);
   int k, t;
   const double A = slice_A;
-  double start_val = -10.0;
-  double end_val = 10.0;
   
   newlambdallk = 0.0;
   
@@ -192,8 +195,8 @@ void keyATMcov::sample_lambda_slice()
       t = cov_ids[tt];
       store_loglik = likelihood_lambda(k, t);
   
-      start = shrink(start_val, A); // shrink
-      end = shrink(end_val, A); // shrink
+      start = shrink(val_min, A); // shrink
+      end = shrink(val_max, A); // shrink
   
       current_lambda = Lambda(k,t);
       previous_p = shrink(current_lambda, A);
