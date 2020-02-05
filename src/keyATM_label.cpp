@@ -11,6 +11,7 @@ void keyATMlabel::read_data_specific()
   alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
 
   // read label data
+  model_settings = model["model_settings"];
   label_vec = model_settings["label"];
 
   estimate_alpha = options_list["estimate_alpha"];
@@ -139,14 +140,14 @@ double keyATMlabel::alpha_loglik_label(int &k)
 {
   loglik = 0.0;
   
-  fixed_part = 0.0;
+  // fixed_part = 0.0;
   Alpha = label_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
   // Alpha = alpha.transpose() + label_dk.rowwise(); // this does not work
   // ndk_a = n_dk.rowwise() + Alpha.rowwise(); // Use Eigen Broadcasting
   ndk_a = n_dk + Alpha; // Adding two matrices
   // alpha_sum_val = alpha.sum();
 
-  Alpha_sum_vec = Alpha.colwise().sum(); 
+  Alpha_sum_vec = Alpha.rowwise().sum(); 
 
 
   // No fixed part this time 
@@ -207,12 +208,15 @@ double keyATMlabel::loglik_total()
   }
 
   // z
-  fixed_part = alpha.sum();
+  Alpha = label_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
+  ndk_a = n_dk + Alpha; // Adding two matrices
+  Alpha_sum_vec = Alpha.rowwise().sum();
+
   for (int d = 0; d < num_doc; d++) {
-    loglik += mylgamma( fixed_part ) - mylgamma( doc_each_len_weighted[d] + fixed_part );
+    loglik += mylgamma( Alpha_sum_vec(d) ) - mylgamma( doc_each_len_weighted[d] + Alpha_sum_vec(d) );
 
     for (int k = 0; k < num_topics; k++) {
-      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+      loglik += mylgamma( ndk_a(d,k) ) - mylgamma( Alpha(d, k) );
     }
   }
 
