@@ -413,7 +413,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   # Organize
   stored_values <- list()
 
-  if (model %in% c("base", "lda")) {
+  if (model %in% c("base", "lda", "label")) {
     if (options$estimate_alpha)
       stored_values$alpha_iter <- list()  
   }
@@ -669,24 +669,22 @@ check_arg_model_settings <- function(obj, model, info)
     
   }
 
-  # # check model settings for label
-  # if (model %in% "label") {
-  #   if (is.null(obj$label)) {
-  #     stop("`model_settings$label` is not provided.")
-  #   }
-  #   if (length(obj$label) != info$num_doc) {
-  #     stop("The length of `model_settings$label` does not match with the number of documents")
-  #   }
-  #   if (max(obj$label) != info$keyword_k | min(obj$label) > 0) {
-  #     stop("`model_settings$label` must only contain integer values less than the total number of the keywords and `NA` should be assigned to non-labeled documents.")
-  #   }
-   
-  #   obj$label <- as.integer(obj$label)
-  # }
+  # check model settings for label
   if (model %in% "label") {
+    if (is.null(obj$label)) {
+      stop("`model_settings$label` is not provided.")
+    }
+    if (length(obj$label) != info$num_doc) {
+      stop("The length of `model_settings$label` does not match with the number of documents")
+    }
+    if (max(obj$label) > info$keyword_k | min(obj$label) <= 0) {
+      stop("`model_settings$label` must only contain integer values less than the total number of the keywords and `NA` should be assigned to non-labeled documents.")
+    }
+   
+    obj$label <- as.integer(obj$label) - 1L  # index starts from 0 in C++
+
     allowed_arguments <- c(allowed_arguments, "label")
   }
-
 
   show_unused_arguments(obj, "`model_settings`", allowed_arguments)
 
@@ -740,7 +738,7 @@ check_arg_priors <- function(obj, model, info)
 
 
   # alpha
-  if (model %in% c("base", "lda")) {
+  if (model %in% c("base", "lda", "label")) {
     if (is.null(obj$alpha)) {
       obj$alpha <- rep(1/info$total_k, info$total_k)
     }
@@ -815,7 +813,7 @@ check_arg_options <- function(obj, model, info)
   }
 
   # Estimate alpha
-  if (model %in% c("base", "lda")) {
+  if (model %in% c("base", "lda", "label")) {
     if (is.null(obj$estimate_alpha)) {
       obj$estimate_alpha <- 1L
     } else {
