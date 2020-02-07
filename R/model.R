@@ -681,13 +681,15 @@ check_arg_model_settings <- function(obj, model, info)
       stop("`model_settings$label` must only contain integer values less than the total number of the keyword topics for labeled documents and `NA` should be assigned to non-labeled documents.")
     }
    
+    obj$label[is.na(obj$label)] <- 0 # insert -1 to NA values
     obj$label <- as.integer(obj$label) - 1L  # index starts from 0 in C++, you do not need to worry about NA here
     
-    obj$label[is.na(obj$label)] <- -1 # insert -1 to NA values
+
 
     if (!isTRUE(all(obj$label == floor(obj$label)))) {
       stop("`model_settings$label` must only contain integer values for labeled documents and `NA` should be assigned to non-labeled documents")
     }
+    # print(obj$label)
 
     allowed_arguments <- c(allowed_arguments, "label")
   }
