@@ -149,18 +149,19 @@ void keyATMmeta::initialize_common()
   }
   total_words = (int)vocab_weights.sum();
 
-  if (weights_type == "inv-freq" || weights_type == "inv-freq-raw") {
+  if (weights_type == "inv-freq" || weights_type == "inv-freq-normalized") {
     // Inverse frequency
     weights_invfreq(); 
   } else if (weights_type == "information-theory" || 
-             weights_type == "information-theory-raw") 
+             weights_type == "information-theory-normalized") 
   {
     // Information theory 
     weights_inftheory();
   }
     
   // Normalize weights
-  if (weights_type == "inv-freq" || weights_type == "information-theory") {
+  if (weights_type == "inv-freq-normalized" || 
+      weights_type == "information-theory-normalized") {
     weights_normalize_total(); 
   } 
 
