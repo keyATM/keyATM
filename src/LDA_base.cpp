@@ -82,18 +82,12 @@ void LDAbase::initialize_common()
   } else if (weights_type == "information-theory" || weights_type == "information-theory-raw") {
     // Information theory 
     weights_inftheory();
-  } else if (weights_type == "tf-idf" || weights_type == "tf-idf-raw") {
-    weights_tfidf(); 
   }
     
   // Normalize weights
   if (weights_type == "inv-freq" || weights_type == "information-theory") {
     weights_normalize_total(); 
   } 
-
-  if (weights_type == "weights_tfidf") {
-    weights_normalize_doc(); 
-  }
 
   // Do you want to use weights?
   if (use_weight == 0) {
@@ -110,6 +104,8 @@ void LDAbase::initialize_common()
   n_dk_noWeight = MatrixXd::Zero(num_doc, num_topics);
   n_k = VectorXd::Zero(num_topics);
 
+  total_words_weighted = 0.0;
+  double temp;
   for(int doc_id = 0; doc_id < num_doc; doc_id++){
     doc_z = Z[doc_id], doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
@@ -123,7 +119,9 @@ void LDAbase::initialize_common()
       n_dk_noWeight(doc_id, z) += 1.0;
     }
 
-    doc_each_len_weighted.push_back(n_dk.row(doc_id).sum());
+    temp = n_dk.row(doc_id).sum();
+    doc_each_len_weighted.push_back(temp);
+    total_words_weighted += temp;
   }
   
 
