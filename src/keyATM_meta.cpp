@@ -149,24 +149,21 @@ void keyATMmeta::initialize_common()
   }
   total_words = (int)vocab_weights.sum();
 
-  if (weights_type == "inv-freq" || weights_type == "inv-freq-raw") {
+  if (weights_type == "inv-freq" || weights_type == "inv-freq-normalized") {
     // Inverse frequency
     weights_invfreq(); 
-  } else if (weights_type == "information-theory" || weights_type == "information-theory-raw") {
+  } else if (weights_type == "information-theory" || 
+             weights_type == "information-theory-normalized") 
+  {
     // Information theory 
     weights_inftheory();
-  } else if (weights_type == "tf-idf" || weights_type == "tf-idf-raw") {
-    weights_tfidf(); 
   }
     
   // Normalize weights
-  if (weights_type == "inv-freq" || weights_type == "information-theory") {
+  if (weights_type == "inv-freq-normalized" || 
+      weights_type == "information-theory-normalized") {
     weights_normalize_total(); 
   } 
-
-  if (weights_type == "weights_tfidf") {
-    weights_normalize_doc(); 
-  }
 
   // Do you want to use weights?
   if (use_weight == 0) {
@@ -179,7 +176,9 @@ void keyATMmeta::initialize_common()
   // Construct data matrices
   // 
   vector<Triplet> trip_s1;  // for a sparse matrix
-  
+  total_words_weighted = 0.0;
+  double temp;
+
   for (int doc_id = 0; doc_id < num_doc; doc_id++) {
     doc_s = S[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
@@ -197,7 +196,9 @@ void keyATMmeta::initialize_common()
       n_dk_noWeight(doc_id, z) += 1.0;
     }
 
-    doc_each_len_weighted.push_back(n_dk.row(doc_id).sum());
+    temp = n_dk.row(doc_id).sum();
+    doc_each_len_weighted.push_back(temp);
+    total_words_weighted += temp;
   }
   n_s1_kv.setFromTriplets(trip_s1.begin(), trip_s1.end());
   
@@ -224,13 +225,6 @@ void keyATMmeta::weights_inftheory()
 }
 
 
-void keyATMmeta::weights_tfidf()
-{
-  // TF-IDF
-
-}
-
-
 void keyATMmeta::weights_normalize_total()
 {
   // Normalize weights so that the total weighted count
@@ -249,14 +243,6 @@ void keyATMmeta::weights_normalize_total()
     }
   }
   vocab_weights = vocab_weights.array() * (double)total_words / total_weights;
-}
-
-
-void keyATMmeta::weights_normalize_doc()
-{
-  // Normalize weights so that the document-level weighted count
-  // is the same as the length of the document
-
 }
 
 
@@ -294,7 +280,7 @@ void keyATMmeta::sampling_store(int &r_index)
 {
 
   double loglik = loglik_total();
-  double perplexity = exp(-loglik / (double)total_words);
+  double perplexity = exp(-loglik / (double)total_words_weighted);
 
   NumericVector model_fit_vec;
   model_fit_vec.push_back(r_index);

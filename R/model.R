@@ -857,9 +857,8 @@ check_arg_options <- function(obj, model, info)
   if (is.null(obj$weights_type)) {
     obj$weights_type <- "information-theory" 
   } else {
-    if (!obj$weights_type %in% c("information-theory", "information-theory-raw", 
-                                 "inv-freq", "inv-freq-raw",
-                                 "tf-idf", "tf-idf-raw")) 
+    if (!obj$weights_type %in% c("information-theory", "information-theory-normalized", 
+                                 "inv-freq", "inv-freq-normalized")) 
     {
       stop("An invalid value in `options$weights_type`") 
     }
