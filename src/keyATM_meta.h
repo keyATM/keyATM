@@ -55,6 +55,7 @@ class keyATMmeta
     std::vector<double> doc_each_len_weighted;
     
     int num_vocab, num_doc, total_words;
+    double total_words_weighted;
 
     List options_list;
     List Z_tables;
@@ -132,9 +133,7 @@ class keyATMmeta
 
     void weights_invfreq();
     void weights_inftheory();
-    void weights_tfidf();
     void weights_normalize_total();
-    void weights_normalize_doc();
 
     // Sampling
     void iteration();

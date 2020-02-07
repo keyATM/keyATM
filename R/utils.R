@@ -1,8 +1,8 @@
 # a more than usually informative error message for handing in the
 # wrong type to a function
-check_arg_type <- function(arg, typename, message = NULL){
+check_arg_type <- function(arg, typename, message = NULL) {
   argname <- deparse(match.call()[['arg']])
-  if (!inherits(arg, typename)){
+  if (!inherits(arg, typename)) {
     if (is.null(message)) {
       stop(paste0('`', argname, '` is not a ', typename))
     } else {
@@ -12,12 +12,12 @@ check_arg_type <- function(arg, typename, message = NULL){
 }
 
 
-is.formula <- function(x){
-  inherits(x,"formula")
+is.formula <- function(x) {
+  inherits(x, "formula")
 }
 
 
-full_model_name <- function(model = c("base", "covariates", "dynamic"),
+full_model_name <- function(model = c("base", "covariates", "dynamic", "label"),
                             type = c("keyATM", "lda"))
 {
   model <- match.arg(model)
@@ -31,6 +31,8 @@ full_model_name <- function(model = c("base", "covariates", "dynamic"),
       return("cov") 
     } else if (model == "dynamic") {
       return("hmm") 
+    } else if (model == "label") {
+      return("label")
     } else {
       stop("Please select a correct model.") 
     }
@@ -44,6 +46,8 @@ full_model_name <- function(model = c("base", "covariates", "dynamic"),
       return("ldacov") 
     } else if (model == "dynamic") {
       return("ldahmm") 
+    # } else if (model == "label") {
+    #   stop("Label LDA is currently not available.")
     } else {
       stop("Please select a correct model.") 
     }     
@@ -63,9 +67,11 @@ abb_model_name <- function(fullname)
     return("base") 
   } else if (fullname %in% c("cov", "ldacov")) {
     return("covariates") 
-  }else if (fullname %in% c("hmm", "ldahmm")) {
+  } else if (fullname %in% c("hmm", "ldahmm")) {
     return("dynamic") 
-  }else{
+  } else if (fullname %in% "label") {
+    return("label")
+  } else {
     stop("Invalid full model name.") 
   }
 
@@ -87,6 +93,8 @@ extract_full_model_name <- function(obj)
     return("ldacov") 
   } else if ("ldahmm" %in% class(obj)) {
     return("ldahmm") 
+  } else if ("label" %in% class(obj)) {
+    return("label")
   }
 
 }
