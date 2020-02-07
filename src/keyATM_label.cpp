@@ -29,7 +29,13 @@ void keyATMlabel::initialize_specific()
   label_dk = MatrixXd::Zero(num_doc, num_topics);
   for (int i = 0; i < num_doc; i++) {
     doc_label = label_vec[i];
+  // if the label is less than zero, it means label is missing
+  if (doc_label >= 0) {
     label_dk(i, doc_label) = log(doc_each_len[i]);
+  } else {
+    label_dk(i, doc_label) = 0;
+  }
+    
   }
 
   // Alpha to store during the iteration

@@ -677,11 +677,17 @@ check_arg_model_settings <- function(obj, model, info)
     if (length(obj$label) != info$num_doc) {
       stop("The length of `model_settings$label` does not match with the number of documents")
     }
-    if (max(obj$label) > info$keyword_k | min(obj$label) <= 0) {
-      stop("`model_settings$label` must only contain integer values less than the total number of the keywords and `NA` should be assigned to non-labeled documents.")
+    if (max(obj$label, na.rm = TRUE) > info$keyword_k | min(obj$label, na.rm = TRUE) <= 0) {
+      stop("`model_settings$label` must only contain integer values less than the total number of the keyword topics for labeled documents and `NA` should be assigned to non-labeled documents.")
     }
    
-    obj$label <- as.integer(obj$label) - 1L  # index starts from 0 in C++
+    obj$label <- as.integer(obj$label) - 1L  # index starts from 0 in C++, you do not need to worry about NA here
+    
+    obj$label[is.na(obj$label)] <- -1 # insert -1 to NA values
+
+    if (!isTRUE(all(obj$label == floor(obj$label)))) {
+      stop("`model_settings$label` must only contain integer values for labeled documents and `NA` should be assigned to non-labeled documents")
+    }
 
     allowed_arguments <- c(allowed_arguments, "label")
   }
