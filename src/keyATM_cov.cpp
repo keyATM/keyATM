@@ -52,7 +52,7 @@ void keyATMcov::iteration_single(int &it)
   // Create Alpha for this iteration
   Alpha = (C * Lambda.transpose()).array().exp();
 
-  for (int ii = 0; ii < num_doc; ii++){
+  for (int ii = 0; ii < num_doc; ii++) {
     doc_id_ = doc_indexes[ii];
     doc_s = S[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
@@ -63,7 +63,7 @@ void keyATMcov::iteration_single(int &it)
     alpha = Alpha.row(doc_id_).transpose(); // take out alpha
     
     // Iterate each word in the document
-    for (int jj = 0; jj < doc_length; jj++){
+    for (int jj = 0; jj < doc_length; jj++) {
       w_position = token_indexes[jj];
       s_ = doc_s[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
     
@@ -148,10 +148,10 @@ void keyATMcov::sample_lambda_mh()
   double mh_sigma = 0.4;
   int k, t;
 
-  for(int kk = 0; kk < num_topics; kk++){
+  for(int kk = 0; kk < num_topics; kk++) {
     k = topic_ids[kk];
     
-    for(int tt = 0; tt < num_cov; tt++){
+    for(int tt = 0; tt < num_cov; tt++) {
       t = cov_ids[tt];
     
       Lambda_current = Lambda(k, t);
@@ -207,7 +207,7 @@ void keyATMcov::sample_lambda_slice()
               + log(unif_rand()); // <-- using R random uniform
   
   
-      for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
+      for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++) {
         new_p = sampler::slice_uniform(start, end); // <-- using R function above
         Lambda(k,t) = expand(new_p, A); // expand
   
@@ -239,8 +239,8 @@ void keyATMcov::sample_lambda_slice()
 double keyATMcov::loglik_total()
 {
   double loglik = 0.0;
-  for (int k = 0; k < num_topics; k++){
-    for (int v = 0; v < num_vocab; v++){ // word
+  for (int k = 0; k < num_topics; k++) {
+    for (int v = 0; v < num_vocab; v++) { // word
       loglik += mylgamma(beta + n_s0_kv(k, v)) - mylgamma(beta);
     }
 

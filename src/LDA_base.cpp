@@ -150,7 +150,7 @@ int LDAbase::sample_z(VectorXd &alpha, int &z, int &s, int &w, int &doc_id)
   new_z = -1; // debug
 
 
-  for (int k = 0; k < num_topics; ++k){
+  for (int k = 0; k < num_topics; ++k) {
 
     numerator = (beta + n_kv(k, w)) *
       (n_dk(doc_id, k) + alpha(k));

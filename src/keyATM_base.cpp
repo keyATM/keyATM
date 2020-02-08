@@ -31,7 +31,7 @@ void keyATMbase::iteration_single(int &it)
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
-  for (int ii = 0; ii < num_doc; ii++){
+  for (int ii = 0; ii < num_doc; ii++) {
     doc_id_ = doc_indexes[ii];
     doc_s = S[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
@@ -39,7 +39,7 @@ void keyATMbase::iteration_single(int &it)
     token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
     
     // Iterate each word in the document
-    for (int jj = 0; jj < doc_length; jj++){
+    for (int jj = 0; jj < doc_length; jj++) {
       w_position = token_indexes[jj];
       s_ = doc_s[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
     
@@ -65,7 +65,7 @@ void keyATMbase::sample_parameters(int &it)
     sample_alpha();
 
   // Store alpha
-  if (store_alpha){
+  if (store_alpha) {
     int r_index = it + 1;
     if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
       NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
@@ -96,18 +96,18 @@ void keyATMbase::sample_alpha()
     slice_ = store_loglik - 2.0 * log(1.0 - previous_p) 
             + log(unif_rand()); // <-- using R random uniform
 
-    for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++){
+    for (int shrink_time = 0; shrink_time < max_shrink_time; shrink_time++) {
       new_p = sampler::slice_uniform(start, end); // <-- using R function above
       alpha(k) = new_p / (1.0 - new_p); // expandp
 
       newalphallk = alpha_loglik(k);
       newlikelihood = newalphallk - 2.0 * log(1.0 - new_p);
 
-      if (slice_ < newlikelihood){
+      if (slice_ < newlikelihood) {
         break;
-      } else if (previous_p < new_p){
+      } else if (previous_p < new_p) {
         end = new_p;
-      } else if (new_p < previous_p){
+      } else if (new_p < previous_p) {
         start = new_p;
       } else {
         Rcpp::stop("Something goes wrong in sample_lambda_slice().");
