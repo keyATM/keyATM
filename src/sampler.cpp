@@ -9,19 +9,23 @@ namespace sampler{
 	double temp;
 	int index;
 
-	double slice_uniform(double& lower, double& upper){
+	double slice_uniform(double& lower, double& upper)
+  {
 		return lower + (upper - lower) * R::unif_rand();
 	}
 
 
-	std::vector<int> shuffled_indexes(int m){
+	std::vector<int> shuffled_indexes(int m)
+  {
+    // Returns a vector of shuffled indexes for sampling
 		std::vector<int> v(m);
 		std::iota(v.begin(), v.end(), 0);
 		std::random_shuffle(v.begin(), v.end(), sampler::rand_wrapper);
 		return v;
 	}
 
-	int rcat(Eigen::VectorXd &prob, int &size){ // was called 'multi1'
+	int rcat(Eigen::VectorXd &prob, int &size)
+  { 
 		u = R::runif(0, 1);
 		temp = 0.0;
 		index = 0;
@@ -35,7 +39,10 @@ namespace sampler{
 		return index;
 	}
 
-	int rcat_without_normalize(Eigen::VectorXd &prob, double &total, int &size){ // was called 'multi1'
+	int rcat_without_normalize(Eigen::VectorXd &prob, double &total, int &size)
+  { 
+    // Draw from a categorial distribution
+    // This function does not requiare a normalized probability vector.
 		u = R::runif(0, 1) * total;
 		temp = 0.0;
 		index = 0;

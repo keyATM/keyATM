@@ -22,6 +22,8 @@ void keyATMbase::read_data_specific()
 void keyATMbase::initialize_specific()
 {
   // No additional initialization
+  // This part is used when there is a model specific need
+  // to initialize variables.
 }
 
 void keyATMbase::iteration_single(int &it)
@@ -87,9 +89,9 @@ void keyATMbase::sample_alpha()
   for (int i = 0; i < num_topics; i++) {
     k = topic_ids[i];
     store_loglik = alpha_loglik(k);
-    start = min_v / (1.0 + min_v); // shrinkp
-    end = 1.0;
-    // end = shrinkp(max_v);
+    start = min_v ; // shrinked with shrinkp()
+    end = max_v;  // shrinked with shrinkp()
+
     previous_p = alpha(k) / (1.0 + alpha(k)); // shrinkp
     slice_ = store_loglik - 2.0 * log(1.0 - previous_p) 
             + log(unif_rand()); // <-- using R random uniform

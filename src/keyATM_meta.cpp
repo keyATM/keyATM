@@ -72,6 +72,15 @@ void keyATMmeta::read_data_common()
 
   // Stored values
   stored_values = model["stored_values"];
+
+  // Slice Sampling
+  // this is used except cov models
+  model_settings = model["model_settings"];
+  min_v = model_settings["slice_min"];
+  min_v = shrinkp(min_v);
+
+  max_v = model_settings["slice_max"];
+  max_v = shrinkp(max_v);
 }
 
 
@@ -92,9 +101,8 @@ void keyATMmeta::initialize_common()
   eta_1_regular = 2.0;
   eta_2_regular = 1.0;
 
-  // Slice sampling initialization
-  min_v = 1e-9;
-  max_v = 100.0;
+  // Slice sampling initialization for alpha
+  // this is used except cov models
   max_shrink_time = 200;
 
   // Vector that stores keywords (words in dictionary)
