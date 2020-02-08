@@ -29,20 +29,16 @@ void keyATMlabel::initialize_specific()
   label_dk = MatrixXd::Zero(num_doc, num_topics);
   for (int i = 0; i < num_doc; i++) {
     doc_label = label_vec[i];
-    // Rprintf("the label %d \n", doc_label);
   // if the label is less than zero, it means label is missing
-  if (doc_label >= 0) {
-    label_dk(i, doc_label) = log(doc_each_len[i]);
-    // Rprintf("the value of log_doc %f \n", log(doc_each_len[i]));
-    // Rprintf("the assigned lable %d \n", doc_label);
-  }
-
+    if (doc_label >= 0) {
+      // label_dk(i, doc_label) = log(doc_each_len[i]);
+      label_dk(i, doc_label) = log(doc_each_len[i]); // use non-log doc-length
+    }
   }
 
   // Alpha to store during the iteration
   // alpha_ = VectorXd::Zero(num_topics);
   Alpha = MatrixXd::Zero(num_doc, num_topics);
-
 }
 
 void keyATMlabel::iteration_single(int &it)
@@ -79,8 +75,8 @@ void keyATMlabel::iteration_single(int &it)
     S[doc_id_] = doc_s;
   }
   sample_parameters(it);
-
 }
+
 
 void keyATMlabel::sample_parameters(int &it)
 {
