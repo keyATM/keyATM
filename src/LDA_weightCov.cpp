@@ -44,12 +44,12 @@ double LDAcov::loglik_total()
   double loglik = 0.0;
   for (int k = 0; k < num_topics; k++){
     for (int v = 0; v < num_vocab; v++){ // word
-      loglik += mylgamma(beta + n_kv(k, v) / vocab_weights(v) ) - mylgamma(beta);
+      loglik += mylgamma(beta + n_kv(k, v)) - mylgamma(beta);
     }
 
 
     // word normalization
-    loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_k_noWeight(k) );
+    loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_k(k) );
 
   }
 
@@ -60,7 +60,7 @@ double LDAcov::loglik_total()
   for (int d = 0; d < num_doc; d++){
     alpha = Alpha.row(d).transpose(); // Doc alpha, column vector  
     
-    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len[d] + alpha.sum() );
+    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++){
       loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
     }

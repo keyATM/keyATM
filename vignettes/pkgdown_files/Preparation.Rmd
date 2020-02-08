@@ -119,6 +119,14 @@ visualize_keywords(keyATM_docs, bills_keywords)
 ```
 The figure helps you to check the frequency of keywords. Including low-frequency keywords do not help the model in general. **keyATM** automatically prune keywords that do not appear in the documents.
 
+Proportion is defined as a number of times a keyword occurs in the corpus divided by the total length of documents. This measures the frequency of the keyword in the corpus. Formally, the proportion of the keyword $v$ is,
+$$
+\begin{align*}
+    \text{Proportion of }v = \frac{\sum_{d=1}^{D} \sum_{i=1}^{N_d} I(w_{di} = v) }{\sum_{d=1}^{D} N_d}
+\end{align*}
+$$
+where $N_d$ is the length of the document $d$ and $I$ is an indicator function. Keywords of each toopic are ordered by the proportion (x-axsis).
+
 
 ## Next Step
 Now you have texts and keywords! The next step is to fit a model `keyATM()`. **keyATM** has three models:

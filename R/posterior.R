@@ -8,6 +8,7 @@ keyATM_output <- function(model)
   message("Creating an output object. It may take time...")
 
   check_arg_type(model, "keyATM_fitted")
+
   values_iter <- list()  # store values by iteration
   model$model <- extract_full_model_name(model)
 
@@ -54,7 +55,7 @@ keyATM_output <- function(model)
     values_iter$alpha_iter <- keyATM_output_alpha_iter_hmm(model, info)
   }
 
-  if ((model$model %in% c("base", "lda"))) {
+  if ((model$model %in% c("base", "lda", "label"))) {
     if (model$options$estimate_alpha)
       values_iter$alpha_iter <- keyATM_output_alpha_iter_base(model, info)  
   }
@@ -70,7 +71,7 @@ keyATM_output <- function(model)
   }
 
   # p
-  if (model$model %in% c("base", "cov", "hmm")){
+  if (model$model %in% c("base", "cov", "hmm", "label")){
     p_estimated <- keyATM_output_p(model$Z, model$S, model$priors$gamma) 
   } else {
     p_estimated <- NULL 
@@ -155,7 +156,7 @@ keyATM_output_theta <- function(model, info)
 
     theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z))
 
-  } else if (model$model %in% c("base", "lda")) {
+  } else if (model$model %in% c("base", "lda", "label")) {
     if (model$options$estimate_alpha) {
       alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]  
     } else {
@@ -197,7 +198,7 @@ keyATM_output_phi <- function(model, info)
   all_words <- model$vocab[as.integer(unlist(model$W, use.names = F)) + 1L]
   all_topics <- as.integer(unlist(model$Z, use.names = F))
   
-  if (model$model %in% c("base", "cov", "hmm")) {
+  if (model$model %in% c("base", "cov", "hmm", "label")) {
     p_estimated <- keyATM_output_p(model$Z, model$S, model$priors$gamma)
     all_s <- as.integer(unlist(model$S, use.names = F))
 
@@ -760,7 +761,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
     stop("Nothing left to plot. Please check arguments.")  
   }
 
-  if (modelname %in% c("base", "lda")) {
+  if (modelname %in% c("base", "lda", "label")) {
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = Topic)) +
           geom_line() +
           geom_point(size = 0.3) +

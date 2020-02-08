@@ -357,12 +357,12 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 
   no_keyword_topics <- as.integer(no_keyword_topics)
 
-  if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm")) {
+  if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm", "label")) {
     stop("Please select a correct model.")  
   }
 
   info <- list(
-                models_keyATM = c("base", "cov", "hmm"),
+                models_keyATM = c("base", "cov", "hmm", "label"),
                 models_lda = c("lda", "ldacov", "ldahmm")
               )
   keywords <- check_arg(keywords, "keywords", model, info)
@@ -413,7 +413,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   # Organize
   stored_values <- list()
 
-  if (model %in% c("base", "lda")) {
+  if (model %in% c("base", "lda", "label")) {
     if (options$estimate_alpha)
       stored_values$alpha_iter <- list()  
   }
@@ -480,6 +480,8 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
     key_model <- keyATM_fit_LDAcov(key_model, iter = options$iteration)
   } else if (model == "ldahmm") {
     key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration)  
+  } else if (model == "label") {
+    key_model <- keyATM_fit_label(key_model, iter = options$iteration)
   } else {
     stop("Please check `mode`.")  
   }
@@ -604,13 +606,13 @@ check_arg_model_settings <- function(obj, model, info)
     temp <- as.data.frame(obj$covariates_data_use)
     temp$y <- stats::rnorm(nrow(obj$covariates_data_use))
 
-    if ("(Intercept)" %in% colnames(obj$covariates_data_use)){
-      fit <- stats::lm(y ~ 0 + ., data = temp)  # data.frame alreayd includes the intercept
+    if ("(Intercept)" %in% colnames(obj$covariates_data_use)) {
+      fit <- stats::lm(y ~ 0 + ., data = temp)  # data.frame already includes the intercept
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
       }    
     } else {
-      fit <- stats::lm(y ~ 0 + ., data = temp)
+      fit <- stats::lm(y ~ ., data = temp)  # data.frame does not have an itercept
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
       }
@@ -632,7 +634,25 @@ check_arg_model_settings <- function(obj, model, info)
       }
     }
 
+    # Slice Sampling Settings
+    if (is.null(obj$slice_min)) {
+      obj$slice_min <- -5.0 
+    } else {
+      if (!is.numeric(obj$slice_min)) {
+        stop("`model_settings$slice_min` should be a numeric value.")
+      }
+    }
+
+    if (is.null(obj$slice_max)) {
+      obj$slice_max <- 5.0 
+    } else {
+      if (!is.numeric(obj$slice_max)) {
+        stop("`model_settings$slice_max` should be a numeric value.")
+      }
+    }
+
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
+                           "slice_min", "slice_max",
                            "covariates_formula", "standardize", "info")
   }
 
@@ -665,6 +685,31 @@ check_arg_model_settings <- function(obj, model, info)
 
     allowed_arguments <- c(allowed_arguments, "num_states", "time_index")
     
+  }
+
+  # check model settings for label
+  if (model %in% "label") {
+    if (is.null(obj$label)) {
+      stop("`model_settings$label` is not provided.")
+    }
+    if (length(obj$label) != info$num_doc) {
+      stop("The length of `model_settings$label` does not match with the number of documents")
+    }
+    if (max(obj$label, na.rm = TRUE) > info$keyword_k | min(obj$label, na.rm = TRUE) <= 0) {
+      stop("`model_settings$label` must only contain integer values less than the total number of the keyword topics for labeled documents and `NA` should be assigned to non-labeled documents.")
+    }
+   
+    obj$label[is.na(obj$label)] <- 0 # insert -1 to NA values
+    obj$label <- as.integer(obj$label) - 1L  # index starts from 0 in C++, you do not need to worry about NA here
+    
+
+
+    if (!isTRUE(all(obj$label == floor(obj$label)))) {
+      stop("`model_settings$label` must only contain integer values for labeled documents and `NA` should be assigned to non-labeled documents")
+    }
+    # print(obj$label)
+
+    allowed_arguments <- c(allowed_arguments, "label")
   }
 
   show_unused_arguments(obj, "`model_settings`", allowed_arguments)
@@ -719,7 +764,7 @@ check_arg_priors <- function(obj, model, info)
 
 
   # alpha
-  if (model %in% c("base", "lda")) {
+  if (model %in% c("base", "lda", "label")) {
     if (is.null(obj$alpha)) {
       obj$alpha <- rep(1/info$total_k, info$total_k)
     }
@@ -741,7 +786,8 @@ check_arg_options <- function(obj, model, info)
   check_arg_type(obj, "list")
   allowed_arguments <- c("seed", "llk_per", "thinning",
                          "iterations", "verbose",
-                         "use_weights", "prune",
+                         "use_weights", "weights_type", 
+                         "prune",
                          "store_theta", "slice_shape")
 
   # llk_per
@@ -793,7 +839,7 @@ check_arg_options <- function(obj, model, info)
   }
 
   # Estimate alpha
-  if (model %in% c("base", "lda")) {
+  if (model %in% c("base", "lda", "label")) {
     if (is.null(obj$estimate_alpha)) {
       obj$estimate_alpha <- 1L
     } else {
@@ -822,6 +868,17 @@ check_arg_options <- function(obj, model, info)
     obj$use_weights <- as.integer(obj$use_weights)
     if (!obj$use_weights %in% c(0, 1)) {
       stop("An invalid value in `options$use_weights`")  
+    }
+  }
+
+  # Type of the weights
+  if (is.null(obj$weights_type)) {
+    obj$weights_type <- "information-theory" 
+  } else {
+    if (!obj$weights_type %in% c("information-theory", "information-theory-normalized", 
+                                 "inv-freq", "inv-freq-normalized")) 
+    {
+      stop("An invalid value in `options$weights_type`") 
     }
   }
 

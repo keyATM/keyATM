@@ -29,6 +29,8 @@ class keyATMmeta
     int iter;
     int llk_per;
     int verbose;
+    string weights_type;
+
     double eta_1;
     double eta_2;
     double eta_1_regular;
@@ -50,8 +52,10 @@ class keyATMmeta
     List keywords_list;
     List model_fit;
     std::vector<int> doc_each_len;
+    std::vector<double> doc_each_len_weighted;
     
     int num_vocab, num_doc, total_words;
+    double total_words_weighted;
 
     List options_list;
     List Z_tables;
@@ -73,10 +77,9 @@ class keyATMmeta
     SparseMatrix<double,RowMajor> n_s1_kv;
     typedef Eigen::Triplet<double> Triplet;
     MatrixXd n_dk;
+    MatrixXd n_dk_noWeight;
     VectorXd n_s0_k;
-    VectorXd n_s0_k_noWeight;
     VectorXd n_s1_k;
-    VectorXd n_s1_k_noWeight;
     VectorXd vocab_weights;
 
     // Use during the iteration
@@ -127,6 +130,10 @@ class keyATMmeta
     void initialize();
     virtual void initialize_common();
     virtual void initialize_specific() = 0;
+
+    void weights_invfreq();
+    void weights_inftheory();
+    void weights_normalize_total();
 
     // Sampling
     void iteration();

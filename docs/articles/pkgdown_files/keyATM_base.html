@@ -130,7 +130,7 @@
 <span id="cb2-2"><a href="#cb2-2"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
 <span id="cb2-4"><a href="#cb2-4"></a>              <span class="dt">model             =</span> <span class="st">"base"</span>,         <span class="co"># select the model</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">50</span>)</span>
+<span id="cb2-5"><a href="#cb2-5"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">250</span>)</span>
 <span id="cb2-6"><a href="#cb2-6"></a>             )</span></code></pre></div>
 <p>The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options.</p>
 </div>
@@ -146,28 +146,28 @@
 <h2 class="hasAnchor">
 <a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##      1_Education        2_Law    3_Health        4_Drug       Other_1
-## 1           loan      law [✓] program [✓]      drug [✓] administrator
-## 2      child [✓]        state     include        report         water
-## 3        federal    court [✓]  public [✓]           use       coastal
-## 4  education [✓]       person  health [✓] treatment [✓]        change
-## 5         school       action   secretary         abuse           air
-## 6    information      federal     provide     substance    commercial
-## 7    student [✓]        class      report         minor    recreation
-## 8        private attorney [✓]    national     frequency         space
-## 9         direct        crime       grant       control      standard
-## 10        entity       united    research    prevention        permit
-##         Other_2    Other_3
-## 1      wildlife    section
-## 2  conservation      shall
-## 3       project        act
-## 4       patient      state
-## 5        safety subsection
-## 6          fish        sec
-## 7        system  paragraph
-## 8           act        may
-## 9       product     united
-## 10       refuge      title</code></pre>
+<pre><code>##      1_Education        2_Law    3_Health        4_Drug   Other_1    Other_2
+## 1      child [✓]        state program [✓]          loan  research        act
+## 2  education [✓]      law [✓]  public [✓]       section  national    section
+## 3         entity        shall       state       veteran    center     insert
+## 4         safety    court [✓]  health [✓]         shall     shall  paragraph
+## 5        include       person        year     secretary   project     strike
+## 6            use       united     section treatment [✓] committee subsection
+## 7     subsection      section         act      drug [✓] secretary      amend
+## 8         school       action       grant          rate    system   congress
+## 9    information        class         may      borrower  wildlife      title
+## 10         state attorney [✓]      fiscal        direct       act     united
+##        Other_3
+## 1      federal
+## 2        shall
+## 3       report
+## 4      section
+## 5          act
+## 6  information
+## 7         date
+## 8    secretary
+## 9         make
+## 10     require</code></pre>
 </div>
   </div>
 
