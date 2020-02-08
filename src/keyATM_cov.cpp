@@ -14,10 +14,18 @@ void keyATMcov::read_data_specific()
   NumericMatrix C_r = model_settings["covariates_data_use"];
   C = Rcpp::as<Eigen::MatrixXd>(C_r);
   num_cov = C.cols();
+
+  // Slice Sampling
+  val_min = model_settings["slice_min"];
+  val_min = shrink(val_min, slice_A);
+
+  val_max = model_settings["slice_max"];
+  val_max = shrink(val_max, slice_A);
 }
 
 void keyATMcov::initialize_specific()
 {
+  // Metropolis-Hastings
   mu = 0.0;
   sigma = 50.0;
   
@@ -190,8 +198,8 @@ void keyATMcov::sample_lambda_slice()
       t = cov_ids[tt];
       store_loglik = likelihood_lambda(k, t);
   
-      start = 0.0; // shrink
-      end = 1.0; // shrink
+      start = val_min; // shrinked value
+      end = val_max; // shrinked value
   
       current_lambda = Lambda(k,t);
       previous_p = shrink(current_lambda, A);
@@ -209,15 +217,16 @@ void keyATMcov::sample_lambda_slice()
   
         if (slice_ < newlikelihood) {
           break;
+        } else if (abs(end - start) < 1e-9) {
+          Rcerr << "Shrinked too much. Using a current value." << std::endl;  
+          Lambda(k,t) = current_lambda;
+          break;
         } else if (previous_p < new_p) {
           end = new_p;
         } else if (new_p < previous_p) {
           start = new_p;
         } else {
-          // Rcerr << "Something goes wrong in sample_lambda_slice()" << std::endl;
           Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
-          Lambda(k,t) = current_lambda;
-          break;
         }
   
       } // for loop for shrink time

@@ -4,20 +4,21 @@
 #'
 #'
 #' @param docs texts read via \code{keyATM_read()}
-#' @param model keyATM model: "base", "covariates", and "dynamic"
+#' @param model keyATM model: "base", "covariates", "dynamic", and "label"
 #' @param no_keyword_topics the number of regular topics
 #' @param keywords a list of keywords
-#' @param model_settings a list of model specific settings
+#' @param model_settings a list of model specific settings (details are in the online documentation)
 #' @param priors a list of priors of parameters
 #' @param options a list of options \itemize{
 #'      \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
 #'      \item \strong{iterations}: An integer. Number of iterations. Default is 1500.
-#'      \item \strong{verbose}: If \code{TRUE} print loglikelihood and perplexity. Default is \code{FALSE}.
+#'      \item \strong{verbose}: If \code{TRUE}, it prints loglikelihood and perplexity. Default is \code{FALSE}.
 #'      \item \strong{llk_per}: An integer. If the value is \code{j} \strong{keyATM} stores loglikelihood and perplexity every \code{j} iteration. Default value is 10 per iterations
 #'      \item \strong{use_weights}: If \code{TRUE} use weight. Default is \code{TRUE}.
 #'      \item \strong{weights_type}: There are four types of weights. Weights based on the information theory (\code{information-theory}) and inverse frequency (\code{inv-freq}) and normalized versions of them (\code{information-theory-normalized} and \code{inv-freq-normalized}). Default is \code{information-theory}.
 #'      \item \strong{prune}: If \code{TRUE} rume keywords that do not appear in the corpus. Default is \code{TRUE}.
-#'      \item \strong{thinning}: An integer. If the value is \code{j} \strong{keyATM} stores following parameters every \code{j} iteration. \itemize{
+#'      \item \strong{store_theta}: If \code{TRUE} or \code{1}, it stores \emph{theta} for the iteration specified by thinning. Default is \code{FALSE} (same as \code{0}).
+#'      \item \strong{thinning}: An integer. If the value is \code{j} \strong{keyATM} stores following parameters every \code{j} iteration. The default is \code{5}. \itemize{
 #'            \item \emph{theta}: For all models. If \code{store_theta} is \code{TRUE} document-level topic assignment is stored (sufficient statistics to calculate document-topic distributions \code{theta}).
 #'            \item \emph{alpha}: For the base and dynamic models. In the base model alpha is shared across all documents whereas each state has different alpha in the dynamic model.
 #'            \item \emph{lambda}: For the covariate model.
@@ -64,7 +65,7 @@
 #'   # keyATM Covariates
 #'   out <- keyATM(
 #'                 docs, model = "covariates", no_keyword_topics = 5, keywords = keywords_list,
-#'                 model_settings(covariates_data = cov)
+#'                 model_settings(covariates_data = cov, covariates_formula = ~ .)
 #'                )
 #'
 #'   # keyATM Dynamic

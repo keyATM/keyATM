@@ -49,7 +49,7 @@ out <- keyATM(
               model             = "dynamic",      # select the model
               model_settings    = list(time_index = bills_time_index,
                                        num_states = 5), # number of (latent) states in the model 
-              options           = list(seed = 50)
+              options           = list(seed = 250)
              )
 ```
 

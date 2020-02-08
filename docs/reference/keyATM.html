@@ -162,7 +162,7 @@
     </tr>
     <tr>
       <th>model</th>
-      <td><p>keyATM model: "base", "covariates", and "dynamic"</p></td>
+      <td><p>keyATM model: "base", "covariates", "dynamic", and "label"</p></td>
     </tr>
     <tr>
       <th>no_keyword_topics</th>
@@ -174,7 +174,7 @@
     </tr>
     <tr>
       <th>model_settings</th>
-      <td><p>a list of model specific settings</p></td>
+      <td><p>a list of model specific settings (details are in the online documentation)</p></td>
     </tr>
     <tr>
       <th>priors</th>
@@ -185,11 +185,13 @@
       <td><p>a list of options</p><ul>
 <li><p><strong>seed</strong>: A numeric value for random seed. If it is not provided, the package randomly selects a seed.</p></li>
 <li><p><strong>iterations</strong>: An integer. Number of iterations. Default is 1500.</p></li>
-<li><p><strong>verbose</strong>: If <code>TRUE</code> print loglikelihood and perplexity. Default is <code>FALSE</code>.</p></li>
+<li><p><strong>verbose</strong>: If <code>TRUE</code>, it prints loglikelihood and perplexity. Default is <code>FALSE</code>.</p></li>
 <li><p><strong>llk_per</strong>: An integer. If the value is <code>j</code> <strong>keyATM</strong> stores loglikelihood and perplexity every <code>j</code> iteration. Default value is 10 per iterations</p></li>
 <li><p><strong>use_weights</strong>: If <code>TRUE</code> use weight. Default is <code>TRUE</code>.</p></li>
+<li><p><strong>weights_type</strong>: There are four types of weights. Weights based on the information theory (<code>information-theory</code>) and inverse frequency (<code>inv-freq</code>) and normalized versions of them (<code>information-theory-normalized</code> and <code>inv-freq-normalized</code>). Default is <code>information-theory</code>.</p></li>
 <li><p><strong>prune</strong>: If <code>TRUE</code> rume keywords that do not appear in the corpus. Default is <code>TRUE</code>.</p></li>
-<li><p><strong>thinning</strong>: An integer. If the value is <code>j</code> <strong>keyATM</strong> stores following parameters every <code>j</code> iteration.</p><ul>
+<li><p><strong>store_theta</strong>: If <code>TRUE</code> or <code>1</code>, it stores <em>theta</em> for the iteration specified by thinning. Default is <code>FALSE</code> (same as <code>0</code>).</p></li>
+<li><p><strong>thinning</strong>: An integer. If the value is <code>j</code> <strong>keyATM</strong> stores following parameters every <code>j</code> iteration. The default is <code>5</code>.</p><ul>
 <li><p><em>theta</em>: For all models. If <code>store_theta</code> is <code>TRUE</code> document-level topic assignment is stored (sufficient statistics to calculate document-topic distributions <code>theta</code>).</p></li>
 <li><p><em>alpha</em>: For the base and dynamic models. In the base model alpha is shared across all documents whereas each state has different alpha in the dynamic model.</p></li>
 <li><p><em>lambda</em>: For the covariate model.</p></li>
@@ -246,7 +248,7 @@
   <span class='co'># keyATM Covariates</span>
   <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(
                 <span class='no'>docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"covariates"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
-                <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov</span>)
+                <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov</span>, <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~ <span class='no'>.</span>)
                )
 
   <span class='co'># keyATM Dynamic</span>

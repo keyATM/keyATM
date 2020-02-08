@@ -572,7 +572,34 @@ check_arg_model_settings <- function(obj, model, info)
   check_arg_type(obj, "list")
   allowed_arguments <- c()
 
-  if (model %in% c("cov", "ldacov")) {
+  if (model %in% c("base", "lda", "hmm", "ldahmm", "label")) {
+    # Slice Sampling Settings
+    if (is.null(obj$slice_min)) {
+      obj$slice_min <- 1e-9 
+    } else {
+      if (!is.numeric(obj$slice_min)) {
+        stop("`model_settings$slice_min` should be a numeric value.")
+      }
+      if (obj$slice_min <= 0) {
+        stop("`model_settings$slice_min` should be a positive value.")
+      }
+    }
+
+    if (is.null(obj$slice_max)) {
+      obj$slice_max <- 100 
+    } else {
+      if (!is.numeric(obj$slice_max)) {
+        stop("`model_settings$slice_max` should be a numeric value.")
+      }
+      if (obj$slice_max <= 0) {
+        stop("`model_settings$slice_max` should be a positive value.")
+      }
+    }
+
+    allowed_arguments <- c(allowed_arguments, "slice_min", "slice_max")
+  }
+
+  if (model %in% c("cov", "ldacov")) { 
      if (is.null(obj$covariates_data)) {
       stop("Please provide `obj$covariates_data`.")  
     }
@@ -634,9 +661,27 @@ check_arg_model_settings <- function(obj, model, info)
       }
     }
 
+    # Slice Sampling Settings
+    if (is.null(obj$slice_min)) {
+      obj$slice_min <- -5.0 
+    } else {
+      if (!is.numeric(obj$slice_min)) {
+        stop("`model_settings$slice_min` should be a numeric value.")
+      }
+    }
+
+    if (is.null(obj$slice_max)) {
+      obj$slice_max <- 5.0 
+    } else {
+      if (!is.numeric(obj$slice_max)) {
+        stop("`model_settings$slice_max` should be a numeric value.")
+      }
+    }
+
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
+                           "slice_min", "slice_max",
                            "covariates_formula", "standardize", "info")
-  }
+  }  # cov model end
 
 
   if (model %in% c("hmm", "ldahmm")) {

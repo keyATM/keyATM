@@ -36,6 +36,15 @@ void LDAbase::read_data_common()
 
   // Stored values
   stored_values = model["stored_values"];
+
+  // Slice Sampling
+  // this is used except cov models
+  model_settings = model["model_settings"];
+  min_v = model_settings["slice_min"];
+  min_v = shrinkp(min_v);
+
+  max_v = model_settings["slice_max"];
+  max_v = shrinkp(max_v);
 }
 
 
@@ -48,12 +57,12 @@ void LDAbase::initialize_common()
   eta_2_regular = 1.0;
 
   // Slice sampling initialization
-  min_v = 1e-9;
-  max_v = 100.0;
   max_shrink_time = 200;
 
  
+  //
   // Vocabulary weights
+  //
   vocab_weights = VectorXd::Constant(num_vocab, 1.0);
 
   int z, w;
@@ -61,9 +70,7 @@ void LDAbase::initialize_common()
   IntegerVector doc_z, doc_w;
 
   
-  //
   // Construct vocab weights
-  //
   for (int doc_id = 0; doc_id < num_doc; doc_id++) {
     doc_w = W[doc_id];
     doc_len = doc_w.size();

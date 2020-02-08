@@ -43,7 +43,7 @@ out <- keyATM(
               model             = "covariates",   # select the model
               model_settings    = list(covariates_data = bills_cov, # covariate data
                                        covariates_formula = ~ RepParty), # formula to fit covarite
-              options           = list(seed = 50)
+              options           = list(seed = 250)
              )
 ```
 The `covariates_formula` takes the same form of a [`formula`](https://rdrr.io/r/stats/formula.html) for `model.matrix()` function. You do not need to specify the left hand side of the formula. The default number of iterations is `1500`. Please check [this page](Options.html) for available options.

@@ -138,7 +138,7 @@
 <span id="cb4-5"><a href="#cb4-5"></a>              <span class="dt">model             =</span> <span class="st">"covariates"</span>,   <span class="co"># select the model</span></span>
 <span id="cb4-6"><a href="#cb4-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariates_data =</span> bills_cov, <span class="co"># covariate data</span></span>
 <span id="cb4-7"><a href="#cb4-7"></a>                                       <span class="dt">covariates_formula =</span> <span class="op">~</span><span class="st"> </span>RepParty), <span class="co"># formula to fit covarite</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">50</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">250</span>)</span>
 <span id="cb4-9"><a href="#cb4-9"></a>             )</span></code></pre></div>
 <p>The <code>covariates_formula</code> takes the same form of a <a href="https://rdrr.io/r/stats/formula.html"><code>formula</code></a> for <code><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix()</a></code> function. You do not need to specify the left hand side of the formula. The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options.</p>
 </div>
@@ -151,28 +151,28 @@
 <h2 class="hasAnchor">
 <a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##      1_Education        2_Law    3_Health        4_Drug    Other_1
-## 1           loan      law [✓] program [✓]       project    section
-## 2      child [✓]        state  health [✓]      drug [✓]      shall
-## 3  education [✓]    court [✓]       grant         water        act
-## 4         school       person    research           use      state
-## 5    student [✓]       action     include       coastal subsection
-## 6        federal        class    national treatment [✓]        may
-## 7       borrower attorney [✓]      fiscal         abuse        sec
-## 8         direct        crime      center     secretary  paragraph
-## 9    educational  enforcement    activity          fund      title
-## 10          rate      patient appropriate     community  secretary
-##          Other_2     Other_3
-## 1     commission      system
-## 2        foreign    wildlife
-## 3  communication    national
-## 4      frequency information
-## 5        service        fish
-## 6         person      refuge
-## 7      president      entity
-## 8       identify         use
-## 9          alien  commercial
-## 10        victim       space</code></pre>
+<pre><code>##      1_Education     2_Law    3_Health      4_Drug      Other_1      Other_2
+## 1           loan     state program [✓]      report          act          act
+## 2  education [✓]   law [✓]  public [✓] information      project      section
+## 3      child [✓]    person       shall         use        state    paragraph
+## 4        federal court [✓]    national      entity     wildlife        shall
+## 5         school     shall       grant       state          use         date
+## 6        section    action    research     section        water   subsection
+## 7    student [✓]    united        year    drug [✓] conservation subparagraph
+## 8       borrower   federal      center         act    secretary       insert
+## 9           rate   section   establish     federal      coastal        amend
+## 10         abuse     title    activity     include      federal          end
+##       Other_3
+## 1     section
+## 2     service
+## 3         act
+## 4  subsection
+## 5   secretary
+## 6  health [3]
+## 7       shall
+## 8       state
+## 9       title
+## 10     insert</code></pre>
 </div>
 <div id="reference" class="section level2">
 <h2 class="hasAnchor">
