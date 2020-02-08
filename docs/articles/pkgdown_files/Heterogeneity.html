@@ -133,35 +133,35 @@
 <p>You can get top words with <code><a href="../../reference/top_words.html">top_words()</a></code>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(strata_tw, <span class="dt">n =</span> <span class="dv">5</span>)</span></code></pre></div>
 <pre><code>## $`0`
-##     1_Education        2_Law    3_Health    4_Drug  Other_1   Other_2 Other_3
-## 1 education [✓]        state program [✓]      loan research   section federal
-## 2     child [✓]      law [✓]       state   section   center       act   shall
-## 3        safety        shall  public [✓]   veteran    shall    insert  report
-## 4        entity      section  health [✓] secretary  project paragraph section
-## 5       patient attorney [✓]        year     shall national    strike     act
+##     1_Education   2_Law    3_Health    4_Drug   Other_1   Other_2 Other_3
+## 1     child [✓]   state program [✓]      loan     shall   section   shall
+## 2 education [✓] law [✓]       state   veteran  research       act section
+## 3        safety   shall  public [✓]   section    center    insert    date
+## 4        entity  united  health [✓] secretary secretary    strike  report
+## 5   information  person   secretary     shall  national paragraph federal
 ## 
 ## $`1`
-##     1_Education     2_Law    3_Health    4_Drug  Other_1    Other_2 Other_3
-## 1        school     state program [✓]      loan national        act federal
-## 2        entity court [✓]  public [✓]  drug [✓]   system    section  report
-## 3           use   law [✓]       state substance research     insert   shall
-## 4     child [✓]     shall  health [✓]  borrower wildlife  paragraph section
-## 5 education [✓]    person       grant   section    shall subsection     act</code></pre>
+##   1_Education     2_Law    3_Health    4_Drug  Other_1   Other_2 Other_3
+## 1 information     state program [✓]  drug [✓] national       act   shall
+## 2      school   law [✓]  public [✓]      loan    shall   section section
+## 3         use court [✓]       state   federal   system    insert  report
+## 4      entity     shall       grant   section research     amend    date
+## 5   paragraph    action   secretary secretary wildlife paragraph federal</code></pre>
 <p>As long as the length is the same as the number of documents, you can use a character vector for <code>by</code> argument argument.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>RepParty_chr &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(bills_cov[, <span class="st">"RepParty"</span>] <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="st">"Democrat"</span>, <span class="st">"Republican"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2"></a>strata_tw_chr &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span>(out, keyATM_docs, RepParty_chr)</span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(strata_tw_chr, <span class="dt">n =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## $Democrat
 ##     1_Education   2_Law    3_Health  4_Drug  Other_1 Other_2 Other_3
-## 1 education [✓]   state program [✓]    loan research section federal
-## 2     child [✓] law [✓]       state section   center     act   shall
-## 3        safety   shall  public [✓] veteran    shall  insert  report
+## 1     child [✓]   state program [✓]    loan    shall section   shall
+## 2 education [✓] law [✓]       state veteran research     act section
+## 3        safety   shall  public [✓] section   center  insert    date
 ## 
 ## $Republican
-##   1_Education     2_Law    3_Health    4_Drug  Other_1 Other_2 Other_3
-## 1      school     state program [✓]      loan national     act federal
-## 2      entity court [✓]  public [✓]  drug [✓]   system section  report
-## 3         use   law [✓]       state substance research  insert   shall</code></pre>
+##   1_Education     2_Law    3_Health   4_Drug  Other_1 Other_2 Other_3
+## 1 information     state program [✓] drug [✓] national     act   shall
+## 2      school   law [✓]  public [✓]     loan    shall section section
+## 3         use court [✓]       state  federal   system  insert  report</code></pre>
 </div>
 <div id="document-topic-distribution-by-covariates" class="section level2">
 <h2 class="hasAnchor">

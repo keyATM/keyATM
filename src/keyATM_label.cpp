@@ -33,8 +33,6 @@ void keyATMlabel::initialize_specific()
   // if the label is less than zero, it means label is missing
   if (doc_label >= 0) {
     label_dk(i, doc_label) = log(doc_each_len[i]);
-    Rprintf("the value of log_doc %f \n", log(doc_each_len[i]));
-    Rprintf("the assigned lable %d \n", doc_label);
   }
 
   }

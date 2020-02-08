@@ -17,7 +17,10 @@ void keyATMcov::read_data_specific()
 
   // Slice Sampling
   val_min = model_settings["slice_min"];
+  val_min = shrink(val_min, slice_A);
+
   val_max = model_settings["slice_max"];
+  val_max = shrink(val_max, slice_A);
 }
 
 void keyATMcov::initialize_specific()
@@ -195,8 +198,8 @@ void keyATMcov::sample_lambda_slice()
       t = cov_ids[tt];
       store_loglik = likelihood_lambda(k, t);
   
-      start = shrink(val_min, A); // shrink
-      end = shrink(val_max, A); // shrink
+      start = val_min; // shrinked value
+      end = val_max; // shrinked value
   
       current_lambda = Lambda(k,t);
       previous_p = shrink(current_lambda, A);

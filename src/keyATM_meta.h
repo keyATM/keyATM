@@ -7,6 +7,7 @@
 #include "sampler.h"
 
 // RcppProgress
+//   shows a progress bar during the iteration
 #include <progress.hpp>
 #include <progress_bar.hpp>
 
@@ -21,6 +22,13 @@ class keyATMmeta
   // that appear throughout the keyATM models.
   // Each model inherits keyATMmeta and adds model specific
   // functions.
+  //
+  // keyATM uses virtual inheritance.
+  //    All keyATM models inherit this class and add model
+  //    specific functions.
+  //
+  //    weightedLDA models inherit this class but modify some
+  //    initialization functions.
 
   public:
     //
@@ -41,7 +49,9 @@ class keyATMmeta
 
     double slice_A; // parameter for slice sampling 
 
+    //
     // Data
+    //
     List model;
     List W, Z, S;
     StringVector vocab;
@@ -68,11 +78,15 @@ class keyATMmeta
     int num_topics;
     VectorXd alpha;
 
+    //
     // Keywords
+    //
     std::vector< std::unordered_set<int> > keywords;
     std::vector<int> keywords_num;
 
+    //
     // Latent Variables
+    //
     MatrixXd n_s0_kv;
     SparseMatrix<double,RowMajor> n_s1_kv;
     typedef Eigen::Triplet<double> Triplet;
@@ -82,7 +96,9 @@ class keyATMmeta
     VectorXd n_s1_k;
     VectorXd vocab_weights;
 
+    //
     // Use during the iteration
+    //
       // Declaration
       std::vector<int> doc_indexes;
       int doc_id_;
@@ -91,7 +107,6 @@ class keyATMmeta
       int w_position;
       int s_, z_, w_;
       int doc_length;
-      // int new_z, new_s;  // defined in sample_z and sample_s
   
       // sample_z
       VectorXd z_prob_vec;
@@ -135,7 +150,9 @@ class keyATMmeta
     void weights_inftheory();
     void weights_normalize_total();
 
+    //
     // Sampling
+    //
     void iteration();
     virtual void iteration_single(int &it) = 0;
     virtual void sample_parameters(int &it) = 0;
@@ -152,7 +169,9 @@ class keyATMmeta
 
     virtual double loglik_total() = 0;
 
+    //
     // Utilities
+    //
     double vmax, vmin;
 
     double gammapdfln(const double &x, const double &a, const double &b);
@@ -162,18 +181,28 @@ class keyATMmeta
 
     double gammaln_frac(const double &value, const int &count);
 
+    //
     // Inline functions
+    //
 
+    // Slice sampling
     double expand(double &p, const double &A)
     {
       return (-(1.0/A) * log((1.0/p) - 1.0));
     };
+
     double shrink(double &x, const double &A)
     {
       return (1.0 / (1.0 + exp(-A*x)));
     };
-    
 
+    double shrinkp(double &x)
+    {
+      return (x / (1.0 + x)); 
+    };
+
+
+    // Log-sum-exp
     double logsumexp(double x, double y, bool flg)
     {
       if (flg) return y; // init mode
@@ -198,6 +227,7 @@ class keyATMmeta
       return vmax + log(sum);
     }
 
+    // Approximations
     double mylgamma(const double &x){
       // gammaln_val = 0.0;
       // gammaln_val = lgamma(x);
@@ -214,7 +244,7 @@ class keyATMmeta
         return ((x-0.5)*log(x) - x + 0.91893853320467 + 1/(12*x));
     };
 
-    // These approximations are not used
+    // Approximations below are not used
     double mypow(const double &a, const double &b){
       // Reference: https://github.com/ekmett/approximate/blob/master/cbits/fast.c
       // Probably not good to use if b>1.0
