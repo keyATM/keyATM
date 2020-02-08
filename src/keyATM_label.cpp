@@ -32,7 +32,7 @@ void keyATMlabel::initialize_specific()
   // if the label is less than zero, it means label is missing
     if (doc_label >= 0) {
       // label_dk(i, doc_label) = log(doc_each_len[i]);
-      label_dk(i, doc_label) = log(doc_each_len[i]); // use non-log doc-length
+      label_dk(i, doc_label) = doc_each_len[i]; // use non-log doc-length
     }
   }
 
