@@ -29,9 +29,9 @@ namespace sampler{
 		u = R::runif(0, 1);
 		temp = 0.0;
 		index = 0;
-		for (int ii = 0; ii < size; ii++){
+		for (int ii = 0; ii < size; ii++) {
 			temp += prob(ii);
-			if (u < temp){
+			if (u < temp) {
 				index = ii;
 				break;
 			}
@@ -46,9 +46,9 @@ namespace sampler{
 		u = R::runif(0, 1) * total;
 		temp = 0.0;
 		index = 0;
-		for (int ii = 0; ii < size; ii++){
+		for (int ii = 0; ii < size; ii++) {
 			temp += prob(ii);
-			if (u < temp){
+			if (u < temp) {
 				index = ii;
 				break;
 			}
