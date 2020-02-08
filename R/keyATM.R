@@ -4,10 +4,10 @@
 #'
 #'
 #' @param docs texts read via \code{keyATM_read()}
-#' @param model keyATM model: "base", "covariates", and "dynamic"
+#' @param model keyATM model: "base", "covariates", "dynamic", and "label"
 #' @param no_keyword_topics the number of regular topics
 #' @param keywords a list of keywords
-#' @param model_settings a list of model specific settings
+#' @param model_settings a list of model specific settings (details are in the online documentation)
 #' @param priors a list of priors of parameters
 #' @param options a list of options \itemize{
 #'      \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
@@ -64,7 +64,7 @@
 #'   # keyATM Covariates
 #'   out <- keyATM(
 #'                 docs, model = "covariates", no_keyword_topics = 5, keywords = keywords_list,
-#'                 model_settings(covariates_data = cov)
+#'                 model_settings(covariates_data = cov, covariates_formula = ~ .)
 #'                )
 #'
 #'   # keyATM Dynamic
