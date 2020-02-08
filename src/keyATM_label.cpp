@@ -27,14 +27,16 @@ void keyATMlabel::initialize_specific()
 {
   // Initialize label information
   label_dk = MatrixXd::Zero(num_doc, num_topics);
-  for (int i = 0; i < num_doc; i++) {
-    doc_label = label_vec[i];
-  // if the label is less than zero, it means label is missing
-    if (doc_label >= 0) {
-      // label_dk(i, doc_label) = log(doc_each_len[i]);
-      label_dk(i, doc_label) = doc_each_len[i]; // use non-log doc-length
-    }
-  }
+
+  // when use non-weighted length
+  // for (int i = 0; i < num_doc; i++) {
+  //   doc_label = label_vec[i];
+  // // if the label is less than zero, it means label is missing
+  //   if (doc_label >= 0) {
+  //     // label_dk(i, doc_label) = log(doc_each_len[i]);
+  //     label_dk(i, doc_label) = doc_each_len[i]; // use non-log doc-length
+  //   }
+  // }
 
   // Alpha to store during the iteration
   // alpha_ = VectorXd::Zero(num_topics);
@@ -43,6 +45,15 @@ void keyATMlabel::initialize_specific()
 
 void keyATMlabel::iteration_single(int &it)
 { // Single iteration
+  // weighted length
+  for (int i = 0; i < num_doc; i++) {
+    doc_label = label_vec[i];
+  // if the label is less than zero, it means label is missing
+    if (doc_label >= 0) {
+      // label_dk(i, doc_label) = log(doc_each_len[i]);
+      label_dk(i, doc_label) = doc_each_len_weighted[i]; // use non-log doc-length
+    }
+  }
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
   Alpha = label_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
