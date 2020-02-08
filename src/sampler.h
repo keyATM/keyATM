@@ -6,7 +6,10 @@
 
 using namespace Eigen;
 
-namespace sampler{
+namespace sampler
+{
+  // Defines sampler used in keyATM
+ 
   inline int rand_wrapper(const int n) { return floor(R::unif_rand() * n); }
 
   double slice_uniform(double& lower, double& upper);
