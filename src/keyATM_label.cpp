@@ -29,31 +29,19 @@ void keyATMlabel::initialize_specific()
   label_dk = MatrixXd::Zero(num_doc, num_topics);
 
   // when use non-weighted length
-  // for (int i = 0; i < num_doc; i++) {
-  //   doc_label = label_vec[i];
-  // // if the label is less than zero, it means label is missing
-  //   if (doc_label >= 0) {
-  //     // label_dk(i, doc_label) = log(doc_each_len[i]);
-  //     label_dk(i, doc_label) = doc_each_len[i]; // use non-log doc-length
-  //   }
-  // }
-
+  for (int i = 0; i < num_doc; i++) {
+    doc_label = label_vec[i];
+  // if the label is less than zero, it means label is missing
+    if (doc_label >= 0) {
+        label_dk(i, doc_label) = doc_each_len_weighted[i]; // use non-log weighted doc-length
+    }
+  }
   // Alpha to store during the iteration
-  // alpha_ = VectorXd::Zero(num_topics);
   Alpha = MatrixXd::Zero(num_doc, num_topics);
 }
 
 void keyATMlabel::iteration_single(int &it)
 { // Single iteration
-  // weighted length
-  for (int i = 0; i < num_doc; i++) {
-    doc_label = label_vec[i];
-  // if the label is less than zero, it means label is missing
-    if (doc_label >= 0) {
-      // label_dk(i, doc_label) = log(doc_each_len[i]);
-      label_dk(i, doc_label) = doc_each_len_weighted[i]; // use non-log doc-length
-    }
-  }
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
   Alpha = label_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
@@ -75,7 +63,6 @@ void keyATMlabel::iteration_single(int &it)
     
       new_z = sample_z(alpha_, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
-    
   
       z_ = doc_z[w_position]; // use updated z
       new_s = sample_s(alpha_, z_, s_, w_, doc_id_);
@@ -110,7 +97,6 @@ void keyATMlabel::sample_parameters(int &it)
 void keyATMlabel::sample_alpha()
 {
 
-  // start, end, previous_p, new_p, newlikelihood, slice_;
   keep_current_param = alpha;
   topic_ids = sampler::shuffled_indexes(num_topics);
 
@@ -156,17 +142,11 @@ double keyATMlabel::alpha_loglik_label(int &k)
   
   // fixed_part = 0.0;
   Alpha = label_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
-  // Alpha = alpha.transpose() + label_dk.rowwise(); // this does not work
-  // ndk_a = n_dk.rowwise() + Alpha.rowwise(); // Use Eigen Broadcasting
   ndk_a = n_dk + Alpha; // Adding two matrices
-  // alpha_sum_val = alpha.sum();
 
   Alpha_sum_vec = Alpha.rowwise().sum(); 
 
-
   // No fixed part this time 
-  // fixed_part += mylgamma(alpha_sum_val); // first term numerator
-  // fixed_part -= mylgamma(alpha(k)); // first term denominator
   // Add prior
   if (k < keyword_k) {
     loglik += gammapdfln(alpha(k), eta_1, eta_2);
