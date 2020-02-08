@@ -37,7 +37,7 @@ out <- keyATM(
               no_keyword_topics = 3,              # number of topics without keywords
               keywords          = bills_keywords, # keywords
               model             = "base",         # base, covariates, or dynamic
-              options           = list(seed = 100),
+              options           = list(seed = 250),
               keep              = c("Z", "S")     # You need to keep `Z` and `S`
              )
 ```
@@ -77,7 +77,7 @@ out <- keyATM(
               model             = "covariates",   # select the model
               model_settings    = list(covariates_data = bills_cov,
                                        covariates_formula = ~ RepParty),
-              options           = list(seed = 100)
+              options           = list(seed = 250)
              )
 ```
 

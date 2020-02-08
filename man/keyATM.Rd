@@ -11,20 +11,20 @@ keyATM(docs, model, no_keyword_topics, keywords = list(),
 \arguments{
 \item{docs}{texts read via \code{keyATM_read()}}
 
-\item{model}{keyATM model: "base", "covariates", and "dynamic"}
+\item{model}{keyATM model: "base", "covariates", "dynamic", and "label"}
 
 \item{no_keyword_topics}{the number of regular topics}
 
 \item{keywords}{a list of keywords}
 
-\item{model_settings}{a list of model specific settings}
+\item{model_settings}{a list of model specific settings (details are in the online documentation)}
 
 \item{priors}{a list of priors of parameters}
 
 \item{options}{a list of options \itemize{
      \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
      \item \strong{iterations}: An integer. Number of iterations. Default is 1500.
-     \item \strong{verbose}: If \code{TRUE} print loglikelihood and perplexity. Default is \code{FALSE}.
+     \item \strong{verbose}: If \code{TRUE}, it prints loglikelihood and perplexity. Default is \code{FALSE}.
      \item \strong{llk_per}: An integer. If the value is \code{j} \strong{keyATM} stores loglikelihood and perplexity every \code{j} iteration. Default value is 10 per iterations
      \item \strong{use_weights}: If \code{TRUE} use weight. Default is \code{TRUE}.
      \item \strong{weights_type}: There are four types of weights. Weights based on the information theory (\code{information-theory}) and inverse frequency (\code{inv-freq}) and normalized versions of them (\code{information-theory-normalized} and \code{inv-freq-normalized}). Default is \code{information-theory}.
@@ -78,7 +78,7 @@ Run keyATM models.
   # keyATM Covariates
   out <- keyATM(
                 docs, model = "covariates", no_keyword_topics = 5, keywords = keywords_list,
-                model_settings(covariates_data = cov)
+                model_settings(covariates_data = cov, covariates_formula = ~ .)
                )
 
   # keyATM Dynamic

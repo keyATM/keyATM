@@ -12,7 +12,7 @@
 #' @param options a list of options \itemize{
 #'      \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
 #'      \item \strong{iterations}: An integer. Number of iterations. Default is 1500.
-#'      \item \strong{verbose}: If \code{TRUE} print loglikelihood and perplexity. Default is \code{FALSE}.
+#'      \item \strong{verbose}: If \code{TRUE}, it prints loglikelihood and perplexity. Default is \code{FALSE}.
 #'      \item \strong{llk_per}: An integer. If the value is \code{j} \strong{keyATM} stores loglikelihood and perplexity every \code{j} iteration. Default value is 10 per iterations
 #'      \item \strong{use_weights}: If \code{TRUE} use weight. Default is \code{TRUE}.
 #'      \item \strong{weights_type}: There are four types of weights. Weights based on the information theory (\code{information-theory}) and inverse frequency (\code{inv-freq}) and normalized versions of them (\code{information-theory-normalized} and \code{inv-freq-normalized}). Default is \code{information-theory}.

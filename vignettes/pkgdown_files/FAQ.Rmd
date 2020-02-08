@@ -21,6 +21,7 @@ The table below summarizes keyATM models and other popular models based on the i
 | Latent Dirichlet Allocation (LDA) |     ×    |     ×     |        ×      |
 |    Structural Topic Model (STM)   |     ×    |     ○     |        △      |
 
+(○: model incorporates the feature, ×: model does not incorporate the feature, △: model can handle the feature but with some limitations)
 
 The next table compares inference methods and speeds. CGS stands for Collapsed Gibbs Sampling and SS stands for Slice Sampling. Variational inference approximates the target distribution, while CGS and SS sample from the exact distribution.
 

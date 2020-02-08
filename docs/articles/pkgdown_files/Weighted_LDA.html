@@ -123,28 +123,28 @@
 <span id="cb2-3"><a href="#cb2-3"></a>                   <span class="dt">model            =</span> <span class="st">"base"</span>,       <span class="co"># select the model</span></span>
 <span id="cb2-4"><a href="#cb2-4"></a>                   <span class="dt">options          =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
 <span id="cb2-5"><a href="#cb2-5"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##        Topic_1    Topic_2     Topic_3       Topic_4  Topic_5     Topic_6
-## 1  information    section    research       project    state        drug
-## 2      federal      shall    national         water    court       grant
-## 3         loan        act      person      wildlife   action   substance
-## 4       safety      state     science administrator   person         use
-## 5       entity subsection  technology  conservation      law     control
-## 6          use  secretary information       coastal   united   community
-## 7      patient    program      change    management    class corporation
-## 8   commission        may  scientific          fish attorney  prevention
-## 9      product       year      global           use    crime    practice
-## 10      direct  paragraph    undersea        refuge  federal     alcohol
+<pre><code>##        Topic_1   Topic_2     Topic_3       Topic_4  Topic_5   Topic_6
+## 1  information   program       shall           act    state      loan
+## 2        shall secretary     section       project    court   section
+## 3          use     shall      report         state   action     shall
+## 4      federal      year       state           sec    shall   federal
+## 5       entity   service   secretary           use   united      make
+## 6       safety    health      person         water  section      year
+## 7   government  research     control      wildlife  federal    direct
+## 8       report   provide    describe administrator    class  congress
+## 9      patient     grant        date       federal attorney   student
+## 10  commission    fiscal information  conservation      law education
 ##       Topic_7
-## 1       child
-## 2  regulation
-## 3      permit
-## 4     license
-## 5       minor
-## 6  commercial
-## 7       space
-## 8     require
-## 9     foreign
-## 10      abuse</code></pre>
+## 1         act
+## 2     section
+## 3  subsection
+## 4   paragraph
+## 5       amend
+## 6      insert
+## 7      united
+## 8       state
+## 9      strike
+## 10      title</code></pre>
 </div>
 <div id="weighted-lda-covariates" class="section level1">
 <h1 class="hasAnchor">
@@ -160,28 +160,28 @@
 <span id="cb5-4"><a href="#cb5-4"></a>                   <span class="dt">model_settings   =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariates_data =</span> bills_cov),</span>
 <span id="cb5-5"><a href="#cb5-5"></a>                   <span class="dt">options          =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
 <span id="cb5-6"><a href="#cb5-6"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##     Topic_1     Topic_2    Topic_3     Topic_4     Topic_5  Topic_6
-## 1     court      health    section        loan      person  program
-## 2    action     service      shall     federal       child national
-## 3     state      entity        act  commission        drug    grant
-## 4     order     program      state      direct       state research
-## 5  district        care subsection    borrower         law   center
-## 6    united information        may        fish       class     fund
-## 7   federal      system        sec corporation    attorney  project
-## 8   chapter     patient  paragraph        rate       crime director
-## 9      rule    security      title    interest enforcement   fiscal
-## 10     case   secretary     united      amount       abuse activity
-##         Topic_7
-## 1     secretary
-## 2       veteran
-## 3        system
-## 4       service
-## 5      wildlife
-## 6  conservation
-## 7        refuge
-## 8          code
-## 9    commercial
-## 10        space</code></pre>
+<pre><code>##        Topic_1    Topic_2       Topic_3     Topic_4  Topic_5  Topic_6
+## 1        shall     health         state        loan    state  program
+## 2          use      state        agency     section    court    grant
+## 3          act      child           act       shall    shall national
+## 4  information    service administrator     federal   person research
+## 5       report    program        school      direct   action    shall
+## 6    secretary    include       federal    borrower   united     year
+## 7       system       care         water        year      law     fund
+## 8   government    section         shall        make  section   center
+## 9      federal        act           sec      permit    class    carry
+## 10        term subsection       coastal corporation attorney   fiscal
+##       Topic_7
+## 1     section
+## 2         act
+## 3  subsection
+## 4   paragraph
+## 5       amend
+## 6      insert
+## 7       title
+## 8       shall
+## 9    congress
+## 10     follow</code></pre>
 </div>
 <div id="weighted-lda-dynamic" class="section level1">
 <h1 class="hasAnchor">
@@ -199,28 +199,28 @@
 <span id="cb8-5"><a href="#cb8-5"></a>                                              <span class="dt">num_states =</span> <span class="dv">5</span>),</span>
 <span id="cb8-6"><a href="#cb8-6"></a>                      <span class="dt">options          =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">100</span>))</span>
 <span id="cb8-7"><a href="#cb8-7"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##     Topic_1     Topic_2    Topic_3     Topic_4     Topic_5  Topic_6
-## 1     court      health    section        loan      person  program
-## 2    action     service      shall     federal       child national
-## 3     state      entity        act  commission        drug    grant
-## 4     order     program      state      direct       state research
-## 5  district        care subsection    borrower         law   center
-## 6    united information        may        fish       class     fund
-## 7   federal      system        sec corporation    attorney  project
-## 8   chapter     patient  paragraph        rate       crime director
-## 9      rule    security      title    interest enforcement   fiscal
-## 10     case   secretary     united      amount       abuse activity
-##         Topic_7
-## 1     secretary
-## 2       veteran
-## 3        system
-## 4       service
-## 5      wildlife
-## 6  conservation
-## 7        refuge
-## 8          code
-## 9    commercial
-## 10        space</code></pre>
+<pre><code>##        Topic_1    Topic_2       Topic_3     Topic_4  Topic_5  Topic_6
+## 1        shall     health         state        loan    state  program
+## 2          use      state        agency     section    court    grant
+## 3          act      child           act       shall    shall national
+## 4  information    service administrator     federal   person research
+## 5       report    program        school      direct   action    shall
+## 6    secretary    include       federal    borrower   united     year
+## 7       system       care         water        year      law     fund
+## 8   government    section         shall        make  section   center
+## 9      federal        act           sec      permit    class    carry
+## 10        term subsection       coastal corporation attorney   fiscal
+##       Topic_7
+## 1     section
+## 2         act
+## 3  subsection
+## 4   paragraph
+## 5       amend
+## 6      insert
+## 7       title
+## 8       shall
+## 9    congress
+## 10     follow</code></pre>
 </div>
   </div>
 
