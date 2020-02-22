@@ -107,8 +107,8 @@ Keywords should be in a list. For example, we prepare four keyword-topics. Keywr
 bills_keywords <- list(
                        Education = c("education", "child", "student"),
                        Law       = c("court", "law", "attorney"),
-                       Health    = c("public", "health", "program"),
-                       Drug      = c("drug", "treatment")
+                       Health    = c("public", "health"),
+                       Drug      = c("drug")
                       )
 ```
 

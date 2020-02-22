@@ -61,6 +61,9 @@
       <a href="../../articles/pkgdown_files/keyATM_dynamic.html">keyATM Dynamic</a>
     </li>
     <li>
+      <a href="../../articles/pkgdown_files/keyATM_label.html">keyATM Label</a>
+    </li>
+    <li>
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
@@ -141,12 +144,12 @@
 <a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
 <p>Researchers need to specify the number of states in addition to keywords.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(    </span>
-<span id="cb6-2"><a href="#cb6-2"></a>              <span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a>              <span class="dt">model             =</span> <span class="st">"dynamic"</span>,      <span class="co"># select the model</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">time_index =</span> bills_time_index,</span>
-<span id="cb6-7"><a href="#cb6-7"></a>                                       <span class="dt">num_states =</span> <span class="dv">5</span>), <span class="co"># number of (latent) states in the model </span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>              <span class="dt">docs              =</span> keyATM_docs,                         <span class="co"># text input</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,                                   <span class="co"># number of topics without keywords</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>              <span class="dt">keywords          =</span> bills_keywords,                      <span class="co"># keywords</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>              <span class="dt">model             =</span> <span class="st">"dynamic"</span>,                           <span class="co"># select the model</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">time_index =</span> bills_time_index,  <span class="co"># time index</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>                                       <span class="dt">num_states =</span> <span class="dv">5</span>),                <span class="co"># number of (latent) states in the model </span></span>
 <span id="cb6-8"><a href="#cb6-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">250</span>)</span>
 <span id="cb6-9"><a href="#cb6-9"></a>             )</span></code></pre></div>
 </div>
@@ -159,28 +162,28 @@
 <h2 class="hasAnchor">
 <a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##      1_Education        2_Law    3_Health      4_Drug    Other_1    Other_2
-## 1           loan        state program [✓] information      shall        act
-## 2      child [✓]    court [✓]   secretary      report   national    section
-## 3  education [✓]        shall  public [✓]  subsection   research      amend
-## 4        federal       action  health [✓]         act  committee subsection
-## 5         school       united       shall       shall     center     insert
-## 6    student [✓]      law [✓]     service    drug [✓]   wildlife  paragraph
-## 7        section       person     provide      safety     system     strike
-## 8       borrower      federal       state      entity   director      shall
-## 9         direct        class       grant     section    science   congress
-## 10   educational attorney [✓]     section         use technology       date
-##          Other_3
-## 1            act
-## 2          state
-## 3        project
-## 4           fund
-## 5  administrator
-## 6     assistance
-## 7            sec
-## 8        section
-## 9            use
-## 10         water</code></pre>
+<pre><code>##      1_Education        2_Law     3_Health        4_Drug       Other_1
+## 1  education [✓]      law [✓]   public [✓]      drug [✓]    commission
+## 2         school    court [✓]   health [✓]       control   information
+## 3    educational       action subparagraph      facility    electronic
+## 4    student [✓]       person         care        report          rule
+## 5          local         code         date   application      congress
+## 6        library     district   individual administrator      security
+## 7           high  enforcement      veteran      describe communication
+## 8       eligible        crime       follow        submit         party
+## 9    institution        civil       period   requirement          term
+## 10      describe attorney [✓]      respect        person          mean
+##        Other_2    Other_3
+## 1  appropriate   national
+## 2        grant   research
+## 3       report     center
+## 4     congress technology
+## 5      project management
+## 6       follow     system
+## 7        carry   director
+## 8       office       area
+## 9     activity   wildlife
+## 10     amended       land</code></pre>
 </div>
   </div>
 
