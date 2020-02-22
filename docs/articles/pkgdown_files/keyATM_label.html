@@ -114,9 +114,9 @@
 
     
     
-<div id="preparing-documents-and-time-index" class="section level2">
+<div id="preparing-documents-and-labels" class="section level2">
 <h2 class="hasAnchor">
-<a href="#preparing-documents-and-time-index" class="anchor"></a>Preparing documents and time index</h2>
+<a href="#preparing-documents-and-labels" class="anchor"></a>Preparing documents and labels</h2>
 <p>Please read <a href="Preparation.html">Preparation</a> for the reading of documents and creating a list of keywords. We use bills data we prapared (<a href="Preparation.html#reading-documents-into-keyatm">documents</a> and <a href="Preparation.html#preparing-keywords">keywords</a>).</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(quanteda)</span>
@@ -125,7 +125,7 @@
 <span id="cb1-5"><a href="#cb1-5"></a>bills_keywords &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>keywords</span>
 <span id="cb1-6"><a href="#cb1-6"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda dfm object</span></span>
 <span id="cb1-7"><a href="#cb1-7"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<p>Label model needs a vector of labels. Values of the vector represent topics. If a document is missing a label, the label vector should have <code>NA</code>.</p>
+<p>Label model needs a vector of labels. Values of the vector represent topics. If a document does not have a label, the corresponding element in the label vector should have <code>NA</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>labels_use &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>labels</span>
 <span id="cb2-2"><a href="#cb2-2"></a>labels_use</span></code></pre></div>
 <pre><code>##   [1] NA NA NA NA NA NA  3 NA NA  3 NA  3 NA NA NA NA  2 NA NA NA NA NA NA NA NA
@@ -189,7 +189,7 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#preparing-documents-and-time-index">Preparing documents and time index</a></li>
+<li><a href="#preparing-documents-and-labels">Preparing documents and labels</a></li>
       <li><a href="#fitting-the-model">Fitting the model</a></li>
       <li><a href="#saving-the-model">Saving the model</a></li>
       <li><a href="#checking-top-words">Checking top words</a></li>

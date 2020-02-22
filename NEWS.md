@@ -1,6 +1,7 @@
 # keyATM 0.1.0
 ### Major changes
 * We organize functions into a package
+* We add keyATM Label
 
 # keyATM 0.0.7
 ### Major changes
@@ -10,11 +11,11 @@
 
 # keyATM 0.0.6
 ### Major changes
-* We add a dynamic covariates model
+* We add keyATM Dynamic
 
 # keyATM 0.0.5
 ### Major changes
-* We add a dynamic model
+* We add keyATM Covariate
 
 # keyATM 0.0.4
 ### Major changes
@@ -31,4 +32,4 @@
 # keyATM 0.0.1
 ### Major changes
 * This is the first release of keyATM.
-* It includes Basic model and Covariate model.
+* It includes the Base model and the first version of the Covariate model.

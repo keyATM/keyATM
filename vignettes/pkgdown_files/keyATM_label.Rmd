@@ -9,7 +9,7 @@ output:
 knitr::opts_chunk$set(eval = T, echo = TRUE)
 ```
 
-## Preparing documents and time index
+## Preparing documents and labels 
 Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. We use bills data we prapared ([documents](Preparation.html#reading-documents-into-keyatm) and [keywords](Preparation.html#preparing-keywords)).
 
 
@@ -23,7 +23,7 @@ bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda dfm object
 keyATM_docs <- keyATM_read(bills_dfm)
 ```
 
-Label model needs a vector of labels. Values of the vector represent topics. If a document is missing a label, the label vector should have `NA`. 
+Label model needs a vector of labels. Values of the vector represent topics. If a document does not have a label, the corresponding element in the label vector should have `NA`. 
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 labels_use <- keyATM_data_bills$labels
