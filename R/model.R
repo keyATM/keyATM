@@ -778,12 +778,12 @@ check_arg_priors <- function(obj, model, info)
 
 
   # beta
-  if (is.null(obj$beta)) {
+  if (!"beta" %in% names(obj)) {
     obj$beta <- 0.01  
   }
 
   if (model %in% info$models_keyATM) {
-    if (is.null(obj$beta_s)) {
+    if (!"beta_s" %in% names(obj)) {
       obj$beta_s <- 0.1  
     }  
     allowed_arguments <- c(allowed_arguments, "beta_s")
