@@ -30,20 +30,43 @@ bills_keywords <- list(
                       )
 ```
 
+## Document-Topic distribution by covariates
+With **keyATM** covariates, we can calculate the predicted posterior distribution of the document-topic distributions. This is for [keyATM Covariate](keyATM_cov.html).
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+out <- keyATM(    
+              docs              = keyATM_docs,     # text input
+              no_keyword_topics = 3,               # number of topics without keywords
+              keywords          = bills_keywords,  # keywords
+              model             = "covariates",    # select the model
+              model_settings    = list(covariates_data = bills_cov,
+                                       covariates_formula = ~ RepParty),
+              options           = list(seed = 250)
+             )
+```
+
+Now let's calculate the mean of theta for two different values of `RepParty`. The figure shows 90\% credible intervals.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+strata_topic <- by_strata_DocTopic(out, by_name = "RepParty", by_values = c(0,1))
+plot(strata_topic, topics = c(1,2,3,4))
+```
+
+
 ## Topic-Word distribution by covariates
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(
-              docs              = keyATM_docs,    # text input
-              no_keyword_topics = 3,              # number of topics without keywords
-              keywords          = bills_keywords, # keywords
-              model             = "base",         # base, covariates, or dynamic
+              docs              = keyATM_docs,      # text input
+              no_keyword_topics = 3,                # number of topics without keywords
+              keywords          = bills_keywords,   # keywords
+              model             = "base",           # base, covariates, or dynamic
               options           = list(seed = 250),
-              keep              = c("Z", "S")     # You need to keep `Z` and `S`
+              keep              = c("Z", "S")       # You need to keep `Z` and `S`
              )
 ```
 
 We have a binary variable of the party ID of bill's proposer. `0` indicates Democrat and `1` indicates Republican.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
+bills_cov <- keyATM_data_bills$cov
 table(bills_cov[, "RepParty"])
 ```
 
@@ -64,27 +87,4 @@ RepParty_chr <- ifelse(bills_cov[, "RepParty"] == 0, "Democrat", "Republican")
 strata_tw_chr <- by_strata_TopicWord(out, keyATM_docs, RepParty_chr)
 top_words(strata_tw_chr, n = 3)
 ```
-
-
-## Document-Topic distribution by covariates
-With **keyATM** covariates, we can calculate the predicted posterior distribution of the document-topic distributions.
-
-```{r, warning=FALSE, message=FALSE, fig.align='center'}
-out <- keyATM(    
-              docs              = keyATM_docs,    # text input
-              no_keyword_topics = 3,              # number of topics without keywords
-              keywords          = bills_keywords, # keywords
-              model             = "covariates",   # select the model
-              model_settings    = list(covariates_data = bills_cov,
-                                       covariates_formula = ~ RepParty),
-              options           = list(seed = 250)
-             )
-```
-
-Now let's calculate the mean of theta for two different values of `RepParty`. The figure shows 90\% credible intervals.
-```{r, warning=FALSE, message=FALSE, fig.align='center'}
-strata_topic <- by_strata_DocTopic(out, by_name = "RepParty", by_values = c(0,1))
-plot(strata_topic, topics = c(1,3,5))
-```
-
 

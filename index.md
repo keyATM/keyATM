@@ -19,6 +19,7 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 * [keyATM Base](articles/pkgdown_files/keyATM_base.html)
 * [keyATM Covariates](articles/pkgdown_files/keyATM_cov.html)
 * [keyATM Dynamic](articles/pkgdown_files/keyATM_dynamic.html)
+* [keyATM Label](articles/pkgdown_files/keyATM_label.html)
 * [Weighted LDA models](articles/pkgdown_files/Weighted_LDA.html)
 * [FAQ](articles/pkgdown_files/FAQ.html)
 

@@ -25,15 +25,13 @@ void keyATMcov::read_data_specific()
 
 void keyATMcov::initialize_specific()
 {
-  // Metropolis-Hastings
-  mu = 0.0;
-  sigma = 50.0;
-  
   // Alpha
   Alpha = MatrixXd::Zero(num_doc, num_topics);
   alpha = VectorXd::Zero(num_topics); // use in iteration
 
   // Lambda
+  mu = 0.0;
+  sigma = 1.0;
   Lambda = MatrixXd::Zero(num_topics, num_cov);
   for (int k = 0; k < num_topics; k++) {
     // Initialize with R random

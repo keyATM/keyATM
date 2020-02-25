@@ -361,11 +361,11 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
         numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
           (n_s1_k(k) + prior_gamma(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
-      }
-      denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) ) *
-        (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
+        denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) ) *
+          (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
-      z_prob_vec(k) = numerator / denominator;
+        z_prob_vec(k) = numerator / denominator;
+      }
     }
 
 

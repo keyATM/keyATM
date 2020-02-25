@@ -12,7 +12,7 @@ void keyATMlabel::read_data_specific()
 
   // read label data
   model_settings = model["model_settings"];
-  label_vec = model_settings["label"];
+  label_vec = model_settings["labels"];
 
   estimate_alpha = options_list["estimate_alpha"];
   if (estimate_alpha == 0) {

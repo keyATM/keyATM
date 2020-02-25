@@ -11,4 +11,5 @@ articles:
   keyATM_base: pkgdown_files/keyATM_base.html
   keyATM_cov: pkgdown_files/keyATM_cov.html
   keyATM_dynamic: pkgdown_files/keyATM_dynamic.html
+  keyATM_label: pkgdown_files/keyATM_label.html
 

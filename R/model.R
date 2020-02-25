@@ -205,7 +205,7 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
   # Make keywords_df
   keywords_df <- data.frame(Topic = 1, Word = 1)
   tnames <- names(keywords)
-  for(k in 1:ext_k){
+  for (k in 1:ext_k) {
     words <- keywords[[k]]
     numwords <- length(words)
     if (is.null(tnames)) {
@@ -214,7 +214,7 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
       topicname <- paste0(k, "_", tnames[k]) 
     }
 
-    for(w in 1:numwords) {
+    for (w in 1:numwords) {
       keywords_df <- rbind(keywords_df, data.frame(Topic = topicname, Word = words[w]))
     }
   }
@@ -716,27 +716,26 @@ check_arg_model_settings <- function(obj, model, info)
 
   # check model settings for label
   if (model %in% "label") {
-    if (is.null(obj$label)) {
-      stop("`model_settings$label` is not provided.")
+    if (is.null(obj$labels)) {
+      stop("`model_settings$labels` is not provided.")
     }
-    if (length(obj$label) != info$num_doc) {
-      stop("The length of `model_settings$label` does not match with the number of documents")
+    if (length(obj$labels) != info$num_doc) {
+      stop("The length of `model_settings$labels` does not match with the number of documents")
     }
-    if (max(obj$label, na.rm = TRUE) > info$keyword_k | min(obj$label, na.rm = TRUE) <= 0) {
-      stop("`model_settings$label` must only contain integer values less than the total number of the keyword topics for labeled documents and `NA` should be assigned to non-labeled documents.")
+    if (max(obj$labels, na.rm = TRUE) > info$keyword_k | min(obj$labels, na.rm = TRUE) <= 0) {
+      stop("`model_settings$labels` must only contain integer values less than the total number of the keyword topics for labeled documents and `NA` should be assigned to non-labeled documents.")
     }
    
-    obj$label[is.na(obj$label)] <- 0 # insert -1 to NA values
-    obj$label <- as.integer(obj$label) - 1L  # index starts from 0 in C++, you do not need to worry about NA here
+    obj$labels[is.na(obj$labels)] <- 0 # insert -1 to NA values
+    obj$labels <- as.integer(obj$labels) - 1L  # index starts from 0 in C++, you do not need to worry about NA here
     
 
 
-    if (!isTRUE(all(obj$label == floor(obj$label)))) {
-      stop("`model_settings$label` must only contain integer values for labeled documents and `NA` should be assigned to non-labeled documents")
+    if (!isTRUE(all(obj$labels == floor(obj$labels)))) {
+      stop("`model_settings$labels` must only contain integer values for labeled documents and `NA` should be assigned to non-labeled documents")
     }
-    # print(obj$label)
 
-    allowed_arguments <- c(allowed_arguments, "label")
+    allowed_arguments <- c(allowed_arguments, "labels")
   }
 
   show_unused_arguments(obj, "`model_settings`", allowed_arguments)
@@ -778,12 +777,12 @@ check_arg_priors <- function(obj, model, info)
 
 
   # beta
-  if (is.null(obj$beta)) {
+  if (!"beta" %in% names(obj)) {
     obj$beta <- 0.01  
   }
 
   if (model %in% info$models_keyATM) {
-    if (is.null(obj$beta_s)) {
+    if (!"beta_s" %in% names(obj)) {
       obj$beta_s <- 0.1  
     }  
     allowed_arguments <- c(allowed_arguments, "beta_s")
