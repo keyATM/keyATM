@@ -92,7 +92,7 @@ keyATM_output <- function(model)
              priors = model$priors, options = model$options,
              keywords_raw = model$keywords_raw,
              model_fit = modelfit, p = p_estimated,
-             values_iter = values_iter)
+             values_iter = values_iter, pi = model$stored_values$pi_vectors)
   class(ll) <- c("keyATM_output", model$model, class(ll))
   return(ll)
 }

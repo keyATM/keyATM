@@ -439,6 +439,9 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   if (options$store_theta)
     stored_values$Z_tables <- list()
 
+  if (options$store_pi)
+    stored_values$pi_vectors <- list()
+
   key_model <- list(
                     W = W, Z = Z, S = S,
                     model = abb_model_name(model),
@@ -814,7 +817,7 @@ check_arg_options <- function(obj, model, info)
                          "iterations", "verbose",
                          "use_weights", "weights_type", 
                          "prune",
-                         "store_theta", "slice_shape")
+                         "store_theta", "slice_shape", "store_pi")
 
   # llk_per
   if (is.null(obj$llk_per))
@@ -863,6 +866,17 @@ check_arg_options <- function(obj, model, info)
       stop("An invalid value in `options$store_theta`")  
     }
   }
+
+  # Store pi
+  if (is.null(obj$store_pi)) {
+    obj$store_pi <- 0L
+  } else {
+    obj$store_pi <- as.integer(obj$store_pi)  
+    if (!obj$store_pi %in% c(0, 1)) {
+      stop("An invalid value in `options$store_theta`")  
+    }
+  }
+
 
   # Estimate alpha
   if (model %in% c("base", "lda", "label")) {

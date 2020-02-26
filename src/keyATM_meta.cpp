@@ -312,8 +312,23 @@ void keyATMmeta::store_theta_iter(int &r_index)
 }
 
 
-void keyATMmeta::verbose_special(int &r_index){
+void keyATMmeta::verbose_special(int &r_index)
+{
   // If there is anything special to show or store, write here.
+
+  // store pi
+  List pi_vectors = stored_values["pi_vectors"];
+  // calculate
+  VectorXd numer = n_s1_k.array() + prior_gamma.col(0).array();
+  VectorXd denom = n_s0_k.array() + prior_gamma.col(1).array() + numer.array();
+  // 
+  VectorXd pi = numer.array()/denom.array();
+
+  // store
+  NumericVector pi_vector = Rcpp::wrap(pi);
+  pi_vectors.push_back(pi_vector);
+  stored_values["pi_vectors"] = pi_vectors;
+
 }
 
 

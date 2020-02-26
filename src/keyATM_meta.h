@@ -164,6 +164,7 @@ class keyATMmeta
 
     void sampling_store(int &r_index);
     void store_theta_iter(int &r_index);
+    void store_pi_iter(int &r_index);
 
     virtual void verbose_special(int &r_index);
 
