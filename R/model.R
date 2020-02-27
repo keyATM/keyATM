@@ -436,11 +436,13 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
     }
   }
 
+  if (model %in% info$models_keyATM) {
+    if (options$store_pi)
+      stored_values$pi_vectors <- list() 
+  }
+
   if (options$store_theta)
     stored_values$Z_tables <- list()
-
-  if (options$store_pi)
-    stored_values$pi_vectors <- list()
 
   key_model <- list(
                     W = W, Z = Z, S = S,
