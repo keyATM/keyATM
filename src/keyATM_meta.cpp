@@ -56,6 +56,7 @@ void keyATMmeta::read_data_common()
   use_weight = options_list["use_weights"];
   slice_A = options_list["slice_shape"];
   store_theta = options_list["store_theta"];
+  store_pi = options_list["store_pi"];
   thinning = options_list["thinning"];
   llk_per = options_list["llk_per"];
   verbose = options_list["verbose"];
@@ -271,6 +272,9 @@ void keyATMmeta::iteration()
     if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
       if (store_theta)
         store_theta_iter(r_index);
+
+      if (store_pi)
+        store_pi_iter(r_index);
     }
 
     // Progress bar
@@ -286,7 +290,8 @@ void keyATMmeta::iteration()
 
 void keyATMmeta::sampling_store(int &r_index)
 {
-
+  // Store likelihood and perplexity during the sampling
+ 
   double loglik = loglik_total();
   double perplexity = exp(-loglik / (double)total_words_weighted);
 
@@ -312,27 +317,30 @@ void keyATMmeta::store_theta_iter(int &r_index)
 }
 
 
-void keyATMmeta::verbose_special(int &r_index)
+void keyATMmeta::store_pi_iter(int &r_index)
 {
-  // If there is anything special to show or store, write here.
-
-  // store pi
   List pi_vectors = stored_values["pi_vectors"];
   // calculate
   VectorXd numer = n_s1_k.array() + prior_gamma.col(0).array();
   VectorXd denom = n_s0_k.array() + prior_gamma.col(1).array() + numer.array();
-  // 
-  VectorXd pi = numer.array()/denom.array();
+  VectorXd pi = numer.array() / denom.array();
 
   // store
   NumericVector pi_vector = Rcpp::wrap(pi);
   pi_vectors.push_back(pi_vector);
   stored_values["pi_vectors"] = pi_vectors;
-
 }
 
 
+void keyATMmeta::verbose_special(int &r_index)
+{
+  // If there is anything special to show, write here.
+}
+
+
+//
 // Sampling
+//
 int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
                          int &w, int &doc_id)
 {
@@ -457,8 +465,9 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
 }
 
 
-
+//
 // Utilities
+//
 double keyATMmeta::gammapdfln(const double &x, const double &a, const double &b)
 {
   // a: shape, b: scale
@@ -471,10 +480,12 @@ double keyATMmeta::betapdf(const double &x, const double &a, const double &b)
   return tgamma(a+b) / (tgamma(a) * tgamma(b)) * pow(x, a-1) * pow(1-x, b-1);
 }
 
+
 double keyATMmeta::betapdfln(const double &x, const double &a, const double &b)
 {
   return (a-1)*log(x) + (b-1)*log(1.0-x) + mylgamma(a+b) - mylgamma(a) - mylgamma(b);
 }
+
 
 NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int& num_topics)
 {
@@ -513,6 +524,5 @@ List keyATMmeta::return_model()
   model["stored_values"] = stored_values;
   return model;
 }
-
 
 

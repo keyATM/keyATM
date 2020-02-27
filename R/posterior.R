@@ -77,6 +77,10 @@ keyATM_output <- function(model)
     p_estimated <- NULL 
   }
 
+  if (length(model$stored_values$pi_vectors) > 0) {
+    values_iter$pi_iter <- model$stored_values$pi_vectors
+  }
+
   # Rescale lambda
   if (model$model %in% c("cov", "ldacov")) {
     values_iter$Lambda_iter_rescaled <- keyATM_output_rescale_Lambda(model, info) 
@@ -92,7 +96,7 @@ keyATM_output <- function(model)
              priors = model$priors, options = model$options,
              keywords_raw = model$keywords_raw,
              model_fit = modelfit, p = p_estimated,
-             values_iter = values_iter, pi = model$stored_values$pi_vectors)
+             values_iter = values_iter)
   class(ll) <- c("keyATM_output", model$model, class(ll))
   return(ll)
 }
