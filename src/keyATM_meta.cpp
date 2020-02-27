@@ -13,10 +13,12 @@ keyATMmeta::keyATMmeta(List model_, const int iter_)
   iter = iter_;
 }
 
+
 keyATMmeta::~keyATMmeta()
 {
   // Destructor
 }
+
 
 void keyATMmeta::fit()
 {
@@ -26,6 +28,7 @@ void keyATMmeta::fit()
   iteration();
 }
 
+
 void keyATMmeta::read_data()
 {
   // `common` reads data required in all models
@@ -33,6 +36,7 @@ void keyATMmeta::read_data()
   read_data_common();
   read_data_specific();
 }
+
 
 void keyATMmeta::read_data_common()
 {
