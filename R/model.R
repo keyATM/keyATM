@@ -402,7 +402,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
     res <- make_sz_key(W, keywords, info)
     S <- res$S
     Z <- res$Z
-  }else{
+  } else {
     # LDA based models
     res <- make_sz_lda(W, info)
     S <- res$S
