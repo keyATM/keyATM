@@ -604,6 +604,30 @@ check_arg_model_settings <- function(obj, model, info)
     allowed_arguments <- c(allowed_arguments, "slice_min", "slice_max")
   }
 
+  if (model %in% c("base", "cov", "hmm")) {
+  
+    if (!is.null(obj$labels)) {
+   
+      if (length(obj$labels) != info$num_doc) {
+        stop("The length of `model_settings$labels` does not match with the number of documents")
+      }
+      if (max(obj$labels, na.rm = TRUE) > info$keyword_k | min(obj$labels, na.rm = TRUE) <= 0) {
+        stop("`model_settings$labels` must only contain integer values less than the total number of the keyword topics for labeled documents and `NA` should be assigned to non-labeled documents.")
+      }
+     
+      obj$labels[is.na(obj$labels)] <- 0 # insert -1 to NA values
+      obj$labels <- as.integer(obj$labels) - 1L  # index starts from 0 in C++, you do not need to worry about NA here
+      
+      if (!isTRUE(all(obj$labels == floor(obj$labels)))) {
+        stop("`model_settings$labels` must only contain integer values for labeled documents and `NA` should be assigned to non-labeled documents")
+      }
+    
+    }
+
+    allowed_arguments <- c(allowed_arguments, "labels")
+  
+  }
+
   if (model %in% c("cov", "ldacov")) { 
      if (is.null(obj$covariates_data)) {
       stop("Please provide `obj$covariates_data`.")  
