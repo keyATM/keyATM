@@ -31,6 +31,7 @@ class LDAbase : virtual public keyATMmeta
     virtual void read_data_common();
     virtual void initialize_common();
     virtual void iteration_single(int &it) = 0;
+    void parameters_store(int &r_index); 
     virtual int sample_z(VectorXd &alpha, int &z, int &s,
                          int &w, int &doc_id) final;
     virtual double loglik_total() = 0;

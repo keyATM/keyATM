@@ -843,7 +843,7 @@ check_arg_options <- function(obj, model, info)
                          "iterations", "verbose",
                          "use_weights", "weights_type", 
                          "prune",
-                         "store_theta", "slice_shape", "store_pi")
+                         "store_theta", "slice_shape")
 
   # llk_per
   if (is.null(obj$llk_per))
@@ -894,13 +894,16 @@ check_arg_options <- function(obj, model, info)
   }
 
   # Store pi
-  if (is.null(obj$store_pi)) {
-    obj$store_pi <- 0L
-  } else {
-    obj$store_pi <- as.integer(obj$store_pi)  
-    if (!obj$store_pi %in% c(0, 1)) {
-      stop("An invalid value in `options$store_theta`")  
+  if (model %in% info$models_keyATM) {
+    if (is.null(obj$store_pi)) {
+      obj$store_pi <- 0L
+    } else {
+      obj$store_pi <- as.integer(obj$store_pi)  
+      if (!obj$store_pi %in% c(0, 1)) {
+        stop("An invalid value in `options$store_theta`")  
+      }
     }
+    allowed_arguments <- c(allowed_arguments, "store_pi")
   }
 
 

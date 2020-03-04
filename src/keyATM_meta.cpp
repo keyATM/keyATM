@@ -274,11 +274,7 @@ void keyATMmeta::iteration()
       verbose_special(r_index);
     }
     if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
-      if (store_theta)
-        store_theta_iter(r_index);
-
-      if (store_pi)
-        store_pi_iter(r_index);
+      parameters_store(r_index);
     }
 
     // Progress bar
@@ -311,6 +307,15 @@ void keyATMmeta::sampling_store(int &r_index)
   }
 }
 
+
+void keyATMmeta::parameters_store(int &r_index)
+{
+  if (store_theta)
+    store_theta_iter(r_index);
+
+  if (store_pi)
+    store_pi_iter(r_index);
+}
 
 void keyATMmeta::store_theta_iter(int &r_index)
 {

@@ -139,6 +139,13 @@ void LDAbase::initialize_common()
 }
 
 
+void LDAbase::parameters_store(int &r_index)
+{
+  if (store_theta)
+    store_theta_iter(r_index);
+}
+
+
 int LDAbase::sample_z(VectorXd &alpha, int &z, int &s, int &w, int &doc_id)
 {
   // remove data
