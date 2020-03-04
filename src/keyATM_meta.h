@@ -68,6 +68,8 @@ class keyATMmeta
     int num_vocab, num_doc, total_words;
     double total_words_weighted;
 
+    VectorXi labels_true;
+
     List options_list;
     List Z_tables;
     List priors_list;
@@ -164,6 +166,7 @@ class keyATMmeta
                    int &w, int &doc_id);
 
     void sampling_store(int &r_index);
+    virtual void parameters_store(int &r_index);
     void store_theta_iter(int &r_index);
     void store_pi_iter(int &r_index);
 
