@@ -297,7 +297,6 @@ void keyATMmeta::initialize_betas()
   
     doc_w = W[doc_id]; 
     doc_len = doc_each_len[doc_id];
-    cout << doc_id << " " << label << endl;
   
     for (int w_pos = 0; w_pos < doc_len; w_pos++) {
       v = doc_w[w_pos];

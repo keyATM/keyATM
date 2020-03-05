@@ -93,10 +93,6 @@ keyATM <- function(docs, model, no_keyword_topics,
                        keywords, model_settings, priors, options
                       )
 
-  # Debug
-  message("Debug in keyATM.R")
-  return(fitted)
-
   # Get output
   out <- keyATM_output(fitted)
 
