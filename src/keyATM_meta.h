@@ -43,8 +43,9 @@ class keyATMmeta
     double eta_2;
     double eta_1_regular;
     double eta_2_regular;
-    int use_weight;
+    int use_weights;
     int store_theta;
+    int store_pi;
     int thinning;
 
     double slice_A; // parameter for slice sampling 
@@ -58,6 +59,7 @@ class keyATMmeta
     NumericVector nv_alpha;
     MatrixXd prior_gamma;
     double beta, beta_s;
+    double Vbeta;
     int regular_k, keyword_k;
     List keywords_list;
     List model_fit;
@@ -66,6 +68,13 @@ class keyATMmeta
     
     int num_vocab, num_doc, total_words;
     double total_words_weighted;
+
+    VectorXi labels_true;
+    int use_labels;
+    MatrixXd beta_s0kv;
+    SparseMatrix<double, RowMajor> beta_s1kv;
+    VectorXd Vbeta_k;
+    VectorXd Lbeta_sk;
 
     List options_list;
     List Z_tables;
@@ -139,16 +148,18 @@ class keyATMmeta
 
     // Reading and Initialization
     void read_data();
-    virtual void read_data_common();
-    virtual void read_data_specific() = 0;
+      virtual void read_data_common();
+      virtual void read_data_specific() = 0;
 
     void initialize();
-    virtual void initialize_common();
-    virtual void initialize_specific() = 0;
+      virtual void initialize_common();
+      virtual void initialize_specific() = 0;
 
-    void weights_invfreq();
-    void weights_inftheory();
-    void weights_normalize_total();
+      void weights_invfreq();
+      void weights_inftheory();
+      void weights_normalize_total();
+
+      void initialize_betas();
 
     //
     // Sampling
@@ -168,11 +179,14 @@ class keyATMmeta
                        int &w, int &doc_id);
 
     void sampling_store(int &r_index);
+    virtual void parameters_store(int &r_index);
     void store_theta_iter(int &r_index);
+    void store_pi_iter(int &r_index);
 
     virtual void verbose_special(int &r_index);
 
     virtual double loglik_total() = 0;
+    virtual double loglik_total_label();
 
     //
     // Utilities

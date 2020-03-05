@@ -13,10 +13,12 @@ keyATMmeta::keyATMmeta(List model_, const int iter_)
   iter = iter_;
 }
 
+
 keyATMmeta::~keyATMmeta()
 {
   // Destructor
 }
+
 
 void keyATMmeta::fit()
 {
@@ -26,6 +28,7 @@ void keyATMmeta::fit()
   iteration();
 }
 
+
 void keyATMmeta::read_data()
 {
   // `common` reads data required in all models
@@ -33,6 +36,7 @@ void keyATMmeta::read_data()
   read_data_common();
   read_data_specific();
 }
+
 
 void keyATMmeta::read_data_common()
 {
@@ -53,9 +57,10 @@ void keyATMmeta::read_data_common()
   
   // Options
   options_list = model["options"];
-  use_weight = options_list["use_weights"];
+  use_weights = options_list["use_weights"];
   slice_A = options_list["slice_shape"];
   store_theta = options_list["store_theta"];
+  store_pi = options_list["store_pi"];
   thinning = options_list["thinning"];
   llk_per = options_list["llk_per"];
   verbose = options_list["verbose"];
@@ -174,8 +179,8 @@ void keyATMmeta::initialize_common()
   } 
 
   // Do you want to use weights?
-  if (use_weight == 0) {
-    cout << "Not using weights!! Check `options$use_weight`." << endl;
+  if (use_weights == 0) {
+    cout << "Not using weights!! Check `options$use_weights`." << endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
 
@@ -213,6 +218,20 @@ void keyATMmeta::initialize_common()
 
   // Use during the iteration
   z_prob_vec = VectorXd::Zero(num_topics);
+
+  // Use labels to initialize beta (prior for topic-word distributions)
+  if (model_settings.containsElementNamed("labels")) {
+    use_labels = 1;
+    initialize_betas();
+  } else {
+    use_labels = 0;
+    Vbeta = (double)num_vocab * beta;
+
+    Lbeta_sk = VectorXd::Zero(num_topics);
+    for (int k = 0; k < num_topics; k++) {
+      Lbeta_sk(k) = (double)keywords_num[k] * beta_s; 
+    }
+  }
   
 }
 
@@ -254,13 +273,73 @@ void keyATMmeta::weights_normalize_total()
 }
 
 
+void keyATMmeta::initialize_betas()
+{
+  // Initialize betas using the label information
+  IntegerVector label_vec = model_settings["labels"];
+  int label;
+  int v;
+  int doc_len;
+  IntegerVector doc_w;
+
+  // Initialize beta matrix
+  beta_s0kv = MatrixXd::Constant(num_topics, num_vocab, beta);
+  beta_s1kv.resize(num_topics, num_vocab);
+
+  vector<Triplet> trip_beta_s1;
+
+  for (int k = 0; k < keyword_k; k++) {
+    for (auto &v : keywords[k]) {
+      trip_beta_s1.push_back(Triplet(k, v, beta_s));
+    } 
+  }
+
+
+  // Add values based on the observed counts
+  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+    label = label_vec[doc_id];
+    if (label < 0)
+      continue;
+  
+    doc_w = W[doc_id]; 
+    doc_len = doc_each_len[doc_id];
+  
+    for (int w_pos = 0; w_pos < doc_len; w_pos++) {
+      v = doc_w[w_pos];
+  
+      if (use_weights) {
+        beta_s0kv(label, v) += vocab_weights(v);
+  
+        if (keywords[label].find(v) != keywords[label].end()){
+          trip_beta_s1.push_back(Triplet(label, v, vocab_weights(v)));
+        }
+      } else {
+        beta_s0kv(label, v) += 1.0;
+  
+        if (keywords[label].find(v) != keywords[label].end()){
+          trip_beta_s1.push_back(Triplet(label, v, vocab_weights(v)));
+        }
+      }
+    }
+  }
+
+  // Make beta_s1kv as a sparse matrix
+  beta_s1kv.setFromTriplets(trip_beta_s1.begin(), trip_beta_s1.end());
+
+  // Pre-Cauculation for speed up
+  Vbeta_k = beta_s0kv.rowwise().sum();
+  Lbeta_sk = beta_s1kv * VectorXd::Ones(beta_s1kv.cols()); // beta_s1kv.rowwise().sum();
+}
+
+
 void keyATMmeta::iteration()
 {
   // Iteration
   Progress progress_bar(iter, !(bool)verbose);
 
   for (int it = 0; it < iter; it++) {
-    iteration_single(it);
+    // Run iteration
+    iteration_single(it); 
 
     // Check storing values
     int r_index = it + 1;
@@ -269,8 +348,7 @@ void keyATMmeta::iteration()
       verbose_special(r_index);
     }
     if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
-      if (store_theta)
-        store_theta_iter(r_index);
+      parameters_store(r_index);
     }
 
     // Progress bar
@@ -286,8 +364,10 @@ void keyATMmeta::iteration()
 
 void keyATMmeta::sampling_store(int &r_index)
 {
-
-  double loglik = loglik_total();
+  // Store likelihood and perplexity during the sampling
+ 
+  double loglik;
+  loglik = (use_labels) ? loglik_total_label() : loglik_total();
   double perplexity = exp(-loglik / (double)total_words_weighted);
 
   NumericVector model_fit_vec;
@@ -303,6 +383,16 @@ void keyATMmeta::sampling_store(int &r_index)
 }
 
 
+void keyATMmeta::parameters_store(int &r_index)
+{
+  if (store_theta)
+    store_theta_iter(r_index);
+
+  if (store_pi)
+    store_pi_iter(r_index);
+}
+
+
 void keyATMmeta::store_theta_iter(int &r_index)
 {
   Z_tables = stored_values["Z_tables"];
@@ -312,12 +402,30 @@ void keyATMmeta::store_theta_iter(int &r_index)
 }
 
 
-void keyATMmeta::verbose_special(int &r_index){
-  // If there is anything special to show or store, write here.
+void keyATMmeta::store_pi_iter(int &r_index)
+{
+  List pi_vectors = stored_values["pi_vectors"];
+  // calculate
+  VectorXd numer = n_s1_k.array() + prior_gamma.col(0).array();
+  VectorXd denom = n_s0_k.array() + prior_gamma.col(1).array() + numer.array();
+  VectorXd pi = numer.array() / denom.array();
+
+  // store
+  NumericVector pi_vector = Rcpp::wrap(pi);
+  pi_vectors.push_back(pi_vector);
+  stored_values["pi_vectors"] = pi_vectors;
 }
 
 
+void keyATMmeta::verbose_special(int &r_index)
+{
+  // If there is anything special to show, write here.
+}
+
+
+//
 // Sampling
+//
 int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
                          int &w, int &doc_id)
 {
@@ -343,7 +451,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
         (n_s0_k(k) + prior_gamma(k, 1)) *
         (n_dk(doc_id, k) + alpha(k));
 
-      denominator = ((double)num_vocab * beta + n_s0_k(k)) *
+      denominator = (Vbeta + n_s0_k(k)) *
         (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
@@ -361,7 +469,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
         numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
           (n_s1_k(k) + prior_gamma(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
-        denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) ) *
+        denominator = (Lbeta_sk(k) + n_s1_k(k) ) *
           (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
         z_prob_vec(k) = numerator / denominator;
@@ -413,11 +521,11 @@ int keyATMmeta::sample_z_label(VectorXd &alpha, int &z, int &s,
   if (s == 0) {
     for (int k = 0; k < num_topics; ++k) {
 
-      numerator = (beta + n_s0_kv(k, w)) *
+      numerator = (beta_s0kv(k, w) + n_s0_kv(k, w)) *
         (n_s0_k(k) + prior_gamma(k, 1)) *
         (n_dk(doc_id, k) + alpha(k));
 
-      denominator = ((double)num_vocab * beta + n_s0_k(k)) *
+      denominator = (Vbeta_k(k) + n_s0_k(k)) *
         (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
@@ -432,10 +540,10 @@ int keyATMmeta::sample_z_label(VectorXd &alpha, int &z, int &s,
         z_prob_vec(k) = 0.0;
         continue;
       } else { 
-        numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
+        numerator = (beta_s1kv.coeffRef(k, w) + n_s1_kv.coeffRef(k, w)) *
           (n_s1_k(k) + prior_gamma(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
-        denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) ) *
+        denominator = (Lbeta_sk(k) + n_s1_k(k) ) *
           (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
         z_prob_vec(k) = numerator / denominator;
@@ -483,14 +591,14 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
 
   numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
     ( n_s1_k(k) + prior_gamma(k, 0) );
-  denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) );
+  denominator = (Lbeta_sk(k) + n_s1_k(k) );
   s1_prob = numerator / denominator;
 
   // newprob_s0()
   numerator = (beta + n_s0_kv(k, w)) *
     (n_s0_k(k) + prior_gamma(k, 1));
 
-  denominator = ((double)num_vocab * beta + n_s0_k(k) );
+  denominator = (Vbeta + n_s0_k(k) );
   s0_prob = numerator / denominator;
 
   // Normalize
@@ -528,16 +636,16 @@ int keyATMmeta::sample_s_label(VectorXd &alpha, int &z, int &s,
   // newprob_s1()
   k = z;
 
-  numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
+  numerator = (beta_s1kv.coeffRef(k, w) + n_s1_kv.coeffRef(k, w)) *
     ( n_s1_k(k) + prior_gamma(k, 0) );
-  denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) );
+  denominator = (Lbeta_sk(k) + n_s1_k(k) );
   s1_prob = numerator / denominator;
 
   // newprob_s0()
-  numerator = (beta + n_s0_kv(k, w)) *
+  numerator = (beta_s0kv(k, w) + n_s0_kv(k, w)) *
     (n_s0_k(k) + prior_gamma(k, 1));
 
-  denominator = ((double)num_vocab * beta + n_s0_k(k) );
+  denominator = (Vbeta_k(k) + n_s0_k(k) );
   s0_prob = numerator / denominator;
 
   // Normalize
@@ -559,7 +667,15 @@ int keyATMmeta::sample_s_label(VectorXd &alpha, int &z, int &s,
 }
 
 
+double keyATMmeta::loglik_total_label()
+{
+  // Should be defined in each model
+  return 0.0;
+}
+
+
 // Utilities
+//
 double keyATMmeta::gammapdfln(const double &x, const double &a, const double &b)
 {
   // a: shape, b: scale
@@ -572,10 +688,12 @@ double keyATMmeta::betapdf(const double &x, const double &a, const double &b)
   return tgamma(a+b) / (tgamma(a) * tgamma(b)) * pow(x, a-1) * pow(1-x, b-1);
 }
 
+
 double keyATMmeta::betapdfln(const double &x, const double &a, const double &b)
 {
   return (a-1)*log(x) + (b-1)*log(1.0-x) + mylgamma(a+b) - mylgamma(a) - mylgamma(b);
 }
+
 
 NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int& num_topics)
 {
@@ -611,9 +729,19 @@ double keyATMmeta::gammaln_frac(const double &value, const int &count)
 List keyATMmeta::return_model()
 {
   // Return output to R
+
+  if (use_labels) {
+    // Return prior to use in R 
+    NumericMatrix R_betas0 = Rcpp::wrap(beta_s0kv);
+    SEXP R_betas1 = Rcpp::wrap(beta_s1kv);
+    
+    priors_list.push_back(R_betas0, "beta_s0");
+    priors_list.push_back(R_betas1, "beta_s1");
+    model["priors"] = priors_list;
+  }
+
   model["stored_values"] = stored_values;
   return model;
 }
-
 
 

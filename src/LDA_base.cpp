@@ -22,7 +22,7 @@ void LDAbase::read_data_common()
   
   // Options
   options_list = model["options"];
-  use_weight = options_list["use_weights"];
+  use_weights = options_list["use_weights"];
   slice_A = options_list["slice_shape"];
   store_theta = options_list["store_theta"];
   thinning = options_list["thinning"];
@@ -59,6 +59,8 @@ void LDAbase::initialize_common()
   // Slice sampling initialization
   max_shrink_time = 200;
 
+  // No labels in LDA
+  use_labels = 0;
  
   //
   // Vocabulary weights
@@ -98,8 +100,8 @@ void LDAbase::initialize_common()
   } 
 
   // Do you want to use weights?
-  if (use_weight == 0) {
-    cout << "Not using weights!! Check `options$use_weight`." << endl;
+  if (use_weights == 0) {
+    cout << "Not using weights!! Check `options$use_weights`." << endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
 
@@ -136,6 +138,13 @@ void LDAbase::initialize_common()
   // Use during the iteration
   z_prob_vec = VectorXd::Zero(num_topics);
 
+}
+
+
+void LDAbase::parameters_store(int &r_index)
+{
+  if (store_theta)
+    store_theta_iter(r_index);
 }
 
 

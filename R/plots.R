@@ -28,6 +28,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
 
   if (is.null(show_topic)) {
     show_topic <- 1:ncol(x$theta)  
+    show_topic <- as.numeric(show_topic)
   }
   check_arg_type(show_topic, "numeric")
   enq_show_topic <- enquo(show_topic)
@@ -46,7 +47,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = Topic)) +
           geom_line() +
           geom_point(size = 0.3) +
-          facet_wrap(~ Topic, ncol = 2, scales = scales) +
+          facet_wrap(~ Topic, ncol = 2, scales = scale) +
           ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
@@ -55,7 +56,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = State, colour = State)) +
           geom_line() +
           geom_point(size = 0.3) +
-          facet_wrap(~ Topic, ncol = 2, scales = scales) +
+          facet_wrap(~ Topic, ncol = 2, scales = scale) +
           ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))  
@@ -113,8 +114,9 @@ plot_modelfit <- function(x, start = 1)
 #' @import ggplot2
 #' @import dplyr
 #' @import magrittr
+#' @import tidyr
 #' @export
-plot_p <- function(x, show_topic = NULL)
+plot_pi <- function(x, show_topic = NULL, start = 0, thinning = 5)
 {
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
@@ -125,25 +127,52 @@ plot_p <- function(x, show_topic = NULL)
 
   num <- length(unique(x$p$Topic))
   if (is.null(show_topic)) {
-    shoe_topic <- 1:num
+    show_topic <- 1:num
+    show_topic <- as.numeric(show_topic)
   }
 
   check_arg_type(show_topic, "numeric")
   enq_show_topic <- enquo(show_topic)
 
-  x$p %>%
-    dplyr::filter(Topic %in% (!!show_topic)) %>%
-    dplyr::mutate(Topic = paste0("Topic", Topic)) -> temp
+  if (!is.null(x$values_iter$pi_iter)) {
+    pi_mat <- do.call(rbind, x$values_iter$pi_iter) 
+    colnames(pi_mat) <- paste0("Topic_", 1:num)
+    if (start != 0) {
+      pi_mat <- tail(pi_mat[, show_topic], -start) # remove the first iterations and extract topics to use
+    }
 
-  g  <- ggplot(temp, aes_string(x='Topic', y='Proportion')) +
-      geom_bar(stat="identity") +
-      theme_bw() +
-      scale_x_discrete(limits = paste0("Topic", get("show_topic"))) +
-      ylab("Proportion (%)") +
-      xlab("Topic") +
-      ggtitle("Proportion of words drawn from topic-word distribution") +
-      theme(plot.title = element_text(hjust = 0.5))
+      pi_mat <- pi_mat[seq(1, nrow(pi_mat), thinning), ] # thinning
+    if(nrow(pi_mat) == 0) {
+      stop("Nothing left to plot. Please check arguments.")
+    }
+    pi_mat %>% data.frame() %>% 
+      pivot_longer(cols = starts_with("Topic"), names_to = "Topic") %>%
+      group_by(Topic) %>%
+      summarise(mean = mean(value), uq = quantile(value, .975), lq = quantile(value, .25)) -> temp
+    temp$Topic <- factor(temp$Topic, levels = paste0("Topic_", show_topic))
+    
+    g <- ggplot(temp, aes(y = mean, x = Topic, color = Topic)) + 
+        geom_point() + 
+        theme_bw() +
+        geom_errorbar(aes(ymin = lq, ymax = uq), data = temp, width = 0.01, size = 1) + 
+        ylab("Proportion (with credible interval)") +
+        xlab("Topic") +
+        ggtitle("Proportion of words drawn from topic-word distribution") +
+        theme(plot.title = element_text(hjust = 0.5))
+  } else {
+    x$p %>%
+      dplyr::filter(Topic %in% (!!show_topic)) %>%
+      dplyr::mutate(Topic = paste0("Topic", Topic)) -> temp
 
+    g  <- ggplot(temp, aes_string(x='Topic', y='Proportion')) +
+        geom_bar(stat="identity") +
+        theme_bw() +
+        scale_x_discrete(limits = paste0("Topic", get("show_topic"))) +
+        ylab("Proportion (%)") +
+        xlab("Topic") +
+        ggtitle("Proportion of words drawn from topic-word distribution") +
+        theme(plot.title = element_text(hjust = 0.5))    
+  }
   return(g)
 }
 
