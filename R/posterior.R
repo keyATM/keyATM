@@ -203,10 +203,10 @@ keyATM_output_phi <- function(model, info)
   all_topics <- as.integer(unlist(model$Z, use.names = F))
   
   if (model$model %in% c("base", "cov", "hmm", "label")) {
-    p_estimated <- keyATM_output_p(model$Z, model$S, model$priors$gamma)
+    pi_estimated <- keyATM_output_p(model$Z, model$S, model$priors$gamma)
     all_s <- as.integer(unlist(model$S, use.names = F))
 
-    obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, p_estimated,
+    obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, pi_estimated,
                                       keywords_raw = model$keywords_raw,
                                       vocab = model$vocab, 
                                       priors = model$priors, 
@@ -222,7 +222,7 @@ keyATM_output_phi <- function(model, info)
 
 #' @noRd
 #' @import magrittr
-keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, p_estimated,
+keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimated,
                                        keywords_raw, vocab, priors, tnames)
 {
   res_tibble <- tibble::tibble(
@@ -231,7 +231,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, p_estimated
                         Switch = all_s
                        )
 
-  prob1 <- p_estimated %>% dplyr::pull(Proportion) / 100
+  prob1 <- pi_estimated %>% dplyr::pull(Proportion) / 100
   prob0 <- 1 - prob1 
   vocab_sorted <- sort(vocab)
 
