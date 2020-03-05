@@ -113,7 +113,6 @@ keyATM <- function(docs, model, no_keyword_topics,
     out$kept_values$stored_values$Z_tables <- NULL
   }
 
-
   return(out)
 }
 

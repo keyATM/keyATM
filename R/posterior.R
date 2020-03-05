@@ -124,8 +124,8 @@ keyATM_output_p <- function(model_Z, model_S, prior)
     warning("Some of the topics are not used.")
     missing <- setdiff(1:nrow(prior), temp$Topic)
     temp %>%
-      add_row(Topic = missing, count = 0, sums = 0) %>%
-      arrange(Topic) -> temp
+      dplyr::add_row(Topic = missing, count = 0, sums = 0) %>%
+      dplyr::arrange(Topic) -> temp
   }
 
   # Get p
@@ -135,8 +135,8 @@ keyATM_output_p <- function(model_Z, model_S, prior)
   b <- prior[, 2]
   p <- (a + s) / (a + b + n) 
   temp %>%
-    mutate(Proportion = p * 100) %>%
-    select(-sums) -> p_estimated
+    dplyr::mutate(Proportion = p * 100) %>%
+    dplyr::select(-sums) -> p_estimated
 
   return(p_estimated)
 }
@@ -280,9 +280,9 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
     if (nrow(phi) != length(tnames)) {
       missing <- setdiff(0:(length(tnames)-1L), phi$Topic)
       phi %>%
-        ungroup() %>%
-        add_row(Topic = missing) %>%
-        arrange(Topic) -> phi
+        dplyr::ungroup() %>%
+        dplyr::add_row(Topic = missing) %>%
+        dplyr::arrange(Topic) -> phi
     }
 
     # Deal with NAs
@@ -299,8 +299,15 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
 
     if (switch_val == 1) {
       # keyword topic-word dist
+      phi_ <- phi
+      all_keywords <- unique(unlist(model$keywords_raw, use.names = F)) 
+      phi <- matrix(0.0, nrow = length(model$keywords), ncol = length(all_keywords))
+      colnames(phi) <- sort(all_keywords)
 
-      all_keywords <- unique(unlist(keywords_raw, use.names = F))
+      for (k in 1:length(model$keywords_raw)) {
+        phi[k, which(colnames(phi) %in% colnames(phi_))] <- phi_[k, ]
+      }
+
       phi <- phi[, sort(colnames(phi)), drop = FALSE]
       for (k in 1:length(keywords_raw)) {
         phi[k, ] <- phi[k, ] + prior[k, ] 
