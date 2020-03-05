@@ -367,13 +367,7 @@ void keyATMmeta::sampling_store(int &r_index)
   // Store likelihood and perplexity during the sampling
  
   double loglik;
-  if (use_labels) {
-    // With label information
-    loglik = loglik_total();
-  } else {
-    // No label infomation
-    loglik = loglik_total(); 
-  }
+  loglik = (use_labels) ? loglik_total_label() : loglik_total();
   double perplexity = exp(-loglik / (double)total_words_weighted);
 
   NumericVector model_fit_vec;
@@ -670,6 +664,13 @@ int keyATMmeta::sample_s_label(VectorXd &alpha, int &z, int &s,
   }
 
   return new_s;
+}
+
+
+double keyATMmeta::loglik_total_label()
+{
+  // Should be defined in each model
+  return 0.0;
 }
 
 

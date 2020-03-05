@@ -186,6 +186,7 @@ class keyATMmeta
     virtual void verbose_special(int &r_index);
 
     virtual double loglik_total() = 0;
+    virtual double loglik_total_label();
 
     //
     // Utilities
