@@ -163,6 +163,7 @@ class keyATMmeta
     //
     void iteration();
     virtual void iteration_single(int &it) = 0;
+    virtual void iteration_single_label(int &it) = 0;
     virtual void sample_parameters(int &it) = 0;
 
     virtual int sample_z(VectorXd &alpha, int &z, int &s,

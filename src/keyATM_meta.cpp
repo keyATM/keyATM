@@ -331,7 +331,7 @@ void keyATMmeta::iteration()
   for (int it = 0; it < iter; it++) {
     if (use_labels) {
       // With label information
-      iteration_single(it);
+      iteration_single_label(it);
     } else {
       // No label information
       iteration_single(it); 

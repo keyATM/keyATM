@@ -26,6 +26,7 @@ void keyATMbase::initialize_specific()
   // to initialize variables.
 }
 
+
 void keyATMbase::iteration_single(int &it)
 { // Single iteration
 
@@ -58,6 +59,7 @@ void keyATMbase::iteration_single(int &it)
   sample_parameters(it);
 
 }
+
 
 void keyATMbase::sample_parameters(int &it)
 {
