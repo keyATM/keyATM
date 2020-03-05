@@ -43,7 +43,7 @@ class keyATMmeta
     double eta_2;
     double eta_1_regular;
     double eta_2_regular;
-    int use_weight;
+    int use_weights;
     int store_theta;
     int store_pi;
     int thinning;
@@ -69,6 +69,9 @@ class keyATMmeta
     double total_words_weighted;
 
     VectorXi labels_true;
+    int use_labels;
+    MatrixXd beta_s0kv;
+    SparseMatrix<double, RowMajor> beta_s1kv;
 
     List options_list;
     List Z_tables;
@@ -142,16 +145,18 @@ class keyATMmeta
 
     // Reading and Initialization
     void read_data();
-    virtual void read_data_common();
-    virtual void read_data_specific() = 0;
+      virtual void read_data_common();
+      virtual void read_data_specific() = 0;
 
     void initialize();
-    virtual void initialize_common();
-    virtual void initialize_specific() = 0;
+      virtual void initialize_common();
+      virtual void initialize_specific() = 0;
 
-    void weights_invfreq();
-    void weights_inftheory();
-    void weights_normalize_total();
+      void weights_invfreq();
+      void weights_inftheory();
+      void weights_normalize_total();
+
+      void initialize_betas();
 
     //
     // Sampling

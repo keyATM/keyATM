@@ -57,7 +57,7 @@ void keyATMmeta::read_data_common()
   
   // Options
   options_list = model["options"];
-  use_weight = options_list["use_weights"];
+  use_weights = options_list["use_weights"];
   slice_A = options_list["slice_shape"];
   store_theta = options_list["store_theta"];
   store_pi = options_list["store_pi"];
@@ -179,8 +179,8 @@ void keyATMmeta::initialize_common()
   } 
 
   // Do you want to use weights?
-  if (use_weight == 0) {
-    cout << "Not using weights!! Check `options$use_weight`." << endl;
+  if (use_weights == 0) {
+    cout << "Not using weights!! Check `options$use_weights`." << endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
 
@@ -218,6 +218,14 @@ void keyATMmeta::initialize_common()
 
   // Use during the iteration
   z_prob_vec = VectorXd::Zero(num_topics);
+
+  // Use labels to initialize beta (prior for topic-word distributions)
+  if (model_settings.containsElementNamed("labels")) {
+    use_labels = 1;
+    initialize_betas();
+  } else {
+    use_labels = 0; 
+  }
   
 }
 
@@ -259,13 +267,76 @@ void keyATMmeta::weights_normalize_total()
 }
 
 
+void keyATMmeta::initialize_betas()
+{
+  // Initialize betas using the label information
+  IntegerVector label_vec = model_settings["labels"];
+  int label;
+  int v;
+  int doc_len;
+  IntegerVector doc_w;
+
+  // Initialize beta matrix
+  beta_s0kv = MatrixXd::Constant(num_topics, num_vocab, beta);
+  beta_s1kv.resize(num_topics, num_vocab);
+
+  vector<Triplet> trip_beta_s1;
+
+  for (int k = 0; k < keyword_k; k++) {
+    for (auto &v : keywords[k]) {
+      trip_beta_s1.push_back(Triplet(k, v, beta_s));
+    } 
+  }
+
+
+  // Add values based on the observed counts
+  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+    label = label_vec[doc_id];
+    if (label < 0)
+      continue;
+  
+    doc_w = W[doc_id]; 
+    doc_len = doc_each_len[doc_id];
+    cout << doc_id << " " << label << endl;
+  
+    for (int w_pos = 0; w_pos < doc_len; w_pos++) {
+      v = doc_w[w_pos];
+  
+      if (use_weights) {
+        beta_s0kv(label, v) += vocab_weights(v);
+  
+        if (keywords[label].find(v) != keywords[label].end()){
+          trip_beta_s1.push_back(Triplet(label, v, vocab_weights(v)));
+        }
+      } else {
+        beta_s0kv(label, v) += 1.0;
+  
+        if (keywords[label].find(v) != keywords[label].end()){
+          trip_beta_s1.push_back(Triplet(label, v, vocab_weights(v)));
+        }
+      }
+    }
+  }
+
+  // Make beta_s1kv as a sparse matrix
+  beta_s1kv.setFromTriplets(trip_beta_s1.begin(), trip_beta_s1.end());
+
+}
+
+
 void keyATMmeta::iteration()
 {
   // Iteration
   Progress progress_bar(iter, !(bool)verbose);
 
   for (int it = 0; it < iter; it++) {
-    iteration_single(it);
+    if (use_labels) {
+      // With label information
+      iteration_single(it);
+    } else {
+      // No label information
+      iteration_single(it); 
+    }
 
     // Check storing values
     int r_index = it + 1;
@@ -292,7 +363,14 @@ void keyATMmeta::sampling_store(int &r_index)
 {
   // Store likelihood and perplexity during the sampling
  
-  double loglik = loglik_total();
+  double loglik;
+  if (use_labels) {
+    // With label information
+    loglik = loglik_total();
+  } else {
+    // No label infomation
+    loglik = loglik_total(); 
+  }
   double perplexity = exp(-loglik / (double)total_words_weighted);
 
   NumericVector model_fit_vec;
@@ -530,6 +608,17 @@ double keyATMmeta::gammaln_frac(const double &value, const int &count)
 List keyATMmeta::return_model()
 {
   // Return output to R
+
+  if (use_labels) {
+    // Return prior to use in R 
+    NumericMatrix R_betas0 = Rcpp::wrap(beta_s0kv);
+    SEXP R_betas1 = Rcpp::wrap(beta_s1kv);
+    
+    priors_list.push_back(R_betas0, "beta_s0");
+    priors_list.push_back(R_betas1, "beta_s1");
+    model["priors"] = priors_list;
+  }
+
   model["stored_values"] = stored_values;
   return model;
 }
