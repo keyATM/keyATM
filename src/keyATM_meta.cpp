@@ -329,13 +329,8 @@ void keyATMmeta::iteration()
   Progress progress_bar(iter, !(bool)verbose);
 
   for (int it = 0; it < iter; it++) {
-    if (use_labels) {
-      // With label information
-      iteration_single_label(it);
-    } else {
-      // No label information
-      iteration_single(it); 
-    }
+    // Run iteration
+    iteration_single(it); 
 
     // Check storing values
     int r_index = it + 1;
@@ -393,6 +388,7 @@ void keyATMmeta::parameters_store(int &r_index)
   if (store_pi)
     store_pi_iter(r_index);
 }
+
 
 void keyATMmeta::store_theta_iter(int &r_index)
 {
@@ -621,9 +617,6 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
 }
 
 
-<<<<<<< HEAD
-//
-=======
 int keyATMmeta::sample_s_label(VectorXd &alpha, int &z, int &s,
                  int &w, int &doc_id)
 {
@@ -671,7 +664,6 @@ int keyATMmeta::sample_s_label(VectorXd &alpha, int &z, int &s,
 }
 
 
->>>>>>> package_dev
 // Utilities
 //
 double keyATMmeta::gammapdfln(const double &x, const double &a, const double &b)
