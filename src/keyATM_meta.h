@@ -170,8 +170,13 @@ class keyATMmeta
 
     virtual int sample_z(VectorXd &alpha, int &z, int &s,
                          int &w, int &doc_id);
+    int sample_z_label(VectorXd &alpha, int &z, int &s,
+                       int &w, int &doc_id);
+
     int sample_s(VectorXd &alpha, int &z, int &s,
                    int &w, int &doc_id);
+    int sample_s_label(VectorXd &alpha, int &z, int &s,
+                       int &w, int &doc_id);
 
     void sampling_store(int &r_index);
     virtual void parameters_store(int &r_index);

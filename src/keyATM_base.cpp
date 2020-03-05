@@ -46,6 +46,8 @@ void keyATMbase::iteration_single(int &it)
       new_z = (use_labels) ? sample_z_label(alpha, z_, s_, w_, doc_id_) : sample_z(alpha, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
     
+      if (keywords[new_z].find(w_) == keywords[new_z].end())	
+        continue;
   
       z_ = doc_z[w_position]; // use updated z
       new_s = (use_labels) ? sample_s_label(alpha, z_, s_, w_, doc_id_) : sample_s(alpha, z_, s_, w_, doc_id_);
