@@ -60,16 +60,13 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
   # If you have quanteda object
   if (!is.null(text_dfm)) {
     vocabulary <- colnames(text_dfm)
-    text_df <- tibble::tibble(
-                              text_split = 
-                                apply(text_dfm, 1,
-                                       function(x){
-                                        return(rep(vocabulary, x))
-                                       }
-                                    )
-                             )
-    names(text_df$text_split) <- NULL
-  }else{
+    W_raw <- apply(text_dfm, 1,
+                   function(x){
+                    return(rep(vocabulary, x))
+                   }
+                  )
+    names(W_raw) <- NULL
+  } else {
     ## preprocess each text
     # Use files <- list.files(doc_folder, pattern = "txt", full.names = T) when you pass
     if (is.null(text_df)) {
@@ -81,10 +78,11 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
                                                  })))
     }
     text_df <- text_df %>% dplyr::mutate(text_split = stringr::str_split(text, pattern = " "))
+
+    # extract splitted text and create a list
+    W_raw <- text_df %>% dplyr::pull(text_split)
   }
 
-  # extract splitted text and create a list
-  W_raw <- text_df %>% dplyr::pull(text_split)
   
   # check whether there is nothing wrong with the structure of texts
   if (check) {
