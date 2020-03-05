@@ -394,11 +394,6 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
 int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
                  int &w, int &doc_id)
 {
-      
-  // If a word is not a keyword, no need to sample
-  if (keywords[z].find(w) == keywords[z].end())
-    return s;
-  
   // remove data
   if (s == 0) {
     n_s0_kv(z, w) -= vocab_weights(w);
