@@ -112,9 +112,7 @@ plot_modelfit <- function(x, start = 1)
 #'
 #' @return ggplot2 object
 #' @import ggplot2
-#' @import dplyr
 #' @import magrittr
-#' @import tidyr
 #' @export
 plot_pi <- function(x, show_topic = NULL, start = 0, thinning = 5)
 {
@@ -145,10 +143,11 @@ plot_pi <- function(x, show_topic = NULL, start = 0, thinning = 5)
     if(nrow(pi_mat) == 0) {
       stop("Nothing left to plot. Please check arguments.")
     }
+
     pi_mat %>% data.frame() %>% 
-      pivot_longer(cols = starts_with("Topic"), names_to = "Topic") %>%
-      group_by(Topic) %>%
-      summarise(mean = mean(value), uq = quantile(value, .975), lq = quantile(value, .25)) -> temp
+      tidyr::pivot_longer(cols = dplyr::starts_with("Topic"), names_to = "Topic") %>%
+      dplyr::group_by(Topic) %>%
+      dplyr::summarise(mean = mean(value), uq = quantile(value, .975), lq = quantile(value, .25)) -> temp
     temp$Topic <- factor(temp$Topic, levels = paste0("Topic_", show_topic))
     
     g <- ggplot(temp, aes(y = mean, x = Topic, color = Topic)) + 
