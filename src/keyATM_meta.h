@@ -59,6 +59,7 @@ class keyATMmeta
     NumericVector nv_alpha;
     MatrixXd prior_gamma;
     double beta, beta_s;
+    double Vbeta;
     int regular_k, keyword_k;
     List keywords_list;
     List model_fit;
@@ -72,6 +73,8 @@ class keyATMmeta
     int use_labels;
     MatrixXd beta_s0kv;
     SparseMatrix<double, RowMajor> beta_s1kv;
+    VectorXd Vbeta_k;
+    VectorXd Lbeta_sk;
 
     List options_list;
     List Z_tables;

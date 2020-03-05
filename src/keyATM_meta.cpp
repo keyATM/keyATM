@@ -224,7 +224,13 @@ void keyATMmeta::initialize_common()
     use_labels = 1;
     initialize_betas();
   } else {
-    use_labels = 0; 
+    use_labels = 0;
+    Vbeta = (double)num_vocab * beta;
+
+    Lbeta_sk = VectorXd::Zero(num_topics);
+    for (int k = 0; k < num_topics; k++) {
+      Lbeta_sk(k) = (double)keywords_num[k] * beta_s; 
+    }
   }
   
 }
@@ -320,6 +326,9 @@ void keyATMmeta::initialize_betas()
   // Make beta_s1kv as a sparse matrix
   beta_s1kv.setFromTriplets(trip_beta_s1.begin(), trip_beta_s1.end());
 
+  // Pre-Cauculation for speed up
+  Vbeta_k = beta_s0kv.rowwise().sum();
+  Lbeta_sk = beta_s1kv * VectorXd::Ones(beta_s1kv.cols()); // beta_s1kv.rowwise().sum();
 }
 
 
@@ -448,7 +457,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
         (n_s0_k(k) + prior_gamma(k, 1)) *
         (n_dk(doc_id, k) + alpha(k));
 
-      denominator = ((double)num_vocab * beta + n_s0_k(k)) *
+      denominator = (Vbeta + n_s0_k(k)) *
         (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
@@ -466,7 +475,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
         numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
           (n_s1_k(k) + prior_gamma(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
-        denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) ) *
+        denominator = (Lbeta_sk(k) + n_s1_k(k) ) *
           (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
         z_prob_vec(k) = numerator / denominator;
@@ -518,11 +527,11 @@ int keyATMmeta::sample_z_label(VectorXd &alpha, int &z, int &s,
   if (s == 0) {
     for (int k = 0; k < num_topics; ++k) {
 
-      numerator = (beta + n_s0_kv(k, w)) *
+      numerator = (beta_s0kv(k, w) + n_s0_kv(k, w)) *
         (n_s0_k(k) + prior_gamma(k, 1)) *
         (n_dk(doc_id, k) + alpha(k));
 
-      denominator = ((double)num_vocab * beta + n_s0_k(k)) *
+      denominator = (Vbeta_k(k) + n_s0_k(k)) *
         (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
@@ -537,10 +546,10 @@ int keyATMmeta::sample_z_label(VectorXd &alpha, int &z, int &s,
         z_prob_vec(k) = 0.0;
         continue;
       } else { 
-        numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
+        numerator = (beta_s1kv.coeffRef(k, w) + n_s1_kv.coeffRef(k, w)) *
           (n_s1_k(k) + prior_gamma(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
-        denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) ) *
+        denominator = (Lbeta_sk(k) + n_s1_k(k) ) *
           (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
         z_prob_vec(k) = numerator / denominator;
@@ -588,14 +597,14 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
 
   numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
     ( n_s1_k(k) + prior_gamma(k, 0) );
-  denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) );
+  denominator = (Lbeta_sk(k) + n_s1_k(k) );
   s1_prob = numerator / denominator;
 
   // newprob_s0()
   numerator = (beta + n_s0_kv(k, w)) *
     (n_s0_k(k) + prior_gamma(k, 1));
 
-  denominator = ((double)num_vocab * beta + n_s0_k(k) );
+  denominator = (Vbeta + n_s0_k(k) );
   s0_prob = numerator / denominator;
 
   // Normalize
@@ -633,16 +642,16 @@ int keyATMmeta::sample_s_label(VectorXd &alpha, int &z, int &s,
   // newprob_s1()
   k = z;
 
-  numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
+  numerator = (beta_s1kv.coeffRef(k, w) + n_s1_kv.coeffRef(k, w)) *
     ( n_s1_k(k) + prior_gamma(k, 0) );
-  denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) );
+  denominator = (Lbeta_sk(k) + n_s1_k(k) );
   s1_prob = numerator / denominator;
 
   // newprob_s0()
-  numerator = (beta + n_s0_kv(k, w)) *
+  numerator = (beta_s0kv(k, w) + n_s0_kv(k, w)) *
     (n_s0_k(k) + prior_gamma(k, 1));
 
-  denominator = ((double)num_vocab * beta + n_s0_k(k) );
+  denominator = (Vbeta_k(k) + n_s0_k(k) );
   s0_prob = numerator / denominator;
 
   // Normalize
