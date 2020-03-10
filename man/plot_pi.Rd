@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot_pi}
 \alias{plot_pi}
-\title{Show a diagnosis plot of p}
+\title{Show a diagnosis plot of pi}
 \usage{
 plot_pi(x, show_topic = NULL, start = 0, thinning = 5)
 }
@@ -15,5 +15,5 @@ plot_pi(x, show_topic = NULL, start = 0, thinning = 5)
 ggplot2 object
 }
 \description{
-Show a diagnosis plot of p
+Show a diagnosis plot of pi
 }
