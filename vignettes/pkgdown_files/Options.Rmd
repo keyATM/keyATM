@@ -12,14 +12,15 @@ pkgdown:
 # Options
 `keyATM` takes various options. You can set options through a list.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
-my_options <- list(seed        = NULL, # automatically generate random seed 
-                   iterations  = 1500,
-                   verbose     = FALSE,
-                   llk_per     = 10,
-                   use_weights = TRUE,
-                   prune       = TRUE,
-                   thinning    = 5,
-                   store_theta = FALSE)
+my_options <- list(seed         = NULL, # automatically generate random seed 
+                   iterations   = 1500,
+                   verbose      = FALSE,
+                   llk_per      = 10,
+                   use_weights  = TRUE,
+                   weights_type = "information-theory",
+                   prune        = TRUE,
+                   thinning     = 5,
+                   store_theta  = FALSE)
 
 out <- keyATM(docs      = keyATM_docs,    # text input
               regular_k = 3,              # number of regular topics
@@ -48,6 +49,10 @@ Default is `FALSE`. If it is true, it shows values of log-likelihood and perplex
 
 ### `use_weights`
 The default value is `TRUE` (use weights). We follow the weighting Scheme in Wilson \& Chew (2010). If you do not want to use weights, please set it to `FALSE`. Please check our paper for details.
+
+
+### `weights_type`
+You can select one of four weights implemented in **keyATM**. The default is `information-theory`. **keyATM** can construct weights from the inverse frequency of the words, `inv-frequency`. There are normalized version of two: `information-theory-normalized` and `inv-freq-normalized`.
 
 
 ### `prune`
