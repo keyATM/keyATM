@@ -1,13 +1,11 @@
 #' Show a diagnosis plot of alpha
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param start Slice iteration
+#' @param start slice iteration
 #' @param show_topic a vector to specify topic indexes to show
-#' @param thinning a integer for thinning
 #' @param scale a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters
 #'
 #' @return ggplot2 object
-#' @importFrom stats as.formula
 #' @import ggplot2
 #' @import magrittr
 #' @export
@@ -68,7 +66,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 #' Show a diagnosis plot of log-likelihood and perplexity
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param start starting value of the plot
+#' @param start slice iteration
 #'
 #' @return ggplot2 object
 #' @import ggplot2
@@ -108,12 +106,13 @@ plot_modelfit <- function(x, start = 1)
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param show_topic A vector to indicate topics to visualize
+#' @param start slice iteration
 #'
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import magrittr
 #' @export
-plot_pi <- function(x, show_topic = NULL, start = 0, thinning = 5)
+plot_pi <- function(x, show_topic = NULL, start = 0)
 {
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
