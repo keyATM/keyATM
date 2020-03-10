@@ -124,8 +124,8 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
     warning("Some of the topics are not used.")
     missing <- setdiff(1:nrow(prior), temp$Topic)
     temp %>%
-      add_row(Topic = missing, count = 0, sums = 0) %>%
-      arrange(Topic) -> temp
+      tibble::add_row(Topic = missing, count = 0, sums = 0) %>%
+      dplyr::arrange(Topic) -> temp
   }
 
   # Get p

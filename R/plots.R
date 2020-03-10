@@ -105,7 +105,7 @@ plot_modelfit <- function(x, start = 1)
 }
 
 
-#' Show a diagnosis plot of p
+#' Show a diagnosis plot of pi
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param show_topic A vector to indicate topics to visualize
@@ -125,38 +125,39 @@ plot_pi <- function(x, show_topic = NULL, start = 0, thinning = 5)
 
   if (is.null(show_topic)) {
     show_topic <- 1:x$keyword_k
+  } else if (sum(!show_topic %in% 1:x$keyword_k) != 0) {
+    stop("`plot_pi` only visualize keyword topics.") 
   }
-
-  check_arg_type(show_topic, "numeric")
   enq_show_topic <- enquo(show_topic)
 
-  if (!is.null(x$values_iter$pi_iter)) {
-    pi_mat <- do.call(rbind, x$values_iter$pi_iter) 
-    colnames(pi_mat) <- paste0("Topic_", 1:num)
-    if (start != 0) {
-      pi_mat <- tail(pi_mat[, show_topic], -start) # remove the first iterations and extract topics to use
-    }
+  tnames <- c(names(x$keywords_raw))[show_topic]
 
-      pi_mat <- pi_mat[seq(1, nrow(pi_mat), thinning), ] # thinning
-    if(nrow(pi_mat) == 0) {
+  if (!is.null(x$values_iter$pi_iter)) {
+    pi_mat <- t(sapply(x$values_iter$pi_iter, unlist, use.names = F))[, show_topic]
+    pi_mat %>%
+      tibble::as_tibble(.name_repair = ~ tnames) %>%
+      dplyr::mutate(Iteration = x$values_iter$used_iter) %>%
+      dplyr::filter(Iteration >= start) %>% 
+      dplyr::select(-Iteration) -> pi_mat
+
+    if (nrow(pi_mat) == 0) {
       stop("Nothing left to plot. Please check arguments.")
     }
-    pi_mat %>% data.frame() %>% 
-      tidyr::pivot_longer(cols = dplyr::starts_with("Topic"), names_to = "Topic") %>%
+
+    pi_mat %>%
+      tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Topic") %>%
       dplyr::group_by(Topic) %>%
-      dplyr::summarise(mean = mean(value), uq = quantile(value, .975), lq = quantile(value, .25)) -> temp
-    temp$Topic <- factor(temp$Topic, levels = paste0("Topic_", show_topic))
+      dplyr::summarise(mean = mean(value), uq = quantile(value, .975), lq = quantile(value, 0.025)) -> temp
     
     g <- ggplot(temp, aes(y = mean, x = Topic, color = Topic)) + 
-        geom_point() + 
-        theme_bw() +
-        geom_errorbar(aes(ymin = lq, ymax = uq), data = temp, width = 0.01, size = 1) + 
-        ylab("Proportion (with credible interval)") +
-        xlab("Topic") +
-        ggtitle("Proportion of words drawn from topic-word distribution") +
-        theme(plot.title = element_text(hjust = 0.5))
+         theme_bw() +
+         geom_errorbar(aes(ymin = lq, ymax = uq), data = temp, width = 0.01, size = 1) + 
+         ylab("Probability") +
+         xlab("Topic") +
+         ggtitle("Probability of words drawn from topic-word distribution") +
+         theme(plot.title = element_text(hjust = 0.5))
   } else {
-    x$p %>%
+    x$pi %>%
       dplyr::filter(Topic %in% (!!show_topic)) %>%
       dplyr::mutate(Topic = paste0("Topic", Topic)) -> temp
 
@@ -164,9 +165,9 @@ plot_pi <- function(x, show_topic = NULL, start = 0, thinning = 5)
         geom_bar(stat="identity") +
         theme_bw() +
         scale_x_discrete(limits = paste0("Topic", get("show_topic"))) +
-        ylab("Proportion (%)") +
+        ylab("Probability") +
         xlab("Topic") +
-        ggtitle("Proportion of words drawn from topic-word distribution") +
+        ggtitle("Probability of words drawn from topic-word distribution") +
         theme(plot.title = element_text(hjust = 0.5))    
   }
   return(g)
