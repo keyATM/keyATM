@@ -21,27 +21,26 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
     stop("`alpha` is not stored. Please check the settings of the model.")  
   }
 
-  thinning <- as.integer(thinning)
-  enq_thinning <- enquo(thinning)
-
   if (is.null(show_topic)) {
-    show_topic <- 1:ncol(x$theta)  
-    show_topic <- as.numeric(show_topic)
+    show_topic <- 1:x$keyword_k
+  } else if (sum(!show_topic %in% 1:x$keyword_k) != 0) {
+    stop("`plot_pi` only visualize keyword topics.") 
   }
-  check_arg_type(show_topic, "numeric")
-  enq_show_topic <- enquo(show_topic)
 
+  if (!is.numeric(start) | length(start) != 1) {
+    stop("`start` argument is invalid.")  
+  }
+
+  tnames <- c(names(x$keywords_raw))[show_topic]
   x$values_iter$alpha_iter %>%
-    dplyr::filter(Iteration %% (!!enq_thinning) == 0) %>%
     dplyr::filter(Iteration >= start) %>%
     dplyr::filter(Topic %in% (!!show_topic)) %>%
-    dplyr::mutate(Topic = paste0("Topic", Topic)) -> res_alpha
-
-  if (nrow(res_alpha) == 0) {
-    stop("Nothing left to plot. Please check arguments.")  
-  }
+    tidyr::pivot_wider(names_from = Topic, values_from = alpha) -> temp
 
   if (modelname %in% c("base", "lda", "label")) {
+    temp %>% dplyr::rename_at(vars(-"Iteration"), ~tnames) %>%
+      tidyr::pivot_longer(-Iteration, names_to = "Topic", values_to = "alpha") -> res_alpha
+
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = Topic)) +
           geom_line() +
           geom_point(size = 0.3) +
@@ -50,7 +49,10 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
   } else if (modelname %in% c("hmm", "ldahmm")) {
-    res_alpha %>% mutate(State = as.character(State)) -> res_alpha
+    temp %>% dplyr::rename_at(vars(-"Iteration", -"State"), ~tnames) %>%
+      tidyr::pivot_longer(-c(Iteration, State), names_to = "Topic", values_to = "alpha") -> res_alpha
+    res_alpha$State <- factor(res_alpha$State, levels = 1:max(res_alpha$State))
+
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = State, colour = State)) +
           geom_line() +
           geom_point(size = 0.3) +
@@ -80,8 +82,7 @@ plot_modelfit <- function(x, start = 1)
   modelfit <- x$model_fit
 
   if (!is.numeric(start) | length(start) != 1) {
-    message("`start` argument is invalid. Using the default (=1)")  
-    start <- 1
+    stop("`start` argument is invalid.")  
   }
 
   if (!is.null(start)) {
@@ -126,7 +127,10 @@ plot_pi <- function(x, show_topic = NULL, start = 0, thinning = 5)
   } else if (sum(!show_topic %in% 1:x$keyword_k) != 0) {
     stop("`plot_pi` only visualize keyword topics.") 
   }
-  enq_show_topic <- enquo(show_topic)
+
+  if (!is.numeric(start) | length(start) != 1) {
+    stop("`start` argument is invalid.")  
+  }
 
   tnames <- c(names(x$keywords_raw))[show_topic]
 
