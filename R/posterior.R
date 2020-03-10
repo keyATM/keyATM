@@ -70,11 +70,11 @@ keyATM_output <- function(model)
       tibble::as_tibble(., .name_repair = ~c("Iteration", "Log Likelihood", "Perplexity")) -> modelfit
   }
 
-  # p
+  # pi
   if (model$model %in% c("base", "cov", "hmm", "label")){
-    p_estimated <- keyATM_output_p(model$Z, model$S, model$priors$gamma) 
+    pi_estimated <- keyATM_output_pi(model$Z, model$S, model$priors$gamma) 
   } else {
-    p_estimated <- NULL 
+    pi_estimated <- NULL 
   }
 
   if (length(model$stored_values$pi_vectors) > 0) {
@@ -95,7 +95,7 @@ keyATM_output <- function(model)
              doc_lens = info$doc_lens, vocab = model$vocab,
              priors = model$priors, options = model$options,
              keywords_raw = model$keywords_raw,
-             model_fit = modelfit, p = p_estimated,
+             model_fit = modelfit, pi = pi_estimated,
              values_iter = values_iter)
   class(ll) <- c("keyATM_output", model$model, class(ll))
   return(ll)
@@ -104,7 +104,7 @@ keyATM_output <- function(model)
 
 #' @noRd
 #' @import magrittr
-keyATM_output_p <- function(model_Z, model_S, prior)
+keyATM_output_pi <- function(model_Z, model_S, prior)
 {
   # p(p | S=s, n, a, b) \propto Be(a+s, b+(n-s))
   #   p(S=s | n, p) p(p | a, b)
@@ -136,9 +136,9 @@ keyATM_output_p <- function(model_Z, model_S, prior)
   p <- (a + s) / (a + b + n) 
   temp %>%
     mutate(Proportion = p * 100) %>%
-    select(-sums) -> p_estimated
+    select(-sums) -> pi_estimated
 
-  return(p_estimated)
+  return(pi_estimated)
 }
 
 
@@ -203,10 +203,10 @@ keyATM_output_phi <- function(model, info)
   all_topics <- as.integer(unlist(model$Z, use.names = F))
   
   if (model$model %in% c("base", "cov", "hmm", "label")) {
-    p_estimated <- keyATM_output_p(model$Z, model$S, model$priors$gamma)
+    pi_estimated <- keyATM_output_pi(model$Z, model$S, model$priors$gamma)
     all_s <- as.integer(unlist(model$S, use.names = F))
 
-    obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, p_estimated,
+    obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, pi_estimated,
                                       keywords_raw = model$keywords_raw,
                                       vocab = model$vocab, 
                                       priors = model$priors, 
@@ -222,7 +222,7 @@ keyATM_output_phi <- function(model, info)
 
 #' @noRd
 #' @import magrittr
-keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, p_estimated,
+keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimated,
                                        keywords_raw, vocab, priors, tnames)
 {
   res_tibble <- tibble::tibble(
@@ -231,7 +231,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, p_estimated
                         Switch = all_s
                        )
 
-  prob1 <- p_estimated %>% dplyr::pull(Proportion) / 100
+  prob1 <- pi_estimated %>% dplyr::pull(Proportion) / 100
   prob0 <- 1 - prob1 
   vocab_sorted <- sort(vocab)
 
@@ -763,12 +763,12 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
                   all_words <- unlist(keyATM_docs[doc_index], use.names = F)
                   all_topics <- as.integer(unlist(x$kept_values$Z[doc_index]), use.names = F)
                   all_s <- as.integer(unlist(x$kept_values$S[doc_index]), use.names = F)
-                  p_estimated <- keyATM_output_p(x$kept_values$Z[doc_index], 
-                                                 x$kept_values$S[doc_index],
-                                                 x$priors$gamma)
+                  pi_estimated <- keyATM_output_pi(x$kept_values$Z[doc_index], 
+                                                   x$kept_values$S[doc_index],
+                                                   x$priors$gamma)
                   vocab <- sort(unique(all_words))
 
-                  phi_obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, p_estimated,
+                  phi_obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, pi_estimated,
                                                         x$keywords_raw,
                                                         vocab, x$priors, tnames)
                 } 

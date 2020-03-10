@@ -112,11 +112,9 @@ plot_modelfit <- function(x, start = 1)
 #'
 #' @return ggplot2 object
 #' @import ggplot2
-#' @import dplyr
 #' @import magrittr
-#' @import tidyr
 #' @export
-plot_pi <- function(x, show_topic = NULL)
+plot_pi <- function(x, show_topic = NULL, start = 0, thinning = 5)
 {
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
@@ -125,10 +123,8 @@ plot_pi <- function(x, show_topic = NULL)
     stop(paste0("`", x$model, "` is not a model with keywords.")) 
   }
 
-  num <- length(unique(x$p$Topic))
   if (is.null(show_topic)) {
-    show_topic <- 1:num
-    show_topic <- as.numeric(show_topic)
+    show_topic <- 1:x$keyword_k
   }
 
   check_arg_type(show_topic, "numeric")
@@ -136,16 +132,19 @@ plot_pi <- function(x, show_topic = NULL)
 
   if (!is.null(x$values_iter$pi_iter)) {
     pi_mat <- do.call(rbind, x$values_iter$pi_iter) 
-    pi_mat <- pi_mat[, c(1:x$keyword_k)]
-    colnames(pi_mat) <- names(x$keywords_raw)
-    pi_mat <- 
+    colnames(pi_mat) <- paste0("Topic_", 1:num)
+    if (start != 0) {
+      pi_mat <- tail(pi_mat[, show_topic], -start) # remove the first iterations and extract topics to use
+    }
+
+      pi_mat <- pi_mat[seq(1, nrow(pi_mat), thinning), ] # thinning
     if(nrow(pi_mat) == 0) {
       stop("Nothing left to plot. Please check arguments.")
     }
     pi_mat %>% data.frame() %>% 
-      pivot_longer(names_to = "Topic") %>% # I think this part is incomplete
-      group_by(Topic) %>%
-      summarise(mean = mean(value), uq = quantile(value, .975), lq = quantile(value, .25)) -> temp
+      tidyr::pivot_longer(cols = dplyr::starts_with("Topic"), names_to = "Topic") %>%
+      dplyr::group_by(Topic) %>%
+      dplyr::summarise(mean = mean(value), uq = quantile(value, .975), lq = quantile(value, .25)) -> temp
     temp$Topic <- factor(temp$Topic, levels = paste0("Topic_", show_topic))
     
     g <- ggplot(temp, aes(y = mean, x = Topic, color = Topic)) + 
