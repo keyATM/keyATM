@@ -140,15 +140,14 @@ void keyATMhmm::iteration_single(int &it)
       w_position = token_indexes[jj];
       s_ = doc_s[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
     
-      new_z = sample_z(alpha, z_, s_, w_, doc_id_);
+      new_z = (use_labels) ? sample_z_label(alpha, z_, s_, w_, doc_id_) : sample_z(alpha, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
     
-      // If a word is not a keyword, no need to sample
-      if (keywords[new_z].find(w_) == keywords[new_z].end())
+      if (keywords[new_z].find(w_) == keywords[new_z].end())	
         continue;
   
       z_ = doc_z[w_position]; // use updated z
-      new_s = sample_s(alpha, z_, s_, w_, doc_id_);
+      new_s = (use_labels) ? sample_s_label(alpha, z_, s_, w_, doc_id_) : sample_s(alpha, z_, s_, w_, doc_id_);
       doc_s[w_position] = new_s;
     }
     

@@ -743,5 +743,3 @@ List keyATMmeta::return_model()
   model["stored_values"] = stored_values;
   return model;
 }
-
-

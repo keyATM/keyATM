@@ -11,9 +11,7 @@
 #' @import ggplot2
 #' @import magrittr
 #' @export
-plot_alpha <- function(x, start = 0, show_topic = NULL,
-                       thinning = 5,
-                       scale = "fixed")
+plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 {
 
   check_arg_type(x, "keyATM_output")
@@ -23,27 +21,26 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
     stop("`alpha` is not stored. Please check the settings of the model.")  
   }
 
-  thinning <- as.integer(thinning)
-  enq_thinning <- enquo(thinning)
-
   if (is.null(show_topic)) {
-    show_topic <- 1:ncol(x$theta)  
-    show_topic <- as.numeric(show_topic)
+    show_topic <- 1:x$keyword_k
+  } else if (sum(!show_topic %in% 1:x$keyword_k) != 0) {
+    stop("`plot_pi` only visualize keyword topics.") 
   }
-  check_arg_type(show_topic, "numeric")
-  enq_show_topic <- enquo(show_topic)
 
+  if (!is.numeric(start) | length(start) != 1) {
+    stop("`start` argument is invalid.")  
+  }
+
+  tnames <- c(names(x$keywords_raw))[show_topic]
   x$values_iter$alpha_iter %>%
-    dplyr::filter(Iteration %% (!!enq_thinning) == 0) %>%
     dplyr::filter(Iteration >= start) %>%
     dplyr::filter(Topic %in% (!!show_topic)) %>%
-    dplyr::mutate(Topic = paste0("Topic", Topic)) -> res_alpha
-
-  if (nrow(res_alpha) == 0) {
-    stop("Nothing left to plot. Please check arguments.")  
-  }
+    tidyr::pivot_wider(names_from = Topic, values_from = alpha) -> temp
 
   if (modelname %in% c("base", "lda", "label")) {
+    temp %>% dplyr::rename_at(vars(-"Iteration"), ~tnames) %>%
+      tidyr::pivot_longer(-Iteration, names_to = "Topic", values_to = "alpha") -> res_alpha
+
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = Topic)) +
           geom_line() +
           geom_point(size = 0.3) +
@@ -52,7 +49,10 @@ plot_alpha <- function(x, start = 0, show_topic = NULL,
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
   } else if (modelname %in% c("hmm", "ldahmm")) {
-    res_alpha %>% mutate(State = as.character(State)) -> res_alpha
+    temp %>% dplyr::rename_at(vars(-"Iteration", -"State"), ~tnames) %>%
+      tidyr::pivot_longer(-c(Iteration, State), names_to = "Topic", values_to = "alpha") -> res_alpha
+    res_alpha$State <- factor(res_alpha$State, levels = 1:max(res_alpha$State))
+
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = State, colour = State)) +
           geom_line() +
           geom_point(size = 0.3) +
@@ -82,8 +82,7 @@ plot_modelfit <- function(x, start = 1)
   modelfit <- x$model_fit
 
   if (!is.numeric(start) | length(start) != 1) {
-    message("`start` argument is invalid. Using the default (=1)")  
-    start <- 1
+    stop("`start` argument is invalid.")  
   }
 
   if (!is.null(start)) {
@@ -105,16 +104,14 @@ plot_modelfit <- function(x, start = 1)
 }
 
 
-#' Show a diagnosis plot of p
+#' Show a diagnosis plot of pi
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param show_topic A vector to indicate topics to visualize
 #'
 #' @return ggplot2 object
 #' @import ggplot2
-#' @import dplyr
 #' @import magrittr
-#' @import tidyr
 #' @export
 plot_pi <- function(x, show_topic = NULL, start = 0, thinning = 5)
 {
@@ -125,52 +122,54 @@ plot_pi <- function(x, show_topic = NULL, start = 0, thinning = 5)
     stop(paste0("`", x$model, "` is not a model with keywords.")) 
   }
 
-  num <- length(unique(x$p$Topic))
   if (is.null(show_topic)) {
-    show_topic <- 1:num
-    show_topic <- as.numeric(show_topic)
+    show_topic <- 1:x$keyword_k
+  } else if (sum(!show_topic %in% 1:x$keyword_k) != 0) {
+    stop("`plot_pi` only visualize keyword topics.") 
   }
 
-  check_arg_type(show_topic, "numeric")
-  enq_show_topic <- enquo(show_topic)
+  if (!is.numeric(start) | length(start) != 1) {
+    stop("`start` argument is invalid.")  
+  }
+
+  tnames <- c(names(x$keywords_raw))[show_topic]
 
   if (!is.null(x$values_iter$pi_iter)) {
-    pi_mat <- do.call(rbind, x$values_iter$pi_iter) 
-    colnames(pi_mat) <- paste0("Topic_", 1:num)
-    if (start != 0) {
-      pi_mat <- tail(pi_mat[, show_topic], -start) # remove the first iterations and extract topics to use
-    }
+    pi_mat <- t(sapply(x$values_iter$pi_iter, unlist, use.names = F))[, show_topic]
+    pi_mat %>%
+      tibble::as_tibble(.name_repair = ~ tnames) %>%
+      dplyr::mutate(Iteration = x$values_iter$used_iter) %>%
+      dplyr::filter(Iteration >= start) %>% 
+      dplyr::select(-Iteration) -> pi_mat
 
-      pi_mat <- pi_mat[seq(1, nrow(pi_mat), thinning), ] # thinning
-    if(nrow(pi_mat) == 0) {
+    if (nrow(pi_mat) == 0) {
       stop("Nothing left to plot. Please check arguments.")
     }
-    pi_mat %>% data.frame() %>% 
-      pivot_longer(cols = starts_with("Topic"), names_to = "Topic") %>%
-      group_by(Topic) %>%
-      summarise(mean = mean(value), uq = quantile(value, .975), lq = quantile(value, .25)) -> temp
-    temp$Topic <- factor(temp$Topic, levels = paste0("Topic_", show_topic))
+
+    pi_mat %>%
+      tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Topic") %>%
+      dplyr::group_by(Topic) %>%
+      dplyr::summarise(mean = mean(value), uq = quantile(value, .975), lq = quantile(value, 0.025)) -> temp
     
     g <- ggplot(temp, aes(y = mean, x = Topic, color = Topic)) + 
-        geom_point() + 
-        theme_bw() +
-        geom_errorbar(aes(ymin = lq, ymax = uq), data = temp, width = 0.01, size = 1) + 
-        ylab("Proportion (with credible interval)") +
-        xlab("Topic") +
-        ggtitle("Proportion of words drawn from topic-word distribution") +
-        theme(plot.title = element_text(hjust = 0.5))
+         theme_bw() +
+         geom_errorbar(aes(ymin = lq, ymax = uq), data = temp, width = 0.01, size = 1) + 
+         ylab("Probability") +
+         xlab("Topic") +
+         ggtitle("Probability of words drawn from keyword topic-word distribution") +
+         theme(plot.title = element_text(hjust = 0.5))
   } else {
-    x$p %>%
+    x$pi %>%
+      dplyr::mutate(Probability = Proportion / 100) %>%
       dplyr::filter(Topic %in% (!!show_topic)) %>%
-      dplyr::mutate(Topic = paste0("Topic", Topic)) -> temp
+      dplyr::mutate(Topic = tnames) -> temp
 
-    g  <- ggplot(temp, aes_string(x='Topic', y='Proportion')) +
+    g  <- ggplot(temp, aes_string(x='Topic', y='Probability')) +
         geom_bar(stat="identity") +
         theme_bw() +
-        scale_x_discrete(limits = paste0("Topic", get("show_topic"))) +
-        ylab("Proportion (%)") +
+        ylab("Probability") +
         xlab("Topic") +
-        ggtitle("Proportion of words drawn from topic-word distribution") +
+        ggtitle("Probability of words drawn from keyword topic-word distribution") +
         theme(plot.title = element_text(hjust = 0.5))    
   }
   return(g)

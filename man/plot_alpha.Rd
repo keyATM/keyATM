@@ -4,8 +4,7 @@
 \alias{plot_alpha}
 \title{Show a diagnosis plot of alpha}
 \usage{
-plot_alpha(x, start = 0, show_topic = NULL, thinning = 5,
-  scale = "fixed")
+plot_alpha(x, start = 0, show_topic = NULL, scale = "fixed")
 }
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}
@@ -14,9 +13,9 @@ plot_alpha(x, start = 0, show_topic = NULL, thinning = 5,
 
 \item{show_topic}{a vector to specify topic indexes to show}
 
-\item{thinning}{a integer for thinning}
-
 \item{scale}{a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters}
+
+\item{thinning}{a integer for thinning}
 }
 \value{
 ggplot2 object

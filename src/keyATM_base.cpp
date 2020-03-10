@@ -26,7 +26,6 @@ void keyATMbase::initialize_specific()
   // to initialize variables.
 }
 
-
 void keyATMbase::iteration_single(int &it)
 { // Single iteration
 
@@ -46,9 +45,8 @@ void keyATMbase::iteration_single(int &it)
     
       new_z = (use_labels) ? sample_z_label(alpha, z_, s_, w_, doc_id_) : sample_z(alpha, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
-
-      // If a word is not a keyword, no need to sample
-      if (keywords[new_z].find(w_) == keywords[new_z].end())
+    
+      if (keywords[new_z].find(w_) == keywords[new_z].end())	
         continue;
   
       z_ = doc_z[w_position]; // use updated z
@@ -62,7 +60,6 @@ void keyATMbase::iteration_single(int &it)
   sample_parameters(it);
 
 }
-
 
 void keyATMbase::sample_parameters(int &it)
 {
