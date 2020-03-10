@@ -44,7 +44,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
     files <- NULL
     text_df <- NULL
   } else if (class(texts) == "character") {
-    warning("Reading from files. Please make sure files are preprocessed.")
+    warning("Reading from files. Please make sure files are preprocessed.", immediate. = TRUE)
     text_dfm <- NULL
     files <- texts
     text_df <- NULL
@@ -258,10 +258,10 @@ check_keywords <- function(unique_words, keywords, prune)
     if (length(non_existent) != 0) {
      if (length(non_existent) == 1) {
        warning("A keyword will be pruned because it does not appear in documents: ",
-               paste(non_existent, collapse = ", "))
+               paste(non_existent, collapse = ", "), immediate. = TRUE)
      } else {
        warning("Keywords will be pruned because they do not appear in documents: ",
-               paste(non_existent, collapse = ", "))
+               paste(non_existent, collapse = ", "), immediate. = TRUE)
      }
     }
 
@@ -640,7 +640,7 @@ check_arg_model_settings <- function(obj, model, info)
     }
 
     if (is.null(obj$covariates_formula)) {
-      warning("`covariates_formula` is not provided. keyATM uses the matrix as it is.")
+      warning("`covariates_formula` is not provided. keyATM uses the matrix as it is.", immediate. = TRUE)
       obj$covariates_formula <- NULL  # do not need to change the matrix
       obj$covariates_data_use <- as.matrix(obj$covariates_data) 
     } else if (is.formula(obj$covariates_formula)) {
@@ -987,15 +987,15 @@ check_vocabulary <- function(vocab)
   }
 
   if (sum(stringr::str_detect(vocab, "^[:upper:]+$")) != 0) {
-    warning('Upper case letters are used. Please review preprocessing steps.')  
+    warning('Upper case letters are used. Please review preprocessing steps.', immediate. = TRUE)  
   }
 
   if (sum(stringr::str_detect(vocab, "\t")) != 0) {
-    warning('Tab is detected in the vocabulary. Please review preprocessing steps.')  
+    warning('Tab is detected in the vocabulary. Please review preprocessing steps.', immediate. = TRUE)
   }
 
   if (sum(stringr::str_detect(vocab, "\n")) != 0) {
-    warning('A line break is detected in the vocabulary. Please review preprocessing steps.')  
+    warning('A line break is detected in the vocabulary. Please review preprocessing steps.', immediate. = TRUE)
   }
 }
 
