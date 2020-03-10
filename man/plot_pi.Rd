@@ -4,12 +4,14 @@
 \alias{plot_pi}
 \title{Show a diagnosis plot of pi}
 \usage{
-plot_pi(x, show_topic = NULL, start = 0, thinning = 5)
+plot_pi(x, show_topic = NULL, start = 0)
 }
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}
 
 \item{show_topic}{A vector to indicate topics to visualize}
+
+\item{start}{slice iteration}
 }
 \value{
 ggplot2 object

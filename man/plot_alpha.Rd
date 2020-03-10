@@ -9,13 +9,11 @@ plot_alpha(x, start = 0, show_topic = NULL, scale = "fixed")
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}
 
-\item{start}{Slice iteration}
+\item{start}{slice iteration}
 
 \item{show_topic}{a vector to specify topic indexes to show}
 
 \item{scale}{a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters}
-
-\item{thinning}{a integer for thinning}
 }
 \value{
 ggplot2 object

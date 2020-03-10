@@ -67,7 +67,7 @@ reference:
   contents:
   - '`plot_alpha`'
   - '`plot_modelfit`'
-  - '`plot_p`'
+  - '`plot_pi`'
   - '`top_docs`'
   - '`top_words`'
   - '`top_topics`'
