@@ -8,10 +8,10 @@
 #include "keyATM_base.h"
 #include "keyATM_cov.h"
 #include "keyATM_HMM.h"
+#include "keyATM_label.h"
 #include "LDA_weight.h"
 #include "LDA_weightCov.h"
 #include "LDA_weightHMM.h"
-#include "keyATM_label.h"
 
 
 // [[Rcpp::plugins(cpp11)]]

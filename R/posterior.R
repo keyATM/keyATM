@@ -126,6 +126,7 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
     missing <- setdiff(1:nrow(prior), temp$Topic)
     temp %>%
       tibble::add_row(Topic = missing, count = 0, sums = 0) %>%
+
       dplyr::arrange(Topic) -> temp
   }
 
@@ -211,7 +212,8 @@ keyATM_output_phi <- function(model, info)
                                       keywords_raw = model$keywords_raw,
                                       vocab = model$vocab, 
                                       priors = model$priors, 
-                                      tnames = info$tnames)  
+                                      tnames = info$tnames,
+                                      model = model)  
   } else if (model$model %in% c("lda", "ldacov", "ldahmm")) {
     obj <- keyATM_output_phi_calc_lda(all_words, all_topics, 
                                       model$vocab, model$priors$beta, info$tnames)
@@ -224,7 +226,7 @@ keyATM_output_phi <- function(model, info)
 #' @noRd
 #' @import magrittr
 keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimated,
-                                       keywords_raw, vocab, priors, tnames)
+                                       keywords_raw, vocab, priors, tnames, model)
 {
   res_tibble <- tibble::tibble(
                         Word = all_words,
@@ -236,14 +238,36 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
   prob0 <- 1 - prob1 
   vocab_sorted <- sort(vocab)
 
+  if ("beta_s0" %in% names(priors)) {
+    beta_s0 <- priors$beta_s0 
+    colnames(beta_s0) <- vocab
+    beta_s0 <- beta_s0[, vocab_sorted]
+  } else {
+    beta_s0 <- priors$beta 
+  }
+
+  all_keywords <- unique(unlist(model$keywords_raw, use.names = F)) 
+  beta_s1 <- matrix(priors$beta_s, nrow = length(model$keywords), ncol = length(all_keywords))
+  colnames(beta_s1) <- sort(all_keywords)
+  if ("beta_s1" %in% names(priors)) {
+    for (k in 1:length(model$keywords_raw)) {
+      keywords_k <- model$keywords_raw[[k]]
+
+      for (keyword in keywords_k) {
+        index <- match(keyword, vocab) 
+        beta_s1[k, keyword] <- priors$beta_s1[k, index]
+      }
+    }
+  }
+
   get_phi <- function(res_tibble, switch_val)
   {
     if (switch_val == 0) {
       # Use no-keyword topic-word dist
-      prior <- priors$beta
+      prior <- beta_s0
     } else if (switch_val == 1) {
       # Use keyword topic-word dist
-      prior <- priors$beta_s
+      prior <- beta_s1
     }
 
     temp <- res_tibble %>%
@@ -258,9 +282,9 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
     if (nrow(phi) != length(tnames)) {
       missing <- setdiff(0:(length(tnames)-1L), phi$Topic)
       phi %>%
-        ungroup() %>%
-        add_row(Topic = missing) %>%
-        arrange(Topic) -> phi
+        dplyr::ungroup() %>%
+        dplyr::add_row(Topic = missing) %>%
+        dplyr::arrange(Topic) -> phi
     }
 
     # Deal with NAs
@@ -277,25 +301,19 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
 
     if (switch_val == 1) {
       # keyword topic-word dist
+      phi_ <- phi
+      all_keywords <- unique(unlist(model$keywords_raw, use.names = F)) 
+      phi <- matrix(0.0, nrow = length(model$keywords), ncol = length(all_keywords))
+      colnames(phi) <- sort(all_keywords)
 
-      all_keywords <- unique(unlist(keywords_raw, use.names = F))
-      phi_ <- matrix(0, nrow = length(tnames), 
-                     ncol = length(all_keywords))
-      colnames(phi_) <- sort(all_keywords)
-      phi <- phi[, sort(colnames(phi)), drop = FALSE]
-      rownames(phi_) <- tnames
-
-      # phi with all keywords
-      phi_[1:nrow(phi), which(colnames(phi_) %in% colnames(phi))] <- 
-            phi[, which(colnames(phi) %in% colnames(phi_))]
-
-      for (k in 1:length(keywords_raw)) {
-        # Keywords in topic k should have positive probability
-        phi_[k, ][which(colnames(phi_) %in% keywords_raw[[k]])] <- 
-                            phi_[k, ][which(colnames(phi_) %in% keywords_raw[[k]])] + prior
+      for (k in 1:length(model$keywords_raw)) {
+        phi[k, which(colnames(phi) %in% colnames(phi_))] <- phi_[k, ]
       }
-      phi <- phi_
+
       phi <- phi[, sort(colnames(phi)), drop = FALSE]
+      for (k in 1:length(keywords_raw)) {
+        phi[k, ] <- phi[k, ] + prior[k, ] 
+      }
       phi <- phi / Matrix::rowSums(phi)
       phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
 
@@ -310,9 +328,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
 
 
     } else {
-
       # no-keyword topic-word dist
-
       # Should have the same dimension as vocab
       phi_ <- matrix(0, nrow = length(tnames), 
                      ncol = length(vocab))
@@ -324,13 +340,13 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
       phi_[, which(colnames(phi_) %in% colnames(phi))] <- 
             phi[, which(colnames(phi) %in% colnames(phi_))]
 
-      phi <- phi_ + prior
+
+      phi <- phi_ + prior  # add scalar (don't use label or matrix)
       phi <- phi / Matrix::rowSums(phi)
     }
 
     return(phi)
   }
-
 
   # Regular
   phi0 <- get_phi(res_tibble, switch_val = 0)

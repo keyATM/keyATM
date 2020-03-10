@@ -57,7 +57,7 @@ void keyATMmeta::read_data_common()
   
   // Options
   options_list = model["options"];
-  use_weight = options_list["use_weights"];
+  use_weights = options_list["use_weights"];
   slice_A = options_list["slice_shape"];
   store_theta = options_list["store_theta"];
   store_pi = options_list["store_pi"];
@@ -179,8 +179,8 @@ void keyATMmeta::initialize_common()
   } 
 
   // Do you want to use weights?
-  if (use_weight == 0) {
-    cout << "Not using weights!! Check `options$use_weight`." << endl;
+  if (use_weights == 0) {
+    cout << "Not using weights!! Check `options$use_weights`." << endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
 
@@ -218,6 +218,20 @@ void keyATMmeta::initialize_common()
 
   // Use during the iteration
   z_prob_vec = VectorXd::Zero(num_topics);
+
+  // Use labels to initialize beta (prior for topic-word distributions)
+  if (model_settings.containsElementNamed("labels")) {
+    use_labels = 1;
+    initialize_betas();
+  } else {
+    use_labels = 0;
+    Vbeta = (double)num_vocab * beta;
+
+    Lbeta_sk = VectorXd::Zero(num_topics);
+    for (int k = 0; k < num_topics; k++) {
+      Lbeta_sk(k) = (double)keywords_num[k] * beta_s; 
+    }
+  }
   
 }
 
@@ -259,13 +273,73 @@ void keyATMmeta::weights_normalize_total()
 }
 
 
+void keyATMmeta::initialize_betas()
+{
+  // Initialize betas using the label information
+  IntegerVector label_vec = model_settings["labels"];
+  int label;
+  int v;
+  int doc_len;
+  IntegerVector doc_w;
+
+  // Initialize beta matrix
+  beta_s0kv = MatrixXd::Constant(num_topics, num_vocab, beta);
+  beta_s1kv.resize(num_topics, num_vocab);
+
+  vector<Triplet> trip_beta_s1;
+
+  for (int k = 0; k < keyword_k; k++) {
+    for (auto &v : keywords[k]) {
+      trip_beta_s1.push_back(Triplet(k, v, beta_s));
+    } 
+  }
+
+
+  // Add values based on the observed counts
+  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+    label = label_vec[doc_id];
+    if (label < 0)
+      continue;
+  
+    doc_w = W[doc_id]; 
+    doc_len = doc_each_len[doc_id];
+  
+    for (int w_pos = 0; w_pos < doc_len; w_pos++) {
+      v = doc_w[w_pos];
+  
+      if (use_weights) {
+        beta_s0kv(label, v) += vocab_weights(v);
+  
+        if (keywords[label].find(v) != keywords[label].end()){
+          trip_beta_s1.push_back(Triplet(label, v, vocab_weights(v)));
+        }
+      } else {
+        beta_s0kv(label, v) += 1.0;
+  
+        if (keywords[label].find(v) != keywords[label].end()){
+          trip_beta_s1.push_back(Triplet(label, v, vocab_weights(v)));
+        }
+      }
+    }
+  }
+
+  // Make beta_s1kv as a sparse matrix
+  beta_s1kv.setFromTriplets(trip_beta_s1.begin(), trip_beta_s1.end());
+
+  // Pre-Cauculation for speed up
+  Vbeta_k = beta_s0kv.rowwise().sum();
+  Lbeta_sk = beta_s1kv * VectorXd::Ones(beta_s1kv.cols()); // beta_s1kv.rowwise().sum();
+}
+
+
 void keyATMmeta::iteration()
 {
   // Iteration
   Progress progress_bar(iter, !(bool)verbose);
 
   for (int it = 0; it < iter; it++) {
-    iteration_single(it);
+    // Run iteration
+    iteration_single(it); 
 
     // Check storing values
     int r_index = it + 1;
@@ -292,7 +366,8 @@ void keyATMmeta::sampling_store(int &r_index)
 {
   // Store likelihood and perplexity during the sampling
  
-  double loglik = loglik_total();
+  double loglik;
+  loglik = (use_labels) ? loglik_total_label() : loglik_total();
   double perplexity = exp(-loglik / (double)total_words_weighted);
 
   NumericVector model_fit_vec;
@@ -316,6 +391,7 @@ void keyATMmeta::parameters_store(int &r_index)
   if (store_pi)
     store_pi_iter(r_index);
 }
+
 
 void keyATMmeta::store_theta_iter(int &r_index)
 {
@@ -375,7 +451,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
         (n_s0_k(k) + prior_gamma(k, 1)) *
         (n_dk(doc_id, k) + alpha(k));
 
-      denominator = ((double)num_vocab * beta + n_s0_k(k)) *
+      denominator = (Vbeta + n_s0_k(k)) *
         (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
@@ -393,7 +469,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
         numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
           (n_s1_k(k) + prior_gamma(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
-        denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) ) *
+        denominator = (Lbeta_sk(k) + n_s1_k(k) ) *
           (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
         z_prob_vec(k) = numerator / denominator;
@@ -423,14 +499,84 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
 }
 
 
+int keyATMmeta::sample_z_label(VectorXd &alpha, int &z, int &s,
+                         int &w, int &doc_id)
+{
+  // For labeled data!
+  // remove data
+  if (s == 0) {
+    n_s0_kv(z, w) -= vocab_weights(w);
+    n_s0_k(z) -= vocab_weights(w);
+  } else if (s == 1) {
+    n_s1_kv.coeffRef(z, w) -= vocab_weights(w);
+    n_s1_k(z) -= vocab_weights(w);
+  } else {
+    Rcerr << "Error at sample_z, remove" << std::endl;
+  }
+
+  n_dk(doc_id, z) -= vocab_weights(w);
+  n_dk_noWeight(doc_id, z) -= 1.0;
+
+  new_z = -1; // debug
+  if (s == 0) {
+    for (int k = 0; k < num_topics; ++k) {
+
+      numerator = (beta_s0kv(k, w) + n_s0_kv(k, w)) *
+        (n_s0_k(k) + prior_gamma(k, 1)) *
+        (n_dk(doc_id, k) + alpha(k));
+
+      denominator = (Vbeta_k(k) + n_s0_k(k)) *
+        (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
+
+      z_prob_vec(k) = numerator / denominator;
+    }
+
+    sum = z_prob_vec.sum(); // normalize
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
+
+  } else {
+    for (int k = 0; k < num_topics; ++k) {
+      if (keywords[k].find(w) == keywords[k].end()) {
+        z_prob_vec(k) = 0.0;
+        continue;
+      } else { 
+        numerator = (beta_s1kv.coeffRef(k, w) + n_s1_kv.coeffRef(k, w)) *
+          (n_s1_k(k) + prior_gamma(k, 0)) *
+          (n_dk(doc_id, k) + alpha(k));
+        denominator = (Lbeta_sk(k) + n_s1_k(k) ) *
+          (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
+
+        z_prob_vec(k) = numerator / denominator;
+      }
+    }
+
+
+    sum = z_prob_vec.sum();
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
+
+  }
+
+  // add back data counts
+  if (s == 0) {
+    n_s0_kv(new_z, w) += vocab_weights(w);
+    n_s0_k(new_z) += vocab_weights(w);
+  } else if (s == 1) {
+    n_s1_kv.coeffRef(new_z, w) += vocab_weights(w);
+    n_s1_k(new_z) += vocab_weights(w);
+  } else {
+    Rcerr << "Error at sample_z, add" << std::endl;
+  }
+  n_dk(doc_id, new_z) += vocab_weights(w);
+  n_dk_noWeight(doc_id, new_z) += 1.0;
+
+  return new_z;
+}
+
+
+
 int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
                  int &w, int &doc_id)
 {
-      
-  // If a word is not a keyword, no need to sample
-  if (keywords[z].find(w) == keywords[z].end())
-    return s;
-  
   // remove data
   if (s == 0) {
     n_s0_kv(z, w) -= vocab_weights(w);
@@ -445,14 +591,14 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
 
   numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
     ( n_s1_k(k) + prior_gamma(k, 0) );
-  denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) );
+  denominator = (Lbeta_sk(k) + n_s1_k(k) );
   s1_prob = numerator / denominator;
 
   // newprob_s0()
   numerator = (beta + n_s0_kv(k, w)) *
     (n_s0_k(k) + prior_gamma(k, 1));
 
-  denominator = ((double)num_vocab * beta + n_s0_k(k) );
+  denominator = (Vbeta + n_s0_k(k) );
   s0_prob = numerator / denominator;
 
   // Normalize
@@ -474,7 +620,60 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
 }
 
 
-//
+int keyATMmeta::sample_s_label(VectorXd &alpha, int &z, int &s,
+                 int &w, int &doc_id)
+{
+  // For labeled data!
+  // remove data
+  if (s == 0) {
+    n_s0_kv(z, w) -= vocab_weights(w);
+    n_s0_k(z) -= vocab_weights(w);
+  } else {
+    n_s1_kv.coeffRef(z, w) -= vocab_weights(w);
+    n_s1_k(z) -= vocab_weights(w);
+  }
+
+  // newprob_s1()
+  k = z;
+
+  numerator = (beta_s1kv.coeffRef(k, w) + n_s1_kv.coeffRef(k, w)) *
+    ( n_s1_k(k) + prior_gamma(k, 0) );
+  denominator = (Lbeta_sk(k) + n_s1_k(k) );
+  s1_prob = numerator / denominator;
+
+  // newprob_s0()
+  numerator = (beta_s0kv(k, w) + n_s0_kv(k, w)) *
+    (n_s0_k(k) + prior_gamma(k, 1));
+
+  denominator = (Vbeta_k(k) + n_s0_k(k) );
+  s0_prob = numerator / denominator;
+
+  // Normalize
+  sum = s0_prob + s1_prob;
+
+  s1_prob = s1_prob / sum;
+  new_s = R::runif(0,1) <= s1_prob;  //new_s = Bern(s0_prob, s1_prob);
+
+  // add back data counts
+  if (new_s == 0) {
+    n_s0_kv(z, w) += vocab_weights(w);
+    n_s0_k(z) += vocab_weights(w);
+  } else {
+    n_s1_kv.coeffRef(z, w) += vocab_weights(w);
+    n_s1_k(z) += vocab_weights(w);
+  }
+
+  return new_s;
+}
+
+
+double keyATMmeta::loglik_total_label()
+{
+  // Should be defined in each model
+  return 0.0;
+}
+
+
 // Utilities
 //
 double keyATMmeta::gammapdfln(const double &x, const double &a, const double &b)
@@ -530,8 +729,17 @@ double keyATMmeta::gammaln_frac(const double &value, const int &count)
 List keyATMmeta::return_model()
 {
   // Return output to R
+
+  if (use_labels) {
+    // Return prior to use in R 
+    NumericMatrix R_betas0 = Rcpp::wrap(beta_s0kv);
+    SEXP R_betas1 = Rcpp::wrap(beta_s1kv);
+    
+    priors_list.push_back(R_betas0, "beta_s0");
+    priors_list.push_back(R_betas1, "beta_s1");
+    model["priors"] = priors_list;
+  }
+
   model["stored_values"] = stored_values;
   return model;
 }
-
-
