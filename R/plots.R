@@ -11,9 +11,7 @@
 #' @import ggplot2
 #' @import magrittr
 #' @export
-plot_alpha <- function(x, start = 0, show_topic = NULL,
-                       thinning = 5,
-                       scale = "fixed")
+plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 {
 
   check_arg_type(x, "keyATM_output")
@@ -154,20 +152,20 @@ plot_pi <- function(x, show_topic = NULL, start = 0, thinning = 5)
          geom_errorbar(aes(ymin = lq, ymax = uq), data = temp, width = 0.01, size = 1) + 
          ylab("Probability") +
          xlab("Topic") +
-         ggtitle("Probability of words drawn from topic-word distribution") +
+         ggtitle("Probability of words drawn from keyword topic-word distribution") +
          theme(plot.title = element_text(hjust = 0.5))
   } else {
     x$pi %>%
+      dplyr::mutate(Probability = Proportion / 100) %>%
       dplyr::filter(Topic %in% (!!show_topic)) %>%
-      dplyr::mutate(Topic = paste0("Topic", Topic)) -> temp
+      dplyr::mutate(Topic = tnames) -> temp
 
-    g  <- ggplot(temp, aes_string(x='Topic', y='Proportion')) +
+    g  <- ggplot(temp, aes_string(x='Topic', y='Probability')) +
         geom_bar(stat="identity") +
         theme_bw() +
-        scale_x_discrete(limits = paste0("Topic", get("show_topic"))) +
         ylab("Probability") +
         xlab("Topic") +
-        ggtitle("Probability of words drawn from topic-word distribution") +
+        ggtitle("Probability of words drawn from keyword topic-word distribution") +
         theme(plot.title = element_text(hjust = 0.5))    
   }
   return(g)

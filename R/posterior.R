@@ -42,6 +42,7 @@ keyATM_output <- function(model)
   total_iter <- 1:(model$options$iterations)
   thinning <- model$options$thinning
   values_iter$used_iter <- total_iter[(total_iter %% thinning == 0) | (total_iter == 1) | total_iter == max(total_iter)]
+  info$used_iter <- values_iter$used_iter
 
   # Phi (topic-word distribution)
   res <- keyATM_output_phi(model, info)
@@ -467,7 +468,7 @@ keyATM_output_alpha_iter_base <- function(model, info)
     dplyr::bind_rows() %>%
     t() %>%
     tibble::as_tibble(., .name_repair = ~topics) %>%
-    dplyr::mutate(Iteration = 1:(dplyr::n())) %>%
+    dplyr::mutate(Iteration = info$used_iter) %>%
     tidyr::gather(key = Topic, value = alpha, -Iteration) %>%
     dplyr::mutate(Topic = as.integer(Topic)) -> alpha_iter
   return(alpha_iter)
@@ -485,7 +486,7 @@ keyATM_output_alpha_iter_hmm <- function(model, info)
                             tibble::as_tibble(.,
                                               .name_repair = ~topics) %>%
                             dplyr::mutate(State = 1:(dplyr::n()),
-                                          Iteration = i) %>%
+                                          Iteration = info$used_iter[i]) %>%
                             tidyr::gather(key = Topic, value = alpha, -State, -Iteration)
                         }) %>%
      dplyr::mutate(Topic = as.integer(Topic)) -> alpha_iter
