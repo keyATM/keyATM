@@ -29,7 +29,8 @@ keyATM(docs, model, no_keyword_topics, keywords = list(),
      \item \strong{use_weights}: If \code{TRUE} use weight. Default is \code{TRUE}.
      \item \strong{weights_type}: There are four types of weights. Weights based on the information theory (\code{information-theory}) and inverse frequency (\code{inv-freq}) and normalized versions of them (\code{information-theory-normalized} and \code{inv-freq-normalized}). Default is \code{information-theory}.
      \item \strong{prune}: If \code{TRUE} rume keywords that do not appear in the corpus. Default is \code{TRUE}.
-     \item \strong{store_theta}: If \code{TRUE} or \code{1}, it stores \emph{theta} for the iteration specified by thinning. Default is \code{FALSE} (same as \code{0}).
+     \item \strong{store_theta}: If \code{TRUE} or \code{1}, it stores \emph{theta} (document-topic distribution) for the iteration specified by thinning. Default is \code{FALSE} (same as \code{0}).
+     \item \strong{store_pi}: If \code{TRUE} or \code{1}, it stores \emph{pi} (the probability of using keyword topic word distribution) for the iteration specified by thinning. Default is \code{FALSE} (same as \code{0}).
      \item \strong{thinning}: An integer. If the value is \code{j} \strong{keyATM} stores following parameters every \code{j} iteration. The default is \code{5}. \itemize{
            \item \emph{theta}: For all models. If \code{store_theta} is \code{TRUE} document-level topic assignment is stored (sufficient statistics to calculate document-topic distributions \code{theta}).
            \item \emph{alpha}: For the base and dynamic models. In the base model alpha is shared across all documents whereas each state has different alpha in the dynamic model.
@@ -45,18 +46,22 @@ keyATM(docs, model, no_keyword_topics, keywords = list(),
 A keyATM_output object containing:
   \describe{
     \item{keyword_k}{number of keyword topics}
-    \item{no_keyword_topics}{number of regular unseeded topics}
-    \item{V}{number of word types}
+    \item{no_keyword_topics}{number of no-keyword topics}
+    \item{V}{number of terms (number of unique words)}
     \item{N}{number of documents}
-    \item{theta}{normalized topic proportions for each document}
-    \item{phi}{normalized topic specific word generation probabilities}
+    \item{model}{the name of the model}
+    \item{theta}{topic proportions for each document (document-topic distribution)}
+    \item{phi}{topic specific word generation probabilities (topic-word distribution)}
     \item{topic_counts}{number of tokens assigned to each topic}
     \item{word_counts}{number of times each word type appears}
     \item{doc_lens}{length of each document in tokens}
     \item{vocab}{words in the vocabulary}
+    \item{priors}{priors}
+    \item{options}{options}
+    \item{keywords_raw}{specified keywords}
     \item{model_fit}{perplexity and log-likelihood}
-    \item{p}{estimated p}
-    \item{values_iter}{organized values stored during iterations}
+    \item{pi}{estimated pi for the last iteration}
+    \item{values_iter}{values stored during iterations}
     \item{kept_values}{outputs you specified to store}
   }
 }
@@ -87,6 +92,8 @@ Run keyATM models.
                 docs, model = "dynamic", no_keyword_topics = 5, keywords = keywords_list,
                 model_settings(time_index = time_index_vec, num_states = 5)
                )
+
+  # Visit our website for full examples: https://keyatm.github.io/keyATM/
 
 }
 

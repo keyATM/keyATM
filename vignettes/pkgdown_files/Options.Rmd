@@ -20,7 +20,8 @@ my_options <- list(seed         = NULL, # automatically generate random seed
                    weights_type = "information-theory",
                    prune        = TRUE,
                    thinning     = 5,
-                   store_theta  = FALSE)
+                   store_theta  = FALSE,
+                   store_pi     = FALSE)
 
 out <- keyATM(docs      = keyATM_docs,    # text input
               regular_k = 3,              # number of regular topics
@@ -66,6 +67,8 @@ The default value is `5` and **keyATM** keeps every $5$ daraws from the sampling
 The default value is `FALSE`. Storing the value of thetas allows the calculation of credible intervals.
 
 
+### `store_pi`
+The default value is `FALSE`. Storing the value of $\pi_k$ for all $k$ (the probability that the topic $k$ use keyword topic-word distribution).
 
 # Priors
 You can manually set priors, but we **do not** recommend doing it unless you understandd the consequences.
@@ -76,7 +79,7 @@ Prior for the document-topic distribution. This option only works for `base` mod
 
 
 ### `beta`
-Prior for the no-keyword topic-word distribution.
+Prior for the topic-word distribution.
 
 
 ### `beta_s`

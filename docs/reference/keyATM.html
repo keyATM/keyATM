@@ -193,7 +193,8 @@
 <li><p><strong>use_weights</strong>: If <code>TRUE</code> use weight. Default is <code>TRUE</code>.</p></li>
 <li><p><strong>weights_type</strong>: There are four types of weights. Weights based on the information theory (<code>information-theory</code>) and inverse frequency (<code>inv-freq</code>) and normalized versions of them (<code>information-theory-normalized</code> and <code>inv-freq-normalized</code>). Default is <code>information-theory</code>.</p></li>
 <li><p><strong>prune</strong>: If <code>TRUE</code> rume keywords that do not appear in the corpus. Default is <code>TRUE</code>.</p></li>
-<li><p><strong>store_theta</strong>: If <code>TRUE</code> or <code>1</code>, it stores <em>theta</em> for the iteration specified by thinning. Default is <code>FALSE</code> (same as <code>0</code>).</p></li>
+<li><p><strong>store_theta</strong>: If <code>TRUE</code> or <code>1</code>, it stores <em>theta</em> (document-topic distribution) for the iteration specified by thinning. Default is <code>FALSE</code> (same as <code>0</code>).</p></li>
+<li><p><strong>store_pi</strong>: If <code>TRUE</code> or <code>1</code>, it stores <em>pi</em> (the probability of using keyword topic word distribution) for the iteration specified by thinning. Default is <code>FALSE</code> (same as <code>0</code>).</p></li>
 <li><p><strong>thinning</strong>: An integer. If the value is <code>j</code> <strong>keyATM</strong> stores following parameters every <code>j</code> iteration. The default is <code>5</code>.</p><ul>
 <li><p><em>theta</em>: For all models. If <code>store_theta</code> is <code>TRUE</code> document-level topic assignment is stored (sufficient statistics to calculate document-topic distributions <code>theta</code>).</p></li>
 <li><p><em>alpha</em>: For the base and dynamic models. In the base model alpha is shared across all documents whereas each state has different alpha in the dynamic model.</p></li>
@@ -213,18 +214,22 @@
 
     <p>A keyATM_output object containing:</p><dl class='dl-horizontal'>
     <dt>keyword_k</dt><dd><p>number of keyword topics</p></dd>
-    <dt>no_keyword_topics</dt><dd><p>number of regular unseeded topics</p></dd>
-    <dt>V</dt><dd><p>number of word types</p></dd>
+    <dt>no_keyword_topics</dt><dd><p>number of no-keyword topics</p></dd>
+    <dt>V</dt><dd><p>number of terms (number of unique words)</p></dd>
     <dt>N</dt><dd><p>number of documents</p></dd>
-    <dt>theta</dt><dd><p>normalized topic proportions for each document</p></dd>
-    <dt>phi</dt><dd><p>normalized topic specific word generation probabilities</p></dd>
+    <dt>model</dt><dd><p>the name of the model</p></dd>
+    <dt>theta</dt><dd><p>topic proportions for each document (document-topic distribution)</p></dd>
+    <dt>phi</dt><dd><p>topic specific word generation probabilities (topic-word distribution)</p></dd>
     <dt>topic_counts</dt><dd><p>number of tokens assigned to each topic</p></dd>
     <dt>word_counts</dt><dd><p>number of times each word type appears</p></dd>
     <dt>doc_lens</dt><dd><p>length of each document in tokens</p></dd>
     <dt>vocab</dt><dd><p>words in the vocabulary</p></dd>
+    <dt>priors</dt><dd><p>priors</p></dd>
+    <dt>options</dt><dd><p>options</p></dd>
+    <dt>keywords_raw</dt><dd><p>specified keywords</p></dd>
     <dt>model_fit</dt><dd><p>perplexity and log-likelihood</p></dd>
-    <dt>p</dt><dd><p>estimated p</p></dd>
-    <dt>values_iter</dt><dd><p>organized values stored during iterations</p></dd>
+    <dt>pi</dt><dd><p>estimated pi for the last iteration</p></dd>
+    <dt>values_iter</dt><dd><p>values stored during iterations</p></dd>
     <dt>kept_values</dt><dd><p>outputs you specified to store</p></dd>
   
 </dl>
@@ -259,6 +264,8 @@
                 <span class='no'>docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"dynamic"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
                 <span class='fu'>model_settings</span>(<span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>time_index_vec</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>)
                )
+
+  <span class='co'># Visit our website for full examples: https://keyatm.github.io/keyATM/</span>
 
 }</div></pre>
   </div>

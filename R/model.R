@@ -123,6 +123,7 @@ summary.keyATM_docs <- function(object, ...)
               "\n  Min: ", round(min(doc_len), 3),
               "\n  Max: ", round(max(doc_len), 3),
               "\n   SD: ", round(sd(doc_len), 3),
+              "\nNumber of unique words: ", length(unique(unlist(object, use.names = F, recursive = F))),
               "\n"
              )  
          )
