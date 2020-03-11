@@ -25,19 +25,23 @@ weightedLDA(docs, model, number_of_topics, model_settings = list(),
 \value{
 A keyATM_output object containing:
   \describe{
-    \item{number_of_topics}{Number of regular unseeded topics}
-    \item{V}{Number of word types}
-    \item{N}{Number of documents}
-    \item{theta}{Normalized topic proportions for each document}
-    \item{phi}{Normalized topic specific word generation probabilities}
-    \item{topic_counts}{Number of tokens assigned to each topic}
-    \item{word_counts}{Number of times each word type appears}
-    \item{doc_lens}{Length of each document in tokens}
-    \item{vocab}{Words in the vocabulary}
-    \item{model_fit}{Perplexity and log-likelihood}
-    \item{p}{Estimated p}
-    \item{values_iter}{Organized values stored during iterations}
-    \item{kept_values}{Outputs you specified to store.}
+    \item{V}{number of terms (number of unique words)}
+    \item{N}{number of documents}
+    \item{model}{the name of the model}
+    \item{theta}{topic proportions for each document (document-topic distribution)}
+    \item{phi}{topic specific word generation probabilities (topic-word distribution)}
+    \item{topic_counts}{number of tokens assigned to each topic}
+    \item{word_counts}{number of times each word type appears}
+    \item{doc_lens}{length of each document in tokens}
+    \item{vocab}{words in the vocabulary}
+    \item{priors}{priors}
+    \item{options}{options}
+    \item{keywords_raw}{\code{NULL} for LDA models}
+    \item{model_fit}{perplexity and log-likelihood}
+    \item{pi}{estimated pi for the last iteration (\code{NULL} for LDA models)}
+    \item{values_iter}{values stored during iterations}
+    \item{number_of_topics}{number of topics}
+    \item{kept_values}{outputs you specified to store in \code{keep} option}
   }
 }
 \description{
@@ -62,6 +66,11 @@ Run weighted LDA models.
                      model_settings(time_index = time_index_vec, num_states = 5)
                     )
 
+  # Visit our website for full examples: https://keyatm.github.io/keyATM/
+
 }
 
+}
+\seealso{
+\url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 }

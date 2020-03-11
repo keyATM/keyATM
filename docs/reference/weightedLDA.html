@@ -191,22 +191,30 @@
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A keyATM_output object containing:</p><dl class='dl-horizontal'>
-    <dt>number_of_topics</dt><dd><p>Number of regular unseeded topics</p></dd>
-    <dt>V</dt><dd><p>Number of word types</p></dd>
-    <dt>N</dt><dd><p>Number of documents</p></dd>
-    <dt>theta</dt><dd><p>Normalized topic proportions for each document</p></dd>
-    <dt>phi</dt><dd><p>Normalized topic specific word generation probabilities</p></dd>
-    <dt>topic_counts</dt><dd><p>Number of tokens assigned to each topic</p></dd>
-    <dt>word_counts</dt><dd><p>Number of times each word type appears</p></dd>
-    <dt>doc_lens</dt><dd><p>Length of each document in tokens</p></dd>
-    <dt>vocab</dt><dd><p>Words in the vocabulary</p></dd>
-    <dt>model_fit</dt><dd><p>Perplexity and log-likelihood</p></dd>
-    <dt>p</dt><dd><p>Estimated p</p></dd>
-    <dt>values_iter</dt><dd><p>Organized values stored during iterations</p></dd>
-    <dt>kept_values</dt><dd><p>Outputs you specified to store.</p></dd>
+    <dt>V</dt><dd><p>number of terms (number of unique words)</p></dd>
+    <dt>N</dt><dd><p>number of documents</p></dd>
+    <dt>model</dt><dd><p>the name of the model</p></dd>
+    <dt>theta</dt><dd><p>topic proportions for each document (document-topic distribution)</p></dd>
+    <dt>phi</dt><dd><p>topic specific word generation probabilities (topic-word distribution)</p></dd>
+    <dt>topic_counts</dt><dd><p>number of tokens assigned to each topic</p></dd>
+    <dt>word_counts</dt><dd><p>number of times each word type appears</p></dd>
+    <dt>doc_lens</dt><dd><p>length of each document in tokens</p></dd>
+    <dt>vocab</dt><dd><p>words in the vocabulary</p></dd>
+    <dt>priors</dt><dd><p>priors</p></dd>
+    <dt>options</dt><dd><p>options</p></dd>
+    <dt>keywords_raw</dt><dd><p><code>NULL</code> for LDA models</p></dd>
+    <dt>model_fit</dt><dd><p>perplexity and log-likelihood</p></dd>
+    <dt>pi</dt><dd><p>estimated pi for the last iteration (<code>NULL</code> for LDA models)</p></dd>
+    <dt>values_iter</dt><dd><p>values stored during iterations</p></dd>
+    <dt>number_of_topics</dt><dd><p>number of topics</p></dd>
+    <dt>kept_values</dt><dd><p>outputs you specified to store in <code>keep</code> option</p></dd>
   
 </dl>
 
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><a href='https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html'>https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html</a></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -228,6 +236,8 @@
                      <span class='fu'>model_settings</span>(<span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>time_index_vec</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>)
                     )
 
+  <span class='co'># Visit our website for full examples: https://keyatm.github.io/keyATM/</span>
+
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -236,6 +246,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

@@ -4,11 +4,17 @@
 #include <algorithm>
 #include <unordered_set>
 #include <string>
+
+// Sampler
 #include "sampler.h"
+
+// keyATM models
 #include "keyATM_base.h"
 #include "keyATM_cov.h"
 #include "keyATM_HMM.h"
 #include "keyATM_label.h"
+
+// Weighted LDA models
 #include "LDA_weight.h"
 #include "LDA_weightCov.h"
 #include "LDA_weightHMM.h"
