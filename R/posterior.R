@@ -565,7 +565,7 @@ summary.keyATM_output <- function(object, ...)
   cat(
       paste0(
              "keyATM_output object for the ",
-             x$model,
+             object$model,
              " model. ",
              "\n"
             )
