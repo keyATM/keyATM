@@ -98,7 +98,6 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
 
 
 #' @noRd
-#' @method print keyATM_docs
 #' @export
 print.keyATM_docs <- function(x, ...)
 {
@@ -111,7 +110,6 @@ print.keyATM_docs <- function(x, ...)
 
 
 #' @noRd
-#' @method summarize keyATM_docs
 #' @export
 summary.keyATM_docs <- function(object, ...)
 {
