@@ -34,7 +34,7 @@ bills_keywords <- list(
 With **keyATM** covariates, we can calculate the predicted posterior distribution of the document-topic distributions. This is for [keyATM Covariate](keyATM_cov.html).
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-out <- keyATM(    
+out <- keyATM(
               docs              = keyATM_docs,     # text input
               no_keyword_topics = 3,               # number of topics without keywords
               keywords          = bills_keywords,  # keywords

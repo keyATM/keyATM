@@ -7,12 +7,6 @@
 \description{
 The implementation of keyATM models.
 }
-\section{Online documentation}{
-
-
-<https://keyatm.github.io/keyATM/>
-}
-
 \seealso{
 Useful links:
 \itemize{

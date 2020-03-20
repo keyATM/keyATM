@@ -14,7 +14,7 @@ by_strata_DocTopic(x, by_name, by_values, burn_in = NULL,
 
 \item{by_values}{numeric. The values of the variable specified in `by_name`}
 
-\item{burn_in}{integer. Burn_in period. If not specified, it is the half of samples. Default is \code{NULL}.}
+\item{burn_in}{integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.}
 
 \item{parallel}{logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}.}
 
