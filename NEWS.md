@@ -1,7 +1,8 @@
 # keyATM 0.1.0
 ### Major changes
-* We organize functions into a package
-* We add keyATM Label
+* Organize functions into a package
+* Add keyATM Label
+* Replace `hashmap` with `fastmap`
 
 # keyATM 0.0.7
 ### Major changes
@@ -11,11 +12,11 @@
 
 # keyATM 0.0.6
 ### Major changes
-* We add keyATM Dynamic
+* Add keyATM Dynamic
 
 # keyATM 0.0.5
 ### Major changes
-* We add keyATM Covariate
+* Add keyATM Covariate
 
 # keyATM 0.0.4
 ### Major changes

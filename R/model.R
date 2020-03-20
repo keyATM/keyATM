@@ -387,15 +387,16 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   info$wd_names <- unique(unlist(docs, use.names = F, recursive = F))
   check_vocabulary(info$wd_names)
 
-  info$wd_map <- hashmap::hashmap(info$wd_names, 1:length(info$wd_names) - 1L)
-  W <- lapply(docs, function(x) { info$wd_map[[x]] })
+  info$wd_map <- myhashmap(info$wd_names, 1:length(info$wd_names) - 1L)
+  W <- lapply(docs, function(x) { myhashmap_getvec(info$wd_map, x) })
 
 
   # Check keywords
   keywords <- check_keywords(info$wd_names, keywords, options$prune)
 
   keywords_raw <- keywords  # keep raw keywords (not word_id)
-  keywords_id <- lapply(keywords, function(x) { as.integer(info$wd_map$find(x)) })
+  keywords_id <- lapply(keywords, function(x) { myhashmap_getvec(info$wd_map, x) })
+  info$keywords_id <- unlist(keywords_id, use.names = F, recursive = F)
 
   # Assign S and Z
   if (model %in% info$models_keyATM) {
@@ -979,19 +980,19 @@ check_vocabulary <- function(vocab)
 make_sz_key <- function(W, keywords, info)
 {
   # zs_assigner maps keywords to category ids
-  key_wdids <- unlist(lapply(keywords, function(x) { info$wd_map$find(x) }))
+  key_wdids <- info$keywords_id
   cat_ids <- rep(1:(info$keyword_k) - 1L, unlist(lapply(keywords, length)))
 
   if (length(key_wdids) == length(unique(key_wdids))) {
     #
     # No keyword appears more than once
     #
-    zs_assigner <- hashmap::hashmap(as.integer(key_wdids), as.integer(cat_ids))
+    zs_assigner <- myhashmap_keyint(as.integer(key_wdids), as.integer(cat_ids))
 
     # if the word is a keyword, assign the appropriate (0 start) Z, else a random Z
     topicvec <- 1:(info$total_k) - 1L
     make_z <- function(s, topicvec) {
-      zz <- zs_assigner[[s]] # if it is a keyword word, we already know the topic
+      zz <- myhashmap_getvec_keyint(zs_assigner, s)
       zz[is.na(zz)] <- sample(topicvec,
                               sum(is.na(zz)),
                               replace = TRUE)
@@ -1007,10 +1008,11 @@ make_sz_key <- function(W, keywords, info)
                         function(x) {
                           paste(as.character(keys_df[keys_df$wid == x, "cat"]), collapse=",")
                         })
-    zs_hashtable <- hashmap::hashmap(as.integer(unique(key_wdids)), keys_char)
+    zs_hashtable <- myhashmap_keyint(as.integer(unique(key_wdids)), keys_char)
 
     zs_assigner <- function(s) {
-      topic <- zs_hashtable[[s]]
+      # topic <- zs_hashtable[[s]]  # hashtable
+      topic <- myhashmap_getvec_keyint(zs_hashtable, s)
       topic <- strsplit(topic, split=",")
       topic <- lapply(topic, sample, 1)
       topic <- as.integer(unlist(topic))
