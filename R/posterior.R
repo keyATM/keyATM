@@ -803,7 +803,7 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param by_name character. The name of the variable to use.
 #' @param by_values numeric. The values of the variable specified in `by_name`
-#' @param burn_in integer. Burn_in period. If not specified, it is the half of samples. Default is \code{NULL}.
+#' @param burn_in integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.
 #' @param parallel logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}.
 #' @param mc.cores integer. The number of cores to use. Default is \code{NULL}.
 #' @param posterior_mean logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{FALSE}.
