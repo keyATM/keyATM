@@ -62,6 +62,7 @@ class keyATMlabel : virtual public keyATMmeta
     void sample_alpha();
     double alpha_loglik_label(int &k);
     virtual double loglik_total();
+    double loglik_total_label();
 };
 
 

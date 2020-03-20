@@ -1,73 +1,77 @@
 #' Show a diagnosis plot of alpha
 #'
+#' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param start Slice iteration
-#' @param show_topic a vector to specify topic indexes to show
-#' @param thinning a integer for thinning
-#' @param scale a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters
+#' @param start integer. The start of slice iteration. Default is 0.
+#' @param show_topic a vector to specify topic indexes to show. Default is \code{NULL}.
+#' @param scale character. Control the scale of y-axis (the parameter in \code{facet_wrap()}): 'free' adjusts y-axis for parameters. Default is "fixed". 
 #'
 #' @return ggplot2 object
-#' @importFrom stats as.formula
 #' @import ggplot2
 #' @import magrittr
 #' @export
-plot_alpha <- function(x, start = 0, show_topic = NULL,
-                       thinning = 5,
-                       scale = "fixed")
+plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 {
 
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
 
+  if (modelname %in% c("lda", "ldacov", "ldahmm")) {
+    stop(paste0("This is not a model with keywords.")) 
+  }
+
   if (!"alpha_iter" %in% names(x$values_iter)) {
     stop("`alpha` is not stored. Please check the settings of the model.")  
   }
 
-  thinning <- as.integer(thinning)
-  enq_thinning <- enquo(thinning)
-
   if (is.null(show_topic)) {
-    show_topic <- 1:ncol(x$theta)  
+    show_topic <- 1:x$keyword_k
   }
-  check_arg_type(show_topic, "numeric")
-  enq_show_topic <- enquo(show_topic)
 
+  if (!is.numeric(start) | length(start) != 1) {
+    stop("`start` argument is invalid.")  
+  }
+
+  tnames <- c(names(x$keywords_raw))[show_topic]
   x$values_iter$alpha_iter %>%
-    dplyr::filter(Iteration %% (!!enq_thinning) == 0) %>%
     dplyr::filter(Iteration >= start) %>%
     dplyr::filter(Topic %in% (!!show_topic)) %>%
-    dplyr::mutate(Topic = paste0("Topic", Topic)) -> res_alpha
-
-  if (nrow(res_alpha) == 0) {
-    stop("Nothing left to plot. Please check arguments.")  
-  }
+    tidyr::pivot_wider(names_from = Topic, values_from = alpha) -> temp
 
   if (modelname %in% c("base", "lda", "label")) {
+    temp %>% dplyr::rename_at(vars(-"Iteration"), ~tnames) %>%
+      tidyr::pivot_longer(-Iteration, names_to = "Topic", values_to = "alpha") -> res_alpha
+
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = Topic)) +
           geom_line() +
           geom_point(size = 0.3) +
-          facet_wrap(~ Topic, ncol = 2, scales = scales) +
+          facet_wrap(~ Topic, ncol = 2, scales = scale) +
           ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
   } else if (modelname %in% c("hmm", "ldahmm")) {
-    res_alpha %>% mutate(State = as.character(State)) -> res_alpha
+    temp %>% dplyr::rename_at(vars(-"Iteration", -"State"), ~tnames) %>%
+      tidyr::pivot_longer(-c(Iteration, State), names_to = "Topic", values_to = "alpha") -> res_alpha
+    res_alpha$State <- factor(res_alpha$State, levels = 1:max(res_alpha$State))
+
     p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = State, colour = State)) +
           geom_line() +
           geom_point(size = 0.3) +
-          facet_wrap(~ Topic, ncol = 2, scales = scales) +
+          facet_wrap(~ Topic, ncol = 2, scales = scale) +
           ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))  
   }
+
   return(p)
 }
 
 
 #' Show a diagnosis plot of log-likelihood and perplexity
 #'
+#' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param start starting value of the plot
+#' @param start integer. The starting value of iteration to use in plot. Default is 1.
 #'
 #' @return ggplot2 object
 #' @import ggplot2
@@ -81,8 +85,7 @@ plot_modelfit <- function(x, start = 1)
   modelfit <- x$model_fit
 
   if (!is.numeric(start) | length(start) != 1) {
-    message("`start` argument is invalid. Using the default (=1)")  
-    start <- 1
+    stop("`start` argument is invalid.")  
   }
 
   if (!is.null(start)) {
@@ -104,55 +107,86 @@ plot_modelfit <- function(x, start = 1)
 }
 
 
-#' Show a diagnosis plot of p
+#' Show a diagnosis plot of pi
 #'
+#' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param show_topic A vector to indicate topics to visualize
+#' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
+#' @param start integer. The starting value of iteration to use in the plot. Default is 0.
 #'
 #' @return ggplot2 object
 #' @import ggplot2
-#' @import dplyr
 #' @import magrittr
 #' @export
-plot_p <- function(x, show_topic = NULL)
+plot_pi <- function(x, show_topic = NULL, start = 0)
 {
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
 
   if (modelname %in% c("lda", "ldacov", "ldahmm")) {
-    stop(paste0("`", x$model, "` is not a model with keywords.")) 
+    stop(paste0("This is not a model with keywords.")) 
   }
 
-  num <- length(unique(x$p$Topic))
   if (is.null(show_topic)) {
-    shoe_topic <- 1:num
+    show_topic <- 1:x$keyword_k
+  } else if (sum(!show_topic %in% 1:x$keyword_k) != 0) {
+    stop("`plot_pi` only visualize keyword topics.") 
   }
 
-  check_arg_type(show_topic, "numeric")
-  enq_show_topic <- enquo(show_topic)
+  if (!is.numeric(start) | length(start) != 1) {
+    stop("`start` argument is invalid.")  
+  }
 
-  x$p %>%
-    dplyr::filter(Topic %in% (!!show_topic)) %>%
-    dplyr::mutate(Topic = paste0("Topic", Topic)) -> temp
+  tnames <- c(names(x$keywords_raw))[show_topic]
 
-  g  <- ggplot(temp, aes_string(x='Topic', y='Proportion')) +
-      geom_bar(stat="identity") +
-      theme_bw() +
-      scale_x_discrete(limits = paste0("Topic", get("show_topic"))) +
-      ylab("Proportion (%)") +
-      xlab("Topic") +
-      ggtitle("Proportion of words drawn from topic-word distribution") +
-      theme(plot.title = element_text(hjust = 0.5))
+  if (!is.null(x$values_iter$pi_iter)) {
+    pi_mat <- t(sapply(x$values_iter$pi_iter, unlist, use.names = F))[, show_topic]
+    pi_mat %>%
+      tibble::as_tibble(.name_repair = ~ tnames) %>%
+      dplyr::mutate(Iteration = x$values_iter$used_iter) %>%
+      dplyr::filter(Iteration >= start) %>% 
+      dplyr::select(-Iteration) -> pi_mat
 
+    if (nrow(pi_mat) == 0) {
+      stop("Nothing left to plot. Please check arguments.")
+    }
+
+    pi_mat %>%
+      tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Topic") %>%
+      dplyr::group_by(Topic) %>%
+      dplyr::summarise(mean = mean(value), uq = quantile(value, .975), lq = quantile(value, 0.025)) -> temp
+    
+    g <- ggplot(temp, aes(y = mean, x = Topic, color = Topic)) + 
+         theme_bw() +
+         geom_errorbar(aes(ymin = lq, ymax = uq), data = temp, width = 0.01, size = 1) + 
+         ylab("Probability") +
+         xlab("Topic") +
+         ggtitle("Probability of words drawn from keyword topic-word distribution") +
+         theme(plot.title = element_text(hjust = 0.5))
+  } else {
+    x$pi %>%
+      dplyr::mutate(Probability = Proportion / 100) %>%
+      dplyr::filter(Topic %in% (!!show_topic)) %>%
+      dplyr::mutate(Topic = tnames) -> temp
+
+    g  <- ggplot(temp, aes_string(x='Topic', y='Probability')) +
+        geom_bar(stat="identity") +
+        theme_bw() +
+        ylab("Probability") +
+        xlab("Topic") +
+        ggtitle("Probability of words drawn from keyword topic-word distribution") +
+        theme(plot.title = element_text(hjust = 0.5))    
+  }
   return(g)
 }
 
 
-#' Plot document-topic distribution by strata 
+#' Plot document-topic distribution by strata (for covariate models)
+#' 
 #'
 #' @param x a strata_doctopic object (see \code{by_strata_DocTopic()})
-#' @param topics topics to show
-#' @param quantile_vec quantiles to show
+#' @param topics a vector or an integer. Indicate topics to visualize.
+#' @param quantile_vec a numeric. Quantiles to visualize
 #' @param ... additional arguments not used
 #'
 #' @return ggplot2 object
@@ -173,7 +207,6 @@ plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0
               dplyr::filter(TopicId %in% topics)
 
   variables <- unique(tables$by)
-
 
   p <- ggplot(tables) +
         geom_linerange(aes(x = by,

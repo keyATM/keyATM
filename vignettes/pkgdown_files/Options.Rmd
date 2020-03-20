@@ -12,14 +12,16 @@ pkgdown:
 # Options
 `keyATM` takes various options. You can set options through a list.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
-my_options <- list(seed        = NULL, # automatically generate random seed 
-                   iterations  = 1500,
-                   verbose     = FALSE,
-                   llk_per     = 10,
-                   use_weights = TRUE,
-                   prune       = TRUE,
-                   thinning    = 5,
-                   store_theta = FALSE)
+my_options <- list(seed         = NULL, # automatically generate random seed 
+                   iterations   = 1500,
+                   verbose      = FALSE,
+                   llk_per      = 10,
+                   use_weights  = TRUE,
+                   weights_type = "information-theory",
+                   prune        = TRUE,
+                   thinning     = 5,
+                   store_theta  = FALSE,
+                   store_pi     = FALSE)
 
 out <- keyATM(docs      = keyATM_docs,    # text input
               regular_k = 3,              # number of regular topics
@@ -50,6 +52,10 @@ Default is `FALSE`. If it is true, it shows values of log-likelihood and perplex
 The default value is `TRUE` (use weights). We follow the weighting Scheme in Wilson \& Chew (2010). If you do not want to use weights, please set it to `FALSE`. Please check our paper for details.
 
 
+### `weights_type`
+You can select one of four weights implemented in **keyATM**. The default is `information-theory`. **keyATM** can construct weights from the inverse frequency of the words, `inv-frequency`. There are normalized version of two: `information-theory-normalized` and `inv-freq-normalized`.
+
+
 ### `prune`
 Prune keywords that do not appear in the documents.
 
@@ -61,6 +67,8 @@ The default value is `5` and **keyATM** keeps every $5$ daraws from the sampling
 The default value is `FALSE`. Storing the value of thetas allows the calculation of credible intervals.
 
 
+### `store_pi`
+The default value is `FALSE`. Storing the value of $\pi_k$ for all $k$ (the probability that the topic $k$ use keyword topic-word distribution).
 
 # Priors
 You can manually set priors, but we **do not** recommend doing it unless you understandd the consequences.
@@ -71,7 +79,7 @@ Prior for the document-topic distribution. This option only works for `base` mod
 
 
 ### `beta`
-Prior for the no-keyword topic-word distribution.
+Prior for the topic-word distribution.
 
 
 ### `beta_s`

@@ -143,6 +143,8 @@ void keyATMhmm::iteration_single(int &it)
       new_z = sample_z(alpha, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
     
+      if (keywords[new_z].find(w_) == keywords[new_z].end())	
+        continue;
   
       z_ = doc_z[w_position]; // use updated z
       new_s = sample_s(alpha, z_, s_, w_, doc_id_);
@@ -156,10 +158,12 @@ void keyATMhmm::iteration_single(int &it)
   sample_parameters(it);
 }
 
+
 void keyATMhmm::verbose_special(int &r_index)
 {
   // If there is anything special to show, write here.
 }
+
 
 void keyATMhmm::sample_parameters(int &it)
 {
@@ -467,6 +471,58 @@ double keyATMhmm::loglik_total()
         loglik += mylgamma(beta_s + it.value() / vocab_weights(it.index()) ) - mylgamma(beta_s);
       }
       loglik += mylgamma( beta_s * (double)keywords_num[k] ) - mylgamma(beta_s * (double)keywords_num[k] + n_s1_k(k) );
+      
+      // Normalization
+      loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
+
+      // s
+      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) ) 
+                - mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1))
+                + mylgamma(n_s1_k(k) + prior_gamma(k, 0) );  
+    }
+  }
+
+
+  for (int d = 0; d < num_doc; d++){
+    // z
+    alpha = alphas.row(get_state_index(doc_id_)).transpose(); // Doc alpha, column vector  
+    
+    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
+    for (int k = 0; k < num_topics; k++){
+      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+    }
+
+  }
+
+  // HMM part
+  for (int t = 0; t < num_time; t++) {
+    state_id = R_est(t);
+    loglik += log( P_est(state_id, state_id) );
+  }
+
+  return loglik;
+}
+
+
+double keyATMhmm::loglik_total_label()
+{
+  loglik = 0.0;
+  for (int k = 0; k < num_topics; k++){
+    for (int v = 0; v < num_vocab; v++){ // word
+      loglik += mylgamma(beta_s0kv(k, v) + n_s0_kv(k, v) ) - mylgamma(beta_s0kv(k, v));
+    }
+
+    // word normalization
+    loglik += mylgamma( Vbeta_k(k) ) - mylgamma(Vbeta_k(k) + n_s0_k(k) );
+
+    if (k < keyword_k) {
+      // For keyword topics
+      
+      // n_s1_kv
+      for (SparseMatrix<double,RowMajor>::InnerIterator it(n_s1_kv, k); it; ++it){
+        loglik += mylgamma(beta_s1kv.coeffRef(k, it.index()) + it.value()) - mylgamma(beta_s1kv.coeffRef(k, it.index()));
+      }
+      loglik += mylgamma( Lbeta_sk(k) ) - mylgamma(Lbeta_sk(k) + n_s1_k(k) );
       
       // Normalization
       loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));

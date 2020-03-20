@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Show a diagnosis plot of log-likelihood and perplexity — plot_modelfit • keyATM</title>
+<title>Show a diagnosis plot of pi — plot_pi • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -34,9 +34,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Show a diagnosis plot of log-likelihood and perplexity — plot_modelfit" />
+<meta property="og:title" content="Show a diagnosis plot of pi — plot_pi" />
 
-<meta property="og:description" content="Show a diagnosis plot of log-likelihood and perplexity" />
+<meta property="og:description" content="Show a diagnosis plot of pi" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -141,18 +141,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Show a diagnosis plot of log-likelihood and perplexity</h1>
+    <h1>Show a diagnosis plot of pi</h1>
     
-    <div class="hidden name"><code>plot_modelfit.Rd</code></div>
+    <div class="hidden name"><code>plot_pi.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Show a diagnosis plot of log-likelihood and perplexity</p>
+    <p>Show a diagnosis plot of pi</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>plot_modelfit</span>(<span class='no'>x</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
+    <pre class="usage"><span class='fu'>plot_pi</span>(<span class='no'>x</span>, <span class='kw'>show_topic</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -162,8 +162,12 @@
       <td><p>the output from a keyATM model (see <code><a href='keyATM.html'>keyATM()</a></code>)</p></td>
     </tr>
     <tr>
+      <th>show_topic</th>
+      <td><p>an integer or a vector. Indicate topics to visualize. Default is <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
       <th>start</th>
-      <td><p>integer. The starting value of iteration to use in plot. Default is 1.</p></td>
+      <td><p>integer. The starting value of iteration to use in the plot. Default is 0.</p></td>
     </tr>
     </table>
     

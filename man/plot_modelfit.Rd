@@ -9,7 +9,7 @@ plot_modelfit(x, start = 1)
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}
 
-\item{start}{starting value of the plot}
+\item{start}{integer. The starting value of iteration to use in plot. Default is 1.}
 }
 \value{
 ggplot2 object

@@ -4,19 +4,16 @@
 \alias{plot_alpha}
 \title{Show a diagnosis plot of alpha}
 \usage{
-plot_alpha(x, start = 0, show_topic = NULL, thinning = 5,
-  scale = "fixed")
+plot_alpha(x, start = 0, show_topic = NULL, scale = "fixed")
 }
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}
 
-\item{start}{Slice iteration}
+\item{start}{integer. The start of slice iteration. Default is 0.}
 
-\item{show_topic}{a vector to specify topic indexes to show}
+\item{show_topic}{a vector to specify topic indexes to show. Default is \code{NULL}.}
 
-\item{thinning}{a integer for thinning}
-
-\item{scale}{a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters}
+\item{scale}{character. Control the scale of y-axis (the parameter in \code{facet_wrap()}): 'free' adjusts y-axis for parameters. Default is "fixed".}
 }
 \value{
 ggplot2 object

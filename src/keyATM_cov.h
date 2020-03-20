@@ -66,10 +66,10 @@ class keyATMcov : virtual public keyATMmeta
     void sample_lambda_slice();
     double alpha_loglik();
     virtual double loglik_total();
+    double loglik_total_label();
 
     double likelihood_lambda(int &k, int &t);
     void proposal_lambda(int& k);
-
 };
 
 

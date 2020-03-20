@@ -5,14 +5,8 @@
 \alias{keyATM-package}
 \title{Keyword Assisted Topic Models}
 \description{
-The implementation of the Base keyATM, the Covariate keyATM, and the Dynamic keyATM.
+The implementation of keyATM models.
 }
-\section{Online documentation}{
-
-
-<https://keyatm.github.io/keyATM/>
-}
-
 \seealso{
 Useful links:
 \itemize{

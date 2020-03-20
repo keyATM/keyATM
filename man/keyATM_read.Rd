@@ -7,17 +7,17 @@
 keyATM_read(texts, encoding = "UTF-8", check = TRUE)
 }
 \arguments{
-\item{texts}{Input. keyATM takes dfm, data.frame, \pkg{tibble} tbl_df, or a vector of file paths.}
+\item{texts}{input. keyATM takes dfm, data.frame, \pkg{tibble} tbl_df, or a vector of file paths.}
 
-\item{encoding}{A character. Only used when `texts` is a vector of file paths.}
+\item{encoding}{character. Only used when \code{texts} is a vector of file paths. Default is "UTF-8".}
 
-\item{check}{If \code{TRUE}, check whether there is nothing wrong with the structure of texts.}
+\item{check}{logical. If \code{TRUE}, check whether there is nothing wrong with the structure of texts. Default is \code{TRUE}.}
 }
 \value{
-A list whose elements are splitted texts. The length of the list equals to the number of documents.
+a list whose elements are splitted texts. The length of the list equals to the number of documents.
 }
 \description{
-This function reads texts and creates a keyATM_docs object, which is a list of texts.
+Read texts and create a \code{keyATM_docs} object, which is a list of texts.
 }
 \examples{
 \dontrun{
@@ -28,9 +28,10 @@ This function reads texts and creates a keyATM_docs object, which is a list of t
  keyATM_docs <- keyATM_read(texts = data_frame_object) 
  keyATM_docs <- keyATM_read(texts = tibble_object) 
 
- # Use a vector that stores full paths to the text files  
+ # Use a vector that stores full paths to the text files 
  files <- list.files(doc_folder, pattern = "*.txt", full.names = T) 
  keyATM_docs <- keyATM_read(texts = files) 
+
 }
 
 }

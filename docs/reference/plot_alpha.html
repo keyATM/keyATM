@@ -152,8 +152,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>plot_alpha</span>(<span class='no'>x</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>show_topic</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>thinning</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>)</pre>
+    <pre class="usage"><span class='fu'>plot_alpha</span>(<span class='no'>x</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>show_topic</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -164,19 +163,15 @@
     </tr>
     <tr>
       <th>start</th>
-      <td><p>Slice iteration</p></td>
+      <td><p>integer. The start of slice iteration. Default is 0.</p></td>
     </tr>
     <tr>
       <th>show_topic</th>
-      <td><p>a vector to specify topic indexes to show</p></td>
-    </tr>
-    <tr>
-      <th>thinning</th>
-      <td><p>a integer for thinning</p></td>
+      <td><p>a vector to specify topic indexes to show. Default is <code>NULL</code>.</p></td>
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters</p></td>
+      <td><p>character. Control the scale of y-axis (the parameter in <code>facet_wrap()</code>): 'free' adjusts y-axis for parameters. Default is "fixed".</p></td>
     </tr>
     </table>
     

@@ -68,6 +68,9 @@ void keyATMcov::iteration_single(int &it)
       new_z = sample_z(alpha, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
     
+      if (keywords[new_z].find(w_) == keywords[new_z].end())	
+        continue;
+  
       z_ = doc_z[w_position]; // use updated z
       new_s = sample_s(alpha, z_, s_, w_, doc_id_);
       doc_s[w_position] = new_s;
@@ -253,6 +256,64 @@ double keyATMcov::loglik_total()
         loglik += mylgamma(beta_s + it.value()) - mylgamma(beta_s);
       }
       loglik += mylgamma( beta_s * (double)keywords_num[k] ) - mylgamma(beta_s * (double)keywords_num[k] + n_s1_k(k) );
+
+
+      // Normalization
+      loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
+
+      // s
+      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) ) 
+                - mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1))
+                + mylgamma( n_s1_k(k) + prior_gamma(k, 0) );  
+    }
+  }
+
+
+  // z
+  Alpha = (C * Lambda.transpose()).array().exp();
+  alpha = VectorXd::Zero(num_topics);
+
+  for (int d = 0; d < num_doc; d++){
+    alpha = Alpha.row(d).transpose(); // Doc alpha, column vector  
+    
+    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
+    for (int k = 0; k < num_topics; k++){
+      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+    }
+  }
+
+  // Lambda loglik
+  double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
+  for (int k = 0; k < num_topics; k++) {
+    for (int t = 0; t < num_cov; t++) {
+      loglik += prior_fixedterm;
+      loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
+    }
+  }
+
+  return loglik;
+}
+
+
+double keyATMcov::loglik_total_label()
+{
+  double loglik = 0.0;
+  for (int k = 0; k < num_topics; k++) {
+    for (int v = 0; v < num_vocab; v++) { // word
+      loglik += mylgamma(beta_s0kv(k, v) + n_s0_kv(k, v) ) - mylgamma(beta_s0kv(k, v));
+    }
+
+    // word normalization
+    loglik += mylgamma( Vbeta_k(k) ) - mylgamma(Vbeta_k(k) + n_s0_k(k) );
+
+    if (k < keyword_k) {
+      // For keyword topics
+
+      // n_s1_kv
+      for (SparseMatrix<double,RowMajor>::InnerIterator it(n_s1_kv, k); it; ++it) {
+        loglik += mylgamma(beta_s1kv.coeffRef(k, it.index()) + it.value()) - mylgamma(beta_s1kv.coeffRef(k, it.index()));
+      }
+      loglik += mylgamma( Lbeta_sk(k) ) - mylgamma(Lbeta_sk(k) + n_s1_k(k) );
 
 
       // Normalization
