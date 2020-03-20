@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estimate document-topic distribution by strata — by_strata_DocTopic • keyATM</title>
+<title>Estimate document-topic distribution by strata (for covariate models) — by_strata_DocTopic • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -34,9 +34,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Estimate document-topic distribution by strata — by_strata_DocTopic" />
+<meta property="og:title" content="Estimate document-topic distribution by strata (for covariate models) — by_strata_DocTopic" />
 
-<meta property="og:description" content="Estimate document-topic distribution by strata" />
+<meta property="og:description" content="Estimate document-topic distribution by strata (for covariate models)" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -141,14 +141,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Estimate document-topic distribution by strata</h1>
+    <h1>Estimate document-topic distribution by strata (for covariate models)</h1>
     
     <div class="hidden name"><code>by_strata_DocTopic.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Estimate document-topic distribution by strata</p>
+    <p>Estimate document-topic distribution by strata (for covariate models)</p>
     
     </div>
 
@@ -164,27 +164,27 @@
     </tr>
     <tr>
       <th>by_name</th>
-      <td><p>the name of the variable</p></td>
+      <td><p>character. The name of the variable to use.</p></td>
     </tr>
     <tr>
       <th>by_values</th>
-      <td><p>the values of the variable specified in `by_name`</p></td>
+      <td><p>numeric. The values of the variable specified in `by_name`</p></td>
     </tr>
     <tr>
       <th>burn_in</th>
-      <td><p>burn_in period to use. If not specified, it is the half of samples.</p></td>
+      <td><p>integer. Burn_in period. If not specified, it is the half of samples. Default is <code>NULL</code>.</p></td>
     </tr>
     <tr>
       <th>parallel</th>
-      <td><p>parallelization for speeding up</p></td>
+      <td><p>logical. If <code>TRUE</code>, parallelization for speeding up. Default is <code>TRUE</code>.</p></td>
     </tr>
     <tr>
       <th>mc.cores</th>
-      <td><p>the number of cores to use</p></td>
+      <td><p>integer. The number of cores to use. Default is <code>NULL</code>.</p></td>
     </tr>
     <tr>
       <th>posterior_mean</th>
-      <td><p>the quantity of interest is the posterior mean</p></td>
+      <td><p>logical. If <code>TRUE</code>, the quantity of interest to estimate is the posterior mean. Default is <code>FALSE</code>.</p></td>
     </tr>
     </table>
     

@@ -172,7 +172,7 @@
     </tr>
     <tr>
       <th>model_settings</th>
-      <td><p>a list of model specific settings</p></td>
+      <td><p>a list of model specific settings (details are in the online documentation)</p></td>
     </tr>
     <tr>
       <th>priors</th>
@@ -180,7 +180,7 @@
     </tr>
     <tr>
       <th>options</th>
-      <td><p>a list of options</p></td>
+      <td><p>a list of options (details are in the documentation of <code><a href='keyATM.html'>keyATM()</a></code>)</p></td>
     </tr>
     <tr>
       <th>keep</th>
@@ -199,7 +199,7 @@
     <dt>topic_counts</dt><dd><p>number of tokens assigned to each topic</p></dd>
     <dt>word_counts</dt><dd><p>number of times each word type appears</p></dd>
     <dt>doc_lens</dt><dd><p>length of each document in tokens</p></dd>
-    <dt>vocab</dt><dd><p>words in the vocabulary</p></dd>
+    <dt>vocab</dt><dd><p>words in the vocabulary (a vector of unique words)</p></dd>
     <dt>priors</dt><dd><p>priors</p></dd>
     <dt>options</dt><dd><p>options</p></dd>
     <dt>keywords_raw</dt><dd><p><code>NULL</code> for LDA models</p></dd>
@@ -227,7 +227,7 @@
   <span class='co'># Weighted LDA Covariates</span>
   <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>weightedLDA</span>(
                      <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"covariates"</span>, <span class='kw'>number_of_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-                     <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov_matrix</span>)
+                     <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov</span>, <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~ <span class='no'>.</span>)
                     )
 
   <span class='co'># Weighted LDA Dynamic</span>

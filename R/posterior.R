@@ -1,4 +1,5 @@
-#' keyATM_fit() calls keyATM_output()
+#' \code{keyATM_fit()} calls \code{keyATM_output()}
+#' 
 #' 
 #' @keywords internal
 #' @import magrittr
@@ -30,7 +31,6 @@ keyATM_output <- function(model)
     info$tnames <- c(paste0("", 1:length(model$keywords)))
   }
 
-
   # theta (document-topic distribution)
   theta <- keyATM_output_theta(model, info)
 
@@ -50,7 +50,6 @@ keyATM_output <- function(model)
   topic_counts <- res$topic_counts
   word_counts <- res$word_counts
   
-
   # alpha_iter
   if (model$model %in% c("hmm", "ldahmm")) {
     values_iter$alpha_iter <- keyATM_output_alpha_iter_hmm(model, info)
@@ -72,7 +71,7 @@ keyATM_output <- function(model)
   }
 
   # pi
-  if (model$model %in% c("base", "cov", "hmm", "label")){
+  if (model$model %in% c("base", "cov", "hmm", "label")) {
     pi_estimated <- keyATM_output_pi(model$Z, model$S, model$priors$gamma) 
   } else {
     pi_estimated <- NULL 
@@ -153,7 +152,7 @@ keyATM_output_theta <- function(model, info)
   if (model$model %in% c("cov", "ldacov")) {
     Alpha <- exp(model$model_settings$covariates_data_use %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
 
-    posterior_z <- function(docid){
+    posterior_z <- function(docid) {
       zvec <- model$Z[[docid]]
       alpha <- Alpha[docid, ]
       tt <- table(factor(zvec, levels = 1:(info$allK) - 1L))
@@ -169,7 +168,7 @@ keyATM_output_theta <- function(model, info)
       alpha <- model$priors$alpha  
     }
 
-    posterior_z <- function(zvec){
+    posterior_z <- function(zvec) {
       tt <- table(factor(zvec, levels = 1:(info$allK) - 1L))
       (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
     }  
@@ -183,8 +182,8 @@ keyATM_output_theta <- function(model, info)
                      nrow = length(model$Z), ncol = info$allK)
 
     Z_table <- do.call(dplyr::bind_rows, 
-                       lapply(model$Z, 
-                        function(zvec){table(factor(zvec, levels = 1:(info$allK) - 1L))}))
+                       lapply(model$Z,
+                        function(zvec) {table(factor(zvec, levels = 1:(info$allK) - 1L))}))
 
     tt <- Z_table + alphas
     theta <- tt / Matrix::rowSums(tt)
@@ -288,7 +287,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
     }
 
     # Deal with NAs
-    phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
+    phi <- apply(phi, 2, function(x) {ifelse(is.na(x), 0, x)})
 
     if (!is.matrix(phi)) {
       phi <- t(phi) 
@@ -315,7 +314,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
         phi[k, ] <- phi[k, ] + prior[k, ] 
       }
       phi <- phi / Matrix::rowSums(phi)
-      phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
+      phi <- apply(phi, 2, function(x) {ifelse(is.na(x), 0, x)})
 
       # keyword topic-word dist should have the same dimension as no-keyword dist
       # for marginilization, but no-keyword elements are 0
@@ -359,7 +358,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
   names(blank_vec) <- vocab_sorted
 
   phi <- sapply(1:length(tnames),
-                function(k){
+                function(k) {
                   regular <- blank_vec
                   regular[colnames(phi0)] <- phi0[k, ]
 
@@ -407,7 +406,7 @@ keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tna
   
   res_tibble %>%
     tidyr::spread(key = Word, value = Count) -> phi
-  phi <- apply(phi, 2, function(x){ifelse(is.na(x), 0, x)})
+  phi <- apply(phi, 2, function(x) {ifelse(is.na(x), 0, x)})
 
   phi <- phi[, 2:ncol(phi)]
   topic_counts <- Matrix::rowSums(phi)
@@ -435,7 +434,7 @@ keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tna
 keyATM_output_theta_iter <- function(model, info)
 {
   if (model$model %in% c("cov", "ldacov")) {
-    posterior_theta <- function(x){
+    posterior_theta <- function(x) {
       Z_table <- model$stored_values$Z_tables[[x]]
       lambda <- model$stored_values$Lambda_iter[[x]]
       Alpha <- exp(model$model_settings$covariates_data_use %*% t(lambda))
@@ -446,7 +445,7 @@ keyATM_output_theta_iter <- function(model, info)
       return(tt / Matrix::rowSums(tt))
     }
   } else if (model$model %in% c("hmm", "ldahmm")) {
-    posterior_theta <- function(x){
+    posterior_theta <- function(x) {
       Z_table <- model$stored_values$Z_tables[[x]]
       R <- model$stored_values$R_iter[[x]] + 1L  # adjust index for R
       R <- R[model$model_settings$time_index]  # retrieve doc level state info
@@ -459,7 +458,7 @@ keyATM_output_theta_iter <- function(model, info)
       return(theta)
     }
   } else {
-    posterior_theta <- function(x){
+    posterior_theta <- function(x) {
       Z_table <- model$stored_values$Z_tables[[x]]
       alpha <- model$stored_values$alpha_iter[[x]]
 
@@ -497,7 +496,7 @@ keyATM_output_alpha_iter_hmm <- function(model, info)
 {
   topics <- paste0(1:(info$allK))
   model$stored_values$alpha_iter %>%
-    purrr::imap_dfr(., function(x, i){
+    purrr::imap_dfr(., function(x, i) {
                           x %>%
                             tibble::as_tibble(.,
                                               .name_repair = ~topics) %>%
@@ -531,7 +530,7 @@ keyATM_output_rescale_Lambda <- function(model, info)
 
   # Get rescaled Lambda
   Lambda <- lapply(model$stored_values$Lambda_iter,
-                   function(L_s){
+                   function(L_s) {
                      y <- Matrix::tcrossprod(standardized_data, L_s)  # x %*% t(y)
                      L <- Matrix::solve(Matrix::crossprod(original_data),  # t(x) %*% x
                                         Matrix::crossprod(original_data, y)  # t(x) %*% y
@@ -584,7 +583,8 @@ save.keyATM_output <- function(x, file = stop("'file' must be specified"))
   saveRDS(x, file = file)
 }
 
-
+#' Show a diagnosis plot of log-likelihood and perplexity
+#'
 #' @noRd
 #' @export
 plot.keyATM_output <- function(x, ...)
@@ -600,13 +600,12 @@ plot.keyATM_output <- function(x, ...)
 #' are labeled with the name of that category.
 #'
 #' @param x the output (see \code{keyATM()} and \code{by_strata_TopicWord()})
-#' @param n How many terms to show. Default: NULL, which shows all
-#' @param measure How to sort the terms: 'probability' (default) or 'lift'
-#' @param show_keyword Mark keywords. (default: TRUE)
+#' @param n integer. The number terms to visualize. Default is NULL, which shows all terms.
+#' @param measure character. The way to sort the terms: 'probability' (default) or 'lift'.
+#' @param show_keyword logical. If \code{TRUE}, mark keywords. Default is \code{TRUE}.
 #'
 #' @return An n x k table of the top n words in each topic
 #' @export
-#'
 top_words <- function(x, n = 10, measure = c("probability", "lift"),
                       show_keyword = TRUE)
 {
@@ -622,7 +621,7 @@ top_words.strata_topicword <- function(x, n = 10, measure = c("probability", "li
 
   measure <- match.arg(measure)
   top_words <- lapply(x$phi,  # list of phis
-                      function(obj){
+                      function(obj) {
                        top_words_calc(
                          n = n, measure = measure, show_keyword = show_keyword,
                          theta = x$theta, phi = obj$phi,
@@ -659,12 +658,12 @@ top_words_calc <- function(n, measure, show_keyword,
   if (is.null(n))
     n <- nrow(theta)
   if (measure == "probability") {
-     measuref <- function(xrow){
+     measuref <- function(xrow) {
        colnames(phi)[order(xrow, decreasing = TRUE)[1:n]]
      }
   } else if (measure == "lift") {
      wfreq <- word_counts / sum(word_counts)
-     measuref <- function(xrow){
+     measuref <- function(xrow) {
        colnames(phi)[order(xrow / wfreq, decreasing = TRUE)[1:n]]
      }
   }
@@ -690,7 +689,7 @@ top_words_calc <- function(n, measure, show_keyword,
 #' Show the top topics for each document
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param n How many topics to show. Default: 2
+#' @param n integer. The number of topics to show. Default is 2.
 #'
 #' @return An n x k table of the top n topics in each document
 #' @import magrittr
@@ -704,7 +703,7 @@ top_topics <- function(x, n = 2)
   if (n > ncol(x$theta))
     n <- ncol(x$theta)
 
-  measuref <- function(xrow){
+  measuref <- function(xrow) {
     colnames(x$theta)[order(xrow, decreasing = TRUE)[1:n]]
   }
 
@@ -728,7 +727,7 @@ top_docs <- function(x, n = 10)
   if (is.null(n))
     n <- nrow(x$theta)
 
-  measuref <- function(xcol){
+  measuref <- function(xcol) {
     order(xcol, decreasing = TRUE)[1:n]
   }
   
@@ -741,7 +740,7 @@ top_docs <- function(x, n = 10)
 #' Estimate subsetted topic-word distribution
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param keyATM_docs (see \code{keyATM_read()})
+#' @param keyATM_docs an object generated by \code{keyATM_read()} (see \code{keyATM_read()})
 #' @param by a vector whose length is the number of documents
 #'
 #' @return strata_topicword object (a list)
@@ -775,7 +774,7 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 
   # Get phi for each
   obj <- lapply(unique_val,
-                function(val){
+                function(val) {
                   doc_index <- which(by == val) 
                   all_words <- unlist(keyATM_docs[doc_index], use.names = F)
                   all_topics <- as.integer(unlist(x$kept_values$Z[doc_index]), use.names = F)
@@ -799,15 +798,15 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 }
 
 
-#' Estimate document-topic distribution by strata 
+#' Estimate document-topic distribution by strata (for covariate models)
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param by_name the name of the variable
-#' @param by_values the values of the variable specified in `by_name`
-#' @param burn_in burn_in period to use. If not specified, it is the half of samples.
-#' @param parallel parallelization for speeding up
-#' @param mc.cores the number of cores to use
-#' @param posterior_mean the quantity of interest is the posterior mean
+#' @param by_name character. The name of the variable to use.
+#' @param by_values numeric. The values of the variable specified in `by_name`
+#' @param burn_in integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.
+#' @param parallel logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}.
+#' @param mc.cores integer. The number of cores to use. Default is \code{NULL}.
+#' @param posterior_mean logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{FALSE}.
 #'
 #' @return strata_topicword object (a list)
 #' @import dplyr
@@ -829,7 +828,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
   
   # Get info for parallelization
   if (parallel) {
-    if (is.null(mc.cores)){
+    if (is.null(mc.cores)) {
       num_core <- parallel::detectCores(all.tests = FALSE, logical = T) - 2L
     } else {
       num_core <- mc.cores 
@@ -848,7 +847,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
 
   if (posterior_mean) {
     res <- lapply(1:length(by_values),
-                  function(i){
+                  function(i) {
                     value <- by_values[i]
                     new_data <- x$kept_values$model_settings$covariates_data_use
                     new_data[, by_name] <- value
@@ -856,7 +855,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
                     # Draw theta
                     obj <- do.call(dplyr::bind_rows,
                                    parallel::mclapply(1:length(use_index),
-                                                      function(s){
+                                                      function(s) {
                                                         Alpha <- exp(Matrix::tcrossprod(
                                                                        new_data,
                                                                        Lambda_iter[[use_index[s]]]
@@ -876,7 +875,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
                   })  
   } else { 
     res <- lapply(1:length(by_values),
-                  function(i){
+                  function(i) {
                     value <- by_values[i] 
                     new_data <- x$kept_values$model_settings$covariates_data_use
                     new_data[, by_name] <- value
@@ -884,7 +883,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
                     # Draw theta
                     obj <- do.call(dplyr::bind_rows,
                                    parallel::mclapply(1:length(use_index),
-                                                      function(s){
+                                                      function(s) {
                                                         Alpha <- exp(Matrix::tcrossprod(
                                                                        new_data,
                                                                        Lambda_iter[[use_index[s]]]
@@ -919,7 +918,7 @@ summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), .
 {
   x <- object
   tables <- lapply(1:length(x$by_values),
-                  function(index){
+                  function(index) {
                      theta <- x$theta[[index]]
                      theta_ <- theta[, 1:(ncol(theta)-2)]
                      q <- as.data.frame(apply(theta_, 2, stats::quantile, quantile_vec))

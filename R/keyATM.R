@@ -27,7 +27,6 @@
 #'            \item \emph{P}: For the dynamic model. The state transition probability.
 #'      }
 #' }
-#'
 #' @param keep a vector of the names of elements you want to keep in output
 #' 
 #' @return A keyATM_output object containing:
@@ -42,14 +41,14 @@
 #'     \item{topic_counts}{number of tokens assigned to each topic}
 #'     \item{word_counts}{number of times each word type appears}
 #'     \item{doc_lens}{length of each document in tokens}
-#'     \item{vocab}{words in the vocabulary}
+#'     \item{vocab}{words in the vocabulary (a vector of unique words)}
 #'     \item{priors}{priors}
 #'     \item{options}{options}
 #'     \item{keywords_raw}{specified keywords}
 #'     \item{model_fit}{perplexity and log-likelihood}
 #'     \item{pi}{estimated pi for the last iteration}
 #'     \item{values_iter}{values stored during iterations}
-#'     \item{kept_values}{outputs you specified to store}
+#'     \item{kept_values}{outputs you specified to store in \code{keep} option}
 #'   }
 #'
 #' @seealso \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
@@ -143,13 +142,13 @@ check_arg_keep <- function(obj, model)
 #'
 #' Run weighted LDA models.
 #'
-#'
+#' 
 #' @param docs texts read via \code{keyATM_read()}
 #' @param model Weighted LDA model: "base", "covariates", and "dynamic"
 #' @param number_of_topics the number of regular topics
-#' @param model_settings a list of model specific settings
+#' @param model_settings a list of model specific settings (details are in the online documentation)
 #' @param priors a list of priors of parameters
-#' @param options a list of options
+#' @param options a list of options (details are in the documentation of \code{keyATM()})
 #' @param keep a vector of the names of elements you want to keep in output
 #'
 #' @return A keyATM_output object containing:
@@ -162,7 +161,7 @@ check_arg_keep <- function(obj, model)
 #'     \item{topic_counts}{number of tokens assigned to each topic}
 #'     \item{word_counts}{number of times each word type appears}
 #'     \item{doc_lens}{length of each document in tokens}
-#'     \item{vocab}{words in the vocabulary}
+#'     \item{vocab}{words in the vocabulary (a vector of unique words)}
 #'     \item{priors}{priors}
 #'     \item{options}{options}
 #'     \item{keywords_raw}{\code{NULL} for LDA models}
@@ -185,7 +184,7 @@ check_arg_keep <- function(obj, model)
 #'   # Weighted LDA Covariates
 #'   out <- weightedLDA(
 #'                      keyATM_docs, model = "covariates", number_of_topics = 5,
-#'                      model_settings(covariates_data = cov_matrix)
+#'                      model_settings(covariates_data = cov, covariates_formula = ~ .)
 #'                     )                   
 #'
 #'   # Weighted LDA Dynamic
@@ -228,8 +227,8 @@ weightedLDA <- function(docs, model, number_of_topics,
   if (length(keep) != 0) {
     kept_values <- list()
     use_elements <- keep[keep %in% names(fitted)]
-    for(i in 1:length(use_elements)){
-      kept_values[use_elements[i]]  <- fitted[use_elements[i]]
+    for(i in 1:length(use_elements)) {
+      kept_values[use_elements[i]] <- fitted[use_elements[i]]
     }
     out$kept_values <- kept_values
   }
