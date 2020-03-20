@@ -13,11 +13,8 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/keyATM/keyATM&style=flat)](https://mergify.io)
 <!-- badges: end -->
 
+# About
+An R package for Keyword Assisted Topic Models, created by [Shusei Eshima](https://shusei-e.github.io), [Tomoya Sasaki](https://polisci.mit.edu/people/tomoya-sasaki), and [Kosuke Imai](https://imai.fas.harvard.edu/).
+
 # Website
 Please visit [our website](https://keyatm.github.io/keyATM/) for a complete reference.
-
-# Installation
-To install **keyATM** from GitHub, please use `devtools`.
-```
-devtools::install_github("keyATM/keyATM")
-```
