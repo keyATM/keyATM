@@ -220,17 +220,24 @@ void keyATMmeta::initialize_common()
   z_prob_vec = VectorXd::Zero(num_topics);
 
   // Use labels to initialize beta (prior for topic-word distributions)
-  if (model_settings.containsElementNamed("labels")) {
-    use_labels = 1;
-    initialize_betas();
-  } else {
-    use_labels = 0;
-    Vbeta = (double)num_vocab * beta;
+  // if (model_settings.containsElementNamed("labels")) {
+  //   use_labels = 1;
+  //   initialize_betas();  // do not use labels for beta for now
+  // } else {
+  //   use_labels = 0;
+  //   Vbeta = (double)num_vocab * beta;
+  //
+  //   Lbeta_sk = VectorXd::Zero(num_topics);
+  //   for (int k = 0; k < num_topics; k++) {
+  //     Lbeta_sk(k) = (double)keywords_num[k] * beta_s; 
+  //   }
+  // }
+  use_labels = 0;
+  Vbeta = (double)num_vocab * beta;
 
-    Lbeta_sk = VectorXd::Zero(num_topics);
-    for (int k = 0; k < num_topics; k++) {
-      Lbeta_sk(k) = (double)keywords_num[k] * beta_s; 
-    }
+  Lbeta_sk = VectorXd::Zero(num_topics);
+  for (int k = 0; k < num_topics; k++) {
+    Lbeta_sk(k) = (double)keywords_num[k] * beta_s;
   }
   
 }

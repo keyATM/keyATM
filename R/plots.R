@@ -16,14 +16,16 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
 
+  if (modelname %in% c("lda", "ldacov", "ldahmm")) {
+    stop(paste0("This is not a model with keywords.")) 
+  }
+
   if (!"alpha_iter" %in% names(x$values_iter)) {
     stop("`alpha` is not stored. Please check the settings of the model.")  
   }
 
   if (is.null(show_topic)) {
     show_topic <- 1:x$keyword_k
-  } else if (sum(!show_topic %in% 1:x$keyword_k) != 0) {
-    stop("`plot_pi` only visualize keyword topics.") 
   }
 
   if (!is.numeric(start) | length(start) != 1) {
@@ -122,7 +124,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
   modelname <- extract_full_model_name(x)
 
   if (modelname %in% c("lda", "ldacov", "ldahmm")) {
-    stop(paste0("`", x$model, "` is not a model with keywords.")) 
+    stop(paste0("This is not a model with keywords.")) 
   }
 
   if (is.null(show_topic)) {

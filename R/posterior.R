@@ -259,7 +259,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
     }
   }
 
-  get_phi <- function(res_tibble, switch_val)
+  get_phi <- function(res_tibble, switch_val, model)
   {
     if (switch_val == 0) {
       # Use no-keyword topic-word dist
@@ -348,10 +348,10 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
   }
 
   # Regular
-  phi0 <- get_phi(res_tibble, switch_val = 0)
+  phi0 <- get_phi(res_tibble, switch_val = 0, model)
 
   # Keyword
-  phi1 <- get_phi(res_tibble, switch_val = 1)
+  phi1 <- get_phi(res_tibble, switch_val = 1, model)
 
   # Marginal out switch
   blank_vec <- rep(0, length(vocab))
@@ -786,7 +786,7 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 
                   phi_obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, pi_estimated,
                                                         x$keywords_raw,
-                                                        vocab, x$priors, tnames)
+                                                        vocab, x$priors, tnames, model = x)
                 } 
                )
   names(obj) <- unique_val
