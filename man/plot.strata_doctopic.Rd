@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot.strata_doctopic}
 \alias{plot.strata_doctopic}
-\title{Plot document-topic distribution by strata}
+\title{Plot document-topic distribution by strata (for covariate models)}
 \usage{
 \method{plot}{strata_doctopic}(x, topics = NULL, quantile_vec = c(0.05,
   0.5, 0.95), ...)
@@ -10,9 +10,9 @@
 \arguments{
 \item{x}{a strata_doctopic object (see \code{by_strata_DocTopic()})}
 
-\item{topics}{topics to show}
+\item{topics}{a vector or an integer. Indicate topics to visualize.}
 
-\item{quantile_vec}{quantiles to show}
+\item{quantile_vec}{a numeric. Quantiles to visualize}
 
 \item{...}{additional arguments not used}
 }
@@ -20,5 +20,5 @@
 ggplot2 object
 }
 \description{
-Plot document-topic distribution by strata
+Plot document-topic distribution by strata (for covariate models)
 }

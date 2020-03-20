@@ -1,9 +1,10 @@
 #' Show a diagnosis plot of alpha
 #'
+#' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param start slice iteration
-#' @param show_topic a vector to specify topic indexes to show
-#' @param scale a parameter to control the scale of y-axis: 'free' adjusts y-axis for parameters
+#' @param start integer. The start of slice iteration. Default is 0.
+#' @param show_topic a vector to specify topic indexes to show. Default is \code{NULL}.
+#' @param scale character. Control the scale of y-axis (the parameter in \code{facet_wrap()}): 'free' adjusts y-axis for parameters. Default is "fixed". 
 #'
 #' @return ggplot2 object
 #' @import ggplot2
@@ -59,14 +60,16 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))  
   }
+
   return(p)
 }
 
 
 #' Show a diagnosis plot of log-likelihood and perplexity
 #'
+#' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param start slice iteration
+#' @param start integer. The starting value of iteration to use in plot. Default is 1.
 #'
 #' @return ggplot2 object
 #' @import ggplot2
@@ -104,9 +107,10 @@ plot_modelfit <- function(x, start = 1)
 
 #' Show a diagnosis plot of pi
 #'
+#' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param show_topic A vector to indicate topics to visualize
-#' @param start slice iteration
+#' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
+#' @param start integer. The starting value of iteration to use in the plot. Default is 0.
 #'
 #' @return ggplot2 object
 #' @import ggplot2
@@ -175,11 +179,12 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 }
 
 
-#' Plot document-topic distribution by strata 
+#' Plot document-topic distribution by strata (for covariate models)
+#' 
 #'
 #' @param x a strata_doctopic object (see \code{by_strata_DocTopic()})
-#' @param topics topics to show
-#' @param quantile_vec quantiles to show
+#' @param topics a vector or an integer. Indicate topics to visualize.
+#' @param quantile_vec a numeric. Quantiles to visualize
 #' @param ... additional arguments not used
 #'
 #' @return ggplot2 object
@@ -200,7 +205,6 @@ plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0
               dplyr::filter(TopicId %in% topics)
 
   variables <- unique(tables$by)
-
 
   p <- ggplot(tables) +
         geom_linerange(aes(x = by,

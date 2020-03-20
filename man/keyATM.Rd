@@ -55,14 +55,14 @@ A keyATM_output object containing:
     \item{topic_counts}{number of tokens assigned to each topic}
     \item{word_counts}{number of times each word type appears}
     \item{doc_lens}{length of each document in tokens}
-    \item{vocab}{words in the vocabulary}
+    \item{vocab}{words in the vocabulary (a vector of unique words)}
     \item{priors}{priors}
     \item{options}{options}
     \item{keywords_raw}{specified keywords}
     \item{model_fit}{perplexity and log-likelihood}
     \item{pi}{estimated pi for the last iteration}
     \item{values_iter}{values stored during iterations}
-    \item{kept_values}{outputs you specified to store}
+    \item{kept_values}{outputs you specified to store in \code{keep} option}
   }
 }
 \description{

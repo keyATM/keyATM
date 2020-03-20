@@ -10,11 +10,11 @@ top_words(x, n = 10, measure = c("probability", "lift"),
 \arguments{
 \item{x}{the output (see \code{keyATM()} and \code{by_strata_TopicWord()})}
 
-\item{n}{How many terms to show. Default: NULL, which shows all}
+\item{n}{integer. The number terms to visualize. Default is NULL, which shows all terms.}
 
-\item{measure}{How to sort the terms: 'probability' (default) or 'lift'}
+\item{measure}{character. The way to sort the terms: 'probability' (default) or 'lift'.}
 
-\item{show_keyword}{Mark keywords. (default: TRUE)}
+\item{show_keyword}{logical. If \code{TRUE}, mark keywords. Default is \code{TRUE}.}
 }
 \value{
 An n x k table of the top n words in each topic

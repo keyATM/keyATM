@@ -2,7 +2,7 @@
 % Please edit documentation in R/posterior.R
 \name{by_strata_DocTopic}
 \alias{by_strata_DocTopic}
-\title{Estimate document-topic distribution by strata}
+\title{Estimate document-topic distribution by strata (for covariate models)}
 \usage{
 by_strata_DocTopic(x, by_name, by_values, burn_in = NULL,
   parallel = TRUE, mc.cores = NULL, posterior_mean = FALSE)
@@ -10,21 +10,21 @@ by_strata_DocTopic(x, by_name, by_values, burn_in = NULL,
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}
 
-\item{by_name}{the name of the variable}
+\item{by_name}{character. The name of the variable to use.}
 
-\item{by_values}{the values of the variable specified in `by_name`}
+\item{by_values}{numeric. The values of the variable specified in `by_name`}
 
-\item{burn_in}{burn_in period to use. If not specified, it is the half of samples.}
+\item{burn_in}{integer. Burn_in period. If not specified, it is the half of samples. Default is \code{NULL}.}
 
-\item{parallel}{parallelization for speeding up}
+\item{parallel}{logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}.}
 
-\item{mc.cores}{the number of cores to use}
+\item{mc.cores}{integer. The number of cores to use. Default is \code{NULL}.}
 
-\item{posterior_mean}{the quantity of interest is the posterior mean}
+\item{posterior_mean}{logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{FALSE}.}
 }
 \value{
 strata_topicword object (a list)
 }
 \description{
-Estimate document-topic distribution by strata
+Estimate document-topic distribution by strata (for covariate models)
 }

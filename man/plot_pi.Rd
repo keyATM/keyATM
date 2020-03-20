@@ -9,9 +9,9 @@ plot_pi(x, show_topic = NULL, start = 0)
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}
 
-\item{show_topic}{A vector to indicate topics to visualize}
+\item{show_topic}{an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.}
 
-\item{start}{slice iteration}
+\item{start}{integer. The starting value of iteration to use in the plot. Default is 0.}
 }
 \value{
 ggplot2 object

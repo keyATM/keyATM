@@ -14,11 +14,11 @@ weightedLDA(docs, model, number_of_topics, model_settings = list(),
 
 \item{number_of_topics}{the number of regular topics}
 
-\item{model_settings}{a list of model specific settings}
+\item{model_settings}{a list of model specific settings (details are in the online documentation)}
 
 \item{priors}{a list of priors of parameters}
 
-\item{options}{a list of options}
+\item{options}{a list of options (details are in the documentation of \code{keyATM()})}
 
 \item{keep}{a vector of the names of elements you want to keep in output}
 }
@@ -33,7 +33,7 @@ A keyATM_output object containing:
     \item{topic_counts}{number of tokens assigned to each topic}
     \item{word_counts}{number of times each word type appears}
     \item{doc_lens}{length of each document in tokens}
-    \item{vocab}{words in the vocabulary}
+    \item{vocab}{words in the vocabulary (a vector of unique words)}
     \item{priors}{priors}
     \item{options}{options}
     \item{keywords_raw}{\code{NULL} for LDA models}
@@ -57,7 +57,7 @@ Run weighted LDA models.
   # Weighted LDA Covariates
   out <- weightedLDA(
                      keyATM_docs, model = "covariates", number_of_topics = 5,
-                     model_settings(covariates_data = cov_matrix)
+                     model_settings(covariates_data = cov, covariates_formula = ~ .)
                     )                   
 
   # Weighted LDA Dynamic
