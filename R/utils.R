@@ -106,3 +106,29 @@ rdirichlet <- function(alpha, n = 1) {
   sm <- x %*% rep(1,l)
   return(x / as.vector(sm))
 }
+
+
+myhashmap <- function(keys, values) {
+  mapped <- fastmap::fastmap(missing_default = NA)
+  invisible(lapply(1:length(keys), function(x) {mapped$set(keys[x], values[x])}))
+  return(mapped)
+}
+
+
+myhashmap_getvec <- function(mapped, keys) {
+  return(unlist(lapply(keys, function(x) {mapped$get(x)}), use.names = F, recursive = F))
+}
+
+
+myhashmap_keyint <- function(keys, values) {
+  mapped <- fastmap::fastmap(missing_default = NA)
+  keys <- as.character(keys)
+  invisible(lapply(1:length(keys), function(x) {mapped$set(keys[x], values[x])}))
+  return(mapped)
+}
+
+
+myhashmap_getvec_keyint <- function(mapped, keys) {
+  keys <- as.character(keys)
+  return(unlist(lapply(keys, function(x) {mapped$get(x)}), use.names = F, recursive = F))
+}
