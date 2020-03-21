@@ -52,7 +52,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
           theme(plot.title = element_text(hjust = 0.5))
   } else if (modelname %in% c("hmm", "ldahmm")) {
     temp %>% dplyr::rename_at(vars(-.data$Iteration, -.data$State), ~tnames) %>%
-      tidyr::pivot_longer(-c(Iteration, State), names_to = "Topic", values_to = "alpha") -> res_alpha
+      tidyr::pivot_longer(-c("Iteration", "State"), names_to = "Topic", values_to = "alpha") -> res_alpha
     res_alpha$State <- factor(res_alpha$State, levels = 1:max(res_alpha$State))
 
     p <- ggplot(res_alpha, aes(x = .data$Iteration, y = .data$alpha, group = .data$State, colour = .data$State)) +
