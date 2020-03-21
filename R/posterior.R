@@ -63,11 +63,11 @@ keyATM_output <- function(model)
   # model fit
   modelfit <- NULL
   if (length(model$model_fit) > 0) {
+    names(model$model_fit) <- 1:length(model$model_fit)
     model$model_fit %>%
-      purrr::set_names(1:length(.)) %>%
       dplyr::bind_rows() %>%
       t() %>%
-      tibble::as_tibble(., .name_repair = ~c("Iteration", "Log Likelihood", "Perplexity")) -> modelfit
+      tibble::as_tibble(.name_repair = ~c("Iteration", "Log Likelihood", "Perplexity")) -> modelfit
   }
 
   # pi
@@ -104,6 +104,7 @@ keyATM_output <- function(model)
 
 #' @noRd
 #' @import magrittr
+#' @importFrom rlang .data
 keyATM_output_pi <- function(model_Z, model_S, prior)
 {
   # p(p | S=s, n, a, b) \propto Be(a+s, b+(n-s))
@@ -113,10 +114,10 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
   data <- tibble::tibble(Z = unlist(model_Z, use.names = F),
                          S = unlist(model_S, use.names = F))
   data %>%
-    dplyr::mutate(Topic = Z+1L) %>%
-    dplyr::select(-starts_with("Z")) %>%
-    dplyr::group_by(Topic) %>%
-    dplyr::summarize(count = (dplyr::n()), sums = sum(S)) %>%
+    dplyr::mutate(Topic = .data$Z+1L) %>%
+    dplyr::select(-dplyr::starts_with("Z")) %>%
+    dplyr::group_by(.data$Topic) %>%
+    dplyr::summarize(count = (dplyr::n()), sums = sum(.data$S)) %>%
     dplyr::ungroup() -> temp
 
   # Check used topics
@@ -125,8 +126,7 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
     missing <- setdiff(1:nrow(prior), temp$Topic)
     temp %>%
       tibble::add_row(Topic = missing, count = 0, sums = 0) %>%
-
-      dplyr::arrange(Topic) -> temp
+      dplyr::arrange(.data$Topic) -> temp
   }
 
   # Get p
@@ -137,7 +137,7 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
   p <- (a + s) / (a + b + n) 
   temp %>%
     dplyr::mutate(Proportion = p * 100) %>%
-    dplyr::select(-sums) -> pi_estimated
+    dplyr::select(-.data$sums) -> pi_estimated
 
   return(pi_estimated)
 }
@@ -145,6 +145,7 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
 
 #' @noRd
 #' @import magrittr
+#' @importFrom rlang .data
 keyATM_output_theta <- function(model, info)
 {
 
@@ -152,14 +153,14 @@ keyATM_output_theta <- function(model, info)
   if (model$model %in% c("cov", "ldacov")) {
     Alpha <- exp(model$model_settings$covariates_data_use %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
 
-    posterior_z <- function(docid) {
+    posterior_z_cov <- function(docid) {
       zvec <- model$Z[[docid]]
       alpha <- Alpha[docid, ]
       tt <- table(factor(zvec, levels = 1:(info$allK) - 1L))
       (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
     }
 
-    theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z))
+    theta <- do.call(dplyr::bind_rows, lapply(1:length(model$Z), posterior_z_cov))
 
   } else if (model$model %in% c("base", "lda", "label")) {
     if (model$options$estimate_alpha) {
@@ -168,12 +169,12 @@ keyATM_output_theta <- function(model, info)
       alpha <- model$priors$alpha  
     }
 
-    posterior_z <- function(zvec) {
+    posterior_z_base <- function(zvec) {
       tt <- table(factor(zvec, levels = 1:(info$allK) - 1L))
       (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
     }  
 
-    theta <- do.call(dplyr::bind_rows, lapply(model$Z, posterior_z))
+    theta <- do.call(dplyr::bind_rows, lapply(model$Z, posterior_z_base))
 
   } else if (model$model %in% c("hmm", "ldahmm")) {
     S <- model$stored_values$S_iter[[length(model$stored_values$S_iter)]] + 1L  # adjust index for R
@@ -224,6 +225,7 @@ keyATM_output_phi <- function(model, info)
 
 #' @noRd
 #' @import magrittr
+#' @importFrom rlang .data
 keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimated,
                                        keywords_raw, vocab, priors, tnames, model)
 {
@@ -233,7 +235,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
                         Switch = all_s
                        )
 
-  prob1 <- pi_estimated %>% dplyr::pull(Proportion) / 100
+  prob1 <- pi_estimated %>% dplyr::pull(.data$Proportion) / 100
   prob0 <- 1 - prob1 
   vocab_sorted <- sort(vocab)
 
@@ -270,12 +272,12 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
     }
 
     temp <- res_tibble %>%
-              dplyr::filter(Switch == switch_val) %>%
-              dplyr::group_by(Topic, Word) %>%
+              dplyr::filter(.data$Switch == switch_val) %>%
+              dplyr::group_by(.data$Topic, .data$Word) %>%
               dplyr::summarize(Count = dplyr::n())  
   
     temp %>%
-      tidyr::spread(key = Word, value = Count) -> phi
+      tidyr::spread(key = "Word", value = "Count") -> phi
 
     # Check unused topic
     if (nrow(phi) != length(tnames)) {
@@ -283,7 +285,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
       phi %>%
         dplyr::ungroup() %>%
         dplyr::add_row(Topic = missing) %>%
-        dplyr::arrange(Topic) -> phi
+        dplyr::arrange(.data$Topic) -> phi
     }
 
     # Deal with NAs
@@ -372,15 +374,15 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
   rownames(phi) <- tnames
 
   topic_counts <- res_tibble %>%
-                    dplyr::group_by(Topic) %>%
+                    dplyr::group_by(.data$Topic) %>%
                     dplyr::summarize(Count = dplyr::n()) %>%
-                    dplyr::pull(Count)
+                    dplyr::pull(.data$Count)
 
   word_counts <- res_tibble %>%
-                    dplyr::group_by(Word) %>%
+                    dplyr::group_by(.data$Word) %>%
                     dplyr::summarize(Count = dplyr::n()) %>%
-                    dplyr::arrange(match(Word, vocab)) %>%  # same order as vocab
-                    dplyr::pull(Count)
+                    dplyr::arrange(match(.data$Word, vocab)) %>%  # same order as vocab
+                    dplyr::pull(.data$Count)
 
   if (ncol(phi) == length(vocab)) {
     phi <- phi[, vocab]
@@ -395,17 +397,18 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
 
 #' @noRd
 #' @import magrittr
+#' @importFrom rlang .data
 keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tnames)
 {
   res_tibble <- data.frame(
                         Word = all_words,
                         Topic = all_topics
                        ) %>%
-                dplyr::group_by(Topic, Word) %>%
+                dplyr::group_by(.data$Topic, .data$Word) %>%
                 dplyr::summarize(Count = dplyr::n())
   
   res_tibble %>%
-    tidyr::spread(key = Word, value = Count) -> phi
+    tidyr::spread(key = "Word", value = "Count") -> phi
   phi <- apply(phi, 2, function(x) {ifelse(is.na(x), 0, x)})
 
   phi <- phi[, 2:ncol(phi)]
@@ -475,36 +478,37 @@ keyATM_output_theta_iter <- function(model, info)
 
 #' @noRd
 #' @import magrittr
+#' @importFrom rlang .data
 keyATM_output_alpha_iter_base <- function(model, info)
 {
   topics <- paste0(1:(info$allK))
+  names(model$stored_values$alpha_iter) <- 1:length(model$stored_values$alpha_iter)
   model$stored_values$alpha_iter %>%
-    purrr::set_names(1:length(.))   %>%
     dplyr::bind_rows() %>%
     t() %>%
-    tibble::as_tibble(., .name_repair = ~topics) %>%
+    tibble::as_tibble(.name_repair = ~topics) %>%
     dplyr::mutate(Iteration = info$used_iter) %>%
-    tidyr::gather(key = Topic, value = alpha, -Iteration) %>%
-    dplyr::mutate(Topic = as.integer(Topic)) -> alpha_iter
+    tidyr::gather(key = "Topic", value = "alpha", -"Iteration") %>%
+    dplyr::mutate(Topic = as.integer(.data$Topic)) -> alpha_iter
   return(alpha_iter)
 }
 
 
 #' @noRd
 #' @import magrittr
+#' @importFrom rlang .data
 keyATM_output_alpha_iter_hmm <- function(model, info)
 {
   topics <- paste0(1:(info$allK))
   model$stored_values$alpha_iter %>%
-    purrr::imap_dfr(., function(x, i) {
-                          x %>%
-                            tibble::as_tibble(.,
-                                              .name_repair = ~topics) %>%
-                            dplyr::mutate(State = 1:(dplyr::n()),
-                                          Iteration = info$used_iter[i]) %>%
-                            tidyr::gather(key = Topic, value = alpha, -State, -Iteration)
-                        }) %>%
-     dplyr::mutate(Topic = as.integer(Topic)) -> alpha_iter
+    purrr::imap_dfr(function(x, i) {
+                       x %>%
+                         tibble::as_tibble(.name_repair = ~topics) %>%
+                         dplyr::mutate(State = 1:(dplyr::n()),
+                                       Iteration = info$used_iter[i]) %>%
+                         tidyr::gather(key = "Topic", value = "alpha", -"State", -"Iteration")
+                     }) %>%
+     dplyr::mutate(Topic = as.integer(.data$Topic)) -> alpha_iter
   return(alpha_iter)
 }
 
@@ -708,7 +712,7 @@ top_topics <- function(x, n = 2)
   }
 
   res <- t(apply(x$theta, 1, measuref)) %>%
-          tibble::as_tibble(., .name_repair = ~paste0("Rank", 1:n))
+          tibble::as_tibble(.name_repair = ~paste0("Rank", 1:n))
   return(res)
 }
 
@@ -732,7 +736,7 @@ top_docs <- function(x, n = 10)
   }
   
   res <- apply(x$theta, 2, measuref) %>%
-          tibble::as_tibble(.)
+          tibble::as_tibble()
   return(res) 
 }
 
@@ -744,7 +748,6 @@ top_docs <- function(x, n = 10)
 #' @param by a vector whose length is the number of documents
 #'
 #' @return strata_topicword object (a list)
-#' @import dplyr
 #' @import magrittr
 #' @export
 by_strata_TopicWord <- function(x, keyATM_docs, by)
@@ -809,7 +812,6 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 #' @param posterior_mean logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{FALSE}.
 #'
 #' @return strata_topicword object (a list)
-#' @import dplyr
 #' @import magrittr
 #' @export
 by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
@@ -913,6 +915,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
 
 
 #' @noRd
+#' @importFrom rlang .data
 #' @export
 summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), ...)
 {
@@ -924,8 +927,8 @@ summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), .
                      q <- as.data.frame(apply(theta_, 2, stats::quantile, quantile_vec))
                      q$Percentile <- c("Lower", "Point", "Upper")
                      q %>% 
-                       tidyr::gather(key = Topic, value = Value, -Percentile) %>%
-                       tidyr::spread(key = Percentile, value = Value) %>%
+                       tidyr::gather(key = "Topic", value = "Value", -"Percentile") %>%
+                       tidyr::spread(key = "Percentile", value = "Value") %>%
                        dplyr::mutate(TopicId = 1:(dplyr::n()),
                                      by = as.character(x$by_values[index])) %>%
                        tibble::as_tibble() -> temp

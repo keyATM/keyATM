@@ -25,6 +25,7 @@
 #' }
 #'
 #' @import magrittr
+#' @importFrom rlang .data
 #' @export
 keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
 {
@@ -78,10 +79,10 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
                                                            collapse = "\n") 
                                                  })))
     }
-    text_df <- text_df %>% dplyr::mutate(text_split = stringr::str_split(text, pattern = " "))
+    text_df <- text_df %>% dplyr::mutate(text_split = stringr::str_split(.data$text, pattern = " "))
 
     # extract splitted text and create a list
-    W_raw <- text_df %>% dplyr::pull(text_split)
+    W_raw <- text_df %>% dplyr::pull(.data$text_split)
   }
 
   
@@ -121,7 +122,7 @@ summary.keyATM_docs <- function(object, ...)
               "\n  Avg: ", round(mean(doc_len), 3),
               "\n  Min: ", round(min(doc_len), 3),
               "\n  Max: ", round(max(doc_len), 3),
-              "\n   SD: ", round(sd(doc_len), 3),
+              "\n   SD: ", round(stats::sd(doc_len), 3),
               "\nNumber of unique words: ", length(unique(unlist(object, use.names = F, recursive = F))),
               "\n"
              )  
@@ -170,6 +171,7 @@ summary.keyATM_docs <- function(object, ...)
 #'
 #' @import magrittr
 #' @import ggplot2
+#' @importFrom rlang .data
 #' @export
 visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
 {
@@ -188,12 +190,12 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
   totalwords <- nrow(unnested_data)
 
   unnested_data %>%
-    dplyr::rename(Word = text_split) %>%
-    dplyr::group_by(Word) %>%
+    dplyr::rename(Word = .data$text_split) %>%
+    dplyr::group_by(.data$Word) %>%
     dplyr::summarize(WordCount = dplyr::n()) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(`Proportion(%)` = round(WordCount / totalwords * 100, 3)) %>%
-    dplyr::arrange(desc(WordCount)) %>%
+    dplyr::ungroup(.data) %>%
+    dplyr::mutate(`Proportion(%)` = round(.data$WordCount / totalwords * 100, 3)) %>%
+    dplyr::arrange(dplyr::desc(.data$WordCount)) %>%
     dplyr::mutate(Ranking = 1:(dplyr::n())) -> data
 
   keywords <- lapply(keywords, function(x) {unlist(strsplit(x," "))})
@@ -220,23 +222,23 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
   keywords_df$Topic <- factor(keywords_df$Topic, levels = unique(keywords_df$Topic))
 
   dplyr::right_join(data, keywords_df, by = "Word") %>%
-    dplyr::group_by(Topic) %>%
-    dplyr::arrange(desc(WordCount)) %>%
+    dplyr::group_by(.data$Topic) %>%
+    dplyr::arrange(dplyr::desc(.data$WordCount)) %>%
     dplyr::mutate(Ranking  =  1:(dplyr::n())) %>%
-    dplyr::arrange(Topic, Ranking) -> temp
+    dplyr::arrange(.data$Topic, .data$Ranking) -> temp
 
   # Visualize
   visualize_keywords <- 
-    ggplot(temp, aes(x = Ranking, y=`Proportion(%)`, colour = Topic)) +
+    ggplot(temp, aes(x = .data$Ranking, y = .data$`Proportion(%)`, colour = .data$Topic)) +
       geom_line() +
       geom_point() +
-      ggrepel::geom_label_repel(aes(label = Word), size = label_size,
+      ggrepel::geom_label_repel(aes(label = .data$Word), size = label_size,
                        box.padding = 0.20, label.padding = 0.12,
                        arrow = arrow(angle = 10, length = unit(0.10, "inches"),
                                    ends = "last", type = "closed"),
                        show.legend = F) +
       scale_x_continuous(breaks = 1:max_num_words) +
-      ylab("Proportion (%)") +
+      xlab("Ranking") + ylab("Proportion (%)") +
       theme_bw()
 
   keyATM_viz <- list(figure = visualize_keywords, values = temp, keywords = keywords)
@@ -710,7 +712,7 @@ check_arg_model_settings <- function(obj, model, info)
     if (max(obj$time_index) < obj$num_states)
       stop("`model_settings$num_states` should not exceed the maximum of `model_settings$time_index`.")
 
-    check <- unique(obj$time_index[2:length(obj$time_index)] - lag(obj$time_index)[2:length(obj$time_index)])
+    check <- unique(obj$time_index[2:length(obj$time_index)] - stats::lag(obj$time_index)[2:length(obj$time_index)])
     if (sum(!unique(check) %in% c(0,1)) != 0)
       stop("`model_settings$num_states` does not increment by 1.")
 

@@ -9,6 +9,7 @@
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import magrittr
+#' @importFrom rlang .data
 #' @export
 plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 {
@@ -34,31 +35,31 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 
   tnames <- c(names(x$keywords_raw))[show_topic]
   x$values_iter$alpha_iter %>%
-    dplyr::filter(Iteration >= start) %>%
-    dplyr::filter(Topic %in% (!!show_topic)) %>%
-    tidyr::pivot_wider(names_from = Topic, values_from = alpha) -> temp
+    dplyr::filter(.data$Iteration >= start) %>%
+    dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
+    tidyr::pivot_wider(names_from = "Topic", values_from = "alpha") -> temp
 
   if (modelname %in% c("base", "lda", "label")) {
     temp %>% dplyr::rename_at(vars(-"Iteration"), ~tnames) %>%
-      tidyr::pivot_longer(-Iteration, names_to = "Topic", values_to = "alpha") -> res_alpha
+      tidyr::pivot_longer(-"Iteration", names_to = "Topic", values_to = "alpha") -> res_alpha
 
-    p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = Topic)) +
+    p <- ggplot(res_alpha, aes(x = .data$Iteration, y = .data$alpha, group = .data$Topic)) +
           geom_line() +
           geom_point(size = 0.3) +
-          facet_wrap(~ Topic, ncol = 2, scales = scale) +
-          ylab("Value") +
+          facet_wrap(~ .data$Topic, ncol = 2, scales = scale) +
+          xlab("Iteration") + ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
   } else if (modelname %in% c("hmm", "ldahmm")) {
-    temp %>% dplyr::rename_at(vars(-"Iteration", -"State"), ~tnames) %>%
-      tidyr::pivot_longer(-c(Iteration, State), names_to = "Topic", values_to = "alpha") -> res_alpha
+    temp %>% dplyr::rename_at(vars(-.data$Iteration, -.data$State), ~tnames) %>%
+      tidyr::pivot_longer(-c("Iteration", "State"), names_to = "Topic", values_to = "alpha") -> res_alpha
     res_alpha$State <- factor(res_alpha$State, levels = 1:max(res_alpha$State))
 
-    p <- ggplot(res_alpha, aes(x = Iteration, y = alpha, group = State, colour = State)) +
+    p <- ggplot(res_alpha, aes(x = .data$Iteration, y = .data$alpha, group = .data$State, colour = .data$State)) +
           geom_line() +
           geom_point(size = 0.3) +
-          facet_wrap(~ Topic, ncol = 2, scales = scale) +
-          ylab("Value") +
+          facet_wrap(~ .data$Topic, ncol = 2, scales = scale) +
+          xlab("Iteration") + ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))  
   }
@@ -76,6 +77,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 #' @return ggplot2 object
 #' @import ggplot2
 #' @importFrom stats as.formula
+#' @importFrom rlang .data
 #' @export
 plot_modelfit <- function(x, start = 1)
 {
@@ -92,14 +94,13 @@ plot_modelfit <- function(x, start = 1)
     modelfit <- modelfit[ modelfit$Iteration >= start, ]
   }
 
-  modelfit <- tidyr::gather(modelfit, key = Measures, value = value, -Iteration)
+  modelfit <- tidyr::gather(modelfit, key = "Measures", value = "value", -"Iteration")
 
-  p <- ggplot(data = modelfit, aes_string(x='Iteration', y='value',
-                                          group='Measures', color='Measures')) +
+  p <- ggplot(data = modelfit, aes(x = .data$Iteration, y = .data$value, group = .data$Measures, color = .data$Measures)) +
      geom_line(show.legend = F) +
      geom_point(size = 0.3, show.legend = F) +
-     facet_wrap(as.formula(paste("~", "Measures")), ncol = 2, scales = "free") +
-     ylab("Value")
+     facet_wrap(~ .data$Measures, ncol = 2, scales = "free") +
+     xlab("Iteration") + ylab("Value")
 
   p <- p + ggtitle("Model Fit") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
 
@@ -117,6 +118,7 @@ plot_modelfit <- function(x, start = 1)
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import magrittr
+#' @importFrom rlang .data
 #' @export
 plot_pi <- function(x, show_topic = NULL, start = 0)
 {
@@ -144,8 +146,8 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
     pi_mat %>%
       tibble::as_tibble(.name_repair = ~ tnames) %>%
       dplyr::mutate(Iteration = x$values_iter$used_iter) %>%
-      dplyr::filter(Iteration >= start) %>% 
-      dplyr::select(-Iteration) -> pi_mat
+      dplyr::filter(.data$Iteration >= start) %>% 
+      dplyr::select(-.data$Iteration) -> pi_mat
 
     if (nrow(pi_mat) == 0) {
       stop("Nothing left to plot. Please check arguments.")
@@ -153,27 +155,26 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 
     pi_mat %>%
       tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Topic") %>%
-      dplyr::group_by(Topic) %>%
-      dplyr::summarise(mean = mean(value), uq = quantile(value, .975), lq = quantile(value, 0.025)) -> temp
+      dplyr::group_by(.data$Topic) %>%
+      dplyr::summarise(mean = mean(.data$value), uq = stats::quantile(.data$value, .975), 
+                       lq = stats::quantile(.data$value, 0.025)) -> temp
     
-    g <- ggplot(temp, aes(y = mean, x = Topic, color = Topic)) + 
+    g <- ggplot(temp, aes(y = .data$mean, x = .data$Topic, color = .data$Topic)) + 
          theme_bw() +
-         geom_errorbar(aes(ymin = lq, ymax = uq), data = temp, width = 0.01, size = 1) + 
-         ylab("Probability") +
-         xlab("Topic") +
+         geom_errorbar(aes(ymin = .data$lq, ymax = .data$uq), data = temp, width = 0.01, size = 1) + 
+         xlab("Topic") + ylab("Probability") +
          ggtitle("Probability of words drawn from keyword topic-word distribution") +
          theme(plot.title = element_text(hjust = 0.5))
   } else {
     x$pi %>%
-      dplyr::mutate(Probability = Proportion / 100) %>%
-      dplyr::filter(Topic %in% (!!show_topic)) %>%
+      dplyr::mutate(Probability = .data$Proportion / 100) %>%
+      dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
       dplyr::mutate(Topic = tnames) -> temp
 
-    g  <- ggplot(temp, aes_string(x='Topic', y='Probability')) +
-        geom_bar(stat="identity") +
+    g  <- ggplot(temp, aes(x = .data$Topic, y = .data$Probability)) +
+        geom_bar(stat = "identity") +
         theme_bw() +
-        ylab("Probability") +
-        xlab("Topic") +
+        xlab("Topic") + ylab("Probability") +
         ggtitle("Probability of words drawn from keyword topic-word distribution") +
         theme(plot.title = element_text(hjust = 0.5))    
   }
@@ -192,6 +193,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import magrittr
+#' @importFrom rlang .data
 #' @export
 plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
 {
@@ -204,19 +206,20 @@ plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0
   }
 
   tables <- dplyr::bind_rows(tables) %>%
-              dplyr::filter(TopicId %in% topics)
+              dplyr::filter(.data$TopicId %in% topics)
 
   variables <- unique(tables$by)
 
   p <- ggplot(tables) +
-        geom_linerange(aes(x = by,
-                           ymin = Lower, ymax = Upper,
-                           group = Topic, colour = Topic),
+        geom_linerange(aes(x = .data$by,
+                           ymin = .data$Lower, ymax = .data$Upper,
+                           group = .data$Topic, colour = .data$Topic),
                        position = position_dodge(width = -1/2)) +
         coord_flip() +
         scale_x_discrete(limits = rev(variables)) +
         xlab(paste0("Value of ", by_name)) +
         ylab(expression(paste("Mean of ", theta))) +
+        guides(color = guide_legend(title = "Topic")) +
         theme_bw()
 
   return(p)

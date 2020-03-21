@@ -1,6 +1,6 @@
 Package: keyATM
 Title: Keyword Assisted Topic Models
-Description: The implementation of keyATM models.
+Description: An R implementation of Keyword Assisted Topic Models.
 Version: 0.1.0
 Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", role = c("aut","cre")),
     person("Tomoya", "Sasaki", email = "tomoyas@mit.edu", role = c("aut")),
@@ -24,13 +24,14 @@ Imports: Rcpp,
   magrittr,
   Matrix,
   purrr,
+  quanteda,
+  rlang,
   stats,
   stringr,
   tibble,
   tidyr
 SystemRequirements: C++11
 Suggests: knitr,
-  quanteda,
   rmarkdown,
   readtext
 VignetteBuilder: knitr

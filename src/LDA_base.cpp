@@ -101,7 +101,7 @@ void LDAbase::initialize_common()
 
   // Do you want to use weights?
   if (use_weights == 0) {
-    cout << "Not using weights!! Check `options$use_weights`." << endl;
+    Rcpp::Rcout << "Not using weights!! Check `options$use_weights`." << std::endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
 
