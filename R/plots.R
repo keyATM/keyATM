@@ -41,7 +41,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 
   if (modelname %in% c("base", "lda", "label")) {
     temp %>% dplyr::rename_at(vars(-"Iteration"), ~tnames) %>%
-      tidyr::pivot_longer(-Iteration, names_to = "Topic", values_to = "alpha") -> res_alpha
+      tidyr::pivot_longer(-"Iteration", names_to = "Topic", values_to = "alpha") -> res_alpha
 
     p <- ggplot(res_alpha, aes(x = .data$Iteration, y = .data$alpha, group = .data$Topic)) +
           geom_line() +
