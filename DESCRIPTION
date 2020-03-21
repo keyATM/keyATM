@@ -24,13 +24,13 @@ Imports: Rcpp,
   magrittr,
   Matrix,
   purrr,
+  quanteda,
   stats,
   stringr,
   tibble,
   tidyr
 SystemRequirements: C++11
 Suggests: knitr,
-  quanteda,
   rmarkdown,
   readtext
 VignetteBuilder: knitr
