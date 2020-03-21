@@ -63,11 +63,11 @@ keyATM_output <- function(model)
   # model fit
   modelfit <- NULL
   if (length(model$model_fit) > 0) {
+    names(model$model_fit) <- 1:length(model$model_fit)
     model$model_fit %>%
-      purrr::set_names(1:length(.)) %>%
       dplyr::bind_rows() %>%
       t() %>%
-      tibble::as_tibble(., .name_repair = ~c("Iteration", "Log Likelihood", "Perplexity")) -> modelfit
+      tibble::as_tibble(.name_repair = ~c("Iteration", "Log Likelihood", "Perplexity")) -> modelfit
   }
 
   # pi

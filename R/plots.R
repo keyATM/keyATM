@@ -51,7 +51,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
   } else if (modelname %in% c("hmm", "ldahmm")) {
-    temp %>% dplyr::rename_at(vars(-"Iteration", -"State"), ~tnames) %>%
+    temp %>% dplyr::rename_at(vars(-.data$Iteration, -.data$State), ~tnames) %>%
       tidyr::pivot_longer(-c(Iteration, State), names_to = "Topic", values_to = "alpha") -> res_alpha
     res_alpha$State <- factor(res_alpha$State, levels = 1:max(res_alpha$State))
 
@@ -94,7 +94,7 @@ plot_modelfit <- function(x, start = 1)
     modelfit <- modelfit[ modelfit$Iteration >= start, ]
   }
 
-  modelfit <- tidyr::gather(modelfit, key = Measures, value = value, -Iteration)
+  modelfit <- tidyr::gather(modelfit, key = "Measures", value = "value", -"Iteration")
 
   p <- ggplot(data = modelfit, aes(x = .data$Iteration, y = .data$value, group = .data$Measures, color = .data$Measures)) +
      geom_line(show.legend = F) +
@@ -168,7 +168,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
   } else {
     x$pi %>%
       dplyr::mutate(Probability = .data$Proportion / 100) %>%
-      dplyr::filter(Topic %in% (!!show_topic)) %>%
+      dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
       dplyr::mutate(Topic = tnames) -> temp
 
     g  <- ggplot(temp, aes(x = .data$Topic, y = .data$Probability)) +
