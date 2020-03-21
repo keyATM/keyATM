@@ -115,7 +115,7 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
                          S = unlist(model_S, use.names = F))
   data %>%
     dplyr::mutate(Topic = .data$Z+1L) %>%
-    dplyr::select(-starts_with("Z")) %>%
+    dplyr::select(-dplyr::starts_with("Z")) %>%
     dplyr::group_by(.data$Topic) %>%
     dplyr::summarize(count = (dplyr::n()), sums = sum(.data$S)) %>%
     dplyr::ungroup() -> temp
@@ -235,7 +235,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
                         Switch = all_s
                        )
 
-  prob1 <- pi_estimated %>% dplyr::pull(Proportion) / 100
+  prob1 <- pi_estimated %>% dplyr::pull(.data$Proportion) / 100
   prob0 <- 1 - prob1 
   vocab_sorted <- sort(vocab)
 
@@ -397,17 +397,18 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
 
 #' @noRd
 #' @import magrittr
+#' @importFrom rlang .data
 keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tnames)
 {
   res_tibble <- data.frame(
                         Word = all_words,
                         Topic = all_topics
                        ) %>%
-                dplyr::group_by(Topic, Word) %>%
+                dplyr::group_by(.data$Topic, .data$Word) %>%
                 dplyr::summarize(Count = dplyr::n())
   
   res_tibble %>%
-    tidyr::spread(key = Word, value = Count) -> phi
+    tidyr::spread(key = "Word", value = "Count") -> phi
   phi <- apply(phi, 2, function(x) {ifelse(is.na(x), 0, x)})
 
   phi <- phi[, 2:ncol(phi)]
