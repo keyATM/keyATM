@@ -97,8 +97,8 @@ plot_modelfit <- function(x, start = 1)
   modelfit <- tidyr::gather(modelfit, key = "Measures", value = "value", -"Iteration")
 
   p <- ggplot(data = modelfit, aes(x = .data$Iteration, y = .data$value, group = .data$Measures, color = .data$Measures)) +
-     geom_line(show.legend = F) +
-     geom_point(size = 0.3, show.legend = F) +
+     geom_line(show.legend = FALSE) +
+     geom_point(size = 0.3, show.legend = FALSE) +
      facet_wrap(~ .data$Measures, ncol = 2, scales = "free") +
      xlab("Iteration") + ylab("Value")
 
@@ -142,7 +142,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
   tnames <- c(names(x$keywords_raw))[show_topic]
 
   if (!is.null(x$values_iter$pi_iter)) {
-    pi_mat <- t(sapply(x$values_iter$pi_iter, unlist, use.names = F))[, show_topic]
+    pi_mat <- t(sapply(x$values_iter$pi_iter, unlist, use.names = FALSE))[, show_topic]
     pi_mat %>%
       tibble::as_tibble(.name_repair = ~ tnames) %>%
       dplyr::mutate(Iteration = x$values_iter$used_iter) %>%

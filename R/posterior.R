@@ -111,8 +111,8 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
   #   p(S=s | n, p) p(p | a, b)
   # Expectation is (a+s) / (a+b+n)
 
-  data <- tibble::tibble(Z = unlist(model_Z, use.names = F),
-                         S = unlist(model_S, use.names = F))
+  data <- tibble::tibble(Z = unlist(model_Z, use.names = FALSE),
+                         S = unlist(model_S, use.names = FALSE))
   data %>%
     dplyr::mutate(Topic = .data$Z+1L) %>%
     dplyr::select(-dplyr::starts_with("Z")) %>%
@@ -201,12 +201,12 @@ keyATM_output_theta <- function(model, info)
 #' @import magrittr
 keyATM_output_phi <- function(model, info)
 {
-  all_words <- model$vocab[as.integer(unlist(model$W, use.names = F)) + 1L]
-  all_topics <- as.integer(unlist(model$Z, use.names = F))
+  all_words <- model$vocab[as.integer(unlist(model$W, use.names = FALSE)) + 1L]
+  all_topics <- as.integer(unlist(model$Z, use.names = FALSE))
   
   if (model$model %in% c("base", "cov", "hmm", "label")) {
     pi_estimated <- keyATM_output_pi(model$Z, model$S, model$priors$gamma)
-    all_s <- as.integer(unlist(model$S, use.names = F))
+    all_s <- as.integer(unlist(model$S, use.names = FALSE))
 
     obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, pi_estimated,
                                       keywords_raw = model$keywords_raw,
@@ -247,7 +247,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
     beta_s0 <- priors$beta 
   }
 
-  all_keywords <- unique(unlist(model$keywords_raw, use.names = F)) 
+  all_keywords <- unique(unlist(model$keywords_raw, use.names = FALSE)) 
   beta_s1 <- matrix(priors$beta_s, nrow = length(model$keywords), ncol = length(all_keywords))
   colnames(beta_s1) <- sort(all_keywords)
   if ("beta_s1" %in% names(priors)) {
@@ -303,7 +303,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
     if (switch_val == 1) {
       # keyword topic-word dist
       phi_ <- phi
-      all_keywords <- unique(unlist(model$keywords_raw, use.names = F)) 
+      all_keywords <- unique(unlist(model$keywords_raw, use.names = FALSE)) 
       phi <- matrix(0.0, nrow = length(model$keywords), ncol = length(all_keywords))
       colnames(phi) <- sort(all_keywords)
 
@@ -831,7 +831,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
   # Get info for parallelization
   if (parallel) {
     if (is.null(mc.cores)) {
-      num_core <- parallel::detectCores(all.tests = FALSE, logical = T) - 2L
+      num_core <- parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L
     } else {
       num_core <- mc.cores 
     }

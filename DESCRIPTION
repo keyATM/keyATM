@@ -1,7 +1,7 @@
 Package: keyATM
 Version: 0.1.0
-Title: Keyword Assisted Topic Models
-Description: An R implementation of Keyword assisted topic models. Providing topic models with a small number of keywords.
+Title: Keyword Assisted Topic Model
+Description: An R implementation of Keyword assisted topic models. By providing topic models with a small number of keywords, researchers can use their substantive knowledge and obtain interpretable topics. The models can also incorporate covariates and time trends.
 Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", role = c("aut","cre")),
     person("Tomoya", "Sasaki", email = "tomoyas@mit.edu", role = c("aut")),
     person("William", "Lowe", email = "wlowe@princeton.edu", role = c("ctb")),

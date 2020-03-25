@@ -19,7 +19,7 @@
 #'  keyATM_docs <- keyATM_read(texts = tibble_object) 
 #' 
 #'  # Use a vector that stores full paths to the text files 
-#'  files <- list.files(doc_folder, pattern = "*.txt", full.names = T) 
+#'  files <- list.files(doc_folder, pattern = "*.txt", full.names = TRUE) 
 #'  keyATM_docs <- keyATM_read(texts = files) 
 #' 
 #' }
@@ -70,7 +70,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
     names(W_raw) <- NULL
   } else {
     ## preprocess each text
-    # Use files <- list.files(doc_folder, pattern = "txt", full.names = T) when you pass
+    # Use files <- list.files(doc_folder, pattern = "txt", full.names = TRUE) when you pass
     if (is.null(text_df)) {
       text_df <- tibble::tibble(text = unlist(lapply(files,
                                                  function(x)
@@ -88,7 +88,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
   
   # check whether there is nothing wrong with the structure of texts
   if (check) {
-    check_vocabulary(unique(unlist(W_raw, use.names = F, recursive = F))) 
+    check_vocabulary(unique(unlist(W_raw, use.names = FALSE, recursive = FALSE))) 
   }
   
   # assign class
@@ -123,7 +123,7 @@ summary.keyATM_docs <- function(object, ...)
               "\n  Min: ", round(min(doc_len), 3),
               "\n  Max: ", round(max(doc_len), 3),
               "\n   SD: ", round(stats::sd(doc_len), 3),
-              "\nNumber of unique words: ", length(unique(unlist(object, use.names = F, recursive = F))),
+              "\nNumber of unique words: ", length(unique(unlist(object, use.names = FALSE, recursive = FALSE))),
               "\n"
              )  
          )
@@ -200,7 +200,7 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
 
   keywords <- lapply(keywords, function(x) {unlist(strsplit(x," "))})
   ext_k <- length(keywords)
-  max_num_words <- max(unlist(lapply(keywords, function(x) {length(x)}), use.names = F))
+  max_num_words <- max(unlist(lapply(keywords, function(x) {length(x)}), use.names = FALSE))
 
   # Make keywords_df
   keywords_df <- data.frame(Topic = 1, Word = 1)
@@ -236,7 +236,7 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
                        box.padding = 0.20, label.padding = 0.12,
                        arrow = arrow(angle = 10, length = unit(0.10, "inches"),
                                    ends = "last", type = "closed"),
-                       show.legend = F) +
+                       show.legend = FALSE) +
       scale_x_continuous(breaks = 1:max_num_words) +
       xlab("Ranking") + ylab("Proportion (%)") +
       theme_bw()
@@ -252,7 +252,7 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
 check_keywords <- function(unique_words, keywords, prune)
 {
   # Prune keywords that do not appear in the corpus
-  keywords_flat <- unlist(keywords, use.names = F, recursive = F)
+  keywords_flat <- unlist(keywords, use.names = FALSE, recursive = FALSE)
   non_existent <- keywords_flat[!keywords_flat %in% unique_words]
 
   if (prune) {
@@ -386,7 +386,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   set.seed(options$seed)
 
   # W
-  info$wd_names <- unique(unlist(docs, use.names = F, recursive = F))
+  info$wd_names <- unique(unlist(docs, use.names = FALSE, recursive = FALSE))
   check_vocabulary(info$wd_names)
 
   info$wd_map <- myhashmap(info$wd_names, 1:length(info$wd_names) - 1L)
@@ -398,7 +398,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 
   keywords_raw <- keywords  # keep raw keywords (not word_id)
   keywords_id <- lapply(keywords, function(x) { myhashmap_getvec(info$wd_map, x) })
-  info$keywords_id <- unlist(keywords_id, use.names = F, recursive = F)
+  info$keywords_id <- unlist(keywords_id, use.names = FALSE, recursive = FALSE)
 
   # Assign S and Z
   if (model %in% info$models_keyATM) {
