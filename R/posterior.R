@@ -779,9 +779,9 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
   obj <- lapply(unique_val,
                 function(val) {
                   doc_index <- which(by == val) 
-                  all_words <- unlist(keyATM_docs[doc_index], use.names = F)
-                  all_topics <- as.integer(unlist(x$kept_values$Z[doc_index]), use.names = F)
-                  all_s <- as.integer(unlist(x$kept_values$S[doc_index]), use.names = F)
+                  all_words <- unlist(keyATM_docs[doc_index], use.names = FALSE)
+                  all_topics <- as.integer(unlist(x$kept_values$Z[doc_index]), use.names = FALSE)
+                  all_s <- as.integer(unlist(x$kept_values$S[doc_index]), use.names = FALSE)
                   pi_estimated <- keyATM_output_pi(x$kept_values$Z[doc_index], 
                                                    x$kept_values$S[doc_index],
                                                    x$priors$gamma)
