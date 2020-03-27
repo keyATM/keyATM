@@ -116,7 +116,7 @@ myhashmap <- function(keys, values) {
 
 
 myhashmap_getvec <- function(mapped, keys) {
-  return(unlist(lapply(keys, function(x) {mapped$get(x)}), use.names = F, recursive = F))
+  return(unlist(lapply(keys, function(x) {mapped$get(x)}), use.names = FALSE, recursive = FALSE))
 }
 
 
@@ -130,5 +130,5 @@ myhashmap_keyint <- function(keys, values) {
 
 myhashmap_getvec_keyint <- function(mapped, keys) {
   keys <- as.character(keys)
-  return(unlist(lapply(keys, function(x) {mapped$get(x)}), use.names = F, recursive = F))
+  return(unlist(lapply(keys, function(x) {mapped$get(x)}), use.names = FALSE, recursive = FALSE))
 }
