@@ -177,9 +177,9 @@ keyATM_output_theta <- function(model, info)
     theta <- do.call(dplyr::bind_rows, lapply(model$Z, posterior_z_base))
 
   } else if (model$model %in% c("hmm", "ldahmm")) {
-    S <- model$stored_values$S_iter[[length(model$stored_values$S_iter)]] + 1L  # adjust index for R
-    S <- S[model$model_settings$time_index]  # retrieve doc level state info
-    alphas <- matrix(model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]][S],
+    R <- model$stored_values$R_iter[[length(model$stored_values$R_iter)]] + 1L  # adjust index for R
+    R <- R[model$model_settings$time_index]  # retrieve doc level state info
+    alphas <- matrix(model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]][R],
                      nrow = length(model$Z), ncol = info$allK)
 
     Z_table <- do.call(dplyr::bind_rows, 
