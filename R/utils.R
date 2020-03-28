@@ -122,13 +122,19 @@ myhashmap_getvec <- function(mapped, keys) {
 
 myhashmap_keyint <- function(keys, values) {
   mapped <- fastmap::fastmap(missing_default = NA)
-  keys <- as.character(keys)
+  keys <- as.character(keys)  # key should be a string
   invisible(lapply(1:length(keys), function(x) {mapped$set(keys[x], values[x])}))
   return(mapped)
 }
 
 
 myhashmap_getvec_keyint <- function(mapped, keys) {
-  keys <- as.character(keys)
+  keys <- as.character(keys) # key should be a string
   return(unlist(lapply(keys, function(x) {mapped$get(x)}), use.names = FALSE, recursive = FALSE))
+}
+
+
+myhashmap_getvec_keyint_list <- function(mapped, keys) {
+  keys <- as.character(keys) # key should be a string
+  return(lapply(keys, function(x) {mapped$get(x)}))
 }

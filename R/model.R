@@ -1013,10 +1013,15 @@ make_sz_key <- function(W, keywords, info)
     zs_hashtable <- myhashmap_keyint(as.integer(unique(key_wdids)), keys_char)
 
     zs_assigner <- function(s) {
-      # topic <- zs_hashtable[[s]]  # hashtable
-      topic <- myhashmap_getvec_keyint(zs_hashtable, s)
-      topic <- strsplit(topic, split=",")
-      topic <- lapply(topic, sample, 1)
+      topic <- myhashmap_getvec_keyint_list(zs_hashtable, s)
+      topic <- lapply(topic,
+                      function(x) {
+                        if (is.na(x)) {
+                          return (x)
+                        } else {
+                          return (sample(strsplit(x, split = ",")[[1]], 1)) 
+                        }
+                      })
       topic <- as.integer(unlist(topic))
       return(topic)
     }
