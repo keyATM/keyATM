@@ -73,7 +73,7 @@ The default value is `FALSE`. Storing the value of $\pi_k$ for all $k$ (the prob
 
 
 ### `parallel_init`
-Parallelize processes to speed up initialization. Default is `FALSE`.
+Parallelize processes to speed up initialization. Default is `FALSE`. Note that even if you use the same `seed`, the initialization will become different between with and without parallelization.
 
 
 # Priors
