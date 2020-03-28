@@ -12,16 +12,17 @@ pkgdown:
 # Options
 `keyATM` takes various options. You can set options through a list.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
-my_options <- list(seed         = NULL, # automatically generate random seed 
-                   iterations   = 1500,
-                   verbose      = FALSE,
-                   llk_per      = 10,
-                   use_weights  = TRUE,
-                   weights_type = "information-theory",
-                   prune        = TRUE,
-                   thinning     = 5,
-                   store_theta  = FALSE,
-                   store_pi     = FALSE)
+my_options <- list(seed          = NULL, # automatically generate random seed 
+                   iterations    = 1500,
+                   verbose       = FALSE,
+                   llk_per       = 10,
+                   use_weights   = TRUE,
+                   weights_type  = "information-theory",
+                   prune         = TRUE,
+                   thinning      = 5,
+                   store_theta   = FALSE,
+                   store_pi      = FALSE,
+                   parallel_init = FALSE)
 
 out <- keyATM(docs      = keyATM_docs,    # text input
               regular_k = 3,              # number of regular topics
@@ -69,6 +70,11 @@ The default value is `FALSE`. Storing the value of thetas allows the calculation
 
 ### `store_pi`
 The default value is `FALSE`. Storing the value of $\pi_k$ for all $k$ (the probability that the topic $k$ use keyword topic-word distribution).
+
+
+### `parallel_init`
+Parallelize processes to speed up initialization. Default is `FALSE`. Note that even if you use the same `seed`, the initialization will become different between with and without parallelization.
+
 
 # Priors
 You can manually set priors, but we **do not** recommend doing it unless you understandd the consequences.

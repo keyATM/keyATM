@@ -29,7 +29,7 @@ Read texts and create a \code{keyATM_docs} object, which is a list of texts.
  keyATM_docs <- keyATM_read(texts = tibble_object) 
 
  # Use a vector that stores full paths to the text files 
- files <- list.files(doc_folder, pattern = "*.txt", full.names = T) 
+ files <- list.files(doc_folder, pattern = "*.txt", full.names = TRUE) 
  keyATM_docs <- keyATM_read(texts = files) 
 
 }
