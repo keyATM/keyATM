@@ -38,6 +38,7 @@ keyATM(docs, model, no_keyword_topics, keywords = list(),
            \item \emph{R}: For the dynamic model. The state each document belongs to.
            \item \emph{P}: For the dynamic model. The state transition probability.
      }
+     \item \strong{parallel_init}: Parallelize processes to speed up initialization. Default is \code{FALSE}.
 }}
 
 \item{keep}{a vector of the names of elements you want to keep in output}

@@ -186,7 +186,7 @@
  <span class='no'>keyATM_docs</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_read</span>(<span class='kw'>texts</span> <span class='kw'>=</span> <span class='no'>tibble_object</span>)
 
  <span class='co'># Use a vector that stores full paths to the text files </span>
- <span class='no'>files</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='no'>doc_folder</span>, <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='st'>"*.txt"</span>, <span class='kw'>full.names</span> <span class='kw'>=</span> <span class='no'>T</span>)
+ <span class='no'>files</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='no'>doc_folder</span>, <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='st'>"*.txt"</span>, <span class='kw'>full.names</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
  <span class='no'>keyATM_docs</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM_read</span>(<span class='kw'>texts</span> <span class='kw'>=</span> <span class='no'>files</span>)
 
 }</div></pre>
