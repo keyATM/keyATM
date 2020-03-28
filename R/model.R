@@ -373,11 +373,13 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   info$num_doc <- length(docs)
   info$keyword_k <- length(keywords)
   info$total_k <- length(keywords) + no_keyword_topics
+  info$num_core <- parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L
 
   # Set default values
   model_settings <- check_arg(model_settings, "model_settings", model, info)
   priors <- check_arg(priors, "priors", model, info)
   options <- check_arg(options, "options", model, info)
+  info$parallel_init <- options$parallel_init
 
   ##
   ## Initialization
@@ -390,8 +392,12 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   check_vocabulary(info$wd_names)
 
   info$wd_map <- myhashmap(info$wd_names, 1:length(info$wd_names) - 1L)
-  W <- lapply(docs, function(x) { myhashmap_getvec(info$wd_map, x) })
 
+  if (info$parallel_init) {
+    W <- parallel::mclapply(docs, function(x) { myhashmap_getvec(info$wd_map, x) }, mc.cores = info$num_core)
+  } else {
+    W <- lapply(docs, function(x) { myhashmap_getvec(info$wd_map, x) })
+  }
 
   # Check keywords
   keywords <- check_keywords(info$wd_names, keywords, options$prune)
@@ -819,8 +825,8 @@ check_arg_options <- function(obj, model, info)
   allowed_arguments <- c("seed", "llk_per", "thinning",
                          "iterations", "verbose",
                          "use_weights", "weights_type", 
-                         "prune",
-                         "store_theta", "slice_shape")
+                         "prune", "store_theta", "slice_shape",
+                         "parallel_init")
 
   # llk_per
   if (is.null(obj$llk_per))
@@ -949,6 +955,16 @@ check_arg_options <- function(obj, model, info)
     allowed_arguments <- c(allowed_arguments, "store_transition_matrix")
   }
 
+  # Use parallel function in initialization
+  if (!"parallel_init" %in% names(obj)) {
+    obj$parallel_init <- FALSE 
+  } else {
+    if (!obj$parallel_init %in% c(0, 1, FALSE, TRUE)) {
+      stop("`obj$parallel_init` should be TRUE/FALSE") 
+    }
+  }
+  allowed_arguments <- c(allowed_arguments, "parallel_init")
+
   # Check unused arguments
   show_unused_arguments(obj, "`options`", allowed_arguments)
   return(obj)
@@ -1037,7 +1053,6 @@ make_sz_key <- function(W, keywords, info)
     }
   }
 
-
   ## ss indicates whether the word comes from a seed topic-word distribution or not
   make_s <- function(s) {
     key <- as.numeric(s %in% key_wdids) # 1 if they're a seed
@@ -1048,10 +1063,16 @@ make_sz_key <- function(W, keywords, info)
     return(s)
   }
 
- S <- lapply(W, make_s)
- Z <- lapply(W, make_z, topicvec)
-
- return(list(S = S, Z = Z))
+  if (info$parallel_init) {
+    S <- parallel::mclapply(W, make_s, mc.cores = info$num_core, mc.set.seed = FALSE)
+    Z <- parallel::mclapply(W, make_z, topicvec, mc.cores = info$num_core, mc.set.seed = FALSE)
+  } else {
+    S <- lapply(W, make_s)
+    Z <- lapply(W, make_z, topicvec)
+  }
+ 
+ 
+  return(list(S = S, Z = Z))
 }
 
 
