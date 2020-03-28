@@ -1080,8 +1080,11 @@ make_sz_lda <- function(W, info)
     return(as.integer(zz))
   }  
 
+  if (info$parallel_init) {
+    Z <- parallel::mclapply(W, make_z, topicvec, mc.cores = info$num_core, mc.set.seed = FALSE)
+  } else {
+    Z <- lapply(W, make_z, topicvec)
+  }
 
- Z <- lapply(W, make_z, topicvec)
-
- return(list(S = list(), Z = Z))
+  return(list(S = list(), Z = Z))
 }
