@@ -50,6 +50,7 @@
 #'     \item{pi}{estimated pi for the last iteration}
 #'     \item{values_iter}{values stored during iterations}
 #'     \item{kept_values}{outputs you specified to store in \code{keep} option}
+#'     \item{information}{information about the fitting}
 #'   }
 #'
 #' @seealso \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
@@ -99,6 +100,11 @@ keyATM <- function(docs, model, no_keyword_topics,
                        docs, model, no_keyword_topics,
                        keywords, model_settings, priors, options
                       )
+
+  # 0 iterations
+  if (options$iterations == 0) {
+    return(fitted) 
+  }
 
   # Get output
   out <- keyATM_output(fitted)
@@ -171,6 +177,7 @@ check_arg_keep <- function(obj, model)
 #'     \item{values_iter}{values stored during iterations}
 #'     \item{number_of_topics}{number of topics}
 #'     \item{kept_values}{outputs you specified to store in \code{keep} option}
+#'     \item{information}{information about the fitting}
 #'   }
 #'
 #' @seealso \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
@@ -217,6 +224,11 @@ weightedLDA <- function(docs, model, number_of_topics,
                        priors = priors,
                        options = options
                       )
+
+  # 0 iterations
+  if (options$iterations == 0) {
+    return(fitted) 
+  }
 
   # Get output
   out <- keyATM_output(fitted)
