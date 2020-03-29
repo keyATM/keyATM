@@ -64,6 +64,7 @@ A keyATM_output object containing:
     \item{pi}{estimated pi for the last iteration}
     \item{values_iter}{values stored during iterations}
     \item{kept_values}{outputs you specified to store in \code{keep} option}
+    \item{information}{information about the fitting}
   }
 }
 \description{
