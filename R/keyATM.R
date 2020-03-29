@@ -100,6 +100,11 @@ keyATM <- function(docs, model, no_keyword_topics,
                        keywords, model_settings, priors, options
                       )
 
+  # 0 iterations
+  if (options$iterations == 0) {
+    return(fitted) 
+  }
+
   # Get output
   out <- keyATM_output(fitted)
 
@@ -217,6 +222,11 @@ weightedLDA <- function(docs, model, number_of_topics,
                        priors = priors,
                        options = options
                       )
+
+  # 0 iterations
+  if (options$iterations == 0) {
+    return(fitted) 
+  }
 
   # Get output
   out <- keyATM_output(fitted)
