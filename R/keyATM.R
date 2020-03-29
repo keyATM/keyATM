@@ -50,6 +50,7 @@
 #'     \item{pi}{estimated pi for the last iteration}
 #'     \item{values_iter}{values stored during iterations}
 #'     \item{kept_values}{outputs you specified to store in \code{keep} option}
+#'     \item{information}{information about the fitting}
 #'   }
 #'
 #' @seealso \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
@@ -176,6 +177,7 @@ check_arg_keep <- function(obj, model)
 #'     \item{values_iter}{values stored during iterations}
 #'     \item{number_of_topics}{number of topics}
 #'     \item{kept_values}{outputs you specified to store in \code{keep} option}
+#'     \item{information}{information about the fitting}
 #'   }
 #'
 #' @seealso \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}

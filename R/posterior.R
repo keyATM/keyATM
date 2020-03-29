@@ -86,6 +86,10 @@ keyATM_output <- function(model)
     values_iter$Lambda_iter_rescaled <- keyATM_output_rescale_Lambda(model, info) 
   }
 
+  # Add information
+  pd <- utils::packageDescription("keyATM")
+  information <- list(date_output_made = Sys.time(), version_keyATM = pd$Version)
+
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
              V = length(model$vocab), N = length(model$Z),
@@ -96,7 +100,7 @@ keyATM_output <- function(model)
              priors = model$priors, options = model$options,
              keywords_raw = model$keywords_raw,
              model_fit = modelfit, pi = pi_estimated,
-             values_iter = values_iter)
+             values_iter = values_iter, information = information)
   class(ll) <- c("keyATM_output", model$model, class(ll))
   return(ll)
 }
