@@ -102,7 +102,7 @@ keyATM <- function(docs, model, no_keyword_topics,
                       )
 
   # 0 iterations
-  if (options$iterations == 0) {
+  if (fitted$options$iterations == 0) {
     return(fitted) 
   }
 
