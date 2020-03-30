@@ -41,12 +41,15 @@ out <- keyATM(
               no_keyword_topics = 3,                                      # number of topics without keywords
               keywords          = bills_keywords,                         # keywords (a list)
               model             = "covariates",                           # select the model
-              model_settings    = list(covariates_data = bills_cov,       # covariate data
-                                       covariates_formula = ~ RepParty),  # formula to fit covarite
+              model_settings    = list(covariates_data    = bills_cov,    # covariate data
+                                       covariates_formula = ~ RepParty,   # formula to fit covarite
+                                       mh_use             = FALSE),       # use Metloporis Hastings
               options           = list(seed = 250)
              )
 ```
 The `covariates_formula` takes the same form of a [`formula`](https://rdrr.io/r/stats/formula.html) for `model.matrix()` function. You do not need to specify the left hand side of the formula. The default number of iterations is `1500`. Please check [this page](Options.html) for available options.
+
+If you set `mh_use = TRUE`, the estimation process will speed up.
 
 
 ## Saving the model
