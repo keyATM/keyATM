@@ -692,7 +692,13 @@ check_arg_model_settings <- function(obj, model, info)
       }
     }
 
-    # MH option
+    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
+                           "slice_min", "slice_max",
+                           "covariates_formula", "standardize", "info")
+  }  # cov model end
+
+  if (model %in% c("cov")) {
+     # MH option
     if (is.null(obj$mh_use)) {
       obj$mh_use <- 0 
     } else {
@@ -701,11 +707,8 @@ check_arg_model_settings <- function(obj, model, info)
         stop("`model_settings$mh_use` should be TRUE/FALSE (0/1)") 
       }
     }
-
-    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
-                           "slice_min", "slice_max", "mh_use",
-                           "covariates_formula", "standardize", "info")
-  }  # cov model end
+    allowed_arguments <- c(allowed_arguments, "mh_use")
+  }
 
   # check model settings for dynamic model
   if (model %in% c("hmm", "ldahmm")) {
