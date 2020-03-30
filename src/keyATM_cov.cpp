@@ -21,6 +21,9 @@ void keyATMcov::read_data_specific()
 
   val_max = model_settings["slice_max"];
   val_max = shrink(val_max, slice_A);
+
+  // Metropolis Hastings
+  mh_use = model_settings["mh_use"];
 }
 
 void keyATMcov::initialize_specific()
@@ -107,7 +110,6 @@ double keyATMcov::likelihood_lambda(int &k, int &t)
 
   for (int d = 0; d < num_doc; d++) {
     alpha = Alpha.row(d).transpose(); // Doc alpha, column vector
-    // alpha = ((C.row(d) * Lambda)).array().exp(); // Doc alpha, column vector
   
     loglik += mylgamma(alpha.sum()); 
         // the first term numerator in the first square bracket
@@ -128,11 +130,9 @@ double keyATMcov::likelihood_lambda(int &k, int &t)
 }
 
 
-
 void keyATMcov::sample_lambda()
 {
-  // sample_lambda_mh();  
-  sample_lambda_slice();
+  mh_use ? sample_lambda_mh() : sample_lambda_slice();
 }
 
 

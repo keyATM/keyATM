@@ -22,6 +22,7 @@ class keyATMcov : virtual public keyATMmeta
     MatrixXd Lambda;
     MatrixXd C;
 
+    int mh_use;
     double mu;
     double sigma;
 
