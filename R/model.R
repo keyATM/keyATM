@@ -90,8 +90,17 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
   if (check) {
     check_vocabulary(unique(unlist(W_raw, use.names = FALSE, recursive = FALSE))) 
   }
+
+  # Check document length
+  lapply(W_raw, length) %>% unlist(use.names = FALSE) -> len
+  len_zero_index <- (1:length(W_raw))[(1:length(W_raw))[len == 0]]
+  if (length(len_zero_index) != 0) {
+    stop("Number of documents with 0 length: ", length(len_zero_index), "\n",
+         "Please review the preprocessing steps.") 
+  }
+
   
-  # assign class
+  # Assign class
   class(W_raw) <- c("keyATM_docs", class(W_raw))
 
   return(W_raw)
