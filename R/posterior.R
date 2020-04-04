@@ -320,11 +320,11 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
         phi[k, ] <- phi[k, ] + prior[k, ] 
       }
       phi <- phi / Matrix::rowSums(phi)
-      phi <- apply(phi, 2, function(x) {ifelse(is.na(x), 0, x)})
+      phi <- apply(phi, c(1,2), function(x) {ifelse(is.na(x), 0, x)})
 
       # keyword topic-word dist should have the same dimension as no-keyword dist
       # for marginilization, but no-keyword elements are 0
-      phi_ <- matrix(0, nrow = length(tnames), 
+     phi_ <- matrix(0, nrow = length(tnames), 
                      ncol = length(vocab))
       colnames(phi_) <- vocab_sorted
       phi_[1:nrow(phi), which(colnames(phi_) %in% colnames(phi))] <- 
