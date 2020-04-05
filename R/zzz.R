@@ -1,8 +1,8 @@
 .onAttach <- function(...) {
-	pkgname <- "keyATM"
+  pkgname <- "keyATM"
   pd <- utils::packageDescription(pkgname);
   packageStartupMessage(pkgname, " v", pd$Version, 
-												" successfully loaded.",
-												"\n Papers, examples, resources, and other materials are at",
+                        " successfully loaded.",
+                        "\n Papers, examples, resources, and other materials are at",
                         "\n https://keyatm.github.io/keyATM/");
 }
