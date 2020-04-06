@@ -675,16 +675,18 @@ top_words_calc <- function(n, measure, show_keyword,
        colnames(phi)[order(xrow / wfreq, decreasing = TRUE)[1:n]]
      }
   }
-  res <- apply(phi, 1, measuref)
 
   if (show_keyword) {
     for (i in 1:ncol(res)) {
+      inds <- which(res[, i] %in% keywords_raw[[i]])
+      res[inds, i] <- paste(res[inds, i], paste0("[", "\U2713" ,"]"))
       for (j in 1:length(keywords_raw)) {
-         inds <- which(res[,i] %in% keywords_raw[[j]])
-         label <- ifelse(i == j,
-                         paste0("[", "\U2713" ,"]"),
-                         paste0("[", as.character(j), "]"))
-         res[inds, i] <- paste(res[inds, i], label)
+        if (i == j) next
+        inds <- which(res[,i] %in% keywords_raw[[j]])
+        label <- ifelse(i == j,
+                        paste0("[", "\U2713" ,"]"),
+                        paste0("[", as.character(j), "]"))
+        res[inds, i] <- paste(res[inds, i], label)
       }
     }
   }
