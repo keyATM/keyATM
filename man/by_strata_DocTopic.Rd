@@ -4,8 +4,15 @@
 \alias{by_strata_DocTopic}
 \title{Estimate document-topic distribution by strata (for covariate models)}
 \usage{
-by_strata_DocTopic(x, by_name, by_values, burn_in = NULL,
-  parallel = TRUE, mc.cores = NULL, posterior_mean = FALSE)
+by_strata_DocTopic(
+  x,
+  by_name,
+  by_values,
+  burn_in = NULL,
+  parallel = TRUE,
+  mc.cores = NULL,
+  posterior_mean = FALSE
+)
 }
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}

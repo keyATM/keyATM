@@ -4,8 +4,15 @@
 \alias{keyATM_fit}
 \title{Fit a keyATM model}
 \usage{
-keyATM_fit(docs, model, no_keyword_topics, keywords = list(),
-  model_settings = list(), priors = list(), options = list())
+keyATM_fit(
+  docs,
+  model,
+  no_keyword_topics,
+  keywords = list(),
+  model_settings = list(),
+  priors = list(),
+  options = list()
+)
 }
 \description{
 keyATM_fit is wrapped by keyATM() and weightedLDA()

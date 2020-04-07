@@ -4,8 +4,15 @@
 \alias{weightedLDA}
 \title{Weighted LDA main function}
 \usage{
-weightedLDA(docs, model, number_of_topics, model_settings = list(),
-  priors = list(), options = list(), keep = c())
+weightedLDA(
+  docs,
+  model,
+  number_of_topics,
+  model_settings = list(),
+  priors = list(),
+  options = list(),
+  keep = c()
+)
 }
 \arguments{
 \item{docs}{texts read via \code{keyATM_read()}}

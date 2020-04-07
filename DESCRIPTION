@@ -31,5 +31,5 @@ URL: https://keyatm.github.io/keyATM/
 Encoding: UTF-8
 BugReports: https://github.com/keyATM/keyATM/issues
 LazyData: TRUE
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 SystemRequirements: C++11

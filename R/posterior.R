@@ -683,8 +683,7 @@ top_words_calc <- function(n, measure, show_keyword,
       for (j in 1:length(keywords_raw)) {
         if (i == j) next
         inds <- which(res[,i] %in% keywords_raw[[j]])
-        label <- paste0("[", "\U2713" ,"]"), 
-                        paste0("[", as.character(j), "]"))
+        label <- paste0("[", as.character(j), "]")
         res[inds, i] <- paste(res[inds, i], label)
       }
     }

@@ -4,9 +4,16 @@
 \alias{keyATM}
 \title{keyATM main function}
 \usage{
-keyATM(docs, model, no_keyword_topics, keywords = list(),
-  model_settings = list(), priors = list(), options = list(),
-  keep = c())
+keyATM(
+  docs,
+  model,
+  no_keyword_topics,
+  keywords = list(),
+  model_settings = list(),
+  priors = list(),
+  options = list(),
+  keep = c()
+)
 }
 \arguments{
 \item{docs}{texts read via \code{keyATM_read()}}
