@@ -681,7 +681,11 @@ top_words_calc <- function(n, measure, show_keyword,
     for (i in 1:ncol(res)) {
       for (j in 1:length(keywords_raw)) {
         # Potential words to check in the top words
-        inds_all <- which(res[, i] %in% c(keywords_raw[[i]], keywords_raw[[j]]))
+        if (i <= length(keywords_raw)) {
+          inds_all <- which(res[, i] %in% c(keywords_raw[[i]], keywords_raw[[j]]))
+        } else {
+          inds_all <- which(res[, i] %in% keywords_raw[[j]])
+        }
         display <- res[inds_all, i]
 
         # If there is a keyword from other topics
@@ -690,8 +694,10 @@ top_words_calc <- function(n, measure, show_keyword,
         display[inds] <- paste(res[inds_all, i][inds], label)
 
         # Keywords of topic i, overwriting above
-        inds <- which(res[inds_all, i] %in% keywords_raw[[i]])
-        display[inds] <- paste(res[inds_all, i][inds], paste0("[", "\U2713" ,"]"))
+        if (i <= length(keywords_raw)) {
+          inds <- which(res[inds_all, i] %in% keywords_raw[[i]])
+          display[inds] <- paste(res[inds_all, i][inds], paste0("[", "\U2713" ,"]"))
+        }
 
         # Put it back to the original table
         res[inds_all, i] <- display
