@@ -4,8 +4,7 @@
 \alias{plot.strata_doctopic}
 \title{Plot document-topic distribution by strata (for covariate models)}
 \usage{
-\method{plot}{strata_doctopic}(x, topics = NULL, quantile_vec = c(0.05,
-  0.5, 0.95), ...)
+\method{plot}{strata_doctopic}(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
 }
 \arguments{
 \item{x}{a strata_doctopic object (see \code{by_strata_DocTopic()})}
