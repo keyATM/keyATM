@@ -919,7 +919,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
                                                         thetas$Iteration <- used_iter[s]
                                                         return(thetas)
                                                       },
-                                                      mc.cores = num_core
+                                                      mc.cores = num_core, mc.set.seed = FALSE
                                                      )
                                   )
 
