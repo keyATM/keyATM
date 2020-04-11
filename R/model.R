@@ -62,8 +62,12 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
   # If you have quanteda object
   if (!is.null(text_dfm)) {
     vocabulary <- colnames(text_dfm)
-    W_raw <- list()
-    W_raw <- read_dfm_cpp(text_dfm, W_raw, vocabulary)
+    W_raw <- apply(text_dfm, 1,
+                   function(x) {
+                    return(rep(vocabulary, x))
+                   }
+                  )
+    names(W_raw) <- NULL
   } else {
     ## preprocess each text
     # Use files <- list.files(doc_folder, pattern = "txt", full.names = TRUE) when you pass
