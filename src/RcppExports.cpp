@@ -6,6 +6,19 @@
 
 using namespace Rcpp;
 
+// read_dfm_cpp
+List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, List W_raw, CharacterVector vocab);
+RcppExport SEXP _keyATM_read_dfm_cpp(SEXP dfmSEXP, SEXP W_rawSEXP, SEXP vocabSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::SparseMatrix<int> >::type dfm(dfmSEXP);
+    Rcpp::traits::input_parameter< List >::type W_raw(W_rawSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type vocab(vocabSEXP);
+    rcpp_result_gen = Rcpp::wrap(read_dfm_cpp(dfm, W_raw, vocab));
+    return rcpp_result_gen;
+END_RCPP
+}
 // keyATM_fit_base
 List keyATM_fit_base(List model, int iter);
 RcppExport SEXP _keyATM_keyATM_fit_base(SEXP modelSEXP, SEXP iterSEXP) {
@@ -92,6 +105,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_keyATM_read_dfm_cpp", (DL_FUNC) &_keyATM_read_dfm_cpp, 3},
     {"_keyATM_keyATM_fit_base", (DL_FUNC) &_keyATM_keyATM_fit_base, 2},
     {"_keyATM_keyATM_fit_cov", (DL_FUNC) &_keyATM_keyATM_fit_cov, 2},
     {"_keyATM_keyATM_fit_HMM", (DL_FUNC) &_keyATM_keyATM_fit_HMM, 2},

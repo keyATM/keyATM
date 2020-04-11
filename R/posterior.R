@@ -895,7 +895,8 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
                                   )
 
                   })  
-  } else { 
+  } else {
+    set.seed(x$options$seed)
     res <- lapply(1:length(by_values),
                   function(i) {
                     value <- by_values[i] 
