@@ -1026,9 +1026,7 @@ make_sz_key <- function(W, keywords, info)
     topicvec <- 1:(info$total_k) - 1L
     make_z <- function(s, topicvec) {
       zz <- myhashmap_getvec_keyint(zs_assigner, s)
-      zz[is.na(zz)] <- sample(topicvec,
-                              sum(is.na(zz)),
-                              replace = TRUE)
+      zz[is.na(zz)] <- sample(topicvec, sum(is.na(zz)), replace = TRUE)
       return(zz)
     }
 
@@ -1055,9 +1053,7 @@ make_sz_key <- function(W, keywords, info)
     topicvec <- 1:(info$total_k) - 1L
     make_z <- function(s, topicvec) {
       zz <- zs_assigner(s) # if it is a seed word, we already know the topic
-      zz[is.na(zz)] <- sample(topicvec,
-                              sum(is.na(zz)),
-                              replace = TRUE)
+      zz[is.na(zz)] <- sample(topicvec, sum(is.na(zz)), replace = TRUE)
       return(zz)
     }
   }

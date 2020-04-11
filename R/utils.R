@@ -56,7 +56,6 @@ full_model_name <- function(model = c("base", "covariates", "dynamic", "label"),
     stop("Please select a correct type") 
   }
 
-
 }
 
 
@@ -103,7 +102,7 @@ extract_full_model_name <- function(obj)
 rdirichlet <- function(alpha, n = 1) {
   l <- length(alpha)
   x <- matrix(stats::rgamma(l*n, alpha), ncol = l, byrow = TRUE)
-  sm <- x %*% rep(1,l)
+  sm <- x %*% rep(1, l)
   return(x / as.vector(sm))
 }
 
@@ -116,7 +115,7 @@ myhashmap <- function(keys, values) {
 
 
 myhashmap_getvec <- function(mapped, keys) {
-  return(unlist(lapply(keys, function(x) {mapped$get(x)}), use.names = FALSE, recursive = FALSE))
+  return(vapply(keys, function(x) {mapped$get(x)}, integer(1), USE.NAMES = FALSE))
 }
 
 
