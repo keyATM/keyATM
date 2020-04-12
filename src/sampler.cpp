@@ -24,6 +24,7 @@ namespace sampler{
 		return v;
 	}
 
+
 	int rcat(Eigen::VectorXd &prob, int &size)
   { 
 		u = R::runif(0, 1);
@@ -38,6 +39,7 @@ namespace sampler{
 		}
 		return index;
 	}
+
 
 	int rcat_without_normalize(Eigen::VectorXd &prob, double &total, int &size)
   { 
