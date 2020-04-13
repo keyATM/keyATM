@@ -29,13 +29,13 @@ List read_dfm_cpp(Eigen::SparseMatrix<int> dfm,
   string word_id;
   int count;
 
-  for (int doc_id = 0; doc_id < doc_num; doc_id++) {
+  for (int doc_id = 0; doc_id < doc_num; ++doc_id) {
     vector<string> doc_words;
     for (SparseMatrix<int>::InnerIterator it(dfm, doc_id); it; ++it) {
       word_id = vocab[it.index()];
       count = it.value();
 
-      for (int i = 0; i < count; i++) {
+      for (int i = 0; i < count; ++i) {
         doc_words.push_back(word_id);
       }
     }
