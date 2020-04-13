@@ -113,12 +113,12 @@ void keyATMmeta::initialize_common()
   // Vector that stores keywords (words in dictionary)
   int wd_id;
   IntegerVector wd_ids;
-  for (int ii = 0; ii < keyword_k; ii++) {
+  for (int ii = 0; ii < keyword_k; ++ii) {
     wd_ids = keywords_list[ii];
     keywords_num.push_back(wd_ids.size());
     
     std::unordered_set<int> keywords_set;
-    for (int jj = 0; jj < wd_ids.size(); jj++) {
+    for (int jj = 0; jj < wd_ids.size(); ++jj) {
       wd_id = wd_ids(jj);
       keywords_set.insert(wd_id);
     }
@@ -126,7 +126,7 @@ void keyATMmeta::initialize_common()
     keywords.push_back(keywords_set);
   }
 
-  for (int i = keyword_k; i < num_topics; i++) {
+  for (int i = keyword_k; i < num_topics; ++i) {
     std::unordered_set<int> keywords_set{ -1 };
   
     keywords_num.push_back(0);
@@ -150,12 +150,12 @@ void keyATMmeta::initialize_common()
   //
   // Construct vocab weights
   //
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+  for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_w = W[doc_id];
     doc_len = doc_w.size();
     doc_each_len.push_back(doc_len);
   
-    for (int w_position = 0; w_position < doc_len; w_position++) {
+    for (int w_position = 0; w_position < doc_len; ++w_position) {
       w = doc_w[w_position];
       vocab_weights(w) += 1.0;
     }
@@ -192,11 +192,11 @@ void keyATMmeta::initialize_common()
   total_words_weighted = 0.0;
   double temp;
 
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+  for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_s = S[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
 
-    for (int w_position = 0; w_position < doc_len; w_position++) {
+    for (int w_position = 0; w_position < doc_len; ++w_position) {
       s = doc_s[w_position], z = doc_z[w_position], w = doc_w[w_position];
       if (s == 0){
         n_s0_kv(z, w) += vocab_weights(w);
@@ -236,7 +236,7 @@ void keyATMmeta::initialize_common()
   Vbeta = (double)num_vocab * beta;
 
   Lbeta_sk = VectorXd::Zero(num_topics);
-  for (int k = 0; k < num_topics; k++) {
+  for (int k = 0; k < num_topics; ++k) {
     Lbeta_sk(k) = (double)keywords_num[k] * beta_s;
   }
   
@@ -267,11 +267,11 @@ void keyATMmeta::weights_normalize_total()
   double total_weights = 0.0;
   int doc_len;
   int w;
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+  for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
 
-    for (int w_position = 0; w_position < doc_len; w_position++) {
+    for (int w_position = 0; w_position < doc_len; ++w_position) {
       w = doc_w[w_position];
       total_weights += vocab_weights(w);
     }
@@ -295,7 +295,7 @@ void keyATMmeta::initialize_betas()
 
   vector<Triplet> trip_beta_s1;
 
-  for (int k = 0; k < keyword_k; k++) {
+  for (int k = 0; k < keyword_k; ++k) {
     for (auto &v : keywords[k]) {
       trip_beta_s1.push_back(Triplet(k, v, beta_s));
     } 
@@ -303,7 +303,7 @@ void keyATMmeta::initialize_betas()
 
 
   // Add values based on the observed counts
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+  for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     label = label_vec[doc_id];
     if (label < 0)
       continue;
@@ -311,7 +311,7 @@ void keyATMmeta::initialize_betas()
     doc_w = W[doc_id]; 
     doc_len = doc_each_len[doc_id];
   
-    for (int w_pos = 0; w_pos < doc_len; w_pos++) {
+    for (int w_pos = 0; w_pos < doc_len; ++w_pos) {
       v = doc_w[w_pos];
   
       if (use_weights) {
@@ -344,7 +344,7 @@ void keyATMmeta::iteration()
   // Iteration
   Progress progress_bar(iter, !(bool)verbose);
 
-  for (int it = 0; it < iter; it++) {
+  for (int it = 0; it < iter; ++it) {
     // Run iteration
     iteration_single(it); 
 
@@ -724,7 +724,7 @@ double keyATMmeta::gammaln_frac(const double &value, const int &count)
   } else {
     gammaln_val = 0.0;
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
       gammaln_val += log(value + i);  
     }
 
