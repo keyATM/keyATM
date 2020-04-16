@@ -1,9 +1,7 @@
 #' \code{keyATM_fit()} calls \code{keyATM_output()}
 #' 
-#' 
 #' @keywords internal
 #' @import magrittr
-#'
 keyATM_output <- function(model)
 {
   message("Creating an output object. It may take time...")
@@ -142,7 +140,6 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
   temp %>%
     dplyr::mutate(Proportion = p * 100) %>%
     dplyr::select(-.data$sums) -> pi_estimated
-
   return(pi_estimated)
 }
 
@@ -196,7 +193,6 @@ keyATM_output_theta <- function(model, info)
 
   theta <- as.matrix(theta)
   colnames(theta) <- info$tnames # label seeded topics
-
   return(theta)
 }
 
@@ -222,7 +218,6 @@ keyATM_output_phi <- function(model, info)
     obj <- keyATM_output_phi_calc_lda(all_words, all_topics, 
                                       model$vocab, model$priors$beta, info$tnames)
   }
-  
   return(obj)
 }
 
@@ -349,7 +344,6 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
       phi <- phi_ + prior  # add scalar (don't use label or matrix)
       phi <- phi / Matrix::rowSums(phi)
     }
-
     return(phi)
   }
 
@@ -394,7 +388,6 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
     # This can happen in `by_strata_TopicWord`
     # Do nothing
   }
-  
   return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
 }
 
@@ -431,7 +424,6 @@ keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tna
 
   phi <- phi / Matrix::rowSums(phi)
   rownames(phi) <- tnames
-
   return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
 }
 
@@ -636,7 +628,6 @@ top_words.strata_topicword <- function(x, n = 10, measure = c("probability", "li
                          word_counts = obj$word_counts, keywords_raw = x$keywords_raw
                        )
                       })
-
   return(top_words)
 }
 
@@ -772,20 +763,16 @@ top_docs <- function(x, n = 10)
 #' @export
 by_strata_TopicWord <- function(x, keyATM_docs, by)
 {
-
   # Check inputs
   if (!is.vector(by)) {
     stop("`by` should be a vector.") 
   }
-
   if (!"Z" %in% names(x$kept_values)) {
     stop("`Z` and `S` should be in the output. Please check `keep` option in `keyATM()`.") 
   }
-
   if (!"S" %in% names(x$kept_values)) {
     stop("`Z` and `S` should be in the output. Please check `keep` option in `keyATM()`.") 
   }
-
   if (length(keyATM_docs) != length(by)) {
     stop("The length of `by` should be the same as the length of documents.") 
   }
@@ -806,11 +793,10 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
                                                    x$kept_values$S[doc_index],
                                                    x$priors$gamma)
                   vocab <- sort(unique(all_words))
-
                   phi_obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, pi_estimated,
                                                         x$keywords_raw,
                                                         vocab, x$priors, tnames, model = x)
-                } 
+                }
                )
   names(obj) <- unique_val
 
@@ -818,6 +804,33 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 
   class(res) <- c("strata_topicword", class(res))
   return(res)
+}
+
+
+#' Show covariates information
+#'
+#' @param x the output from a keyATM model (see \code{keyATM()})
+#' @export
+covariates_info <- function(x) {
+  if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
+    stop("This is not an output of covariate model")
+  }
+  cat(paste0("Colnames: ", paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse = ", "),
+             "\nStandardized: ", as.character(as.logical(x$kept_values$model_settings$standardize)),
+             "\nFormula: ", paste(as.character(x$kept_values$model_settings$covariates_formula), collapse = " "), "\n\nPreview:\n"))
+  print(head(x$kept_values$model_settings$covariates_data_use))
+}
+
+
+#' Return covariates used in the iteration
+#'
+#' @param x the output from a keyATM model (see \code{keyATM()})
+#' @export
+covariates_get <- function(x) {
+  if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
+    stop("This is not an output of covariate model")
+  }
+  return(x$kept_values$model_settings$covariates_data_use) 
 }
 
 
@@ -839,11 +852,11 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NU
                                parallel = TRUE, mc.cores = NULL, posterior_mean = FALSE)
 {
   # Check inputs
-  variables <- colnames(x$kept_values$model_settings$covariates_data)
+  variables <- colnames(x$kept_values$model_settings$covariates_data_use)
   if (!by_var %in% variables)
-    stop(paste0(by_var, " is not in the set of covariates in keyATM model. ",
+    stop(paste0(by_var, " is not in the set of covariates in keyATM model. Check with `covariates_info()`.",
                 "Covariates provided are: ", 
-                paste(colnames(x$kept_values$model_settings$covariates_data), collapse=" , ")))
+                paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse=" , ")))
 
   if (is.null(burn_in)) {
     burn_in <- floor(max(x$model_fit$Iteration) / 2) 
@@ -934,7 +947,6 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NU
   names(res) <- by_values
   obj <- list(theta = tibble::as_tibble(res), by_values = by_values, by_var = by_var, labels = labels)
   class(obj) <- c("strata_doctopic", class(obj)) 
-
   return(obj)
 }
 

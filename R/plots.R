@@ -13,22 +13,18 @@
 #' @export
 plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 {
-
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
 
   if (modelname %in% c("lda", "ldacov", "ldahmm")) {
     stop(paste0("This is not a model with keywords."))  # only plot keywords later
   }
-
   if (!"alpha_iter" %in% names(x$values_iter)) {
     stop("`alpha` is not stored. Please check the options.\nNote that the covariate model does not have `alpha`.\nPlease check our paper for details.")
   }
-
   if (is.null(show_topic)) {
     show_topic <- 1:x$keyword_k
   }
-
   if (!is.numeric(start) | length(start) != 1) {
     stop("`start` argument is invalid.")  
   }
@@ -80,9 +76,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 #' @export
 plot_modelfit <- function(x, start = 1)
 {
-
   check_arg_type(x, "keyATM_output")
-
   modelfit <- x$model_fit
 
   if (!is.numeric(start) | length(start) != 1) {
@@ -185,6 +179,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #'
 #' @param x a strata_doctopic object (see \code{by_strata_DocTopic()})
 #' @param topics a vector or an integer. Indicate topics to visualize.
+#' @param var_name the name of the variable in the plot.
 #' @param quantile_vec a numeric. Quantiles to visualize
 #' @param ... additional arguments not used
 #'
@@ -193,11 +188,14 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' @import magrittr
 #' @importFrom rlang .data
 #' @export
-plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
+plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
 {
   tables <- summary.strata_doctopic(x, quantile_vec = quantile_vec)
   by_var <- x$by_var
   by_values <- x$by_values
+  if (!is.null(var_name)) {
+    by_var <- var_name
+  }
 
   if (is.null(topics)) {
     topics <- 1:nrow(tables[[1]]) 
