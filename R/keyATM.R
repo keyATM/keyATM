@@ -226,7 +226,7 @@ weightedLDA <- function(docs, model, number_of_topics,
                       )
 
   # 0 iterations
-  if (options$iterations == 0) {
+  if (fitted$options$iterations == 0) {
     return(fitted) 
   }
 

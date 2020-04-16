@@ -824,8 +824,9 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 #' Estimate document-topic distribution by strata (for covariate models)
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param by_name character. The name of the variable to use.
-#' @param by_values numeric. The values of the variable specified in `by_name`
+#' @param by_var character. The name of the variable to use.
+#' @param labels character. The labels for the values specified in `by_var`
+#' @param by_values numeric. Specific values for `by_var`, ordered from small to large. If it is not specified, all values in `by_var` will be used.
 #' @param burn_in integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.
 #' @param parallel logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}.
 #' @param mc.cores integer. The number of cores to use. Default is \code{NULL}.
@@ -834,13 +835,13 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 #' @return strata_topicword object (a list)
 #' @import magrittr
 #' @export
-by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
+by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NULL,
                                parallel = TRUE, mc.cores = NULL, posterior_mean = FALSE)
 {
   # Check inputs
   variables <- colnames(x$kept_values$model_settings$covariates_data)
-  if (!by_name %in% variables)
-    stop(paste0(by_name, " is not in the set of covariates in keyATM model. ",
+  if (!by_var %in% variables)
+    stop(paste0(by_var, " is not in the set of covariates in keyATM model. ",
                 "Covariates provided are: ", 
                 paste(colnames(x$kept_values$model_settings$covariates_data), collapse=" , ")))
 
@@ -859,7 +860,6 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
     num_core <- 1L
   }
 
-  
   # Info
   used_iter <- x$values_iter$used_iter
   used_iter <- used_iter[used_iter > burn_in]
@@ -867,12 +867,19 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
   tnames <- rownames(x$phi)
   Lambda_iter <- x$values_iter$Lambda_iter_rescaled
 
+  if (is.null(by_values)) {
+    by_values <- sort(unique(x$kept_values$model_settings$covariates_data_use[, by_var]))
+  }
+  if (length(by_values) != length(labels)) {
+    stop("Length mismatches. Please check `labels`.")
+  }
+
   if (posterior_mean) {
     res <- lapply(1:length(by_values),
                   function(i) {
                     value <- by_values[i]
                     new_data <- x$kept_values$model_settings$covariates_data_use
-                    new_data[, by_name] <- value
+                    new_data[, by_var] <- value
 
                     # Draw theta
                     obj <- do.call(dplyr::bind_rows,
@@ -893,7 +900,6 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
                                                       mc.cores = num_core
                                                      )
                                   )
-
                   })  
   } else {
     set.seed(x$options$seed)
@@ -901,7 +907,7 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
                   function(i) {
                     value <- by_values[i] 
                     new_data <- x$kept_values$model_settings$covariates_data_use
-                    new_data[, by_name] <- value
+                    new_data[, by_var] <- value
 
                     # Draw theta
                     obj <- do.call(dplyr::bind_rows,
@@ -923,12 +929,10 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
                                                       mc.cores = num_core, mc.set.seed = FALSE
                                                      )
                                   )
-
                   })
   }
   names(res) <- by_values
-
-  obj <- list(theta = tibble::as_tibble(res), by_values = by_values, by_name = by_name)
+  obj <- list(theta = tibble::as_tibble(res), by_values = by_values, by_var = by_var, labels = labels)
   class(obj) <- c("strata_doctopic", class(obj)) 
 
   return(obj)
@@ -938,9 +942,8 @@ by_strata_DocTopic <- function(x, by_name, by_values, burn_in = NULL,
 #' @noRd
 #' @importFrom rlang .data
 #' @export
-summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), ...)
+summary.strata_doctopic <- function(x, quantile_vec = c(0.05, 0.5, 0.95), ...)
 {
-  x <- object
   tables <- lapply(1:length(x$by_values),
                   function(index) {
                      theta <- x$theta[[index]]
@@ -951,10 +954,9 @@ summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), .
                        tidyr::gather(key = "Topic", value = "Value", -"Percentile") %>%
                        tidyr::spread(key = "Percentile", value = "Value") %>%
                        dplyr::mutate(TopicId = 1:(dplyr::n()),
-                                     by = as.character(x$by_values[index])) %>%
+                                     val = x$by_values[index],
+                                     label = x$labels[index]) %>%
                        tibble::as_tibble() -> temp
                   })
-
   return(tables)
 }
-

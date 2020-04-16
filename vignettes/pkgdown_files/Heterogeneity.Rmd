@@ -25,7 +25,7 @@ keyATM_docs <- keyATM_read(bills_dfm)
 bills_keywords <- list(
                        Education = c("education", "child", "student"),
                        Law       = c("court", "law", "attorney"),
-                       Health    = c("public", "health", "program"),
+                       Health    = c("public", "health"),
                        Drug      = c("drug", "treatment")
                       )
 ```
@@ -39,7 +39,7 @@ out <- keyATM(
               no_keyword_topics = 3,               # number of topics without keywords
               keywords          = bills_keywords,  # keywords
               model             = "covariates",    # select the model
-              model_settings    = list(covariates_data = bills_cov,
+              model_settings    = list(covariates_data    = bills_cov,
                                        covariates_formula = ~ RepParty),
               options           = list(seed = 250)
              )
@@ -47,7 +47,8 @@ out <- keyATM(
 
 Now let's calculate the mean of theta for two different values of `RepParty`. The figure shows 90\% credible intervals.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-strata_topic <- by_strata_DocTopic(out, by_name = "RepParty", by_values = c(0,1))
+strata_topic <- by_strata_DocTopic(out, by_var = "RepParty", labels = c("Dem", "Rep"))
+summary(strata_topic)
 plot(strata_topic, topics = c(1,2,3,4))
 ```
 

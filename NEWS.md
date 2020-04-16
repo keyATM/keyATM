@@ -1,3 +1,10 @@
+# keyATM 0.2.0
+### Major changes
+* Update `by_strata_DocTopic`
+
+### Bug fix
+* `weightedLDA` without specifying the number of iterations
+
 # keyATM 0.1.0
 ### Major changes
 * Organize functions into a package
