@@ -6,8 +6,9 @@
 \usage{
 by_strata_DocTopic(
   x,
-  by_name,
-  by_values,
+  by_var,
+  labels,
+  by_values = NULL,
   burn_in = NULL,
   parallel = TRUE,
   mc.cores = NULL,
@@ -17,9 +18,11 @@ by_strata_DocTopic(
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}
 
-\item{by_name}{character. The name of the variable to use.}
+\item{by_var}{character. The name of the variable to use.}
 
-\item{by_values}{numeric. The values of the variable specified in `by_name`}
+\item{labels}{character. The labels for the values specified in `by_var`}
+
+\item{by_values}{numeric. Specific values for `by_var`, ordered from small to large. If it is not specified, all values in `by_var` will be used.}
 
 \item{burn_in}{integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.}
 

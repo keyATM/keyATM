@@ -63,7 +63,6 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))  
   }
-
   return(p)
 }
 
@@ -103,7 +102,6 @@ plot_modelfit <- function(x, start = 1)
      xlab("Iteration") + ylab("Value")
 
   p <- p + ggtitle("Model Fit") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
-
   return(p)
 }
 
@@ -198,7 +196,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
 {
   tables <- summary.strata_doctopic(x, quantile_vec = quantile_vec)
-  by_name <- x$by_name
+  by_var <- x$by_var
   by_values <- x$by_values
 
   if (is.null(topics)) {
@@ -207,20 +205,18 @@ plot.strata_doctopic <- function(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0
 
   tables <- dplyr::bind_rows(tables) %>%
               dplyr::filter(.data$TopicId %in% topics)
-
-  variables <- unique(tables$by)
+  variables <- unique(tables$label)
 
   p <- ggplot(tables) +
-        geom_linerange(aes(x = .data$by,
+        geom_linerange(aes(x = .data$label,
                            ymin = .data$Lower, ymax = .data$Upper,
                            group = .data$Topic, colour = .data$Topic),
                        position = position_dodge(width = -1/2)) +
         coord_flip() +
         scale_x_discrete(limits = rev(variables)) +
-        xlab(paste0("Value of ", by_name)) +
+        xlab(paste0(by_var)) +
         ylab(expression(paste("Mean of ", theta))) +
         guides(color = guide_legend(title = "Topic")) +
         theme_bw()
-
   return(p)
 }
