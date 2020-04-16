@@ -18,11 +18,11 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
   modelname <- extract_full_model_name(x)
 
   if (modelname %in% c("lda", "ldacov", "ldahmm")) {
-    stop(paste0("This is not a model with keywords.")) 
+    stop(paste0("This is not a model with keywords."))  # only plot keywords later
   }
 
   if (!"alpha_iter" %in% names(x$values_iter)) {
-    stop("`alpha` is not stored. Please check the settings of the model.")  
+    stop("`alpha` is not stored. Please check the options.\nNote that the covariate model does not have `alpha`.\nPlease check our paper for details.")
   }
 
   if (is.null(show_topic)) {
