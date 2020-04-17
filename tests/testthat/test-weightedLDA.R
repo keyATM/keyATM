@@ -35,7 +35,7 @@ test_that("weightedLDA cov", {
 
   skip_on_os("linux")
   expect_equal(cov$model_fit$Perplexity[2], 2188.554, tolerance = 0.1)
-  expect_equal(top_words(cov)[3, 1], "grant")
+  expect_equal(top_words(cov)[3, 1], "research")
 })
 
 

@@ -865,7 +865,7 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NU
   # Get info for parallelization
   if (parallel) {
     if (is.null(mc.cores)) {
-      num_core <- min(1, parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L)
+      num_core <- max(1, parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L)
     } else {
       num_core <- mc.cores 
     }
