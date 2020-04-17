@@ -11,12 +11,13 @@ base <- weightedLDA(docs = keyATM_docs,
                       options=list(seed = 100, iterations = 30))
 
 test_that("weightedLDA base", {
+  expect_error(plot_alpha(base, start = 10))
+  expect_error(plot_pi(base))
+
+  skip_on_os("linux")
   expect_equal(base$model_fit$Perplexity[3], 1978.213, tolerance = 0.1)
   expect_equal(top_words(base)[3, 1], "library")
   expect_equal(base$pi, NULL)
-
-  expect_error(plot_alpha(base, start = 10))
-  expect_error(plot_pi(base))
 })
 
 
@@ -29,11 +30,12 @@ cov <- weightedLDA(docs = keyATM_docs,
                    options = list(seed = 100, iterations = 10))
 
 test_that("weightedLDA cov", {
-  expect_equal(cov$model_fit$Perplexity[2], 2188.554, tolerance = 0.1)
-  expect_equal(top_words(cov)[3, 1], "grant")
-
   expect_error(plot_alpha(cov, start = 10))
   expect_error(plot_pi(cov))
+
+  skip_on_os("linux")
+  expect_equal(cov$model_fit$Perplexity[2], 2188.554, tolerance = 0.1)
+  expect_equal(top_words(cov)[3, 1], "grant")
 })
 
 
@@ -46,9 +48,10 @@ dyn <- weightedLDA(docs = keyATM_docs,
                    options = list(seed = 100, iterations = 10))
 
 test_that("weightedLDA dynamic", {
-  expect_equal(dyn$model_fit$Perplexity[2], 2098.095, tolerance = 0.1)
-  expect_equal(top_words(dyn)[3, 1], "commission")
-
   expect_error(plot_alpha(dyn, start = 10))
   expect_error(plot_pi(dyn))
+
+  skip_on_os("linux")
+  expect_equal(dyn$model_fit$Perplexity[2], 2098.095, tolerance = 0.1)
+  expect_equal(top_words(dyn)[3, 1], "commission")
 })

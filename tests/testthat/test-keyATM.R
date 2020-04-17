@@ -15,13 +15,14 @@ base <- keyATM(docs = keyATM_docs,
                               store_pi = 1, use_weights = 1))
 
 test_that("keyATM base", {
+  expect_s3_class(plot_alpha(base, start = 10), "ggplot")
+  expect_s3_class(plot_pi(base), "ggplot")
+
+  skip_on_os("linux")
   expect_equal(base$model_fit$Perplexity[3], 1861.29, tolerance = 0.1)
   expect_equal(top_words(base)[1, 1], "education [\U2713]")
   expect_equal(top_words(base)[3, 1], "educational")
   expect_equal(base$pi$Proportion[3], 6.403216, tolerance = 0.01)
-
-  expect_s3_class(plot_alpha(base, start = 10), "ggplot")
-  expect_s3_class(plot_pi(base), "ggplot")
 })
 
 
@@ -39,6 +40,7 @@ cov <- keyATM(docs = keyATM_docs,
              )
 
 test_that("keyATM covariate", {
+  skip_on_os("linux")
   expect_equal(cov$model_fit$Perplexity[3], 1874.663, tolerance = 0.5)
   expect_equal(top_words(cov)[1, 1], "education [\U2713]")
   expect_equal(top_words(cov)[3, 3], "care")
@@ -56,18 +58,21 @@ dyn <- keyATM(docs = keyATM_docs,
                      options=list(seed=250, verbose = F, iterations = 15, thinning = 2))
 
 test_that("keyATM dynamic", {
+  expect_s3_class(plot_alpha(dyn, start = 10), "ggplot")
+
+  skip_on_os("linux")
   expect_equal(dyn$model_fit$Perplexity[2], 2410.199, tolerance = 0.1)
   expect_equal(top_words(dyn)[1, 1], "education [\U2713]")
   expect_equal(top_words(dyn)[2, 5], "security")
   expect_equal(dyn$pi$Proportion[2], 2.960897, tolerance = 0.01)
-
-  expect_s3_class(plot_alpha(dyn, start = 10), "ggplot")
 })
 
 
 # Heterogeneity
 test_that("keyATM Heterogeneity Doc-Topic", {
   strata_topic <- by_strata_DocTopic(cov, by_var = "RepParty", labels = c("Dem", "Rep"))
+
+  skip_on_os("linux")
   expect_equal(summary(strata_topic)[[2]]$Lower[2], 0.1336164, tolerance = 0.01)
   expect_s3_class(plot(strata_topic, topics = c(1,2,3,4)), "ggplot")
 })
@@ -89,6 +94,7 @@ out <- keyATM(docs = keyATM_docs,
               model = "base",
               options = list(seed = 250, iterations = 5))
 test_that("keyATM onle one keyword topic", {
+  skip_on_os("linux")
   expect_equal(out$model_fit$Perplexity[2], 3064.172, tolerance = 0.1)
 })
 
@@ -109,6 +115,7 @@ out <- keyATM(docs = keyATM_docs,
                              thinning = 2, use_weights = 1))
 
 test_that("keyATM overlapping keywords", {
+  skip_on_os("linux")
   expect_equal(out$model_fit$Perplexity[2], 2283.335, tolerance = 0.1)
   expect_equal(top_words(out)[1, 1], "education [\U2713]")
   expect_equal(top_words(out)[2, 5], "commission")
@@ -128,6 +135,7 @@ out <- keyATM(docs = keyATM_docs,
               options = list(seed = 250, store_theta = T, iterations = 10))
 
 test_that("keyATM same keywords in multiple topics", {
+  skip_on_os("linux")
   expect_equal(out$model_fit$Perplexity[2], 2246.162, tolerance = 0.1)
   expect_equal(top_words(out)[1, 1], "education [\U2713]")
   expect_equal(top_words(out)[2, 5], "follow")
