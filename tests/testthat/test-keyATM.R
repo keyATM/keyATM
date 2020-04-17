@@ -1,0 +1,135 @@
+data(keyATM_data_bills)
+bills_dfm <- keyATM_data_bills$doc_dfm
+bills_keywords <- keyATM_data_bills$keywords
+bills_cov <- keyATM_data_bills$cov
+bills_time_index <- keyATM_data_bills$time_index
+labels_use <- keyATM_data_bills$labels
+keyATM_docs <- keyATM_read(bills_dfm)
+
+# Base
+base <- keyATM(docs = keyATM_docs,
+               no_keyword_topics = 3,
+               keywords = bills_keywords,
+               model = "base",
+               options = list(seed = 250, store_theta = T, iterations = 30,
+                              store_pi = 1, use_weights = 1))
+
+test_that("keyATM base", {
+  expect_equal(base$model_fit$Perplexity[3], 1861.29, tolerance = 0.1)
+  expect_equal(top_words(base)[1, 1], "education [\U2713]")
+  expect_equal(top_words(base)[3, 1], "educational")
+  expect_equal(base$pi$Proportion[3], 6.403216, tolerance = 0.01)
+
+  expect_s3_class(plot_alpha(base, start = 10), "ggplot")
+  expect_s3_class(plot_pi(base), "ggplot")
+})
+
+
+# Covariate
+cov <- keyATM(docs = keyATM_docs,
+              no_keyword_topics=3,
+              keywords=bills_keywords,
+              model="covariates",
+              model_settings=list(covariates_data=bills_cov, standardize = T, 
+                                  covariates_formula = ~.
+                                  ),
+              options=list(seed=250, store_theta = T, iterations = 20,
+                           store_pi = 1, thinning = 5, verbose = F),
+              keep = c("Z", "S")
+             )
+
+test_that("keyATM covariate", {
+  expect_equal(cov$model_fit$Perplexity[3], 1874.663, tolerance = 0.5)
+  expect_equal(top_words(cov)[1, 1], "education [\U2713]")
+  expect_equal(top_words(cov)[3, 3], "care")
+  expect_equal(cov$pi$Proportion[2], 4.836863, tolerance = 0.01)
+})
+
+
+# Dynamic
+dyn <- keyATM(docs = keyATM_docs,
+                     no_keyword_topics=3,
+                     keywords=bills_keywords,
+                     model="dynamic",
+                     model_settings=list(time_index=bills_time_index-100,
+                                         num_states=5),
+                     options=list(seed=250, verbose = F, iterations = 15, thinning = 2))
+
+test_that("keyATM dynamic", {
+  expect_equal(dyn$model_fit$Perplexity[2], 2410.199, tolerance = 0.1)
+  expect_equal(top_words(dyn)[1, 1], "education [\U2713]")
+  expect_equal(top_words(dyn)[2, 5], "security")
+  expect_equal(dyn$pi$Proportion[2], 2.960897, tolerance = 0.01)
+
+  expect_s3_class(plot_alpha(dyn, start = 10), "ggplot")
+})
+
+
+# Heterogeneity
+test_that("keyATM Heterogeneity Doc-Topic", {
+  strata_topic <- by_strata_DocTopic(cov, by_var = "RepParty", labels = c("Dem", "Rep"))
+  expect_equal(summary(strata_topic)[[2]]$Lower[2], 0.1336164, tolerance = 0.01)
+  expect_s3_class(plot(strata_topic, topics = c(1,2,3,4)), "ggplot")
+})
+
+test_that("keyATM Heterogeneity Topic-Word", {
+  RepParty <- as.vector(bills_cov[, "RepParty"])  # the length should be the same as the number of documents
+  strata_tw <- by_strata_TopicWord(cov, keyATM_docs, by = RepParty)
+  
+  RepParty_chr <- ifelse(bills_cov[, "RepParty"] == 0, "Democrat", "Republican")
+  strata_tw_chr <- by_strata_TopicWord(cov, keyATM_docs, RepParty_chr)
+  expect_equal(top_words(strata_tw_chr, n = 3)$Republican[1, 3], "public [\U2713]")
+})
+
+
+# Only one keyword
+out <- keyATM(docs = keyATM_docs,
+              no_keyword_topics = 3,
+              keywords = bills_keywords[1],
+              model = "base",
+              options = list(seed = 250, iterations = 5))
+test_that("keyATM onle one keyword topic", {
+  expect_equal(out$model_fit$Perplexity[2], 3064.172, tolerance = 0.1)
+})
+
+
+# Overlapping keywords
+bills_keywords2 <- list(
+                        Education = c("education", "child", "student"),	
+                              Law = c("court", "law", "attorney"),	
+                           Health = c("public", "health", "student"),	
+                             Drug = c("drug", "court")	
+                       )
+
+out <- keyATM(docs = keyATM_docs, 
+              no_keyword_topics = 3,
+              keywords = bills_keywords2,
+              model = "base",
+              options = list(seed = 250, store_theta = T, iterations = 12,
+                             thinning = 2, use_weights = 1))
+
+test_that("keyATM overlapping keywords", {
+  expect_equal(out$model_fit$Perplexity[2], 2283.335, tolerance = 0.1)
+  expect_equal(top_words(out)[1, 1], "education [\U2713]")
+  expect_equal(top_words(out)[2, 5], "commission")
+  expect_equal(out$pi$Proportion[2], 4.750078, tolerance = 0.01)
+})
+
+# Same keywords in multiple topics
+bills_keywords_multiple <- bills_keywords
+bills_keywords_multiple$New <- c("public", "drug", "health")
+bills_keywords_multiple$New2 <- c("law", "public", "health")
+bills_keywords_multiple$Education <- c("education", "child", "student", "law")
+
+out <- keyATM(docs = keyATM_docs,
+              no_keyword_topics = 0,
+              keywords = bills_keywords_multiple,
+              model = "base",
+              options = list(seed = 250, store_theta = T, iterations = 10))
+
+test_that("keyATM same keywords in multiple topics", {
+  expect_equal(out$model_fit$Perplexity[2], 2246.162, tolerance = 0.1)
+  expect_equal(top_words(out)[1, 1], "education [\U2713]")
+  expect_equal(top_words(out)[2, 5], "follow")
+  expect_equal(top_words(out)[9, 6], "law [\U2713]")
+})
