@@ -11,6 +11,7 @@ test_that("Reading documents from quanteda dfm", {
 
 
 test_that("Parallel initialization", {
+  skip_on_os("linux")
   out <- keyATM(docs = keyATM_docs,  # text input
                 no_keyword_topics = 3,  # number of regular topics
                 keywords = bills_keywords,  # keywords
