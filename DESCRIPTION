@@ -7,7 +7,7 @@ Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", ro
     person("William", "Lowe", email = "wlowe@princeton.edu", role = c("ctb")),
     person("Kosuke", "Imai", email = "imai@harvard.edu", role = c("aut")))
 License: GPL-3
-Depends: R (>= 3.6)
+Depends: R (>= 3.5)
 Imports: Rcpp,
   dplyr,
   fastmap,
