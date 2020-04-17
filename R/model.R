@@ -378,7 +378,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   info$num_doc <- length(docs)
   info$keyword_k <- length(keywords)
   info$total_k <- length(keywords) + no_keyword_topics
-  info$num_core <- parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L
+  info$num_core <- max(1, parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L)
 
   # Set default values
   model_settings <- check_arg(model_settings, "model_settings", model, info)
