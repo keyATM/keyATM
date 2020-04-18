@@ -40,6 +40,10 @@ cov <- keyATM(docs = keyATM_docs,
              )
 
 test_that("keyATM covariate", {
+  expect_output(covariates_info(cov))
+  expect_type(covariates_get(cov), "double")
+  expect_error(covariates_info(base))
+
   skip_on_os("linux")
   expect_equal(cov$model_fit$Perplexity[3], 1874.663, tolerance = 0.5)
   expect_equal(top_words(cov)[1, 1], "education [\U2713]")

@@ -818,7 +818,7 @@ covariates_info <- function(x) {
   cat(paste0("Colnames: ", paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse = ", "),
              "\nStandardized: ", as.character(as.logical(x$kept_values$model_settings$standardize)),
              "\nFormula: ", paste(as.character(x$kept_values$model_settings$covariates_formula), collapse = " "), "\n\nPreview:\n"))
-  print(head(x$kept_values$model_settings$covariates_data_use))
+  print(utils::head(x$kept_values$model_settings$covariates_data_use))
 }
 
 
@@ -954,11 +954,11 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NU
 #' @noRd
 #' @importFrom rlang .data
 #' @export
-summary.strata_doctopic <- function(x, quantile_vec = c(0.05, 0.5, 0.95), ...)
+summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), ...)
 {
-  tables <- lapply(1:length(x$by_values),
+  tables <- lapply(1:length(object$by_values),
                   function(index) {
-                     theta <- x$theta[[index]]
+                     theta <- object$theta[[index]]
                      theta_ <- theta[, 1:(ncol(theta)-2)]
                      q <- as.data.frame(apply(theta_, 2, stats::quantile, quantile_vec))
                      q$Percentile <- c("Lower", "Point", "Upper")
@@ -966,8 +966,8 @@ summary.strata_doctopic <- function(x, quantile_vec = c(0.05, 0.5, 0.95), ...)
                        tidyr::gather(key = "Topic", value = "Value", -"Percentile") %>%
                        tidyr::spread(key = "Percentile", value = "Value") %>%
                        dplyr::mutate(TopicId = 1:(dplyr::n()),
-                                     val = x$by_values[index],
-                                     label = x$labels[index]) %>%
+                                     val = object$by_values[index],
+                                     label = object$labels[index]) %>%
                        tibble::as_tibble() -> temp
                   })
   return(tables)
