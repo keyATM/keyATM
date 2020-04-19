@@ -26,8 +26,13 @@ void keyATMbase::initialize_specific()
   // to initialize variables.
 }
 
-void keyATMbase::iteration_single(int &it)
+void keyATMbase::iteration_single(int it)
 { // Single iteration
+  int doc_id_;
+  int doc_length;
+  int w_, z_, s_;
+  int new_z, new_s;
+  int w_position;
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
@@ -61,7 +66,7 @@ void keyATMbase::iteration_single(int &it)
 
 }
 
-void keyATMbase::sample_parameters(int &it)
+void keyATMbase::sample_parameters(int it)
 {
   if (estimate_alpha)
     sample_alpha();
@@ -82,7 +87,7 @@ void keyATMbase::sample_parameters(int &it)
 void keyATMbase::sample_alpha()
 {
 
-  // start, end, previous_p, new_p, newlikelihood, slice_;
+  double start, end, previous_p, new_p, newlikelihood, slice_;
   keep_current_param = alpha;
   topic_ids = sampler::shuffled_indexes(num_topics);
   newalphallk = 0.0;
@@ -121,13 +126,13 @@ void keyATMbase::sample_alpha()
 }
 
 
-double keyATMbase::alpha_loglik(int &k)
+double keyATMbase::alpha_loglik(int k)
 {
-  loglik = 0.0;
-  
-  fixed_part = 0.0;
+  double loglik = 0.0;
+  double fixed_part = 0.0;
+
   ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
-  alpha_sum_val = alpha.sum();
+  double alpha_sum_val = alpha.sum();
   
   
   fixed_part += mylgamma(alpha_sum_val); // first term numerator
@@ -156,6 +161,7 @@ double keyATMbase::alpha_loglik(int &k)
 double keyATMbase::loglik_total()
 {
   double loglik = 0.0;
+  double fixed_part = 0.0;
 
   for (int k = 0; k < num_topics; ++k) {
     for (int v = 0; v < num_vocab; ++v) { // word
@@ -200,6 +206,7 @@ double keyATMbase::loglik_total()
 double keyATMbase::loglik_total_label()
 {
   double loglik = 0.0;
+  double fixed_part = 0.0;
 
   for (int k = 0; k < num_topics; ++k) {
     for (int v = 0; v < num_vocab; ++v) { // word

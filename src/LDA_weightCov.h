@@ -23,7 +23,7 @@ class LDAcov : public LDAbase, public keyATMcov
 
 
     // Functions
-    void iteration_single(int &it) final;
+    void iteration_single(int it) final;
     double loglik_total() final;
 
 };

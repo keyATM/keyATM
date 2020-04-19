@@ -28,12 +28,8 @@ class LDAweight : public LDAbase, public keyATMbase
     double store_loglik;
     double newalphallk;
 
-    double loglik;
-    double fixed_part;
-
     // in alpha_loglik
     MatrixXd ndk_a;
-
     
     //
     // Functions
@@ -46,7 +42,7 @@ class LDAweight : public LDAbase, public keyATMbase
       keyATMbase(model_, iter_) {};
 
     // Iteration
-    void iteration_single(int &it) final;
+    void iteration_single(int it) final;
     double loglik_total() final;
 };
 
