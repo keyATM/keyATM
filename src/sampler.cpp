@@ -24,7 +24,7 @@ namespace sampler{
 
 	int rcat(Eigen::VectorXd &prob, const int size)
   { 
-		double u = R::runif(0, 1);
+		double u = R::unif_rand();
 		double temp = 0.0;
 		int index = 0;
 		for (int ii = 0; ii < size; ii++) {
@@ -42,7 +42,7 @@ namespace sampler{
   { 
     // Draw from a categorial distribution
     // This function does not requiare a normalized probability vector.
-		double u = R::runif(0, 1) * total;
+		double u = R::unif_rand() * total;
 		double temp = 0.0;
 		int index = 0;
 		for (int ii = 0; ii < size; ii++) {
