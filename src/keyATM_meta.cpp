@@ -735,6 +735,7 @@ double keyATMmeta::gammaln_frac(const double value, const int count)
 {
   // Calculate \log \frac{\gamma(value + count)}{\gamma(\value)}
   // Not very fast
+  double gammaln_val;
   
   if (count > 19) {
     return mylgamma(value + count) - mylgamma(value);  

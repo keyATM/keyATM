@@ -37,8 +37,6 @@ class keyATMhmm : virtual public keyATMmeta
       // so we just store the count of each state
     MatrixXd P_est;  // (num_states, num_states)
     MatrixXd alphas;  // (num_states, num_topics)
-    double loglik;
-    double fixed_part;
 
     // Constructor
     keyATMhmm(List model_, const int iter_) :
@@ -50,12 +48,8 @@ class keyATMhmm : virtual public keyATMmeta
       VectorXd rt_1l;
       VectorXd rt_k;
       VectorXd logrt_k;
-      double logsum;
-      int added;
 
-      int state_id;
       VectorXd state_prob_vec;
-      double pii;
 
       // Sample alpha
       VectorXi states_start;
@@ -64,8 +58,6 @@ class keyATMhmm : virtual public keyATMmeta
         // Slice Sampling
         std::vector<int> topic_ids;
         VectorXd keep_current_param;
-        double store_loglik;
-        double newalphallk;
         MatrixXd ndk_a;
   
     // 

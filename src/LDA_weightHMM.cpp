@@ -43,7 +43,9 @@ void LDAhmm::iteration_single(int it)
 
 double LDAhmm::loglik_total()
 {
-  loglik = 0.0;
+  double loglik = 0.0;
+  int state_id;
+
   for (int k = 0; k < num_topics; k++) {
     for (int v = 0; v < num_vocab; v++) { // word
       loglik += mylgamma(beta + n_kv(k, v)) - mylgamma(beta);

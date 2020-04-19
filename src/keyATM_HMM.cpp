@@ -236,6 +236,9 @@ void keyATMhmm::sample_alpha_state(int state, int state_start, int state_end)
 {
 
   double start, end, previous_p, new_p, newlikelihood, slice_;
+  double store_loglik;
+  double newalphallk;
+
   keep_current_param = alpha;
   topic_ids = sampler::shuffled_indexes(num_topics);
   newalphallk = 0.0;
@@ -283,11 +286,11 @@ void keyATMhmm::sample_alpha_state(int state, int state_start, int state_end)
 
 double keyATMhmm::alpha_loglik(int k, int state_start, int state_end)
 {
+  double loglik = 0.0;
+  double fixed_part = 0.0;
 
-  loglik = 0.0;
-  fixed_part = 0.0;
   ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
-  alpha_sum_val = alpha.sum();
+  double alpha_sum_val = alpha.sum();
 
 
   fixed_part += mylgamma(alpha_sum_val); // first term numerator
@@ -314,6 +317,9 @@ double keyATMhmm::alpha_loglik(int k, int state_start, int state_end)
 
 void keyATMhmm::sample_forward()
 { // Calculate Prk (num_doc, num_states)
+  double logsum;
+  int added;
+  double loglik;
 
   // Prk = MatrixXd::Zero(num_time, num_states);
 
@@ -367,7 +373,7 @@ void keyATMhmm::sample_forward()
 
 double keyATMhmm::polyapdfln(int t, VectorXd &alpha)
 { // Polya distribution: log-likelihood
-  loglik = 0.0;
+  double loglik = 0.0;
 
   int doc_start, doc_end;
   doc_start = time_doc_start(t);  // starting doc index of time segment t
@@ -386,6 +392,8 @@ double keyATMhmm::polyapdfln(int t, VectorXd &alpha)
 
 void keyATMhmm::sample_backward()
 {
+  int state_id;
+
   // sample R_est
   // num_time - 2, because time segment index is (num_time - 1)
   // and we want to start from (time_index - 1)
@@ -412,6 +420,8 @@ void keyATMhmm::sample_backward()
 
 void keyATMhmm::sample_P()
 {
+  double pii;
+
   // sample P_est
   // iterate until index_state - 2
   for (int r = 0; r <= (num_states - 2); ++r) {
@@ -452,7 +462,9 @@ void keyATMhmm::store_P_est()
 
 double keyATMhmm::loglik_total()
 {
-  loglik = 0.0;
+  double loglik = 0.0;
+  int state_id;
+
   for (int k = 0; k < num_topics; ++k) {
     for (int v = 0; v < num_vocab; ++v) { // word
       loglik += mylgamma(beta + n_s0_kv(k, v)) - mylgamma(beta);
@@ -506,7 +518,9 @@ double keyATMhmm::loglik_total()
 
 double keyATMhmm::loglik_total_label()
 {
-  loglik = 0.0;
+  double loglik = 0.0;
+  int state_id;
+
   for (int k = 0; k < num_topics; ++k) {
     for (int v = 0; v < num_vocab; ++v) { // word
       loglik += mylgamma(beta_s0kv(k, v) + n_s0_kv(k, v) ) - mylgamma(beta_s0kv(k, v));

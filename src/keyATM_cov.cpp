@@ -186,10 +186,19 @@ void keyATMcov::sample_lambda_mh()
 
 void keyATMcov::sample_lambda_slice()
 {
-  start = 0.0; 
-  end = 0.0;
-  previous_p = 0.0; new_p = 0.0;
-  newlikelihood = 0.0; slice_ = 0.0; current_lambda = 0.0;
+  double start = 0.0; 
+  double end = 0.0;
+
+  double previous_p = 0.0;
+  double new_p = 0.0;
+
+  double newlikelihood = 0.0;
+  double slice_ = 0.0;
+  double current_lambda = 0.0;
+
+  double store_loglik;
+  double newlambdallk;
+
   topic_ids = sampler::shuffled_indexes(num_topics);
   cov_ids = sampler::shuffled_indexes(num_cov);
   int k, t;

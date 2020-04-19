@@ -128,11 +128,11 @@ void keyATMbase::sample_alpha()
 
 double keyATMbase::alpha_loglik(int k)
 {
-  loglik = 0.0;
-  
-  fixed_part = 0.0;
+  double loglik = 0.0;
+  double fixed_part = 0.0;
+
   ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
-  alpha_sum_val = alpha.sum();
+  double alpha_sum_val = alpha.sum();
   
   
   fixed_part += mylgamma(alpha_sum_val); // first term numerator
@@ -161,6 +161,7 @@ double keyATMbase::alpha_loglik(int k)
 double keyATMbase::loglik_total()
 {
   double loglik = 0.0;
+  double fixed_part = 0.0;
 
   for (int k = 0; k < num_topics; ++k) {
     for (int v = 0; v < num_vocab; ++v) { // word
@@ -205,6 +206,7 @@ double keyATMbase::loglik_total()
 double keyATMbase::loglik_total_label()
 {
   double loglik = 0.0;
+  double fixed_part = 0.0;
 
   for (int k = 0; k < num_topics; ++k) {
     for (int v = 0; v < num_vocab; ++v) { // word

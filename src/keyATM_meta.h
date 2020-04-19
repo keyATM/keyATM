@@ -117,13 +117,10 @@ class keyATMmeta
       VectorXd z_prob_vec;
 
       // sample alpha
-      double alpha_sum_val;
       double min_v;
       double max_v;
       int max_shrink_time;
 
-      // gammaln_sum
-      double gammaln_val;
 
 
     //

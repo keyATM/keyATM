@@ -30,18 +30,7 @@ class keyATMcov : virtual public keyATMmeta
       std::vector<int> topic_ids;
       std::vector<int> cov_ids;
 
-      double Lambda_current;
-      double llk_current;
-      double llk_proposal;
-      double diffllk;
-      double r, u;
-
       // Slice sampling
-      double start, end;
-      double previous_p, new_p;
-      double newlikelihood, slice_, current_lambda;
-      double store_loglik;
-      double newlambdallk;
       double val_min;
       double val_max;
     
