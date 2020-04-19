@@ -485,7 +485,7 @@ double keyATMhmm::loglik_total()
 
   for (int d = 0; d < num_doc; ++d) {
     // z
-    alpha = alphas.row(get_state_index(doc_id_)).transpose(); // Doc alpha, column vector  
+    alpha = alphas.row(get_state_index(d)).transpose(); // Doc alpha, column vector  
     
     loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
     for (int k = 0; k < num_topics; ++k) {
@@ -537,7 +537,7 @@ double keyATMhmm::loglik_total_label()
 
   for (int d = 0; d < num_doc; ++d) {
     // z
-    alpha = alphas.row(get_state_index(doc_id_)).transpose(); // Doc alpha, column vector  
+    alpha = alphas.row(get_state_index(d)).transpose(); // Doc alpha, column vector  
     
     loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
     for (int k = 0; k < num_topics; ++k) {
