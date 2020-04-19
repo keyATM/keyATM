@@ -2,9 +2,11 @@
 ### Major changes
 * Update `by_strata_DocTopic`
 * Make examples runnable (thank you [Chung-hong Chan](https://github.com/chainsawriot) for the suggestion!)
+* Speed up (about 15% faster)
 
 ### Bug fix
 * `weightedLDA` without specifying the number of iterations
+* log-likelihood of dynamic models 
 
 # keyATM 0.1.0
 ### Major changes
