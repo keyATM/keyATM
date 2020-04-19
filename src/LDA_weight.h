@@ -46,7 +46,7 @@ class LDAweight : public LDAbase, public keyATMbase
       keyATMbase(model_, iter_) {};
 
     // Iteration
-    void iteration_single(int &it) final;
+    void iteration_single(int it) final;
     double loglik_total() final;
 };
 

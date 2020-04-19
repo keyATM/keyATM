@@ -6,7 +6,7 @@ using namespace std;
 
 # define PI_V   3.14159265358979323846  /* pi */
 
-void LDAcov::iteration_single(int &it)
+void LDAcov::iteration_single(int it)
 { // Single iteration
   int doc_id_;
   int doc_length;

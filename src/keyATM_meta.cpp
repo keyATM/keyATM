@@ -369,7 +369,7 @@ void keyATMmeta::iteration()
 }
 
 
-void keyATMmeta::sampling_store(int &r_index)
+void keyATMmeta::sampling_store(int r_index)
 {
   // Store likelihood and perplexity during the sampling
  
@@ -390,7 +390,7 @@ void keyATMmeta::sampling_store(int &r_index)
 }
 
 
-void keyATMmeta::parameters_store(int &r_index)
+void keyATMmeta::parameters_store(int r_index)
 {
   if (store_theta)
     store_theta_iter(r_index);
@@ -400,7 +400,7 @@ void keyATMmeta::parameters_store(int &r_index)
 }
 
 
-void keyATMmeta::store_theta_iter(int &r_index)
+void keyATMmeta::store_theta_iter(int r_index)
 {
   Z_tables = stored_values["Z_tables"];
   NumericMatrix Z_table = Rcpp::wrap(n_dk_noWeight);
@@ -409,7 +409,7 @@ void keyATMmeta::store_theta_iter(int &r_index)
 }
 
 
-void keyATMmeta::store_pi_iter(int &r_index)
+void keyATMmeta::store_pi_iter(int r_index)
 {
   List pi_vectors = stored_values["pi_vectors"];
   // calculate
@@ -424,7 +424,7 @@ void keyATMmeta::store_pi_iter(int &r_index)
 }
 
 
-void keyATMmeta::verbose_special(int &r_index)
+void keyATMmeta::verbose_special(int r_index)
 {
   // If there is anything special to show, write here.
 }
@@ -509,8 +509,8 @@ int keyATMmeta::sample_z(VectorXd &alpha, int z, int s,
 }
 
 
-int keyATMmeta::sample_z_label(VectorXd &alpha, int &z, int &s,
-                         int &w, int &doc_id)
+int keyATMmeta::sample_z_label(VectorXd &alpha, int z, int s,
+                         int w, int doc_id)
 {
   int new_z;
   double numerator, denominator;
@@ -588,8 +588,8 @@ int keyATMmeta::sample_z_label(VectorXd &alpha, int &z, int &s,
 
 
 
-int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
-                 int &w, int &doc_id)
+int keyATMmeta::sample_s(VectorXd &alpha, int z, int s,
+                 int w, int doc_id)
 {
   int new_s;
   double numerator, denominator;
@@ -639,8 +639,8 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
 }
 
 
-int keyATMmeta::sample_s_label(VectorXd &alpha, int &z, int &s,
-                 int &w, int &doc_id)
+int keyATMmeta::sample_s_label(VectorXd &alpha, int z, int s,
+                 int w, int doc_id)
 {
   int new_s;
   double numerator, denominator;
@@ -700,26 +700,26 @@ double keyATMmeta::loglik_total_label()
 
 // Utilities
 //
-double keyATMmeta::gammapdfln(const double &x, const double &a, const double &b)
+double keyATMmeta::gammapdfln(const double x, const double a, const double b)
 {
   // a: shape, b: scale
   return - a * log(b) - mylgamma(a) + (a-1.0) * log(x) - x/b;
 }
 
 
-double keyATMmeta::betapdf(const double &x, const double &a, const double &b)
+double keyATMmeta::betapdf(const double x, const double a, const double b)
 {
   return tgamma(a+b) / (tgamma(a) * tgamma(b)) * pow(x, a-1) * pow(1-x, b-1);
 }
 
 
-double keyATMmeta::betapdfln(const double &x, const double &a, const double &b)
+double keyATMmeta::betapdfln(const double x, const double a, const double b)
 {
   return (a-1)*log(x) + (b-1)*log(1.0-x) + mylgamma(a+b) - mylgamma(a) - mylgamma(b);
 }
 
 
-NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int& num_topics)
+NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int num_topics)
 {
   NumericVector alpha_rvec(num_topics);
 
@@ -731,7 +731,7 @@ NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int& num_topics)
 }
 
 
-double keyATMmeta::gammaln_frac(const double &value, const int &count)
+double keyATMmeta::gammaln_frac(const double value, const int count)
 {
   // Calculate \log \frac{\gamma(value + count)}{\gamma(\value)}
   // Not very fast

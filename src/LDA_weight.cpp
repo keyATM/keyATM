@@ -5,7 +5,7 @@ using namespace Rcpp;
 using namespace std;
 
 
-void LDAweight::iteration_single(int &it)
+void LDAweight::iteration_single(int it)
 { // Single iteration
   int doc_id_;
   int doc_length;

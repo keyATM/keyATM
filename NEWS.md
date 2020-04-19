@@ -1,6 +1,7 @@
 # keyATM 0.2.0
 ### Major changes
-* Update `by_strata_DocTopic`
+* Update: `by_strata_DocTopic`
+* Bugfix: log-likelihood of dynamic models 
 
 ### Bug fix
 * `weightedLDA` without specifying the number of iterations

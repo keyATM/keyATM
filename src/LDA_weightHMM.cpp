@@ -4,7 +4,7 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-void LDAhmm::iteration_single(int &it)
+void LDAhmm::iteration_single(int it)
 {
   int doc_id_;
   int doc_length;

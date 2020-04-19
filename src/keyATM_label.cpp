@@ -40,7 +40,7 @@ void keyATMlabel::initialize_specific()
   Alpha = MatrixXd::Zero(num_doc, num_topics);
 }
 
-void keyATMlabel::iteration_single(int &it)
+void keyATMlabel::iteration_single(int it)
 { // Single iteration
   int doc_id_;
   int doc_length;
@@ -82,7 +82,7 @@ void keyATMlabel::iteration_single(int &it)
 }
 
 
-void keyATMlabel::sample_parameters(int &it)
+void keyATMlabel::sample_parameters(int it)
 {
   if (estimate_alpha)
     sample_alpha();
@@ -142,7 +142,7 @@ void keyATMlabel::sample_alpha()
 }
 
 
-double keyATMlabel::alpha_loglik_label(int &k)
+double keyATMlabel::alpha_loglik_label(int k)
 {
   loglik = 0.0;
   

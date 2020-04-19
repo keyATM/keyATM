@@ -45,7 +45,7 @@ void keyATMcov::initialize_specific()
 }
 
 
-void keyATMcov::iteration_single(int &it)
+void keyATMcov::iteration_single(int it)
 { // Single iteration
   int doc_id_;
   int doc_length;
@@ -92,7 +92,7 @@ void keyATMcov::iteration_single(int &it)
 }
 
 
-void keyATMcov::sample_parameters(int &it)
+void keyATMcov::sample_parameters(int it)
 {
   sample_lambda();
 
@@ -107,7 +107,7 @@ void keyATMcov::sample_parameters(int &it)
 }
 
 
-double keyATMcov::likelihood_lambda(int &k, int &t)
+double keyATMcov::likelihood_lambda(int k, int t)
 {
   double loglik = 0.0;
   Alpha = (C * Lambda.transpose()).array().exp();

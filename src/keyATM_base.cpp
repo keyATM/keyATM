@@ -26,7 +26,7 @@ void keyATMbase::initialize_specific()
   // to initialize variables.
 }
 
-void keyATMbase::iteration_single(int &it)
+void keyATMbase::iteration_single(int it)
 { // Single iteration
   int doc_id_;
   int doc_length;
@@ -66,7 +66,7 @@ void keyATMbase::iteration_single(int &it)
 
 }
 
-void keyATMbase::sample_parameters(int &it)
+void keyATMbase::sample_parameters(int it)
 {
   if (estimate_alpha)
     sample_alpha();
@@ -87,7 +87,7 @@ void keyATMbase::sample_parameters(int &it)
 void keyATMbase::sample_alpha()
 {
 
-  // start, end, previous_p, new_p, newlikelihood, slice_;
+  double start, end, previous_p, new_p, newlikelihood, slice_;
   keep_current_param = alpha;
   topic_ids = sampler::shuffled_indexes(num_topics);
   newalphallk = 0.0;
@@ -126,7 +126,7 @@ void keyATMbase::sample_alpha()
 }
 
 
-double keyATMbase::alpha_loglik(int &k)
+double keyATMbase::alpha_loglik(int k)
 {
   loglik = 0.0;
   

@@ -109,7 +109,7 @@ void keyATMhmm::initialize_specific()
 }
 
 
-int keyATMhmm::get_state_index(const int &doc_id)
+int keyATMhmm::get_state_index(const int doc_id)
 {
   // Which time segment the document belongs to
   int t;
@@ -122,7 +122,7 @@ int keyATMhmm::get_state_index(const int &doc_id)
 }
 
 
-void keyATMhmm::iteration_single(int &it)
+void keyATMhmm::iteration_single(int it)
 { // Single iteration
   int doc_id_;
   int doc_length;
@@ -165,13 +165,13 @@ void keyATMhmm::iteration_single(int &it)
 }
 
 
-void keyATMhmm::verbose_special(int &r_index)
+void keyATMhmm::verbose_special(int r_index)
 {
   // If there is anything special to show, write here.
 }
 
 
-void keyATMhmm::sample_parameters(int &it)
+void keyATMhmm::sample_parameters(int it)
 {
   // alpha
   sample_alpha();
@@ -224,12 +224,6 @@ void keyATMhmm::sample_alpha()
     states_end(r) = time_doc_end(index_end);
   }
 
-  // // Debug
-  // cout << R_est.transpose() << endl;
-  // cout << R_count.transpose() << endl;
-  // cout << states_start.transpose() << endl;
-  // cout << states_end.transpose() << endl;
-
   for (int r = 0; r < num_states; ++r) {
     sample_alpha_state(r, states_start(r),
                           states_end(r));  
@@ -238,10 +232,10 @@ void keyATMhmm::sample_alpha()
 }
 
 
-void keyATMhmm::sample_alpha_state(int &state, int &state_start, int &state_end)
+void keyATMhmm::sample_alpha_state(int state, int state_start, int state_end)
 {
 
-  // start, end, previous_p, new_p, newlikelihood, slice_;
+  double start, end, previous_p, new_p, newlikelihood, slice_;
   keep_current_param = alpha;
   topic_ids = sampler::shuffled_indexes(num_topics);
   newalphallk = 0.0;
@@ -287,7 +281,7 @@ void keyATMhmm::sample_alpha_state(int &state, int &state_start, int &state_end)
 }
 
 
-double keyATMhmm::alpha_loglik(int &k, int &state_start, int &state_end)
+double keyATMhmm::alpha_loglik(int k, int state_start, int state_end)
 {
 
   loglik = 0.0;
@@ -371,7 +365,7 @@ void keyATMhmm::sample_forward()
 }
 
 
-double keyATMhmm::polyapdfln(int &t, VectorXd &alpha)
+double keyATMhmm::polyapdfln(int t, VectorXd &alpha)
 { // Polya distribution: log-likelihood
   loglik = 0.0;
 

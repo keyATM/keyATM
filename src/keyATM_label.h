@@ -56,10 +56,10 @@ class keyATMlabel : virtual public keyATMmeta
     void initialize_specific();
 
     // Iteration
-    virtual void iteration_single(int &it);
-    void sample_parameters(int &it);
+    virtual void iteration_single(int it);
+    void sample_parameters(int it);
     void sample_alpha();
-    double alpha_loglik_label(int &k);
+    double alpha_loglik_label(int k);
     virtual double loglik_total();
     double loglik_total_label();
 };
