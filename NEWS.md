@@ -1,6 +1,7 @@
 # keyATM 0.2.0
 ### Major changes
 * Update `by_strata_DocTopic`
+* Make examples runnable (thank you [Chung-hong Chan](https://github.com/chainsawriot) for the suggestion!)
 * Speed up (about 15% faster)
 
 ### Bug fix
