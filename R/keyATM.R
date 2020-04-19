@@ -72,10 +72,10 @@
 #'   # keyATM Covariates
 #'   bills_cov <- as.data.frame(keyATM_data_bills$cov)
 #'   out <- keyATM(keyATM_docs,
-#'          model = "covariates", no_keyword_topics = 5,
-#'          keywords = bills_keywords,
-#'          model_settings = list(covariates_data = bills_cov,
-#'          covariates_formula = ~RepParty))
+#'                 model = "covariates", no_keyword_topics = 5,
+#'                 keywords = bills_keywords,
+#'                 model_settings = list(covariates_data = bills_cov,
+#'                                       covariates_formula = ~RepParty))
 #'
 #'   # keyATM Dynamic
 #'   bills_time_index <- keyATM_data_bills$time_index
@@ -88,7 +88,6 @@
 #'                 time_index = bills_time_index, num_states = 5))
 #'
 #'   # Visit our website for full examples: https://keyatm.github.io/keyATM/
-#'
 #' }
 #'
 #' @export
@@ -204,21 +203,20 @@ check_arg_keep <- function(obj, model)
 #'   # Weighted LDA Covariates
 #'   bills_cov <- as.data.frame(keyATM_data_bills$cov)
 #'   out <- weightedLDA(keyATM_docs, model = "covariates",
-#'          number_of_topics = 5,
-#'          model_settings = list(covariates_data = bills_cov,
-#'          covariates_formula = ~ RepParty))                   
+#'                      number_of_topics = 5,
+#'                      model_settings = list(covariates_data = bills_cov,
+#'                                            covariates_formula = ~ RepParty))                   
 #'
 #'   # Weighted LDA Dynamic
 #'   bills_time_index <- keyATM_data_bills$time_index
 #'   # Time index should start from 1, increment by 1
 #'   bills_time_index <- as.integer(bills_time_index - 100)
 #'   out <- weightedLDA(keyATM_docs, model = "dynamic",
-#'          number_of_topics = 5,
-#'          model_settings = list(num_states = 5,
-#'                           time_index = bills_time_index))
+#'                      number_of_topics = 5,
+#'                      model_settings = list(num_states = 5,
+#'                                            time_index = bills_time_index))
 #'
 #'   # Visit our website for full examples: https://keyatm.github.io/keyATM/
-#'
 #' }
 #'
 #' @export
