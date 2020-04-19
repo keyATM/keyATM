@@ -22,7 +22,7 @@ class LDAhmm : public LDAbase, public keyATMhmm
       keyATMhmm(model_, iter_) {};
 
     // Functions
-    void iteration_single(int &it) final;
+    void iteration_single(int it) final;
     double loglik_total() final;
 
 };

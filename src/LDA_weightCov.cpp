@@ -6,8 +6,14 @@ using namespace std;
 
 # define PI_V   3.14159265358979323846  /* pi */
 
-void LDAcov::iteration_single(int &it)
+void LDAcov::iteration_single(int it)
 { // Single iteration
+  int doc_id_;
+  int doc_length;
+  int w_, z_, s_;
+  int new_z;
+  int w_position;
+
   s_ = -1;
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 

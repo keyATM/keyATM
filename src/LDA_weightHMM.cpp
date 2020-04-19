@@ -4,8 +4,14 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-void LDAhmm::iteration_single(int &it)
+void LDAhmm::iteration_single(int it)
 {
+  int doc_id_;
+  int doc_length;
+  int w_, z_, s_;
+  int new_z;
+  int w_position;
+
   s_ = -1;  // we do not use x_ in LDA HMM
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
@@ -37,7 +43,9 @@ void LDAhmm::iteration_single(int &it)
 
 double LDAhmm::loglik_total()
 {
-  loglik = 0.0;
+  double loglik = 0.0;
+  int state_id;
+
   for (int k = 0; k < num_topics; k++) {
     for (int v = 0; v < num_vocab; v++) { // word
       loglik += mylgamma(beta + n_kv(k, v)) - mylgamma(beta);
@@ -50,7 +58,7 @@ double LDAhmm::loglik_total()
 
   for (int d = 0; d < num_doc; d++) {
     // z
-    alpha = alphas.row(get_state_index(doc_id_)).transpose(); // Doc alpha, column vector  
+    alpha = alphas.row(get_state_index(d)).transpose(); // Doc alpha, column vector  
     
     loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
     for (int k = 0; k < num_topics; k++) {

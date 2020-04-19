@@ -110,33 +110,17 @@ class keyATMmeta
     //
       // Declaration
       std::vector<int> doc_indexes;
-      int doc_id_;
       std::vector<int> token_indexes;
       IntegerVector doc_s, doc_z, doc_w;
-      int w_position;
-      int s_, z_, w_;
-      int doc_length;
   
       // sample_z
       VectorXd z_prob_vec;
-      int new_z;
-      double numerator, denominator;
-      double sum;
-
-      // sample_s
-      int new_s;
-      double s0_prob;
-      double s1_prob;
-      int k;
 
       // sample alpha
-      double alpha_sum_val;
       double min_v;
       double max_v;
       int max_shrink_time;
 
-      // gammaln_sum
-      double gammaln_val;
 
 
     //
@@ -165,25 +149,25 @@ class keyATMmeta
     // Sampling
     //
     void iteration();
-    virtual void iteration_single(int &it) = 0;
-    virtual void sample_parameters(int &it) = 0;
+    virtual void iteration_single(int it) = 0;
+    virtual void sample_parameters(int it) = 0;
 
-    virtual int sample_z(VectorXd &alpha, int &z, int &s,
-                         int &w, int &doc_id);
-    int sample_z_label(VectorXd &alpha, int &z, int &s,
-                       int &w, int &doc_id);
+    virtual int sample_z(VectorXd &alpha, int z, int s,
+                         int w, int doc_id);
+    int sample_z_label(VectorXd &alpha, int z, int s,
+                       int w, int doc_id);
 
-    int sample_s(VectorXd &alpha, int &z, int &s,
-                   int &w, int &doc_id);
-    int sample_s_label(VectorXd &alpha, int &z, int &s,
-                       int &w, int &doc_id);
+    int sample_s(VectorXd &alpha, int z, int s,
+                   int w, int doc_id);
+    int sample_s_label(VectorXd &alpha, int z, int s,
+                       int w, int doc_id);
 
-    void sampling_store(int &r_index);
-    virtual void parameters_store(int &r_index);
-    void store_theta_iter(int &r_index);
-    void store_pi_iter(int &r_index);
+    void sampling_store(int r_index);
+    virtual void parameters_store(int r_index);
+    void store_theta_iter(int r_index);
+    void store_pi_iter(int r_index);
 
-    virtual void verbose_special(int &r_index);
+    virtual void verbose_special(int r_index);
 
     virtual double loglik_total() = 0;
     virtual double loglik_total_label();
@@ -193,29 +177,29 @@ class keyATMmeta
     //
     double vmax, vmin;
 
-    double gammapdfln(const double &x, const double &a, const double &b);
-    double betapdf(const double &x, const double &a, const double &b);
-    double betapdfln(const double &x, const double &a, const double &b);
-    NumericVector alpha_reformat(VectorXd& alpha, int& num_topics);
+    double gammapdfln(const double x, const double a, const double b);
+    double betapdf(const double x, const double a, const double b);
+    double betapdfln(const double x, const double a, const double b);
+    NumericVector alpha_reformat(VectorXd& alpha, int num_topics);
 
-    double gammaln_frac(const double &value, const int &count);
+    double gammaln_frac(const double value, const int count);
 
     //
     // Inline functions
     //
 
     // Slice sampling
-    double expand(double &p, const double &A)
+    double expand(const double p, const double A)
     {
       return (-(1.0/A) * log((1.0/p) - 1.0));
     };
 
-    double shrink(double &x, const double &A)
+    double shrink(const double x, const double A)
     {
       return (1.0 / (1.0 + exp(-A*x)));
     };
 
-    double shrinkp(double &x)
+    double shrinkp(const double x)
     {
       return (x / (1.0 + x)); 
     };
@@ -236,8 +220,8 @@ class keyATMmeta
     };
 
     double logsumexp_Eigen(VectorXd &vec, const int size){
-      vmax = vec.maxCoeff();
-      sum = 0.0;
+      double vmax = vec.maxCoeff();
+      double sum = 0.0;
 
       for(int i = 0; i < size; i++){
         sum += exp(vec(i) - vmax);
@@ -247,7 +231,7 @@ class keyATMmeta
     }
 
     // Approximations
-    double mylgamma(const double &x){
+    double mylgamma(const double x){
       // gammaln_val = 0.0;
       // gammaln_val = lgamma(x);
       
@@ -264,7 +248,7 @@ class keyATMmeta
     };
 
     // Approximations below are not used
-    double mypow(const double &a, const double &b){
+    double mypow(const double a, const double b){
       // Reference: https://github.com/ekmett/approximate/blob/master/cbits/fast.c
       // Probably not good to use if b>1.0
       
@@ -276,7 +260,7 @@ class keyATMmeta
       return u.d;
     };
 
-    double myexp(const double &a){
+    double myexp(const double a){
       // Seems to be not very good
       union { double d; long long x; } u, v;
       u.x = (long long)(3248660424278399LL * a + 0x3fdf127e83d16f12LL);
@@ -284,7 +268,7 @@ class keyATMmeta
       return u.d / v.d;
     };
 
-    double mylog(const double &a){
+    double mylog(const double a){
       // Looks fine even with large a
       union { double d; long long x; } u = { a };
       return (u.x - 4606921278410026770) * 1.539095918623324e-16;  
