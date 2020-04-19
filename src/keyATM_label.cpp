@@ -51,7 +51,7 @@ void keyATMlabel::iteration_single(int &it)
     doc_s = S[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
 
-    alpha_ = Alpha.row(doc_id_).transpose(); // chooose document specific alpha
+    alpha = Alpha.row(doc_id_).transpose(); // chooose document specific alpha
     token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
     
     // Iterate each word in the document

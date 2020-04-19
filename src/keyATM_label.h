@@ -31,7 +31,6 @@ class keyATMlabel : virtual public keyATMmeta
           // 
     MatrixXd Alpha;
     MatrixXd label_dk;
-    VectorXd alpha_;
     VectorXd Alpha_sum_vec;
 
 
