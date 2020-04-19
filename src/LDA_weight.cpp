@@ -7,6 +7,10 @@ using namespace std;
 
 void LDAweight::iteration_single(int &it)
 { // Single iteration
+  int doc_id_;
+  int doc_length;
+  int w_, z_, s_;
+  int w_position;
 
   s_ = -1;  // we do not use x_ in LDA weight
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle

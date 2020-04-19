@@ -8,6 +8,11 @@ using namespace std;
 
 void LDAcov::iteration_single(int &it)
 { // Single iteration
+  int doc_id_;
+  int doc_length;
+  int w_, z_, s_;
+  int w_position;
+
   s_ = -1;
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 

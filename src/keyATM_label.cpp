@@ -42,6 +42,10 @@ void keyATMlabel::initialize_specific()
 
 void keyATMlabel::iteration_single(int &it)
 { // Single iteration
+  int doc_id_;
+  int doc_length;
+  int w_, z_, s_;
+  int w_position;
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
   Alpha = label_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting

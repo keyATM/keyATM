@@ -110,12 +110,8 @@ class keyATMmeta
     //
       // Declaration
       std::vector<int> doc_indexes;
-      int doc_id_;
       std::vector<int> token_indexes;
       IntegerVector doc_s, doc_z, doc_w;
-      int w_position;
-      int s_, z_, w_;
-      int doc_length;
   
       // sample_z
       VectorXd z_prob_vec;
