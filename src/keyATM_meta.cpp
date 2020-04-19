@@ -433,9 +433,13 @@ void keyATMmeta::verbose_special(int &r_index)
 //
 // Sampling
 //
-int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
-                         int &w, int &doc_id)
+int keyATMmeta::sample_z(VectorXd &alpha, int z, int s,
+                         int w, int doc_id)
 {
+  int new_z;
+  double numerator, denominator;
+  double sum;
+
   // remove data
   if (s == 0) {
     n_s0_kv(z, w) -= vocab_weights(w);
@@ -483,7 +487,6 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
       }
     }
 
-
     sum = z_prob_vec.sum();
     new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
 
@@ -509,6 +512,10 @@ int keyATMmeta::sample_z(VectorXd &alpha, int &z, int &s,
 int keyATMmeta::sample_z_label(VectorXd &alpha, int &z, int &s,
                          int &w, int &doc_id)
 {
+  int new_z;
+  double numerator, denominator;
+  double sum;
+
   // For labeled data!
   // remove data
   if (s == 0) {
@@ -584,6 +591,12 @@ int keyATMmeta::sample_z_label(VectorXd &alpha, int &z, int &s,
 int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
                  int &w, int &doc_id)
 {
+  int new_s;
+  double numerator, denominator;
+  double s0_prob;
+  double s1_prob;
+  double sum;
+
   // remove data
   if (s == 0) {
     n_s0_kv(z, w) -= vocab_weights(w);
@@ -594,18 +607,17 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
   }
 
   // newprob_s1()
-  k = z;
 
-  numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
-    ( n_s1_k(k) + prior_gamma(k, 0) );
-  denominator = (Lbeta_sk(k) + n_s1_k(k) );
+  numerator = (beta_s + n_s1_kv.coeffRef(z, w)) *
+    ( n_s1_k(z) + prior_gamma(z, 0) );
+  denominator = (Lbeta_sk(z) + n_s1_k(z) );
   s1_prob = numerator / denominator;
 
   // newprob_s0()
-  numerator = (beta + n_s0_kv(k, w)) *
-    (n_s0_k(k) + prior_gamma(k, 1));
+  numerator = (beta + n_s0_kv(z, w)) *
+    (n_s0_k(z) + prior_gamma(z, 1));
 
-  denominator = (Vbeta + n_s0_k(k) );
+  denominator = (Vbeta + n_s0_k(z) );
   s0_prob = numerator / denominator;
 
   // Normalize
@@ -630,6 +642,12 @@ int keyATMmeta::sample_s(VectorXd &alpha, int &z, int &s,
 int keyATMmeta::sample_s_label(VectorXd &alpha, int &z, int &s,
                  int &w, int &doc_id)
 {
+  int new_s;
+  double numerator, denominator;
+  double s0_prob;
+  double s1_prob;
+  double sum;
+
   // For labeled data!
   // remove data
   if (s == 0) {
@@ -641,18 +659,17 @@ int keyATMmeta::sample_s_label(VectorXd &alpha, int &z, int &s,
   }
 
   // newprob_s1()
-  k = z;
 
-  numerator = (beta_s1kv.coeffRef(k, w) + n_s1_kv.coeffRef(k, w)) *
-    ( n_s1_k(k) + prior_gamma(k, 0) );
-  denominator = (Lbeta_sk(k) + n_s1_k(k) );
+  numerator = (beta_s1kv.coeffRef(z, w) + n_s1_kv.coeffRef(z, w)) *
+    ( n_s1_k(z) + prior_gamma(z, 0) );
+  denominator = (Lbeta_sk(z) + n_s1_k(z) );
   s1_prob = numerator / denominator;
 
   // newprob_s0()
-  numerator = (beta_s0kv(k, w) + n_s0_kv(k, w)) *
-    (n_s0_k(k) + prior_gamma(k, 1));
+  numerator = (beta_s0kv(z, w) + n_s0_kv(z, w)) *
+    (n_s0_k(z) + prior_gamma(z, 1));
 
-  denominator = (Vbeta_k(k) + n_s0_k(k) );
+  denominator = (Vbeta_k(z) + n_s0_k(z) );
   s0_prob = numerator / denominator;
 
   // Normalize

@@ -115,15 +115,6 @@ class keyATMmeta
   
       // sample_z
       VectorXd z_prob_vec;
-      int new_z;
-      double numerator, denominator;
-      double sum;
-
-      // sample_s
-      int new_s;
-      double s0_prob;
-      double s1_prob;
-      int k;
 
       // sample alpha
       double alpha_sum_val;
@@ -164,8 +155,8 @@ class keyATMmeta
     virtual void iteration_single(int &it) = 0;
     virtual void sample_parameters(int &it) = 0;
 
-    virtual int sample_z(VectorXd &alpha, int &z, int &s,
-                         int &w, int &doc_id);
+    virtual int sample_z(VectorXd &alpha, int z, int s,
+                         int w, int doc_id);
     int sample_z_label(VectorXd &alpha, int &z, int &s,
                        int &w, int &doc_id);
 
@@ -201,17 +192,17 @@ class keyATMmeta
     //
 
     // Slice sampling
-    double expand(double &p, const double &A)
+    double expand(const double p, const double A)
     {
       return (-(1.0/A) * log((1.0/p) - 1.0));
     };
 
-    double shrink(double &x, const double &A)
+    double shrink(const double x, const double A)
     {
       return (1.0 / (1.0 + exp(-A*x)));
     };
 
-    double shrinkp(double &x)
+    double shrinkp(const double x)
     {
       return (x / (1.0 + x)); 
     };
@@ -232,8 +223,8 @@ class keyATMmeta
     };
 
     double logsumexp_Eigen(VectorXd &vec, const int size){
-      vmax = vec.maxCoeff();
-      sum = 0.0;
+      double vmax = vec.maxCoeff();
+      double sum = 0.0;
 
       for(int i = 0; i < size; i++){
         sum += exp(vec(i) - vmax);
@@ -243,7 +234,7 @@ class keyATMmeta
     }
 
     // Approximations
-    double mylgamma(const double &x){
+    double mylgamma(const double x){
       // gammaln_val = 0.0;
       // gammaln_val = lgamma(x);
       

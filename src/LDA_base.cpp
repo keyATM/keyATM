@@ -150,6 +150,10 @@ void LDAbase::parameters_store(int &r_index)
 
 int LDAbase::sample_z(VectorXd &alpha, int &z, int &s, int &w, int &doc_id)
 {
+  int new_z;
+  double numerator, denominator;
+  double sum;
+
   // remove data
   n_kv(z, w) -= vocab_weights(w);
   n_k(z) -= vocab_weights(w);

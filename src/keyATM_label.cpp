@@ -45,6 +45,7 @@ void keyATMlabel::iteration_single(int &it)
   int doc_id_;
   int doc_length;
   int w_, z_, s_;
+  int new_z, new_s;
   int w_position;
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle

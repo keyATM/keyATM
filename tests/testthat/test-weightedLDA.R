@@ -52,6 +52,6 @@ test_that("weightedLDA dynamic", {
   expect_error(plot_pi(dyn))
 
   skip_on_os("linux")
-  expect_equal(dyn$model_fit$Perplexity[2], 2087.217, tolerance = 0.001)
+  expect_equal(dyn$model_fit$Perplexity[2], 2093.104, tolerance = 0.001)
   expect_equal(top_words(dyn)[3, 1], "commission")
 })
