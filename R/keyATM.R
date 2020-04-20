@@ -1,6 +1,6 @@
 #' keyATM main function
 #'
-#' Run keyATM models.
+#' Fit keyATM models.
 #'
 #'
 #' @param docs texts read via \code{keyATM_read()}
@@ -13,16 +13,16 @@
 #'      \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
 #'      \item \strong{iterations}: An integer. Number of iterations. Default is 1500.
 #'      \item \strong{verbose}: If \code{TRUE}, it prints loglikelihood and perplexity. Default is \code{FALSE}.
-#'      \item \strong{llk_per}: An integer. If the value is \code{j} \strong{keyATM} stores loglikelihood and perplexity every \code{j} iteration. Default value is 10 per iterations
+#'      \item \strong{llk_per}: An integer. If the value is \code{j} \strong{keyATM} stores loglikelihood and perplexity every \eqn{j} iteration. Default value is 10 per iterations
 #'      \item \strong{use_weights}: If \code{TRUE} use weight. Default is \code{TRUE}.
 #'      \item \strong{weights_type}: There are four types of weights. Weights based on the information theory (\code{information-theory}) and inverse frequency (\code{inv-freq}) and normalized versions of them (\code{information-theory-normalized} and \code{inv-freq-normalized}). Default is \code{information-theory}.
 #'      \item \strong{prune}: If \code{TRUE} rume keywords that do not appear in the corpus. Default is \code{TRUE}.
-#'      \item \strong{store_theta}: If \code{TRUE} or \code{1}, it stores \emph{theta} (document-topic distribution) for the iteration specified by thinning. Default is \code{FALSE} (same as \code{0}).
-#'      \item \strong{store_pi}: If \code{TRUE} or \code{1}, it stores \emph{pi} (the probability of using keyword topic word distribution) for the iteration specified by thinning. Default is \code{FALSE} (same as \code{0}).
+#'      \item \strong{store_theta}: If \code{TRUE} or \code{1}, it stores \eqn{\theta} (document-topic distribution) for the iteration specified by thinning. Default is \code{FALSE} (same as \code{0}).
+#'      \item \strong{store_pi}: If \code{TRUE} or \code{1}, it stores \eqn{\pi} (the probability of using keyword topic word distribution) for the iteration specified by thinning. Default is \code{FALSE} (same as \code{0}).
 #'      \item \strong{thinning}: An integer. If the value is \code{j} \strong{keyATM} stores following parameters every \code{j} iteration. The default is \code{5}. \itemize{
 #'            \item \emph{theta}: For all models. If \code{store_theta} is \code{TRUE} document-level topic assignment is stored (sufficient statistics to calculate document-topic distributions \code{theta}).
 #'            \item \emph{alpha}: For the base and dynamic models. In the base model alpha is shared across all documents whereas each state has different alpha in the dynamic model.
-#'            \item \emph{lambda}: For the covariate model.
+#'            \item \emph{lambda}: coefficients in the covariate model.
 #'            \item \emph{R}: For the dynamic model. The state each document belongs to.
 #'            \item \emph{P}: For the dynamic model. The state transition probability.
 #'      }
@@ -47,7 +47,7 @@
 #'     \item{options}{options}
 #'     \item{keywords_raw}{specified keywords}
 #'     \item{model_fit}{perplexity and log-likelihood}
-#'     \item{pi}{estimated pi for the last iteration}
+#'     \item{pi}{estimated \eqn{\pi} (the probability of using keyword topic word distribution) for the last iteration}
 #'     \item{values_iter}{values stored during iterations}
 #'     \item{kept_values}{outputs you specified to store in \code{keep} option}
 #'     \item{information}{information about the fitting}
@@ -153,7 +153,7 @@ check_arg_keep <- function(obj, model)
 
 #' Weighted LDA main function
 #'
-#' Run weighted LDA models.
+#' Fit weighted LDA models.
 #'
 #' 
 #' @param docs texts read via \code{keyATM_read()}

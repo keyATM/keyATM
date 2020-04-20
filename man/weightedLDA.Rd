@@ -53,7 +53,7 @@ A keyATM_output object containing:
   }
 }
 \description{
-Run weighted LDA models.
+Fit weighted LDA models.
 }
 \examples{
 \donttest{
@@ -70,21 +70,20 @@ Run weighted LDA models.
   # Weighted LDA Covariates
   bills_cov <- as.data.frame(keyATM_data_bills$cov)
   out <- weightedLDA(keyATM_docs, model = "covariates",
-         number_of_topics = 5,
-         model_settings = list(covariates_data = bills_cov,
-         covariates_formula = ~ RepParty))                   
+                     number_of_topics = 5,
+                     model_settings = list(covariates_data = bills_cov,
+                                           covariates_formula = ~ RepParty))                   
 
   # Weighted LDA Dynamic
   bills_time_index <- keyATM_data_bills$time_index
   # Time index should start from 1, increment by 1
   bills_time_index <- as.integer(bills_time_index - 100)
   out <- weightedLDA(keyATM_docs, model = "dynamic",
-         number_of_topics = 5,
-         model_settings = list(num_states = 5,
-                          time_index = bills_time_index))
+                     number_of_topics = 5,
+                     model_settings = list(num_states = 5,
+                                           time_index = bills_time_index))
 
   # Visit our website for full examples: https://keyatm.github.io/keyATM/
-
 }
 
 }
