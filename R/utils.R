@@ -99,6 +99,18 @@ extract_full_model_name <- function(obj)
 }
 
 
+#' Save a figure
+#' 
+#' @param x the object
+#' @param filename file name to create on disk
+#' @param ... other arguments passed on to the \code{ggsave()} function
+#' @export
+#' @keywords visualize_keywords
+save_fig <- function(x, filename, ...) {
+  UseMethod("save_fig")
+}
+
+
 rdirichlet <- function(alpha, n = 1) {
   l <- length(alpha)
   x <- matrix(stats::rgamma(l*n, alpha), ncol = l, byrow = TRUE)

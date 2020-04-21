@@ -10,9 +10,16 @@ test_that("Reading documents from quanteda dfm", {
 })
 
 
+test_that("Visualizing keywords", {
+  p <- visualize_keywords(keyATM_docs, bills_keywords)
+  expect_s3_class(p, "keyATM_viz")
+  skip_on_cran() ; skip_on_travis()
+  expect_message(save_fig(p, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
+})
+
+
 test_that("Parallel initialization", {
-  skip_on_travis()
-  skip_on_cran()
+  skip_on_cran() ; skip_on_travis()
   out <- keyATM(docs = keyATM_docs,  # text input
                 no_keyword_topics = 3,  # number of regular topics
                 keywords = bills_keywords,  # keywords

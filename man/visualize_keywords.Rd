@@ -32,8 +32,8 @@ Visualize the proportion of keywords in the documents.
   
  # Keywords are in a list  
  keywords <- list(
-                   c("education", "child", "student"),  # Education
-                   c("public", "health", "program"),  # Health
+                  Education = c("education", "child", "student"),
+                  Health    = c("public", "health", "program"),
                  )
 
  # Visualize keywords
@@ -44,7 +44,7 @@ Visualize the proportion of keywords in the documents.
    # Or: `keyATM_viz$figure`
 
  # Save a figure 
- save_fig(keyATM_viz, filename)
+ save(keyATM_viz, filename)
 
 }
 

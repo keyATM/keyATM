@@ -7,6 +7,7 @@
 ### Bug fix
 * `weightedLDA` without specifying the number of iterations
 * log-likelihood of dynamic models 
+* saving figures
 
 # keyATM 0.1.0
 ### Major changes

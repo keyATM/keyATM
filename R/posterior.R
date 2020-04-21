@@ -583,6 +583,7 @@ save.keyATM_output <- function(x, file = stop("'file' must be specified"))
   saveRDS(x, file = file)
 }
 
+
 #' Show a diagnosis plot of log-likelihood and perplexity
 #'
 #' @noRd
