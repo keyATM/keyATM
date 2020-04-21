@@ -13,7 +13,7 @@ test_that("Reading documents from quanteda dfm", {
 test_that("Visualizing keywords", {
   p <- visualize_keywords(keyATM_docs, bills_keywords)
   expect_s3_class(p, "keyATM_viz")
-  skip_on_cran() ; skip_on_travis()
+  skip_on_cran()
   expect_message(save_fig(p, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
 })
 
