@@ -158,8 +158,8 @@ summary.keyATM_docs <- function(object, ...)
 #'   
 #'  # Keywords are in a list  
 #'  keywords <- list(
-#'                    c("education", "child", "student"),  # Education
-#'                    c("public", "health", "program"),  # Health
+#'                   Education = c("education", "child", "student"),
+#'                   Health    = c("public", "health", "program"),
 #'                  )
 #'
 #'  # Visualize keywords
@@ -302,6 +302,7 @@ check_keywords <- function(unique_words, keywords, prune)
   return(keywords)
 }
 
+
 #' Print a keyword plot
 #' 
 #' @noRd
@@ -310,6 +311,7 @@ print.keyATM_viz <- function(x, ...)
 {
   print(x$figure)  
 }
+
 
 #' Check summary statistics of the keywords
 #' 
@@ -321,27 +323,11 @@ summary.keyATM_viz <- function(object, ...)
 }
 
 
-#' Save a keyATM_viz object
-#'
-#' @param x a keyATM_viz object (see \code{visualize_keywords()})
-#' @param file a character
-#'
+#' @noRd
 #' @export
-save.keyATM_viz <- function(x, file = stop("'file' must be specified"))
+save_fig.keyATM_viz <- function(x, filename, ...)
 {
-  saveRDS(x, file = file)
-}
-
-
-#' Save a keyword plot
-#'
-#' @param x a keyATM_viz object (see \code{visualize_keywords()})
-#' @param file a character
-#'
-#' @export
-save_fig.keyATM_viz <- function(x, file = stop("'file' must be specified"))
-{
-  ggplot2::ggsave(x$figure, file = file)
+  ggplot2::ggsave(filename = filename, plot = x$figure, ...)
 }
 
 

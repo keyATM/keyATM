@@ -1,4 +1,4 @@
-if (as.logical(compareVersion(paste0(version$major, ".", version$minor), "3.5"))) {
+if (compareVersion(paste0(version$major, ".", version$minor), "3.6") < 0) {
   skip("Randomization algorithm has changed from R 3.6")
 }
 
@@ -83,7 +83,11 @@ test_that("keyATM Heterogeneity Doc-Topic", {
 
   skip_on_os("linux") ; skip_on_cran()
   expect_equal(summary(strata_topic)[[2]]$Lower[2], 0.1387664, tolerance = 0.001)
-  expect_s3_class(plot(strata_topic, topics = c(1,2,3,4)), "ggplot")
+
+  p <- plot(strata_topic, topics = c(1,2,3,4))
+  expect_s3_class(p, "ggplot")
+
+  expect_message(suppressWarnings(save_fig(p, paste0(tempdir(), "/test.pdf"))), "Saving 7 x 7 in image")
 })
 
 test_that("keyATM Heterogeneity Topic-Word", {

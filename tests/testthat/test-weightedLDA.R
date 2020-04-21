@@ -1,4 +1,4 @@
-if (as.logical(compareVersion(paste0(version$major, ".", version$minor), "3.5"))) {
+if (compareVersion(paste0(version$major, ".", version$minor), "3.6") < 0) {
   skip("Randomization algorithm has changed from R 3.6")
 }
 

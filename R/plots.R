@@ -1,3 +1,23 @@
+#' Save a figure
+#' 
+#' @param x the object
+#' @param filename file name to create on disk
+#' @param ... other arguments passed on to the \code{ggsave()} function
+#' @export
+#' @keywords visualize_keywords
+save_fig <- function(x, filename, ...) {
+  UseMethod("save_fig")
+}
+
+
+#' @noRd
+#' @export
+save_fig.keyATM_fig <- function(x, filename, ...)
+{
+  ggplot2::ggsave(filename = filename, plot = x, ...)
+}
+
+
 #' Show a diagnosis plot of alpha
 #'
 #' 
@@ -59,6 +79,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))  
   }
+  class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
 
@@ -94,8 +115,9 @@ plot_modelfit <- function(x, start = 1)
      geom_point(size = 0.3, show.legend = FALSE) +
      facet_wrap(~ .data$Measures, ncol = 2, scales = "free") +
      xlab("Iteration") + ylab("Value")
-
   p <- p + ggtitle("Model Fit") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+  class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
 
@@ -151,7 +173,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
       dplyr::summarise(mean = mean(.data$value), uq = stats::quantile(.data$value, .975), 
                        lq = stats::quantile(.data$value, 0.025)) -> temp
     
-    g <- ggplot(temp, aes(y = .data$mean, x = .data$Topic, color = .data$Topic)) + 
+    p <- ggplot(temp, aes(y = .data$mean, x = .data$Topic, color = .data$Topic)) + 
          theme_bw() +
          geom_errorbar(aes(ymin = .data$lq, ymax = .data$uq), data = temp, width = 0.01, size = 1) + 
          xlab("Topic") + ylab("Probability") +
@@ -163,14 +185,15 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
       dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
       dplyr::mutate(Topic = tnames) -> temp
 
-    g  <- ggplot(temp, aes(x = .data$Topic, y = .data$Probability)) +
+    p <- ggplot(temp, aes(x = .data$Topic, y = .data$Probability)) +
         geom_bar(stat = "identity") +
         theme_bw() +
         xlab("Topic") + ylab("Probability") +
         ggtitle("Probability of words drawn from keyword topic-word distribution") +
         theme(plot.title = element_text(hjust = 0.5))    
   }
-  return(g)
+  class(p) <- c("keyATM_fig", class(p))
+  return(p)
 }
 
 
@@ -216,5 +239,6 @@ plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, quantile_vec
         ylab(expression(paste("Mean of ", theta))) +
         guides(color = guide_legend(title = "Topic")) +
         theme_bw()
+  class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
