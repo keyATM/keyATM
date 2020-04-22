@@ -747,8 +747,7 @@ top_docs <- function(x, n = 10)
     order(xcol, decreasing = TRUE)[1:n]
   }
   
-  res <- apply(x$theta, 2, measuref) %>%
-          tibble::as_tibble()
+  res <- apply(x$theta, 2, measuref) %>% as.data.frame()
   return(res) 
 }
 
