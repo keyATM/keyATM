@@ -51,7 +51,7 @@ keyATM(
 \item{keep}{a vector of the names of elements you want to keep in output}
 }
 \value{
-A keyATM_output object containing:
+A \code{keyATM_output} object containing:
   \describe{
     \item{keyword_k}{number of keyword topics}
     \item{no_keyword_topics}{number of no-keyword topics}
@@ -78,7 +78,7 @@ A keyATM_output object containing:
 Fit keyATM models.
 }
 \examples{
-\donttest{
+\dontrun{
   library(keyATM)
   library(quanteda)
   data(keyATM_data_bills)
@@ -110,5 +110,5 @@ Fit keyATM models.
 
 }
 \seealso{
-\url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+\code{\link{save.keyATM_output}}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 }

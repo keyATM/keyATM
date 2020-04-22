@@ -30,7 +30,7 @@
 #' }
 #' @param keep a vector of the names of elements you want to keep in output
 #' 
-#' @return A keyATM_output object containing:
+#' @return A \code{keyATM_output} object containing:
 #'   \describe{
 #'     \item{keyword_k}{number of keyword topics}
 #'     \item{no_keyword_topics}{number of no-keyword topics}
@@ -53,10 +53,10 @@
 #'     \item{information}{information about the fitting}
 #'   }
 #'
-#' @seealso \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+#' @seealso \code{\link{save.keyATM_output}}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   library(keyATM)
 #'   library(quanteda)
 #'   data(keyATM_data_bills)
@@ -160,7 +160,7 @@ check_arg_keep <- function(obj, model)
 #' @param options a list of options (details are in the documentation of \code{keyATM()})
 #' @param keep a vector of the names of elements you want to keep in output
 #'
-#' @return A keyATM_output object containing:
+#' @return A \code{keyATM_output} object containing:
 #'   \describe{
 #'     \item{V}{number of terms (number of unique words)}
 #'     \item{N}{number of documents}
@@ -182,10 +182,10 @@ check_arg_keep <- function(obj, model)
 #'     \item{information}{information about the fitting}
 #'   }
 #'
-#' @seealso \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+#' @seealso \code{\link{save.keyATM_output}}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   library(keyATM)
 #'   library(quanteda)
 #'   data(keyATM_data_bills)

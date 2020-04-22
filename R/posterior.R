@@ -576,7 +576,7 @@ summary.keyATM_output <- function(object, ...)
 #'
 #' @param x a keyATM_output object (see \code{keyATM()})
 #' @param file a character
-#'
+#' @seealso \code{\link{keyATM}}, \code{\link{weightedLDA}}
 #' @export
 save.keyATM_output <- function(x, file = stop("'file' must be specified"))
 {

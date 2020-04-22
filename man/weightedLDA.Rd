@@ -30,7 +30,7 @@ weightedLDA(
 \item{keep}{a vector of the names of elements you want to keep in output}
 }
 \value{
-A keyATM_output object containing:
+A \code{keyATM_output} object containing:
   \describe{
     \item{V}{number of terms (number of unique words)}
     \item{N}{number of documents}
@@ -56,7 +56,7 @@ A keyATM_output object containing:
 Fit weighted LDA models.
 }
 \examples{
-\donttest{
+\dontrun{
   library(keyATM)
   library(quanteda)
   data(keyATM_data_bills)
@@ -84,5 +84,5 @@ Fit weighted LDA models.
 
 }
 \seealso{
-\url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+\code{\link{save.keyATM_output}}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 }

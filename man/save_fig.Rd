@@ -16,4 +16,6 @@ save_fig(x, filename, ...)
 \description{
 Save a figure
 }
-\keyword{visualize_keywords}
+\seealso{
+\code{\link{visualize_keywords}}, \code{\link{plot_alpha}}, \code{\link{plot_modelfit}}, and \code{\link{plot_pi}}
+}

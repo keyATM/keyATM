@@ -62,7 +62,8 @@ reference:
   contents:
   - '`keyATM`'
   - '`weightedLDA`'
-- title: Check results
+  - '`save.keyATM_output`'
+- title: Checking results
   desc: ~
   contents:
   - '`plot_alpha`'
@@ -71,11 +72,20 @@ reference:
   - '`top_docs`'
   - '`top_words`'
   - '`top_topics`'
+- title: Making plots
+  desc: ~
+  contents:
+  - '`plot_alpha`'
+  - '`plot_modelfit`'
+  - '`plot_pi`'
+  - '`save_fig`'
 - title: Additional analyses
   desc: ~
   contents:
   - '`by_strata_DocTopic`'
   - '`by_strata_TopicWord`'
+  - '`covariates_get`'
+  - '`covariates_info`'
   - '`plot.strata_doctopic`'
 - title: Built-in data
   desc: ~
