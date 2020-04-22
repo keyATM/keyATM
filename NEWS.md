@@ -9,6 +9,7 @@
 * `weightedLDA` without specifying the number of iterations
 * log-likelihood of dynamic models 
 * saving figures
+* topic labels when there is no keyword topic
 
 # keyATM 0.1.0
 ### Major changes
