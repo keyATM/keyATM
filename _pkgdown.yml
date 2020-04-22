@@ -70,8 +70,8 @@ reference:
   - '`plot_modelfit`'
   - '`plot_pi`'
   - '`top_docs`'
-  - '`top_words`'
   - '`top_topics`'
+  - '`top_words`'
 - title: Making plots
   desc: ~
   contents:
