@@ -26,7 +26,7 @@ keyATM_output <- function(model)
     info$tnames <- paste0("Topic_", 1:model$no_keyword_topics)
   } else {
     # Keywords only
-    info$tnames <- c(paste0("", 1:length(model$keywords)))
+    info$tnames <- c(names(model$keywords_raw))
   }
 
   # theta (document-topic distribution)
