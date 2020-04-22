@@ -23,3 +23,6 @@ ggplot2 object
 \description{
 Plot document-topic distribution by strata (for covariate models)
 }
+\seealso{
+\code{\link{save_fig}}
+}

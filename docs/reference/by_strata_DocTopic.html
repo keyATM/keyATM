@@ -68,7 +68,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -154,8 +154,9 @@
 
     <pre class="usage"><span class='fu'>by_strata_DocTopic</span>(
   <span class='no'>x</span>,
-  <span class='no'>by_name</span>,
-  <span class='no'>by_values</span>,
+  <span class='no'>by_var</span>,
+  <span class='no'>labels</span>,
+  <span class='kw'>by_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>burn_in</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>parallel</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -170,12 +171,16 @@
       <td><p>the output from a keyATM model (see <code><a href='keyATM.html'>keyATM()</a></code>)</p></td>
     </tr>
     <tr>
-      <th>by_name</th>
+      <th>by_var</th>
       <td><p>character. The name of the variable to use.</p></td>
     </tr>
     <tr>
+      <th>labels</th>
+      <td><p>character. The labels for the values specified in `by_var`</p></td>
+    </tr>
+    <tr>
       <th>by_values</th>
-      <td><p>numeric. The values of the variable specified in `by_name`</p></td>
+      <td><p>numeric. Specific values for `by_var`, ordered from small to large. If it is not specified, all values in `by_var` will be used.</p></td>
     </tr>
     <tr>
       <th>burn_in</th>

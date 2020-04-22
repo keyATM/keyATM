@@ -3,8 +3,8 @@
 #' @param x the object
 #' @param filename file name to create on disk
 #' @param ... other arguments passed on to the \code{ggsave()} function
+#' @seealso \code{\link{visualize_keywords}}, \code{\link{plot_alpha}}, \code{\link{plot_modelfit}}, and \code{\link{plot_pi}}
 #' @export
-#' @keywords visualize_keywords
 save_fig <- function(x, filename, ...) {
   UseMethod("save_fig")
 }
@@ -20,7 +20,6 @@ save_fig.keyATM_fig <- function(x, filename, ...)
 
 #' Show a diagnosis plot of alpha
 #'
-#' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param start integer. The start of slice iteration. Default is 0.
 #' @param show_topic a vector to specify topic indexes to show. Default is \code{NULL}.
@@ -30,6 +29,7 @@ save_fig.keyATM_fig <- function(x, filename, ...)
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
+#' @seealso \code{\link{save_fig}}
 #' @export
 plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 {
@@ -85,7 +85,6 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 
 
 #' Show a diagnosis plot of log-likelihood and perplexity
-#'
 #' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param start integer. The starting value of iteration to use in plot. Default is 1.
@@ -94,6 +93,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @importFrom rlang .data
+#' @seealso \code{\link{save_fig}}
 #' @export
 plot_modelfit <- function(x, start = 1)
 {
@@ -124,7 +124,6 @@ plot_modelfit <- function(x, start = 1)
 
 #' Show a diagnosis plot of pi
 #'
-#' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param start integer. The starting value of iteration to use in the plot. Default is 0.
@@ -133,6 +132,7 @@ plot_modelfit <- function(x, start = 1)
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
+#' @seealso \code{\link{save_fig}}
 #' @export
 plot_pi <- function(x, show_topic = NULL, start = 0)
 {
@@ -210,6 +210,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
+#' @seealso \code{\link{save_fig}} 
 #' @export
 plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
 {
