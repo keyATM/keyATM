@@ -596,8 +596,8 @@ plot.keyATM_output <- function(x, ...)
 
 #' Show the top words for each topic
 #'
-#' If \code{show_keyword} is true then words in their seeded categories
-#' are suffixed with a check mark. Words from another seeded category
+#' If \code{show_keyword} is \code{TRUE} then words in their keyword topics
+#' are suffixed with a check mark. Words from another keyword topic
 #' are labeled with the name of that category.
 #'
 #' @param x the output (see \code{keyATM()} and \code{by_strata_TopicWord()})

@@ -19,7 +19,7 @@ top_words(x, n = 10, measure = c("probability", "lift"), show_keyword = TRUE)
 An n x k table of the top n words in each topic
 }
 \description{
-If \code{show_keyword} is true then words in their seeded categories
-are suffixed with a check mark. Words from another seeded category
+If \code{show_keyword} is \code{TRUE} then words in their keyword topics
+are suffixed with a check mark. Words from another keyword topic
 are labeled with the name of that category.
 }
