@@ -62,7 +62,7 @@ Prune keywords that do not appear in the documents.
 
 
 ### `thinning`
-The default value is `5` and **keyATM** keeps every $5$ daraws from the sampling.
+The default value is `5` and **keyATM** keeps every $5$th draw from the sampling.
 
 ### `store_theta`
 The default value is `FALSE`. Storing the value of thetas allows the calculation of credible intervals.
