@@ -65,37 +65,23 @@
 #'   keyATM_docs <- keyATM_read(bills_dfm)
 #'
 #'   # keyATM Base
-<<<<<<< HEAD
 #'   out <- keyATM(docs = keyATM_docs,
 #'                 model = "base", no_keyword_topics = 5,
-=======
-#'   out <- keyATM(keyATM_docs, model = "base", no_keyword_topics = 5,
->>>>>>> v0.2.0
-#'                 keywords = bills_keywords)
 #'
 #'   # keyATM Covariates
 #'   bills_cov <- as.data.frame(keyATM_data_bills$cov)
-<<<<<<< HEAD
 #'   out <- keyATM(docs = keyATM_docs,
 #'                 model = "covariates", no_keyword_topics = 5,
-=======
-#'   out <- keyATM(keyATM_docs, model = "covariates", no_keyword_topics = 5,
->>>>>>> v0.2.0
 #'                 keywords = bills_keywords,
 #'                 model_settings = list(covariates_data = bills_cov,
 #'                                       covariates_formula = ~ RepParty))
 #'
 #'   # keyATM Dynamic
 #'   bills_time_index <- keyATM_data_bills$time_index
-<<<<<<< HEAD
 #'   # Time index should start from 1, increment by 1
 #'   bills_time_index <- as.integer(bills_time_index - 100)
 #'   out <- keyATM(docs = keyATM_docs,
 #'                 model = "dynamic", no_keyword_topics = 5,
-=======
-#'   bills_time_index <- as.integer(bills_time_index - 100)  # starts from 1, increment by 1
-#'   out <- keyATM(keyATM_docs, model = "dynamic", no_keyword_topics = 5,
->>>>>>> v0.2.0
 #'                 keywords = bills_keywords,
 #'                 model_settings = list(num_states = 5,
 #'                                       time_index = bills_time_index))
@@ -210,7 +196,6 @@ check_arg_keep <- function(obj, model)
 #'   keyATM_docs <- keyATM_read(bills_dfm)
 #'
 #'   # Weighted LDA
-<<<<<<< HEAD
 #'   out <- weightedLDA(docs = keyATM_docs, model = "base",
 #'                      number_of_topics = 5)
 #'
@@ -218,27 +203,15 @@ check_arg_keep <- function(obj, model)
 #'   bills_cov <- as.data.frame(keyATM_data_bills$cov)
 #'   out <- weightedLDA(docs = keyATM_docs, model = "covariates",
 #'                      number_of_topics = 5,
-=======
-#'   out <- weightedLDA(keyATM_docs, model = "base", number_of_topics = 5)
-#'
-#'   # Weighted LDA Covariates
-#'   bills_cov <- as.data.frame(keyATM_data_bills$cov)
-#'   out <- weightedLDA(keyATM_docs, model = "covariates", number_of_topics = 5,
->>>>>>> v0.2.0
 #'                      model_settings = list(covariates_data = bills_cov,
 #'                                            covariates_formula = ~ RepParty))                   
 #'
 #'   # Weighted LDA Dynamic
 #'   bills_time_index <- keyATM_data_bills$time_index
-<<<<<<< HEAD
 #'   # Time index should start from 1, increment by 1
 #'   bills_time_index <- as.integer(bills_time_index - 100)
 #'   out <- weightedLDA(docs = keyATM_docs, model = "dynamic",
 #'                      number_of_topics = 5,
-=======
-#'   bills_time_index <- as.integer(bills_time_index - 100)  # starts from 1, increment by 1
-#'   out <- weightedLDA(keyATM_docs, model = "dynamic", number_of_topics = 5,
->>>>>>> v0.2.0
 #'                      model_settings = list(num_states = 5,
 #'                                            time_index = bills_time_index))
 #'
