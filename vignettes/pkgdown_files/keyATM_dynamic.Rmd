@@ -30,7 +30,7 @@ bills_time_index <- keyATM_data_bills$time_index
 table(bills_time_index)
 ```
 
-Time index should start from `1`, increment by $1$, and have the same value if they are in the same time (for example the session of congress).
+Time index should start from `1` and increase by $1$, and have the same value if they are in the same time (for example the session of congress).
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 bills_time_index <- as.integer(bills_time_index - 100)
 table(bills_time_index)
