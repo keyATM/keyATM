@@ -77,7 +77,7 @@
 #'
 #'   # keyATM Dynamic
 #'   bills_time_index <- keyATM_data_bills$time_index
-#'   # Time index should start from 1, increment by 1
+#'   # Time index should start from 1 and increase by 1
 #'   bills_time_index <- as.integer(bills_time_index - 100)
 #'   out <- keyATM(docs = keyATM_docs, model = "dynamic",
 #'                 no_keyword_topics = 5, keywords = bills_keywords,
@@ -206,7 +206,7 @@ check_arg_keep <- function(obj, model)
 #'
 #'   # Weighted LDA Dynamic
 #'   bills_time_index <- keyATM_data_bills$time_index
-#'   # Time index should start from 1, increment by 1
+#'   # Time index should start from 1 and increase by 1
 #'   bills_time_index <- as.integer(bills_time_index - 100)
 #'   out <- weightedLDA(docs = keyATM_docs, model = "dynamic",
 #'                      number_of_topics = 5,
