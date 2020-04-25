@@ -67,6 +67,7 @@
 #'   # keyATM Base
 #'   out <- keyATM(docs = keyATM_docs,
 #'                 model = "base", no_keyword_topics = 5,
+#'                 keywords = bills_keywords)
 #'
 #'   # keyATM Covariates
 #'   bills_cov <- as.data.frame(keyATM_data_bills$cov)
