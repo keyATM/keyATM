@@ -158,8 +158,8 @@ summary.keyATM_docs <- function(object, ...)
 #'   
 #'  # Keywords are in a list  
 #'  keywords <- list(
-#'                    c("education", "child", "student"),  # Education
-#'                    c("public", "health", "program"),  # Health
+#'                    Education = c("education", "child", "student"),  # Education
+#'                    Health = c("public", "health", "program"),  # Health
 #'                  )
 #'
 #'  # Visualize keywords
