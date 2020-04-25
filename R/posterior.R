@@ -26,7 +26,7 @@ keyATM_output <- function(model)
     info$tnames <- paste0("Topic_", 1:model$no_keyword_topics)
   } else {
     # Keywords only
-    info$tnames <- c(paste0("", 1:length(model$keywords)))
+    info$tnames <- c(names(model$keywords_raw))
   }
 
   # theta (document-topic distribution)
@@ -576,12 +576,13 @@ summary.keyATM_output <- function(object, ...)
 #'
 #' @param x a keyATM_output object (see \code{keyATM()})
 #' @param file a character
-#'
+#' @seealso \code{\link{keyATM}}, \code{\link{weightedLDA}}
 #' @export
 save.keyATM_output <- function(x, file = stop("'file' must be specified"))
 {
   saveRDS(x, file = file)
 }
+
 
 #' Show a diagnosis plot of log-likelihood and perplexity
 #'
@@ -595,8 +596,8 @@ plot.keyATM_output <- function(x, ...)
 
 #' Show the top words for each topic
 #'
-#' If \code{show_keyword} is true then words in their seeded categories
-#' are suffixed with a check mark. Words from another seeded category
+#' If \code{show_keyword} is \code{TRUE} then words in their keyword topics
+#' are suffixed with a check mark. Words from another keyword topic
 #' are labeled with the name of that category.
 #'
 #' @param x the output (see \code{keyATM()} and \code{by_strata_TopicWord()})
@@ -746,8 +747,7 @@ top_docs <- function(x, n = 10)
     order(xcol, decreasing = TRUE)[1:n]
   }
   
-  res <- apply(x$theta, 2, measuref) %>%
-          tibble::as_tibble()
+  res <- apply(x$theta, 2, measuref) %>% as.data.frame()
   return(res) 
 }
 

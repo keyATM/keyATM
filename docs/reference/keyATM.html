@@ -36,7 +36,7 @@
   
 <meta property="og:title" content="keyATM main function — keyATM" />
 
-<meta property="og:description" content="Run keyATM models." />
+<meta property="og:description" content="Fit keyATM models." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -68,7 +68,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -148,7 +148,7 @@
 
     <div class="ref-description">
     
-    <p>Run keyATM models.</p>
+    <p>Fit keyATM models.</p>
     
     </div>
 
@@ -196,16 +196,16 @@
 <li><p><strong>seed</strong>: A numeric value for random seed. If it is not provided, the package randomly selects a seed.</p></li>
 <li><p><strong>iterations</strong>: An integer. Number of iterations. Default is 1500.</p></li>
 <li><p><strong>verbose</strong>: If <code>TRUE</code>, it prints loglikelihood and perplexity. Default is <code>FALSE</code>.</p></li>
-<li><p><strong>llk_per</strong>: An integer. If the value is <code>j</code> <strong>keyATM</strong> stores loglikelihood and perplexity every <code>j</code> iteration. Default value is 10 per iterations</p></li>
+<li><p><strong>llk_per</strong>: An integer. If the value is <code>j</code> <strong>keyATM</strong> stores loglikelihood and perplexity every \(j\) iteration. Default value is 10 per iterations</p></li>
 <li><p><strong>use_weights</strong>: If <code>TRUE</code> use weight. Default is <code>TRUE</code>.</p></li>
 <li><p><strong>weights_type</strong>: There are four types of weights. Weights based on the information theory (<code>information-theory</code>) and inverse frequency (<code>inv-freq</code>) and normalized versions of them (<code>information-theory-normalized</code> and <code>inv-freq-normalized</code>). Default is <code>information-theory</code>.</p></li>
 <li><p><strong>prune</strong>: If <code>TRUE</code> rume keywords that do not appear in the corpus. Default is <code>TRUE</code>.</p></li>
-<li><p><strong>store_theta</strong>: If <code>TRUE</code> or <code>1</code>, it stores <em>theta</em> (document-topic distribution) for the iteration specified by thinning. Default is <code>FALSE</code> (same as <code>0</code>).</p></li>
-<li><p><strong>store_pi</strong>: If <code>TRUE</code> or <code>1</code>, it stores <em>pi</em> (the probability of using keyword topic word distribution) for the iteration specified by thinning. Default is <code>FALSE</code> (same as <code>0</code>).</p></li>
+<li><p><strong>store_theta</strong>: If <code>TRUE</code> or <code>1</code>, it stores \(\theta\) (document-topic distribution) for the iteration specified by thinning. Default is <code>FALSE</code> (same as <code>0</code>).</p></li>
+<li><p><strong>store_pi</strong>: If <code>TRUE</code> or <code>1</code>, it stores \(\pi\) (the probability of using keyword topic word distribution) for the iteration specified by thinning. Default is <code>FALSE</code> (same as <code>0</code>).</p></li>
 <li><p><strong>thinning</strong>: An integer. If the value is <code>j</code> <strong>keyATM</strong> stores following parameters every <code>j</code> iteration. The default is <code>5</code>.</p><ul>
 <li><p><em>theta</em>: For all models. If <code>store_theta</code> is <code>TRUE</code> document-level topic assignment is stored (sufficient statistics to calculate document-topic distributions <code>theta</code>).</p></li>
 <li><p><em>alpha</em>: For the base and dynamic models. In the base model alpha is shared across all documents whereas each state has different alpha in the dynamic model.</p></li>
-<li><p><em>lambda</em>: For the covariate model.</p></li>
+<li><p><em>lambda</em>: coefficients in the covariate model.</p></li>
 <li><p><em>R</em>: For the dynamic model. The state each document belongs to.</p></li>
 <li><p><em>P</em>: For the dynamic model. The state transition probability.</p></li>
 </ul></li>
@@ -220,7 +220,7 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A keyATM_output object containing:</p><dl class='dl-horizontal'>
+    <p>A <code>keyATM_output</code> object containing:</p><dl class='dl-horizontal'>
     <dt>keyword_k</dt><dd><p>number of keyword topics</p></dd>
     <dt>no_keyword_topics</dt><dd><p>number of no-keyword topics</p></dd>
     <dt>V</dt><dd><p>number of terms (number of unique words)</p></dd>
@@ -236,7 +236,7 @@
     <dt>options</dt><dd><p>options</p></dd>
     <dt>keywords_raw</dt><dd><p>specified keywords</p></dd>
     <dt>model_fit</dt><dd><p>perplexity and log-likelihood</p></dd>
-    <dt>pi</dt><dd><p>estimated pi for the last iteration</p></dd>
+    <dt>pi</dt><dd><p>estimated \(\pi\) (the probability of using keyword topic word distribution) for the last iteration</p></dd>
     <dt>values_iter</dt><dd><p>values stored during iterations</p></dd>
     <dt>kept_values</dt><dd><p>outputs you specified to store in <code>keep</code> option</p></dd>
     <dt>information</dt><dd><p>information about the fitting</p></dd>
@@ -246,7 +246,7 @@
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><a href='https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html'>https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html</a></p></div>
+    <div class='dont-index'><p><code><a href='save.keyATM_output.html'>save.keyATM_output</a></code>, <a href='https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html'>https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html</a></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -257,25 +257,27 @@
   <span class='no'>bills_keywords</span> <span class='kw'>&lt;-</span> <span class='no'>keyATM_data_bills</span>$<span class='no'>keywords</span>
   <span class='no'>bills_dfm</span> <span class='kw'>&lt;-</span> <span class='no'>keyATM_data_bills</span>$<span class='no'>doc_dfm</span>  <span class='co'># quanteda dfm object</span>
   <span class='no'>keyATM_docs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='keyATM_read.html'>keyATM_read</a></span>(<span class='no'>bills_dfm</span>)
+
   <span class='co'># keyATM Base</span>
-  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(
-                <span class='no'>docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"base"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>
-               )
+  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(<span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"base"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>bills_keywords</span>)
 
   <span class='co'># keyATM Covariates</span>
-  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(
-                <span class='no'>docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"covariates"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
-                <span class='fu'>model_settings</span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>cov</span>, <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~ <span class='no'>.</span>)
-               )
+  <span class='no'>bills_cov</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span>(<span class='no'>keyATM_data_bills</span>$<span class='no'>cov</span>)
+  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(<span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"covariates"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>bills_keywords</span>,
+                <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>bills_cov</span>,
+                                      <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~<span class='no'>RepParty</span>))
 
   <span class='co'># keyATM Dynamic</span>
-  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(
-                <span class='no'>docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"dynamic"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>keywords_list</span>,
-                <span class='fu'>model_settings</span>(<span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>time_index_vec</span>, <span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>)
-               )
+  <span class='no'>bills_time_index</span> <span class='kw'>&lt;-</span> <span class='no'>keyATM_data_bills</span>$<span class='no'>time_index</span>
+  <span class='no'>bills_time_index</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>bills_time_index</span> - <span class='fl'>100</span>)  <span class='co'># starts from 1, increment by 1</span>
+  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(<span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"dynamic"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>bills_keywords</span>,
+                <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+                                      <span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>bills_time_index</span>))
 
   <span class='co'># Visit our website for full examples: https://keyatm.github.io/keyATM/</span>
-
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

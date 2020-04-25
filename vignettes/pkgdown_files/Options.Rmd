@@ -42,7 +42,7 @@ The  default value is `1500`.
 
 
 ### `verbose`
-Default is `FALSE`. If it is true, it shows values of log-likelihood and perplexity.
+Default is `FALSE`. If it is `TRUE`, it shows values of log-likelihood and perplexity.
 
 
 ### `llk_per`

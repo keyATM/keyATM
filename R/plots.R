@@ -1,6 +1,25 @@
+#' Save a figure
+#' 
+#' @param x the object
+#' @param filename file name to create on disk
+#' @param ... other arguments passed on to the \code{ggsave()} function
+#' @seealso \code{\link{visualize_keywords}}, \code{\link{plot_alpha}}, \code{\link{plot_modelfit}}, and \code{\link{plot_pi}}
+#' @export
+save_fig <- function(x, filename, ...) {
+  UseMethod("save_fig")
+}
+
+
+#' @noRd
+#' @export
+save_fig.keyATM_fig <- function(x, filename, ...)
+{
+  ggplot2::ggsave(filename = filename, plot = x, ...)
+}
+
+
 #' Show a diagnosis plot of alpha
 #'
-#' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param start integer. The start of slice iteration. Default is 0.
 #' @param show_topic a vector to specify topic indexes to show. Default is \code{NULL}.
@@ -10,6 +29,7 @@
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
+#' @seealso \code{\link{save_fig}}
 #' @export
 plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 {
@@ -59,12 +79,12 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))  
   }
+  class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
 
 
 #' Show a diagnosis plot of log-likelihood and perplexity
-#'
 #' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param start integer. The starting value of iteration to use in plot. Default is 1.
@@ -73,6 +93,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @importFrom rlang .data
+#' @seealso \code{\link{save_fig}}
 #' @export
 plot_modelfit <- function(x, start = 1)
 {
@@ -94,15 +115,15 @@ plot_modelfit <- function(x, start = 1)
      geom_point(size = 0.3, show.legend = FALSE) +
      facet_wrap(~ .data$Measures, ncol = 2, scales = "free") +
      xlab("Iteration") + ylab("Value")
-
   p <- p + ggtitle("Model Fit") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+  class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
 
 
 #' Show a diagnosis plot of pi
 #'
-#' 
 #' @param x the output from a keyATM model (see \code{keyATM()})
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param start integer. The starting value of iteration to use in the plot. Default is 0.
@@ -111,6 +132,7 @@ plot_modelfit <- function(x, start = 1)
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
+#' @seealso \code{\link{save_fig}}
 #' @export
 plot_pi <- function(x, show_topic = NULL, start = 0)
 {
@@ -151,7 +173,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
       dplyr::summarise(mean = mean(.data$value), uq = stats::quantile(.data$value, .975), 
                        lq = stats::quantile(.data$value, 0.025)) -> temp
     
-    g <- ggplot(temp, aes(y = .data$mean, x = .data$Topic, color = .data$Topic)) + 
+    p <- ggplot(temp, aes(y = .data$mean, x = .data$Topic, color = .data$Topic)) + 
          theme_bw() +
          geom_errorbar(aes(ymin = .data$lq, ymax = .data$uq), data = temp, width = 0.01, size = 1) + 
          xlab("Topic") + ylab("Probability") +
@@ -163,14 +185,15 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
       dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
       dplyr::mutate(Topic = tnames) -> temp
 
-    g  <- ggplot(temp, aes(x = .data$Topic, y = .data$Probability)) +
+    p <- ggplot(temp, aes(x = .data$Topic, y = .data$Probability)) +
         geom_bar(stat = "identity") +
         theme_bw() +
         xlab("Topic") + ylab("Probability") +
         ggtitle("Probability of words drawn from keyword topic-word distribution") +
         theme(plot.title = element_text(hjust = 0.5))    
   }
-  return(g)
+  class(p) <- c("keyATM_fig", class(p))
+  return(p)
 }
 
 
@@ -187,6 +210,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
+#' @seealso \code{\link{save_fig}} 
 #' @export
 plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
 {
@@ -216,5 +240,6 @@ plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, quantile_vec
         ylab(expression(paste("Mean of ", theta))) +
         guides(color = guide_legend(title = "Topic")) +
         theme_bw()
+  class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
