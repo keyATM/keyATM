@@ -45,8 +45,13 @@ void keyATMcov::initialize_specific()
 }
 
 
-void keyATMcov::iteration_single(int &it)
+void keyATMcov::iteration_single(int it)
 { // Single iteration
+  int doc_id_;
+  int doc_length;
+  int w_, z_, s_;
+  int new_z, new_s;
+  int w_position;
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
@@ -87,7 +92,7 @@ void keyATMcov::iteration_single(int &it)
 }
 
 
-void keyATMcov::sample_parameters(int &it)
+void keyATMcov::sample_parameters(int it)
 {
   sample_lambda();
 
@@ -102,7 +107,7 @@ void keyATMcov::sample_parameters(int &it)
 }
 
 
-double keyATMcov::likelihood_lambda(int &k, int &t)
+double keyATMcov::likelihood_lambda(int k, int t)
 {
   double loglik = 0.0;
   Alpha = (C * Lambda.transpose()).array().exp();
@@ -181,10 +186,19 @@ void keyATMcov::sample_lambda_mh()
 
 void keyATMcov::sample_lambda_slice()
 {
-  start = 0.0; 
-  end = 0.0;
-  previous_p = 0.0; new_p = 0.0;
-  newlikelihood = 0.0; slice_ = 0.0; current_lambda = 0.0;
+  double start = 0.0; 
+  double end = 0.0;
+
+  double previous_p = 0.0;
+  double new_p = 0.0;
+
+  double newlikelihood = 0.0;
+  double slice_ = 0.0;
+  double current_lambda = 0.0;
+
+  double store_loglik;
+  double newlambdallk;
+
   topic_ids = sampler::shuffled_indexes(num_topics);
   cov_ids = sampler::shuffled_indexes(num_cov);
   int k, t;

@@ -1,8 +1,23 @@
+# keyATM 0.2.0
+### Major changes
+* Update `by_strata_DocTopic`
+* Make examples runnable (thank you [Chung-hong Chan](https://github.com/chainsawriot) for the suggestion!)
+* Speed up (about 15% faster)
+* `save_fig` function
+
+### Bug fix
+* `weightedLDA` without specifying the number of iterations ([Chung-hong Chan](https://github.com/chainsawriot) independently reported this bug, thank you!)
+* log-likelihood of dynamic models 
+* saving figures
+* topic labels when there is no keyword topic
+
 # keyATM 0.1.0
 ### Major changes
+* The first CRAN version
 * Organize functions into a package
 * Add keyATM Label
 * Replace `hashmap` with `fastmap`
+* Thank you [Santiago Olivella](http://santiagoolivella.info/) for finding several bugs!
 
 # keyATM 0.0.7
 ### Major changes

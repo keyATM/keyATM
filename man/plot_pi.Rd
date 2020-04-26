@@ -19,3 +19,6 @@ ggplot2 object
 \description{
 Show a diagnosis plot of pi
 }
+\seealso{
+\code{\link{save_fig}}
+}

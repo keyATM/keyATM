@@ -17,3 +17,6 @@ ggplot2 object
 \description{
 Show a diagnosis plot of log-likelihood and perplexity
 }
+\seealso{
+\code{\link{save_fig}}
+}

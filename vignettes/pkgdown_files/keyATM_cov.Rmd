@@ -27,6 +27,7 @@ For the covariate data, we use the dummy variable which takes one if the bill is
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 bills_cov <- keyATM_data_bills$cov # dummy variable indicating the party proposed the bill
 dim(bills_cov)  # We have 140 documents and a single covariate for each document
+table(bills_cov) # this is a binary indicator
 ```
 
 Please make sure that **the order of covariates is the same as the order of documents**.
