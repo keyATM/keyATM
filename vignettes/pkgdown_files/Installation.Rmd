@@ -12,6 +12,6 @@ You can install **keyATM** from either CRAN or GitHub. CRAN has a stable version
 install.packages("keyATM")
 
 # Install development version from GitHub
-devtools::install_github("keyATM/keyATM")
+devtools::install_github("keyATM/keyATM", ref = "v0.2.0")
 ```
 
