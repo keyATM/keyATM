@@ -27,6 +27,7 @@ namespace sampler{
 		double u = R::unif_rand();
 		double temp = 0.0;
 		int index = 0;
+
 		for (int ii = 0; ii < size; ii++) {
 			temp += prob(ii);
 			if (u < temp) {
@@ -54,4 +55,39 @@ namespace sampler{
 		}
 		return index;
 	}
+
+
+  int rcat_eqsize(const int size)
+  {
+    double u = R::unif_rand(); 
+    double temp = 0.0;
+    int index = 0;
+    double prob = 1.0 / size;
+
+		for (int ii = 0; ii < size; ii++) {
+			temp += prob;
+			if (u < temp) {
+				index = ii;
+				break;
+			}
+		}
+		return index;
+  }
+
+
+  int rcat_eqprob(const double prob, const int size)
+  {
+    double u = R::unif_rand(); 
+    double temp = 0.0;
+    int index = 0;
+
+		for (int ii = 0; ii < size; ii++) {
+			temp += prob;
+			if (u < temp) {
+				index = ii;
+				break;
+			}
+		}
+		return index; 
+  }
 }

@@ -412,7 +412,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   rm(res)
 
   # Organize
-  stored_values <- list()
+  stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)))
 
   if (model %in% c("base", "lda", "label")) {
     if (options$estimate_alpha)
@@ -471,6 +471,12 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   ##
   ## Fitting
   ##
+  return(fitting_models(key_model, model, options))
+}
+
+
+fitting_models <- function(key_model, model, options)
+{
   message(paste0("Fitting the model. ", options$iterations, " iterations..."))
   set.seed(options$seed)
 
@@ -528,6 +534,10 @@ check_arg <- function(obj, name, model, info = list())
 
   if (name == "options") {
     return(check_arg_options(obj, model, info))  
+  }
+
+  if (name == "vb_options") {
+    return(check_arg_vboptions(obj, model, info))  
   }
 }
 
@@ -754,7 +764,6 @@ check_arg_model_settings <- function(obj, model, info)
   }
 
   show_unused_arguments(obj, "`model_settings`", allowed_arguments)
-
   return(obj)
 }
 
@@ -816,7 +825,6 @@ check_arg_priors <- function(obj, model, info)
   }
 
   show_unused_arguments(obj, "`priors`", allowed_arguments)
-
   return(obj)
 }
 

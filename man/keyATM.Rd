@@ -87,21 +87,22 @@ Fit keyATM models.
   keyATM_docs <- keyATM_read(bills_dfm)
 
   # keyATM Base
-  out <- keyATM(keyATM_docs, model = "base", no_keyword_topics = 5,
-                keywords = bills_keywords)
+  out <- keyATM(docs = keyATM_docs, model = "base",
+                no_keyword_topics = 5, keywords = bills_keywords)
 
   # keyATM Covariates
   bills_cov <- as.data.frame(keyATM_data_bills$cov)
-  out <- keyATM(keyATM_docs, model = "covariates", no_keyword_topics = 5,
-                keywords = bills_keywords,
+  out <- keyATM(docs = keyATM_docs, model = "covariates",
+                no_keyword_topics = 5, keywords = bills_keywords,
                 model_settings = list(covariates_data = bills_cov,
-                                      covariates_formula = ~RepParty))
+                                      covariates_formula = ~ RepParty))
 
   # keyATM Dynamic
   bills_time_index <- keyATM_data_bills$time_index
-  bills_time_index <- as.integer(bills_time_index - 100)  # starts from 1, increment by 1
-  out <- keyATM(keyATM_docs, model = "dynamic", no_keyword_topics = 5,
-                keywords = bills_keywords,
+  # Time index should start from 1 and increase by 1
+  bills_time_index <- as.integer(bills_time_index - 100)
+  out <- keyATM(docs = keyATM_docs, model = "dynamic",
+                no_keyword_topics = 5, keywords = bills_keywords,
                 model_settings = list(num_states = 5,
                                       time_index = bills_time_index))
 

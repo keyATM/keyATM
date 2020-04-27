@@ -765,6 +765,16 @@ List keyATMmeta::return_model()
     model["priors"] = priors_list;
   }
 
+  // Vocabulary weights
+  NumericVector vocab_weights_R = stored_values["vocab_weights"];
+
+  for (int v = 0; v < num_vocab; v++) {
+    vocab_weights_R[v] = vocab_weights(v); 
+  }
+  stored_values["vocab_weights"] = vocab_weights_R;
   model["stored_values"] = stored_values;
+
+  model["stored_values"] = stored_values;
+
   return model;
 }
