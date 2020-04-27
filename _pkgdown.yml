@@ -61,6 +61,7 @@ reference:
   desc: ~
   contents:
   - '`keyATM`'
+  - '`keyATMvb`'
   - '`weightedLDA`'
   - '`save.keyATM_output`'
 - title: Checking results

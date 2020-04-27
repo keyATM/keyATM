@@ -7,6 +7,7 @@
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![Travis-CI Build Status](https://travis-ci.com/keyATM/keyATM.svg?branch=master)](https://travis-ci.com/keyATM/keyATM)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/keyATM/keyATM&style=flat)](https://mergify.io)
+[![DevVersion](https://img.shields.io/badge/Dev-v0.2.0-orange)](https://github.com/keyATM/keyATM/projects/1)
 <!-- badges: end -->
 
 <br>

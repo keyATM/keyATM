@@ -19,8 +19,8 @@ An R package for Keyword Assisted Topic Models, created by [Shusei Eshima](https
 # Website
 Please visit [our website](https://keyatm.github.io/keyATM/) for a complete reference.
 
-# Development version [![DevVersion](https://img.shields.io/badge/Dev-v0.2.0-orange)](https://github.com/keyATM/keyATM/tree/v0.2.0)
-We are preparing the next version. If you want to try it, you can install it with `devtools`.
+# Development version [![DevVersion](https://img.shields.io/badge/Dev-v0.2.0-orange)](https://github.com/keyATM/keyATM/projects/1)
+We are preparing the next version. If you want to try it, you can install it with `devtools`. [Roadmap](https://github.com/keyATM/keyATM/projects/1).
 ```r
 devtools::install_github("keyATM/keyATM", ref = "v0.2.0")
 ```

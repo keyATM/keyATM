@@ -19,6 +19,8 @@ namespace sampler
   int rcat(VectorXd &prob, const int size);
   int rcat_without_normalize(VectorXd &prob, const double total, const int size);
 
+  int rcat_eqsize(const int size);
+  int rcat_eqprob(const double prob, const int size);
 }
 
 #endif

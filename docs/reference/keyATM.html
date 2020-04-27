@@ -259,21 +259,22 @@
   <span class='no'>keyATM_docs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='keyATM_read.html'>keyATM_read</a></span>(<span class='no'>bills_dfm</span>)
 
   <span class='co'># keyATM Base</span>
-  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(<span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"base"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-                <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>bills_keywords</span>)
+  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(<span class='kw'>docs</span> <span class='kw'>=</span> <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"base"</span>,
+                <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>bills_keywords</span>)
 
   <span class='co'># keyATM Covariates</span>
   <span class='no'>bills_cov</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span>(<span class='no'>keyATM_data_bills</span>$<span class='no'>cov</span>)
-  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(<span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"covariates"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-                <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>bills_keywords</span>,
+  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(<span class='kw'>docs</span> <span class='kw'>=</span> <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"covariates"</span>,
+                <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>bills_keywords</span>,
                 <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>bills_cov</span>,
-                                      <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~<span class='no'>RepParty</span>))
+                                      <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~ <span class='no'>RepParty</span>))
 
   <span class='co'># keyATM Dynamic</span>
   <span class='no'>bills_time_index</span> <span class='kw'>&lt;-</span> <span class='no'>keyATM_data_bills</span>$<span class='no'>time_index</span>
-  <span class='no'>bills_time_index</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>bills_time_index</span> - <span class='fl'>100</span>)  <span class='co'># starts from 1, increment by 1</span>
-  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(<span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"dynamic"</span>, <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-                <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>bills_keywords</span>,
+  <span class='co'># Time index should start from 1 and increase by 1</span>
+  <span class='no'>bills_time_index</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>bills_time_index</span> - <span class='fl'>100</span>)
+  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>keyATM</span>(<span class='kw'>docs</span> <span class='kw'>=</span> <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"dynamic"</span>,
+                <span class='kw'>no_keyword_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='no'>bills_keywords</span>,
                 <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>,
                                       <span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>bills_time_index</span>))
 

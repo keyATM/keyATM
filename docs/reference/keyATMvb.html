@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Weighted LDA main function — weightedLDA • keyATM</title>
+<title>keyATM with Collapsed Variational Bayes — keyATMvb • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -34,9 +34,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Weighted LDA main function — weightedLDA" />
+<meta property="og:title" content="keyATM with Collapsed Variational Bayes — keyATMvb" />
 
-<meta property="og:description" content="Fit weighted LDA models." />
+<meta property="og:description" content="[Experimental feature] Fit keyATM base with Collapsed Variational Bayes" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -141,25 +141,27 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Weighted LDA main function</h1>
+    <h1>keyATM with Collapsed Variational Bayes</h1>
     
-    <div class="hidden name"><code>weightedLDA.Rd</code></div>
+    <div class="hidden name"><code>keyATMvb.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Fit weighted LDA models.</p>
+    <p>[Experimental feature] Fit keyATM base with Collapsed Variational Bayes</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>weightedLDA</span>(
+    <pre class="usage"><span class='fu'>keyATMvb</span>(
   <span class='no'>docs</span>,
   <span class='no'>model</span>,
-  <span class='no'>number_of_topics</span>,
+  <span class='no'>no_keyword_topics</span>,
+  <span class='kw'>keywords</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
   <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
+  <span class='kw'>vb_options</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
   <span class='kw'>priors</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
   <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  <span class='kw'>keep</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>()
+  <span class='kw'>keep</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()
 )</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -171,15 +173,26 @@
     </tr>
     <tr>
       <th>model</th>
-      <td><p>Weighted LDA model: "base", "covariates", and "dynamic"</p></td>
+      <td><p>keyATM model: "base", "covariates", "dynamic", and "label"</p></td>
     </tr>
     <tr>
-      <th>number_of_topics</th>
+      <th>no_keyword_topics</th>
       <td><p>the number of regular topics</p></td>
+    </tr>
+    <tr>
+      <th>keywords</th>
+      <td><p>a list of keywords</p></td>
     </tr>
     <tr>
       <th>model_settings</th>
       <td><p>a list of model specific settings (details are in the online documentation)</p></td>
+    </tr>
+    <tr>
+      <th>vb_options</th>
+      <td><p>a list of settings for Variational Bayes</p><ul>
+<li><p><strong>convtol</strong>: the default is <code>1e-4</code></p></li>
+<li><p><strong>init</strong>: "mcmc" (default) or "random"</p></li>
+</ul></td>
     </tr>
     <tr>
       <th>priors</th>
@@ -187,7 +200,7 @@
     </tr>
     <tr>
       <th>options</th>
-      <td><p>a list of options (details are in the documentation of <code><a href='keyATM.html'>keyATM()</a></code>)</p></td>
+      <td><p>a list of options same as <code><a href='keyATM.html'>keyATM()</a></code>. Options are used when initialization method is "mcmc".</p></td>
     </tr>
     <tr>
       <th>keep</th>
@@ -197,64 +210,9 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A <code>keyATM_output</code> object containing:</p><dl class='dl-horizontal'>
-    <dt>V</dt><dd><p>number of terms (number of unique words)</p></dd>
-    <dt>N</dt><dd><p>number of documents</p></dd>
-    <dt>model</dt><dd><p>the name of the model</p></dd>
-    <dt>theta</dt><dd><p>topic proportions for each document (document-topic distribution)</p></dd>
-    <dt>phi</dt><dd><p>topic specific word generation probabilities (topic-word distribution)</p></dd>
-    <dt>topic_counts</dt><dd><p>number of tokens assigned to each topic</p></dd>
-    <dt>word_counts</dt><dd><p>number of times each word type appears</p></dd>
-    <dt>doc_lens</dt><dd><p>length of each document in tokens</p></dd>
-    <dt>vocab</dt><dd><p>words in the vocabulary (a vector of unique words)</p></dd>
-    <dt>priors</dt><dd><p>priors</p></dd>
-    <dt>options</dt><dd><p>options</p></dd>
-    <dt>keywords_raw</dt><dd><p><code>NULL</code> for LDA models</p></dd>
-    <dt>model_fit</dt><dd><p>perplexity and log-likelihood</p></dd>
-    <dt>pi</dt><dd><p>estimated pi for the last iteration (<code>NULL</code> for LDA models)</p></dd>
-    <dt>values_iter</dt><dd><p>values stored during iterations</p></dd>
-    <dt>number_of_topics</dt><dd><p>number of topics</p></dd>
-    <dt>kept_values</dt><dd><p>outputs you specified to store in <code>keep</code> option</p></dd>
-    <dt>information</dt><dd><p>information about the fitting</p></dd>
-  
-</dl>
-
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='save.keyATM_output.html'>save.keyATM_output</a></code>, <a href='https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html'>https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html</a></p></div>
+    <p>A <code>keyATM_output</code> object</p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-  <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>keyATM</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>quanteda</span>)
-  <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>keyATM_data_bills</span>)
-  <span class='no'>bills_dfm</span> <span class='kw'>&lt;-</span> <span class='no'>keyATM_data_bills</span>$<span class='no'>doc_dfm</span>  <span class='co'># quanteda dfm object</span>
-  <span class='no'>keyATM_docs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='keyATM_read.html'>keyATM_read</a></span>(<span class='no'>bills_dfm</span>)
-
-  <span class='co'># Weighted LDA</span>
-  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>weightedLDA</span>(<span class='kw'>docs</span> <span class='kw'>=</span> <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"base"</span>,
-                     <span class='kw'>number_of_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>)
-
-  <span class='co'># Weighted LDA Covariates</span>
-  <span class='no'>bills_cov</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span>(<span class='no'>keyATM_data_bills</span>$<span class='no'>cov</span>)
-  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>weightedLDA</span>(<span class='kw'>docs</span> <span class='kw'>=</span> <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"covariates"</span>,
-                     <span class='kw'>number_of_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-                     <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>covariates_data</span> <span class='kw'>=</span> <span class='no'>bills_cov</span>,
-                                           <span class='kw'>covariates_formula</span> <span class='kw'>=</span> ~ <span class='no'>RepParty</span>))
-
-  <span class='co'># Weighted LDA Dynamic</span>
-  <span class='no'>bills_time_index</span> <span class='kw'>&lt;-</span> <span class='no'>keyATM_data_bills</span>$<span class='no'>time_index</span>
-  <span class='co'># Time index should start from 1 and increase by 1</span>
-  <span class='no'>bills_time_index</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>bills_time_index</span> - <span class='fl'>100</span>)
-  <span class='no'>out</span> <span class='kw'>&lt;-</span> <span class='fu'>weightedLDA</span>(<span class='kw'>docs</span> <span class='kw'>=</span> <span class='no'>keyATM_docs</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"dynamic"</span>,
-                     <span class='kw'>number_of_topics</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-                     <span class='kw'>model_settings</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>num_states</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-                                           <span class='kw'>time_index</span> <span class='kw'>=</span> <span class='no'>bills_time_index</span>))
-
-  <span class='co'># Visit our website for full examples: https://keyatm.github.io/keyATM/</span>
-}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -262,11 +220,7 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>

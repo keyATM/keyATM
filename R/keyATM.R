@@ -2,7 +2,6 @@
 #'
 #' Fit keyATM models.
 #'
-#'
 #' @param docs texts read via \code{keyATM_read()}
 #' @param model keyATM model: "base", "covariates", "dynamic", and "label"
 #' @param no_keyword_topics the number of regular topics
@@ -152,7 +151,6 @@ check_arg_keep <- function(obj, model)
 #'
 #' Fit weighted LDA models.
 #'
-#' 
 #' @param docs texts read via \code{keyATM_read()}
 #' @param model Weighted LDA model: "base", "covariates", and "dynamic"
 #' @param number_of_topics the number of regular topics
