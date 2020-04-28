@@ -93,6 +93,8 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
   keywords <- check_arg(keywords, "keywords", model, info)
 
   # Get Info
+  info$use_doc_index <- get_doc_index(docs)
+  docs <- docs[info$use_doc_index]
   info$num_doc <- length(docs)
   info$keyword_k <- length(keywords)
   info$total_k <- length(keywords) + no_keyword_topics
