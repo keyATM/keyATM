@@ -90,7 +90,7 @@ test_that("Documents with length 0: dynamic", {
 })
 
 
-test_that("Documents with length 0: dynamic", {
+test_that("Documents with length 0: label", {
   expect_warning(docs0 <- keyATM_read(bills_dfm_0))
   expect_warning(
     out <- keyATM(docs = docs0,  # text input
