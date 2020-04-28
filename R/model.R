@@ -3,7 +3,7 @@
 #' Read texts and create a \code{keyATM_docs} object, which is a list of texts.
 #'
 #' 
-#' @param texts input. keyATM takes dfm, data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
+#' @param texts input. keyATM takes quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
 #' @param encoding character. Only used when \code{texts} is a vector of file paths. Default is "UTF-8".
 #' @param check logical. If \code{TRUE}, check whether there is nothing wrong with the structure of texts. Default is \code{TRUE}.
 #'
@@ -41,7 +41,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
     text_dfm <- NULL
     files <- NULL
     text_df <- tibble::as_tibble(texts)
-  } else if (class(texts) == "dfm") {
+  } else if (class(texts) == "dfm" | "dgCMatrix" %in% class(texts)) {
     message("Using quanteda dfm.")
     text_dfm <- texts
     files <- NULL

@@ -7,7 +7,7 @@
 keyATM_read(texts, encoding = "UTF-8", check = TRUE)
 }
 \arguments{
-\item{texts}{input. keyATM takes dfm, data.frame, \pkg{tibble} tbl_df, or a vector of file paths.}
+\item{texts}{input. keyATM takes quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.}
 
 \item{encoding}{character. Only used when \code{texts} is a vector of file paths. Default is "UTF-8".}
 
