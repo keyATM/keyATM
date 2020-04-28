@@ -44,3 +44,6 @@ A \code{keyATM_output} object
 \description{
 [Experimental feature] Fit keyATM base with Collapsed Variational Bayes
 }
+\seealso{
+\url{https://keyatm.github.io/keyATM/articles/pkgdown_files/keyATMvb.html}
+}

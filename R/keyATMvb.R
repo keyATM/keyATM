@@ -15,6 +15,7 @@
 #' @param options a list of options same as \code{keyATM()}. Options are used when initialization method is "mcmc".
 #' @param keep a vector of the names of elements you want to keep in output
 #' @return A \code{keyATM_output} object
+#' @seealso \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/keyATMvb.html}
 #' @export
 keyATMvb <- function(docs, model, no_keyword_topics,
                      keywords = list(), model_settings = list(), vb_options = list(),
