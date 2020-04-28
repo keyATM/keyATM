@@ -26,6 +26,9 @@ keyATMvb <- function(docs, model, no_keyword_topics,
     check_arg_type(keep, "character")
 
   model <- full_model_name(model, type="keyATM")
+  if (is.null(options$iterations)) {
+    options$iterations <- 100
+  }
 
   # Initialize and fit keyATM (if MCMC initialization)
   fitted <- keyATMvb_fit(
