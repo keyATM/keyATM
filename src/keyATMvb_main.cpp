@@ -553,8 +553,8 @@ void keyATMvb::iteration()
         change_rate = (previous_perplexity - perplexity) / previous_perplexity;
         previous_perplexity = perplexity;
       }
-      cout << "Perplexity [" << count << "]: " << perplexity << " / ";
-      cout << "Convergence [" << count << "]: " << change_rate << endl;
+      Rcpp::Rcout << "Perplexity [" << count << "]: " << perplexity << " / ";
+      Rcpp::Rcout << "Convergence [" << count << "]: " << change_rate << endl;
     }
   
   
