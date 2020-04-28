@@ -85,17 +85,9 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
   # check whether there is nothing wrong with the structure of texts
   if (check) {
     check_vocabulary(unique(unlist(W_raw, use.names = FALSE, recursive = FALSE))) 
+    doc_index <- get_doc_index(W_raw)
   }
 
-  # Check document length
-  lapply(W_raw, length) %>% unlist(use.names = FALSE) -> len
-  len_zero_index <- (1:length(W_raw))[(1:length(W_raw))[len == 0]]
-  if (length(len_zero_index) != 0) {
-    stop("Number of documents with 0 length: ", length(len_zero_index), "\n",
-         "Please review the preprocessing steps.") 
-  }
-
-  
   # Assign class
   class(W_raw) <- c("keyATM_docs", class(W_raw))
 
@@ -332,6 +324,23 @@ save_fig.keyATM_viz <- function(x, filename, ...)
 }
 
 
+get_doc_index <- function(docs)
+{
+  lapply(docs, length) %>% unlist(use.names = FALSE) -> len
+  index <- 1:length(docs)
+  nonzero_index <- index[index[len != 0]]
+  zero_index <- index[index[len == 0]]
+  if (length(zero_index) != 0) {
+    warning("Number of documents of 0 length: ", length(zero_index), "\n",
+             "This may cause invalid covariates or time index.", "\n",
+             "Please review the preprocessing steps.", "\n",
+             "Document index to check: ", paste(zero_index, collapse = ", "),
+             immediate. = TRUE) 
+  }
+  return(nonzero_index)
+}
+
+
 #' Fit a keyATM model 
 #' 
 #' keyATM_fit is wrapped by keyATM() and weightedLDA()
@@ -362,6 +371,8 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   keywords <- check_arg(keywords, "keywords", model, info)
 
   # Get Info
+  info$use_doc_index <- get_doc_index(docs)
+  docs <- docs[info$use_doc_index]
   info$num_doc <- length(docs)
   info$keyword_k <- length(keywords)
   info$total_k <- length(keywords) + no_keyword_topics
@@ -372,6 +383,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   priors <- check_arg(priors, "priors", model, info)
   options <- check_arg(options, "options", model, info)
   info$parallel_init <- options$parallel_init
+
 
   ##
   ## Initialization
@@ -412,7 +424,8 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   rm(res)
 
   # Organize
-  stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)))
+  stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)),
+                        doc_index = info$use_doc_index)
 
   if (model %in% c("base", "lda", "label")) {
     if (options$estimate_alpha)
@@ -620,6 +633,8 @@ check_arg_model_settings <- function(obj, model, info)
       stop("Please provide `obj$covariates_data`.")  
     }
 
+    obj$covariates_data <- as.matrix(obj$covariates_data)[info$use_doc_index, , drop = FALSE]
+
     if (nrow(obj$covariates_data) != info$num_doc) {
       stop("The row of `model_settings$covariates_data` should be the same as the number of documents.")  
     }
@@ -631,7 +646,7 @@ check_arg_model_settings <- function(obj, model, info)
     if (is.null(obj$covariates_formula)) {
       warning("`covariates_formula` is not provided. keyATM uses the matrix as it is.", immediate. = TRUE)
       obj$covariates_formula <- NULL  # do not need to change the matrix
-      obj$covariates_data_use <- as.matrix(obj$covariates_data) 
+      obj$covariates_data_use <- obj$covariates_data
     } else if (is.formula(obj$covariates_formula)) {
       message("Convert covariates data using `model_settings$covariates_formula`.")
       obj$covariates_data_use <- stats::model.matrix(obj$covariates_formula,
@@ -719,6 +734,8 @@ check_arg_model_settings <- function(obj, model, info)
       stop("`model_settings$time_index` is not provided.")
     }
 
+    obj$time_index <- obj$time_index[info$use_doc_index]
+
     if (length(obj$time_index) != info$num_doc) {
       stop("The length of the `model_settings$time_index` does not match with the number of documents.")  
     }
@@ -729,6 +746,7 @@ check_arg_model_settings <- function(obj, model, info)
 
     if (max(obj$time_index) < obj$num_states)
       stop("`model_settings$num_states` should not exceed the maximum of `model_settings$time_index`.")
+
 
     check <- unique(obj$time_index[2:length(obj$time_index)] - stats::lag(obj$time_index)[2:length(obj$time_index)])
     if (sum(!unique(check) %in% c(0,1)) != 0)
@@ -745,6 +763,9 @@ check_arg_model_settings <- function(obj, model, info)
     if (is.null(obj$labels)) {
       stop("`model_settings$labels` is not provided.")
     }
+
+    obj$labels <- obj$labels[info$use_doc_index]
+
     if (length(obj$labels) != info$num_doc) {
       stop("The length of `model_settings$labels` does not match with the number of documents")
     }

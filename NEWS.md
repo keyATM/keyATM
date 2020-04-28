@@ -4,6 +4,7 @@
 * Make examples runnable (thank you [Chung-hong Chan](https://github.com/chainsawriot) for the suggestion!)
 * Speed up (about 15% faster)
 * `save_fig` function
+* Automatically drops documents with length 0, raising a warning (thank you [Francesco Grossetti](https://github.com/contefranz) for the suggestion!)
 
 ### Bug fix
 * `weightedLDA` without specifying the number of iterations ([Chung-hong Chan](https://github.com/chainsawriot) independently reported this bug, thank you!)
