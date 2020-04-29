@@ -3,7 +3,7 @@
 #' Read texts and create a \code{keyATM_docs} object, which is a list of texts.
 #'
 #' 
-#' @param texts input. keyATM takes dfm, data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
+#' @param texts input. keyATM takes quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
 #' @param encoding character. Only used when \code{texts} is a vector of file paths. Default is "UTF-8".
 #' @param check logical. If \code{TRUE}, check whether there is nothing wrong with the structure of texts. Default is \code{TRUE}.
 #'
@@ -41,7 +41,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
     text_dfm <- NULL
     files <- NULL
     text_df <- tibble::as_tibble(texts)
-  } else if (class(texts) == "dfm") {
+  } else if (class(texts) == "dfm" | "dgCMatrix" %in% class(texts)) {
     message("Using quanteda dfm.")
     text_dfm <- texts
     files <- NULL
@@ -85,7 +85,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
   # check whether there is nothing wrong with the structure of texts
   if (check) {
     check_vocabulary(unique(unlist(W_raw, use.names = FALSE, recursive = FALSE))) 
-    doc_index <- get_doc_index(W_raw)
+    doc_index <- get_doc_index(W_raw, check = TRUE)
   }
 
   # Assign class
@@ -324,18 +324,24 @@ save_fig.keyATM_viz <- function(x, filename, ...)
 }
 
 
-get_doc_index <- function(docs)
+get_doc_index <- function(docs, check = FALSE)
 {
   lapply(docs, length) %>% unlist(use.names = FALSE) -> len
   index <- 1:length(docs)
   nonzero_index <- index[index[len != 0]]
   zero_index <- index[index[len == 0]]
   if (length(zero_index) != 0) {
-    warning("Number of documents of 0 length: ", length(zero_index), "\n",
-             "This may cause invalid covariates or time index.", "\n",
-             "Please review the preprocessing steps.", "\n",
-             "Document index to check: ", paste(zero_index, collapse = ", "),
-             immediate. = TRUE) 
+    if (check) {
+      warning("Number of documents with 0 length: ", length(zero_index), "\n",
+               "This may cause invalid covariates or time index.", "\n",
+               "Please review the preprocessing steps.", "\n",
+               "Document index to check: ", paste(zero_index, collapse = ", "),
+               immediate. = TRUE)     
+    } else {
+      warning("Number of documents dropped because of 0 length: ", length(zero_index), "\n",
+               "Document index to check: ", paste(zero_index, collapse = ", "),
+               immediate. = TRUE) 
+    }
   }
   return(nonzero_index)
 }
