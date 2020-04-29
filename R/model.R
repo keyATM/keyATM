@@ -333,14 +333,14 @@ get_doc_index <- function(docs, check = FALSE)
   if (length(zero_index) != 0) {
     if (check) {
       warning("Number of documents with 0 length: ", length(zero_index), "\n",
-               "This may cause invalid covariates or time index.", "\n",
-               "Please review the preprocessing steps.", "\n",
-               "Document index to check: ", paste(zero_index, collapse = ", "),
-               immediate. = TRUE)     
+              "This may cause invalid covariates or time index.", "\n",
+              "Please review the preprocessing steps.", "\n",
+              "Document index to check: ", paste(zero_index, collapse = ", "),
+              immediate. = TRUE)     
     } else {
       warning("Number of documents dropped because of 0 length: ", length(zero_index), "\n",
-               "Document index to check: ", paste(zero_index, collapse = ", "),
-               immediate. = TRUE) 
+              "Document index to check: ", paste(zero_index, collapse = ", "),
+              immediate. = TRUE) 
     }
   }
   return(nonzero_index)
