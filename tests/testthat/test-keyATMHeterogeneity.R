@@ -75,11 +75,12 @@ test_that("Covariates get", {
 
 test_that("Doc Topic", {
   strata_topic <- by_strata_DocTopic(out, by_var = "Period20_21c",
-                                          labels = c("18_19c", "20_21c"))
+                                          labels = c("18_19c", "20_21c"),
+                                          posterior_mean = TRUE)
   p <- plot(strata_topic, var_name = "Period", topics = c(1,2,3,4))
   expect_s3_class(p, "keyATM_fig")
   skip_on_os("linux")
-  expect_equal(summary(strata_topic)[[2]]$Point[1], 0.1343383, tolerance = 0.001)
+  expect_equal(summary(strata_topic)[[2]]$Point[1], 0.1260392, tolerance = 0.001)
 })
 
 

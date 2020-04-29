@@ -843,13 +843,13 @@ covariates_get <- function(x) {
 #' @param burn_in integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.
 #' @param parallel logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}.
 #' @param mc.cores integer. The number of cores to use. Default is \code{NULL}.
-#' @param posterior_mean logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{FALSE}.
+#' @param posterior_mean logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{TRUE}.
 #'
 #' @return strata_topicword object (a list)
 #' @import magrittr
 #' @export
 by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NULL,
-                               parallel = TRUE, mc.cores = NULL, posterior_mean = FALSE)
+                               parallel = TRUE, mc.cores = NULL, posterior_mean = TRUE)
 {
   # Check inputs
   variables <- colnames(x$kept_values$model_settings$covariates_data_use)
