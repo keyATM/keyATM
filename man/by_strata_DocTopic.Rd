@@ -12,7 +12,7 @@ by_strata_DocTopic(
   burn_in = NULL,
   parallel = TRUE,
   mc.cores = NULL,
-  posterior_mean = FALSE
+  posterior_mean = TRUE
 )
 }
 \arguments{
@@ -20,7 +20,7 @@ by_strata_DocTopic(
 
 \item{by_var}{character. The name of the variable to use.}
 
-\item{labels}{character. The labels for the values specified in `by_var`}
+\item{labels}{character. The labels for the values specified in `by_var` (ascending order).}
 
 \item{by_values}{numeric. Specific values for `by_var`, ordered from small to large. If it is not specified, all values in `by_var` will be used.}
 
@@ -30,7 +30,7 @@ by_strata_DocTopic(
 
 \item{mc.cores}{integer. The number of cores to use. Default is \code{NULL}.}
 
-\item{posterior_mean}{logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{FALSE}.}
+\item{posterior_mean}{logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{TRUE}.}
 }
 \value{
 strata_topicword object (a list)
