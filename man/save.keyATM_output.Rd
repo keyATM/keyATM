@@ -15,5 +15,5 @@ save.keyATM_output(x, file = stop("'file' must be specified"))
 Save a keyATM_output object
 }
 \seealso{
-\code{\link{keyATM}}, \code{\link{weightedLDA}}
+\code{keyATM()}, \code{weightedLDA()}, and \code{keyATMvb()}
 }

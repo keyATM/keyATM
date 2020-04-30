@@ -24,10 +24,10 @@ test_that("keyATM base", {
   expect_s3_class(plot_pi(base), "ggplot")
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(base$model_fit$Perplexity[3], 1861.29, tolerance = 0.01)
+  expect_equal(base$model_fit$Perplexity[3], 1861.29, tolerance = 0.0001)
   expect_equal(top_words(base)[1, 1], "education [\U2713]")
   expect_equal(top_words(base)[3, 1], "educational")
-  expect_equal(base$pi$Proportion[3], 6.403216, tolerance = 0.01)
+  expect_equal(base$pi$Proportion[3], 6.403216, tolerance = 0.00001)
 })
 
 
@@ -53,7 +53,7 @@ test_that("keyATM covariate", {
   expect_equal(cov$model_fit$Perplexity[3], 1874.663, tolerance = 0.001)
   expect_equal(top_words(cov)[1, 1], "education [\U2713]")
   expect_equal(top_words(cov)[3, 3], "care")
-  expect_equal(cov$pi$Proportion[2], 4.836863, tolerance = 0.001)
+  expect_equal(cov$pi$Proportion[2], 4.836863, tolerance = 0.00001)
 })
 
 
@@ -73,16 +73,16 @@ test_that("keyATM dynamic", {
   expect_equal(dyn$model_fit$Perplexity[3], 2171.842, tolerance = 0.001)
   expect_equal(top_words(dyn)[1, 1], "education [\U2713]")
   expect_equal(top_words(dyn)[2, 5], "security")
-  expect_equal(dyn$pi$Proportion[2], 2.960897, tolerance = 0.001)
+  expect_equal(dyn$pi$Proportion[2], 2.960897, tolerance = 0.00001)
 })
 
 
 # Heterogeneity
 test_that("keyATM Heterogeneity Doc-Topic", {
-  strata_topic <- by_strata_DocTopic(cov, by_var = "RepParty", labels = c("Dem", "Rep"), parallel = FALSE)
+  strata_topic <- by_strata_DocTopic(cov, by_var = "RepParty", labels = c("Dem", "Rep"), parallel = FALSE, posterior_mean = FALSE)
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(summary(strata_topic)[[2]]$Lower[2], 0.1387664, tolerance = 0.001)
+  expect_equal(summary(strata_topic)[[2]]$Lower[2], 0.1387664, tolerance = 0.00001)
 
   p <- plot(strata_topic, topics = c(1,2,3,4))
   expect_s3_class(p, "ggplot")
@@ -132,7 +132,7 @@ test_that("keyATM overlapping keywords", {
   expect_equal(out$model_fit$Perplexity[2], 2283.335, tolerance = 0.001)
   expect_equal(top_words(out)[1, 1], "education [\U2713]")
   expect_equal(top_words(out)[2, 5], "commission")
-  expect_equal(out$pi$Proportion[2], 4.750078, tolerance = 0.001)
+  expect_equal(out$pi$Proportion[2], 4.750078, tolerance = 0.00001)
 })
 
 # Same keywords in multiple topics

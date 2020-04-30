@@ -20,5 +20,5 @@ ggplot2 object
 Show a diagnosis plot of pi
 }
 \seealso{
-\code{\link{save_fig}}
+\code{save_fig()}
 }

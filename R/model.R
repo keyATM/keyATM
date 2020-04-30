@@ -169,7 +169,7 @@ summary.keyATM_docs <- function(object, ...)
 #' @import magrittr
 #' @import ggplot2
 #' @importFrom rlang .data
-#' @seealso \code{\link{save_fig}}
+#' @seealso \code{save_fig()}
 #' @export
 visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
 {

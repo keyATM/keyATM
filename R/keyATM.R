@@ -52,7 +52,7 @@
 #'     \item{information}{information about the fitting}
 #'   }
 #'
-#' @seealso \code{\link{save.keyATM_output}}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+#' @seealso \code{save.keyATM_output()}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 #'
 #' @examples
 #' \dontrun{
@@ -181,7 +181,7 @@ check_arg_keep <- function(obj, model)
 #'     \item{information}{information about the fitting}
 #'   }
 #'
-#' @seealso \code{\link{save.keyATM_output}}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+#' @seealso \code{save.keyATM_output()}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 #'
 #' @examples
 #' \dontrun{

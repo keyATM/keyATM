@@ -17,5 +17,5 @@ save_fig(x, filename, ...)
 Save a figure
 }
 \seealso{
-\code{\link{visualize_keywords}}, \code{\link{plot_alpha}}, \code{\link{plot_modelfit}}, and \code{\link{plot_pi}}
+\code{visualize_keywords()}, \code{plot_alpha()}, \code{plot_modelfit()}, \code{plot_pi()}, and \code{by_strata_DocTopic()}
 }

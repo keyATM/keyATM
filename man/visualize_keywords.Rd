@@ -50,5 +50,5 @@ Visualize the proportion of keywords in the documents.
 
 }
 \seealso{
-\code{\link{save_fig}}
+\code{save_fig()}
 }
