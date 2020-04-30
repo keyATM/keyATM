@@ -18,5 +18,5 @@ ggplot2 object
 Show a diagnosis plot of log-likelihood and perplexity
 }
 \seealso{
-\code{\link{save_fig}}
+\code{save_fig()}
 }

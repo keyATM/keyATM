@@ -24,5 +24,5 @@ ggplot2 object
 Plot document-topic distribution by strata (for covariate models)
 }
 \seealso{
-\code{\link{save_fig}}
+\code{save_fig()} and \code{by_strata_DocTopic()}
 }

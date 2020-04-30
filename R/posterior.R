@@ -1,4 +1,4 @@
-#' \code{keyATM_fit()} calls \code{keyATM_output()}
+#' Create an output object
 #' 
 #' @keywords internal
 #' @import magrittr
@@ -576,7 +576,7 @@ summary.keyATM_output <- function(object, ...)
 #'
 #' @param x a keyATM_output object (see \code{keyATM()})
 #' @param file a character
-#' @seealso \code{\link{keyATM}}, \code{\link{weightedLDA}}
+#' @seealso \code{keyATM()}, \code{weightedLDA()}, and \code{keyATMvb()}
 #' @export
 save.keyATM_output <- function(x, file = stop("'file' must be specified"))
 {

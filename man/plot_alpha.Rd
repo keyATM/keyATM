@@ -22,5 +22,5 @@ ggplot2 object
 Show a diagnosis plot of alpha
 }
 \seealso{
-\code{\link{save_fig}}
+\code{save_fig()}
 }
