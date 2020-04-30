@@ -1,7 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
-^NEWS\.md$
 ^index\.md$
 ^\.mergify\.yml$
 ^\.travis\.yml$ 
