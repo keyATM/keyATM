@@ -639,7 +639,7 @@ check_arg_model_settings <- function(obj, model, info)
       stop("Please provide `obj$covariates_data`.")  
     }
 
-    obj$covariates_data <- as.matrix(obj$covariates_data)[info$use_doc_index, , drop = FALSE]
+    obj$covariates_data <- as.data.frame(obj$covariates_data)[info$use_doc_index, , drop = FALSE]
 
     if (nrow(obj$covariates_data) != info$num_doc) {
       stop("The row of `model_settings$covariates_data` should be the same as the number of documents.")  
