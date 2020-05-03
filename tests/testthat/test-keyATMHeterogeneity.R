@@ -34,7 +34,7 @@ keywords <- list(Government     = c("laws", "law", "executive"),
 # Create covariates
 vars <- docvars(data_corpus_inaugural)
 vars %>%
-  as_tibble() %>%
+  tibble::as_tibble() %>%
   mutate(Period = case_when(Year <= 1899 ~ "18_19c",
                             TRUE ~ "20_21c")) %>%
   mutate(Party = case_when(Party == "Democratic" ~ "Democratic",
@@ -70,6 +70,7 @@ test_that("Covariates get", {
   mat <- covariates_get(out)
   expect_type(mat, "double")
   expect_equivalent(dim(mat), c(58L, 4L))
+  expect_equivalent(colnames(mat), c("(Intercept)", "PartyRepublican", "PartyDemocratic", "Period20_21c"))
 })
 
 
@@ -80,7 +81,7 @@ test_that("Doc Topic", {
   p <- plot(strata_topic, var_name = "Period", topics = c(1,2,3,4))
   expect_s3_class(p, "keyATM_fig")
   skip_on_os("linux")
-  expect_equal(summary(strata_topic)[[2]]$Point[1], 0.1260392, tolerance = 0.001)
+  expect_equal(summary(strata_topic)[[2]]$Point[1], 0.07443097, tolerance = 0.001)
 })
 
 
@@ -90,6 +91,7 @@ test_that("Topic Word", {
   top <- top_words(strata_tw, n = 3) 
   expect_equivalent(top$Democratic[1, 3], "world [\U2713]")
   expect_equivalent(top$Republican[1, 5], "war [\U2713]")
+  expect_equivalent(top$Republican[3, 7], "done")
 })
 
 
