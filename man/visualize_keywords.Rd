@@ -11,15 +11,15 @@ visualize_keywords(docs, keywords, prune = TRUE, label_size = 3.2)
 
 \item{keywords}{a list of keywords}
 
-\item{prune}{logical. If \code{TRUE}, prune keywords that do not appear in `docs`. Default is \code{TRUE}.}
+\item{prune}{logical. If \code{TRUE}, prune keywords that do not appear in \code{docs}. Default is \code{TRUE}.}
 
-\item{label_size}{the size of keyword labels in the output plot. Default is 3.2.}
+\item{label_size}{the size of keyword labels in the output plot. Default is \code{3.2}.}
 }
 \value{
 A list containing \describe{
-   \item{figure}{a ggplot2 object}
-   \item{values}{a tibble object that stores values}
-   \item{keywords}{a list of keywords that appear in documents}
+\item{figure}{a ggplot2 object}
+\item{values}{a tibble object that stores values}
+\item{keywords}{a list of keywords that appear in documents}
 }
 }
 \description{
@@ -31,10 +31,8 @@ Visualize the proportion of keywords in the documents.
  keyATM_docs <- keyATM_read(input)
   
  # Keywords are in a list  
- keywords <- list(
-                  Education = c("education", "child", "student"),
-                  Health    = c("public", "health", "program"),
-                 )
+ keywords <- list(Education = c("education", "child", "student"),
+                  Health    = c("public", "health", "program"))
 
  # Visualize keywords
  keyATM_viz <- visualize_keywords(keyATM_docs, keywords)
@@ -50,5 +48,5 @@ Visualize the proportion of keywords in the documents.
 
 }
 \seealso{
-\code{save_fig()}
+\code{\link[=save_fig]{save_fig()}}
 }

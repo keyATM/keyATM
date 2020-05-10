@@ -2,8 +2,8 @@
 #' 
 #' @param x the object
 #' @param filename file name to create on disk
-#' @param ... other arguments passed on to the \code{ggsave()} function
-#' @seealso \code{visualize_keywords()}, \code{plot_alpha()}, \code{plot_modelfit()}, \code{plot_pi()}, and \code{by_strata_DocTopic()}
+#' @param ... other arguments passed on to the [ggplot2::ggsave()][ggplot2::ggsave] function
+#' @seealso [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [by_strata_DocTopic()]
 #' @export
 save_fig <- function(x, filename, ...) {
   UseMethod("save_fig")
@@ -21,15 +21,15 @@ save_fig.keyATM_fig <- function(x, filename, ...)
 #' Show a diagnosis plot of alpha
 #'
 #' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param start integer. The start of slice iteration. Default is 0.
+#' @param start integer. The start of slice iteration. Default is \code{0}.
 #' @param show_topic a vector to specify topic indexes to show. Default is \code{NULL}.
-#' @param scale character. Control the scale of y-axis (the parameter in \code{facet_wrap()}): 'free' adjusts y-axis for parameters. Default is "fixed". 
+#' @param scale character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
 #'
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
-#' @seealso \code{save_fig()}
+#' @seealso [save_fig()]
 #' @export
 plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 {
@@ -86,14 +86,14 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 
 #' Show a diagnosis plot of log-likelihood and perplexity
 #' 
-#' @param x the output from a keyATM model (see \code{keyATM()})
-#' @param start integer. The starting value of iteration to use in plot. Default is 1.
+#' @param x the output from a keyATM model (see [keyATM()])
+#' @param start integer. The starting value of iteration to use in plot. Default is \code{1}.
 #'
 #' @return ggplot2 object
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @importFrom rlang .data
-#' @seealso \code{save_fig()}
+#' @seealso [save_fig()]
 #' @export
 plot_modelfit <- function(x, start = 1)
 {
@@ -124,15 +124,15 @@ plot_modelfit <- function(x, start = 1)
 
 #' Show a diagnosis plot of pi
 #'
-#' @param x the output from a keyATM model (see \code{keyATM()})
+#' @param x the output from a keyATM model (see [keyATM()])
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
-#' @param start integer. The starting value of iteration to use in the plot. Default is 0.
+#' @param start integer. The starting value of iteration to use in the plot. Default is \code{0}.
 #'
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
-#' @seealso \code{save_fig()}
+#' @seealso [save_fig()]
 #' @export
 plot_pi <- function(x, show_topic = NULL, start = 0)
 {
@@ -200,7 +200,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' Plot document-topic distribution by strata (for covariate models)
 #' 
 #'
-#' @param x a strata_doctopic object (see \code{by_strata_DocTopic()})
+#' @param x a strata_doctopic object (see [by_strata_DocTopic()])
 #' @param topics a vector or an integer. Indicate topics to visualize.
 #' @param var_name the name of the variable in the plot.
 #' @param quantile_vec a numeric. Quantiles to visualize
@@ -210,7 +210,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
-#' @seealso \code{save_fig()} and \code{by_strata_DocTopic()}
+#' @seealso [save_fig()], [by_strata_DocTopic()]
 #' @export
 plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
 {

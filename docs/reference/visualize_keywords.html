@@ -167,20 +167,20 @@
     </tr>
     <tr>
       <th>prune</th>
-      <td><p>logical. If <code>TRUE</code>, prune keywords that do not appear in `docs`. Default is <code>TRUE</code>.</p></td>
+      <td><p>logical. If <code>TRUE</code>, prune keywords that do not appear in <code>docs</code>. Default is <code>TRUE</code>.</p></td>
     </tr>
     <tr>
       <th>label_size</th>
-      <td><p>the size of keyword labels in the output plot. Default is 3.2.</p></td>
+      <td><p>the size of keyword labels in the output plot. Default is <code>3.2</code>.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A list containing</p><dl class='dl-horizontal'>
-   <dt>figure</dt><dd><p>a ggplot2 object</p></dd>
-   <dt>values</dt><dd><p>a tibble object that stores values</p></dd>
-   <dt>keywords</dt><dd><p>a list of keywords that appear in documents</p></dd>
+<dt>figure</dt><dd><p>a ggplot2 object</p></dd>
+<dt>values</dt><dd><p>a tibble object that stores values</p></dd>
+<dt>keywords</dt><dd><p>a list of keywords that appear in documents</p></dd>
 
 </dl>
 
@@ -196,10 +196,8 @@
  <span class='no'>keyATM_docs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='keyATM_read.html'>keyATM_read</a></span>(<span class='no'>input</span>)
 
  <span class='co'># Keywords are in a list  </span>
- <span class='no'>keywords</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
-                  <span class='kw'>Education</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"education"</span>, <span class='st'>"child"</span>, <span class='st'>"student"</span>),
-                  <span class='kw'>Health</span>    <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"public"</span>, <span class='st'>"health"</span>, <span class='st'>"program"</span>),
-                 )
+ <span class='no'>keywords</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>Education</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"education"</span>, <span class='st'>"child"</span>, <span class='st'>"student"</span>),
+                  <span class='kw'>Health</span>    <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"public"</span>, <span class='st'>"health"</span>, <span class='st'>"program"</span>))
 
  <span class='co'># Visualize keywords</span>
  <span class='no'>keyATM_viz</span> <span class='kw'>&lt;-</span> <span class='fu'>visualize_keywords</span>(<span class='no'>keyATM_docs</span>, <span class='no'>keywords</span>)
