@@ -20,7 +20,7 @@ save_fig.keyATM_fig <- function(x, filename, ...)
 
 #' Show a diagnosis plot of alpha
 #'
-#' @param x the output from a keyATM model (see \code{keyATM()})
+#' @param x the output from a keyATM model (see [keyATM()])
 #' @param start integer. The start of slice iteration. Default is \code{0}.
 #' @param show_topic a vector to specify topic indexes to show. Default is \code{NULL}.
 #' @param scale character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 

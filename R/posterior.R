@@ -575,7 +575,7 @@ summary.keyATM_output <- function(object, ...)
 #' Save a keyATM_output object
 #'
 #' @param x a keyATM_output object (see [keyATM()])
-#' @param file a character
+#' @param file file name to create on disk
 #' @seealso [keyATM()], [weightedLDA()], [keyATMvb()]
 #' @export
 save.keyATM_output <- function(x, file = stop("'file' must be specified"))
@@ -601,7 +601,7 @@ plot.keyATM_output <- function(x, ...)
 #' are labeled with the name of that category.
 #'
 #' @param x the output (see [keyATM()] and [by_strata_TopicWord()])
-#' @param n integer. The number terms to visualize. Default is \code{NULL}, which shows all terms.
+#' @param n integer. The number terms to visualize. Default is \code{10}.
 #' @param measure character. The way to sort the terms: \code{probability} (default) or \code{lift}.
 #' @param show_keyword logical. If \code{TRUE}, mark keywords. Default is \code{TRUE}.
 #'
@@ -836,7 +836,7 @@ covariates_get <- function(x) {
 
 #' Estimate document-topic distribution by strata (for covariate models)
 #'
-#' @param x the output from a keyATM model (see [keyATM()])
+#' @param x the output from the covariate keyATM model (see [keyATM()])
 #' @param by_var character. The name of the variable to use.
 #' @param labels character. The labels for the values specified in `by_var` (ascending order).
 #' @param by_values numeric. Specific values for `by_var`, ordered from small to large. If it is not specified, all values in `by_var` will be used.
