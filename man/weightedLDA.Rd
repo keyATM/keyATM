@@ -25,7 +25,7 @@ weightedLDA(
 
 \item{priors}{a list of priors of parameters}
 
-\item{options}{a list of options (details are in the documentation of \code{\link[=keyATM]{keyATM()}}}
+\item{options}{a list of options (details are in the documentation of \code{\link[=keyATM]{keyATM()}})}
 
 \item{keep}{a vector of the names of elements you want to keep in output}
 }

@@ -16,7 +16,7 @@ by_strata_DocTopic(
 )
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}})}
+\item{x}{the output from the covariate keyATM model (see \code{\link[=keyATM]{keyATM()}})}
 
 \item{by_var}{character. The name of the variable to use.}
 

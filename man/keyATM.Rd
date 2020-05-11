@@ -16,7 +16,7 @@ keyATM(
 )
 }
 \arguments{
-\item{docs}{texts read via \code{keyATM_read()}}
+\item{docs}{texts read via \code{\link[=keyATM_read]{keyATM_read()}}}
 
 \item{model}{keyATM model: \code{base}, \code{covariates}, \code{dynamic}, and \code{label}}
 

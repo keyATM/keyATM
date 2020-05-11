@@ -2,7 +2,7 @@
 #'
 #' Fit keyATM models.
 #'
-#' @param docs texts read via \code{keyATM_read()}
+#' @param docs texts read via [keyATM_read()]
 #' @param model keyATM model: \code{base}, \code{covariates}, \code{dynamic}, and \code{label}
 #' @param no_keyword_topics the number of regular topics
 #' @param keywords a list of keywords
@@ -156,7 +156,7 @@ check_arg_keep <- function(obj, model)
 #' @param number_of_topics the number of regular topics
 #' @param model_settings a list of model specific settings (details are in the online documentation)
 #' @param priors a list of priors of parameters
-#' @param options a list of options (details are in the documentation of [keyATM()]
+#' @param options a list of options (details are in the documentation of [keyATM()])
 #' @param keep a vector of the names of elements you want to keep in output
 #'
 #' @return A \code{keyATM_output} object containing:

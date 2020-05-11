@@ -11,7 +11,7 @@ keyATM_read(texts, encoding = "UTF-8", check = TRUE)
 
 \item{encoding}{character. Only used when \code{texts} is a vector of file paths. Default is \code{UTF-8}.}
 
-\item{check}{logical. If \code{TRUE}, check whether there is nothing wrong with the structure of texts. Default is \code{TRUE}.}
+\item{check}{logical. If \code{TRUE}, check whether there is anything wrong with the structure of texts. Default is \code{TRUE}.}
 }
 \value{
 a list whose elements are splitted texts. The length of the list equals to the number of documents.
