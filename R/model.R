@@ -5,7 +5,7 @@
 #' 
 #' @param texts input. keyATM takes quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
 #' @param encoding character. Only used when \code{texts} is a vector of file paths. Default is \code{UTF-8}.
-#' @param check logical. If \code{TRUE}, check whether there is nothing wrong with the structure of texts. Default is \code{TRUE}.
+#' @param check logical. If \code{TRUE}, check whether there is anything wrong with the structure of texts. Default is \code{TRUE}.
 #'
 #' @return a list whose elements are splitted texts. The length of the list equals to the number of documents.
 #'
