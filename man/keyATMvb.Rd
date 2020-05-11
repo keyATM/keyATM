@@ -17,9 +17,9 @@ keyATMvb(
 )
 }
 \arguments{
-\item{docs}{texts read via \code{keyATM_read()}}
+\item{docs}{texts read via \code{\link[=keyATM_read]{keyATM_read()}}}
 
-\item{model}{keyATM model: "base", "covariates", "dynamic", and "label"}
+\item{model}{keyATM model: \code{base}, \code{covariates}, and \code{dynamic}}
 
 \item{no_keyword_topics}{the number of regular topics}
 
@@ -29,12 +29,12 @@ keyATMvb(
 
 \item{vb_options}{a list of settings for Variational Bayes \itemize{
 \item \strong{convtol}: the default is \code{1e-4}
-\item \strong{init}: "mcmc" (default) or "random"
+\item \strong{init}: \code{mcmc} (default) or \code{random}
 }}
 
 \item{priors}{a list of priors of parameters}
 
-\item{options}{a list of options same as \code{keyATM()}. Options are used when initialization method is "mcmc".}
+\item{options}{a list of options same as \code{\link[=keyATM]{keyATM()}}. Options are used when initialization method is \code{mcmc}.}
 
 \item{keep}{a vector of the names of elements you want to keep in output}
 }
@@ -42,7 +42,7 @@ keyATMvb(
 A \code{keyATM_output} object
 }
 \description{
-[Experimental feature] Fit keyATM base with Collapsed Variational Bayes
+\strong{Experimental feature:} Fit keyATM base with Collapsed Variational Bayes
 }
 \seealso{
 \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/keyATMvb.html}

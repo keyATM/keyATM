@@ -7,7 +7,7 @@
 \method{plot}{strata_doctopic}(x, topics = NULL, var_name = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
 }
 \arguments{
-\item{x}{a strata_doctopic object (see \code{by_strata_DocTopic()})}
+\item{x}{a strata_doctopic object (see \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}})}
 
 \item{topics}{a vector or an integer. Indicate topics to visualize.}
 
@@ -24,5 +24,5 @@ ggplot2 object
 Plot document-topic distribution by strata (for covariate models)
 }
 \seealso{
-\code{save_fig()} and \code{by_strata_DocTopic()}
+\code{\link[=save_fig]{save_fig()}}, \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}}
 }

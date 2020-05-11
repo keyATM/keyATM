@@ -16,13 +16,13 @@ by_strata_DocTopic(
 )
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM()})}
+\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}})}
 
 \item{by_var}{character. The name of the variable to use.}
 
-\item{labels}{character. The labels for the values specified in `by_var` (ascending order).}
+\item{labels}{character. The labels for the values specified in \code{by_var} (ascending order).}
 
-\item{by_values}{numeric. Specific values for `by_var`, ordered from small to large. If it is not specified, all values in `by_var` will be used.}
+\item{by_values}{numeric. Specific values for \code{by_var}, ordered from small to large. If it is not specified, all values in \code{by_var} will be used.}
 
 \item{burn_in}{integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.}
 

@@ -7,7 +7,7 @@
 covariates_get(x)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM()})}
+\item{x}{the output from the covariate keyATM model (see \code{\link[=keyATM]{keyATM()}})}
 }
 \description{
 Return covariates used in the iteration

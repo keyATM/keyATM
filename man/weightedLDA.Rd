@@ -15,9 +15,9 @@ weightedLDA(
 )
 }
 \arguments{
-\item{docs}{texts read via \code{keyATM_read()}}
+\item{docs}{texts read via \code{\link[=keyATM_read]{keyATM_read()}}}
 
-\item{model}{Weighted LDA model: "base", "covariates", and "dynamic"}
+\item{model}{Weighted LDA model: \code{base}, \code{covariates}, and \code{dynamic}}
 
 \item{number_of_topics}{the number of regular topics}
 
@@ -25,32 +25,32 @@ weightedLDA(
 
 \item{priors}{a list of priors of parameters}
 
-\item{options}{a list of options (details are in the documentation of \code{keyATM()})}
+\item{options}{a list of options (details are in the documentation of \code{\link[=keyATM]{keyATM()}}}
 
 \item{keep}{a vector of the names of elements you want to keep in output}
 }
 \value{
 A \code{keyATM_output} object containing:
-  \describe{
-    \item{V}{number of terms (number of unique words)}
-    \item{N}{number of documents}
-    \item{model}{the name of the model}
-    \item{theta}{topic proportions for each document (document-topic distribution)}
-    \item{phi}{topic specific word generation probabilities (topic-word distribution)}
-    \item{topic_counts}{number of tokens assigned to each topic}
-    \item{word_counts}{number of times each word type appears}
-    \item{doc_lens}{length of each document in tokens}
-    \item{vocab}{words in the vocabulary (a vector of unique words)}
-    \item{priors}{priors}
-    \item{options}{options}
-    \item{keywords_raw}{\code{NULL} for LDA models}
-    \item{model_fit}{perplexity and log-likelihood}
-    \item{pi}{estimated pi for the last iteration (\code{NULL} for LDA models)}
-    \item{values_iter}{values stored during iterations}
-    \item{number_of_topics}{number of topics}
-    \item{kept_values}{outputs you specified to store in \code{keep} option}
-    \item{information}{information about the fitting}
-  }
+\describe{
+\item{V}{number of terms (number of unique words)}
+\item{N}{number of documents}
+\item{model}{the name of the model}
+\item{theta}{topic proportions for each document (document-topic distribution)}
+\item{phi}{topic specific word generation probabilities (topic-word distribution)}
+\item{topic_counts}{number of tokens assigned to each topic}
+\item{word_counts}{number of times each word type appears}
+\item{doc_lens}{length of each document in tokens}
+\item{vocab}{words in the vocabulary (a vector of unique words)}
+\item{priors}{priors}
+\item{options}{options}
+\item{keywords_raw}{\code{NULL} for LDA models}
+\item{model_fit}{perplexity and log-likelihood}
+\item{pi}{estimated pi for the last iteration (\code{NULL} for LDA models)}
+\item{values_iter}{values stored during iterations}
+\item{number_of_topics}{number of topics}
+\item{kept_values}{outputs you specified to store in \code{keep} option}
+\item{information}{information about the fitting}
+}
 }
 \description{
 Fit weighted LDA models.
@@ -88,5 +88,5 @@ Fit weighted LDA models.
 
 }
 \seealso{
-\code{save.keyATM_output()}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+\code{\link[=save.keyATM_output]{save.keyATM_output()}}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 }

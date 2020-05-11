@@ -7,11 +7,11 @@
 plot_pi(x, show_topic = NULL, start = 0)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM()})}
+\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}})}
 
 \item{show_topic}{an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.}
 
-\item{start}{integer. The starting value of iteration to use in the plot. Default is 0.}
+\item{start}{integer. The starting value of iteration to use in the plot. Default is \code{0}.}
 }
 \value{
 ggplot2 object
@@ -20,5 +20,5 @@ ggplot2 object
 Show a diagnosis plot of pi
 }
 \seealso{
-\code{save_fig()}
+\code{\link[=save_fig]{save_fig()}}
 }

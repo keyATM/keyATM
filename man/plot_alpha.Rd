@@ -9,11 +9,11 @@ plot_alpha(x, start = 0, show_topic = NULL, scale = "fixed")
 \arguments{
 \item{x}{the output from a keyATM model (see \code{keyATM()})}
 
-\item{start}{integer. The start of slice iteration. Default is 0.}
+\item{start}{integer. The start of slice iteration. Default is \code{0}.}
 
 \item{show_topic}{a vector to specify topic indexes to show. Default is \code{NULL}.}
 
-\item{scale}{character. Control the scale of y-axis (the parameter in \code{facet_wrap()}): 'free' adjusts y-axis for parameters. Default is "fixed".}
+\item{scale}{character. Control the scale of y-axis (the parameter in \link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}): \code{free} adjusts y-axis for parameters. Default is \code{fixed}.}
 }
 \value{
 ggplot2 object
@@ -22,5 +22,5 @@ ggplot2 object
 Show a diagnosis plot of alpha
 }
 \seealso{
-\code{save_fig()}
+\code{\link[=save_fig]{save_fig()}}
 }

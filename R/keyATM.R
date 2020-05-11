@@ -3,16 +3,16 @@
 #' Fit keyATM models.
 #'
 #' @param docs texts read via \code{keyATM_read()}
-#' @param model keyATM model: "base", "covariates", "dynamic", and "label"
+#' @param model keyATM model: \code{base}, \code{covariates}, \code{dynamic}, and \code{label}
 #' @param no_keyword_topics the number of regular topics
 #' @param keywords a list of keywords
 #' @param model_settings a list of model specific settings (details are in the online documentation)
 #' @param priors a list of priors of parameters
 #' @param options a list of options \itemize{
 #'      \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
-#'      \item \strong{iterations}: An integer. Number of iterations. Default is 1500.
+#'      \item \strong{iterations}: An integer. Number of iterations. Default is \code{1500}.
 #'      \item \strong{verbose}: If \code{TRUE}, it prints loglikelihood and perplexity. Default is \code{FALSE}.
-#'      \item \strong{llk_per}: An integer. If the value is \code{j} \strong{keyATM} stores loglikelihood and perplexity every \eqn{j} iteration. Default value is 10 per iterations
+#'      \item \strong{llk_per}: An integer. If the value is \code{j} \strong{keyATM} stores loglikelihood and perplexity every \eqn{j} iteration. Default value is \code{10} per iterations
 #'      \item \strong{use_weights}: If \code{TRUE} use weight. Default is \code{TRUE}.
 #'      \item \strong{weights_type}: There are four types of weights. Weights based on the information theory (\code{information-theory}) and inverse frequency (\code{inv-freq}) and normalized versions of them (\code{information-theory-normalized} and \code{inv-freq-normalized}). Default is \code{information-theory}.
 #'      \item \strong{prune}: If \code{TRUE} rume keywords that do not appear in the corpus. Default is \code{TRUE}.
@@ -52,7 +52,7 @@
 #'     \item{information}{information about the fitting}
 #'   }
 #'
-#' @seealso \code{save.keyATM_output()}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+#' @seealso [save.keyATM_output()], \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 #'
 #' @examples
 #' \dontrun{
@@ -151,12 +151,12 @@ check_arg_keep <- function(obj, model)
 #'
 #' Fit weighted LDA models.
 #'
-#' @param docs texts read via \code{keyATM_read()}
-#' @param model Weighted LDA model: "base", "covariates", and "dynamic"
+#' @param docs texts read via [keyATM_read()]
+#' @param model Weighted LDA model: \code{base}, \code{covariates}, and \code{dynamic}
 #' @param number_of_topics the number of regular topics
 #' @param model_settings a list of model specific settings (details are in the online documentation)
 #' @param priors a list of priors of parameters
-#' @param options a list of options (details are in the documentation of \code{keyATM()})
+#' @param options a list of options (details are in the documentation of [keyATM()]
 #' @param keep a vector of the names of elements you want to keep in output
 #'
 #' @return A \code{keyATM_output} object containing:
@@ -181,7 +181,7 @@ check_arg_keep <- function(obj, model)
 #'     \item{information}{information about the fitting}
 #'   }
 #'
-#' @seealso \code{save.keyATM_output()}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+#' @seealso [save.keyATM_output()], \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 #'
 #' @examples
 #' \dontrun{
