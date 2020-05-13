@@ -230,6 +230,7 @@ plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, by = c("cova
 
   tables <- dplyr::bind_rows(tables) %>%
               dplyr::filter(.data$TopicId %in% topics)
+  variables <- unique(tables$label)
 
   p <- ggplot(tables) +
         geom_linerange(aes(x = .data$label,
@@ -244,7 +245,6 @@ plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, by = c("cova
         theme_bw()
 
   if (by == "covariate") {
-    variables <- unique(tables$label)
     p <- p + facet_wrap(~Topic, scale = "free") 
   }
 
