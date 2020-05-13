@@ -5,13 +5,14 @@
 * Speed up (about 15% faster)
 * `save_fig` function
 * Automatically drops documents with length 0, raising a warning (thank you [Francesco Grossetti](https://github.com/contefranz) for the suggestion!)
+* Update `plot.strata_doctopic`: showing by topic by default (thank you [Soichiro Yamauchi](https://soichiroy.github.io/) for the suggestion!)
 
 ### Bug fix
 * `weightedLDA` without specifying the number of iterations ([Chung-hong Chan](https://github.com/chainsawriot) independently reported this bug, thank you!)
 * log-likelihood of dynamic models 
 * saving figures
 * topic labels when there is no keyword topic
-* `summary.strata_doctopic`: the last topic is removed when the number of no-keyword topic is 0 
+* `summary.strata_doctopic`: the last topic is removed when the number of no-keyword topic is 0
 
 # keyATM 0.1.0
 ### Major changes

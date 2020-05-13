@@ -619,7 +619,6 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
 top_words.strata_topicword <- function(x, n = 10, measure = c("probability", "lift"),
                                   show_keyword = TRUE)
 {
-
   measure <- match.arg(measure)
   top_words <- lapply(x$phi,  # list of phis
                       function(obj) {

@@ -204,6 +204,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' @param topics a vector or an integer. Indicate topics to visualize.
 #' @param var_name the name of the variable in the plot.
 #' @param quantile_vec a numeric. Quantiles to visualize
+#' @param by `covariate` or `topic`. Default is by `topic`.
 #' @param ... additional arguments not used
 #'
 #' @return ggplot2 object
@@ -212,8 +213,10 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' @importFrom rlang .data
 #' @seealso [save_fig()], [by_strata_DocTopic()]
 #' @export
-plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
+plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, by = c("covariate", "topic"),
+                                 quantile_vec = c(0.05, 0.5, 0.95), ...)
 {
+  by <- match.arg(by)
   tables <- summary.strata_doctopic(x, quantile_vec = quantile_vec)
   by_var <- x$by_var
   by_values <- x$by_values
@@ -227,7 +230,6 @@ plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, quantile_vec
 
   tables <- dplyr::bind_rows(tables) %>%
               dplyr::filter(.data$TopicId %in% topics)
-  variables <- unique(tables$label)
 
   p <- ggplot(tables) +
         geom_linerange(aes(x = .data$label,
@@ -240,6 +242,12 @@ plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, quantile_vec
         ylab(expression(paste("Mean of ", theta))) +
         guides(color = guide_legend(title = "Topic")) +
         theme_bw()
+
+  if (by == "covariate") {
+    variables <- unique(tables$label)
+    p <- p + facet_wrap(~Topic, scale = "free") 
+  }
+
   class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
