@@ -11,6 +11,7 @@
 * log-likelihood of dynamic models 
 * saving figures
 * topic labels when there is no keyword topic
+* `summary.strata_doctopic`: the last topic is removed when the number of no-keyword topic is 0 
 
 # keyATM 0.1.0
 ### Major changes
