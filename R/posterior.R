@@ -959,7 +959,7 @@ summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), .
   tables <- lapply(1:length(object$by_values),
                   function(index) {
                      theta <- object$theta[[index]]
-                     theta_ <- theta[, 1:(ncol(theta)-2)]
+                     theta_ <- theta[, 1:(ncol(theta)-1)]
                      q <- as.data.frame(apply(theta_, 2, stats::quantile, quantile_vec))
                      q$Percentile <- c("Lower", "Point", "Upper")
                      q %>% 
