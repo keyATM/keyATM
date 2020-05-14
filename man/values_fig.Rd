@@ -13,8 +13,5 @@ values_fig(x, filename, ...)
 Get values used to create a figure
 }
 \seealso{
-\code{\link[=save_fig]{save_fig()}}, \code{\link[=visualize_keywords]{visualize_keywords()}}, \code{\link[=plot_alpha]{plot_alpha()}}, \code{\link[=plot_modelfit]{plot_modelfit()}}, \code{\link[=plot_pi]{plot_pi()}}, [plot_timetrend)], [by_strata_DocTopic()]
-
-[plot_timetrend)]: R:plot_timetrend)
-[by_strata_DocTopic()]: R:by_strata_DocTopic()
+\code{\link[=save_fig]{save_fig()}}, \code{\link[=visualize_keywords]{visualize_keywords()}}, \code{\link[=plot_alpha]{plot_alpha()}}, \code{\link[=plot_modelfit]{plot_modelfit()}}, \code{\link[=plot_pi]{plot_pi()}}, \code{\link[=plot_timetrend]{plot_timetrend()}}, \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}}
 }

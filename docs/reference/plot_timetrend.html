@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Save a figure — save_fig • keyATM</title>
+<title>Plot time trend — plot_timetrend • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -34,9 +34,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Save a figure — save_fig" />
+<meta property="og:title" content="Plot time trend — plot_timetrend" />
 
-<meta property="og:description" content="Save a figure" />
+<meta property="og:description" content="Plot time trend" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -141,39 +141,67 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Save a figure</h1>
+    <h1>Plot time trend</h1>
     
-    <div class="hidden name"><code>save_fig.Rd</code></div>
+    <div class="hidden name"><code>plot_timetrend.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Save a figure</p>
+    <p>Plot time trend</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>save_fig</span>(<span class='no'>x</span>, <span class='no'>filename</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>plot_timetrend</span>(
+  <span class='no'>x</span>,
+  <span class='kw'>show_topic</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>time_index_label</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>quantile_vec</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.05</span>, <span class='fl'>0.5</span>, <span class='fl'>0.95</span>),
+  <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time"</span>,
+  <span class='kw'>scales</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>,
+  <span class='no'>...</span>
+)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>the object</p></td>
+      <td><p>the output from the dynamic keyATM model (see <code><a href='keyATM.html'>keyATM()</a></code>)</p></td>
     </tr>
     <tr>
-      <th>filename</th>
-      <td><p>file name to create on disk</p></td>
+      <th>show_topic</th>
+      <td><p>an integer or a vector. Indicate topics to visualize. Default is <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>time_index_label</th>
+      <td><p>a vector. The label for time index. The length should be equal to the number of documents (time index provided to <code><a href='keyATM.html'>keyATM()</a></code>).</p></td>
+    </tr>
+    <tr>
+      <th>quantile_vec</th>
+      <td><p>a numeric. Quantiles to visualize</p></td>
+    </tr>
+    <tr>
+      <th>xlab</th>
+      <td><p>a character.</p></td>
+    </tr>
+    <tr>
+      <th>scales</th>
+      <td><p>character. Control the scale of y-axis (the parameter in <a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>ggplot2::facet_wrap()</a>): <code>free</code> adjusts y-axis for parameters. Default is <code>fixed</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>other arguments passed on to the <a href='https://ggplot2.tidyverse.org/reference/ggsave.html'>ggplot2::ggsave()</a> function</p></td>
+      <td><p>additional arguments not used</p></td>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>ggplot2 object</p>
+    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='visualize_keywords.html'>visualize_keywords()</a></code>, <code><a href='plot_alpha.html'>plot_alpha()</a></code>, <code><a href='plot_modelfit.html'>plot_modelfit()</a></code>, <code><a href='plot_pi.html'>plot_pi()</a></code>, <code><a href='plot_timetrend.html'>plot_timetrend()</a></code>, <code><a href='by_strata_DocTopic.html'>by_strata_DocTopic()</a></code>, <code><a href='values_fig.html'>values_fig()</a></code></p></div>
+    <div class='dont-index'><p><code><a href='save_fig.html'>save_fig()</a></code></p></div>
     
 
   </div>
@@ -182,6 +210,8 @@
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
+      <li><a href="#value">Value</a></li>
+
       <li><a href="#see-also">See also</a></li>
           </ul>
 
