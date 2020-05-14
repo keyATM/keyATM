@@ -49,7 +49,7 @@ Now let's calculate the mean of theta for two different values of `RepParty`. Th
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 strata_topic <- by_strata_DocTopic(out, by_var = "RepParty", labels = c("Dem", "Rep"))
 summary(strata_topic)
-plot(strata_topic, topics = c(1,2,3,4))
+plot(strata_topic, show_topic = c(1,2,3,4))
 ```
 
 

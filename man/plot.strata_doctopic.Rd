@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{strata_doctopic}(
   x,
-  topics = NULL,
+  show_topic = NULL,
   var_name = NULL,
   by = c("covariate", "topic"),
   quantile_vec = c(0.05, 0.5, 0.95),
@@ -16,7 +16,7 @@
 \arguments{
 \item{x}{a strata_doctopic object (see \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}})}
 
-\item{topics}{a vector or an integer. Indicate topics to visualize.}
+\item{show_topic}{a vector or an integer. Indicate topics to visualize.}
 
 \item{var_name}{the name of the variable in the plot.}
 

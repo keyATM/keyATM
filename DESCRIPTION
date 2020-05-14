@@ -22,7 +22,7 @@ Imports: Rcpp,
   stats,
   stringr,
   tibble,
-  tidyr
+  tidyr (>= 1.0.0)
 LinkingTo: Rcpp,
   RcppEigen,
   RcppProgress
