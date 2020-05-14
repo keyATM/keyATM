@@ -11,6 +11,7 @@ plot_timetrend(
   quantile_vec = c(0.05, 0.5, 0.95),
   xlab = "Time",
   scales = "fixed",
+  width = 0.5,
   ...
 )
 }
@@ -26,6 +27,8 @@ plot_timetrend(
 \item{xlab}{a character.}
 
 \item{scales}{character. Control the scale of y-axis (the parameter in \link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}): \code{free} adjusts y-axis for parameters. Default is \code{fixed}.}
+
+\item{width}{numeric. Width of the error bars.}
 
 \item{...}{additional arguments not used}
 }

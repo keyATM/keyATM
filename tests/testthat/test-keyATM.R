@@ -84,7 +84,7 @@ test_that("keyATM Heterogeneity Doc-Topic", {
   skip_on_os("linux") ; skip_on_cran()
   expect_equal(summary(strata_topic)[[2]]$Lower[2], 0.1387664, tolerance = 0.00001)
 
-  p <- plot(strata_topic, show_topic = c(1,2,3,4), by = "topic")
+  p <- plot(strata_topic, show_topic = c(1,2,3,4), by = "covariate")
   expect_s3_class(p, "keyATM_fig")
 
   expect_message(suppressWarnings(save_fig(p, paste0(tempdir(), "/test.pdf"))), "Saving 7 x 7 in image")

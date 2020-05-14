@@ -228,8 +228,9 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' @param x a strata_doctopic object (see [by_strata_DocTopic()])
 #' @param show_topic a vector or an integer. Indicate topics to visualize.
 #' @param var_name the name of the variable in the plot.
-#' @param by `covariate` or `topic`. Default is by `topic`.
+#' @param by `topic` or `covariate`. Default is by `topic`.
 #' @param quantile_vec a numeric. Quantiles to visualize
+#' @param width numeric. Width of the error bars.
 #' @param ... additional arguments not used
 #' @return ggplot2 object
 #' @import ggplot2
@@ -237,8 +238,8 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' @importFrom rlang .data
 #' @seealso [save_fig()], [by_strata_DocTopic()]
 #' @export
-plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("covariate", "topic"),
-                                 quantile_vec = c(0.05, 0.5, 0.95), ...)
+plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("topic", "covariate"),
+                                 quantile_vec = c(0.05, 0.5, 0.95), width = 0.1, ...)
 {
   by <- match.arg(by)
   tables <- summary.strata_doctopic(x, quantile_vec = quantile_vec)
@@ -264,12 +265,12 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
         guides(color = guide_legend(title = "Topic")) +
         theme_bw()
 
-  if (by == "covariate") {
-    p <- p + geom_linerange(aes(x = .data$label, ymin = .data$Lower, ymax = .data$Upper,
+  if (by == "topic") {
+    p <- p + geom_errorbar(width = width, aes(x = .data$label, ymin = .data$Lower, ymax = .data$Upper,
                 group = .data$Topic), position = position_dodge(width = -1/2)) +
           facet_wrap(~Topic, scale = "free") 
   } else {
-    p <- p + geom_linerange(aes(x = .data$label, ymin = .data$Lower, ymax = .data$Upper,
+    p <- p + geom_errorbar(width = width, aes(x = .data$label, ymin = .data$Lower, ymax = .data$Upper,
                 group = .data$Topic, colour = .data$Topic), position = position_dodge(width = -1/2))   
   }
 
@@ -287,6 +288,7 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 #' @param quantile_vec a numeric. Quantiles to visualize
 #' @param xlab a character.
 #' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
+#' @param width numeric. Width of the error bars.
 #' @param ... additional arguments not used
 #' @return ggplot2 object
 #' @import ggplot2
@@ -295,7 +297,7 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 #' @seealso [save_fig()]
 #' @export
 plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, quantile_vec = c(0.05, 0.5, 0.95), 
-                           xlab = "Time", scales = "fixed", ...)
+                           xlab = "Time", scales = "fixed", width = 0.5, ...)
 {
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
@@ -341,7 +343,7 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, quanti
       tidyr::pivot_wider(names_from = q, values_from = value) -> dat
     p <- ggplot(dat, aes(x = .data$time_index, y = .data$`50%`, group = .data$Topic)) +
           geom_line(size = 0.8, color = "blue") +
-          geom_errorbar(width = 0.3, size = 0.5, aes(ymin = .data$`5%`, ymax = .data$`95%`), colour = "gray30")
+          geom_errorbar(width = width, size = 0.5, aes(ymin = .data$`5%`, ymax = .data$`95%`), colour = "gray30")
   }
   p <- p + xlab(xlab) + ylab(expression(paste("Mean of ", theta))) +
         facet_wrap(~Topic, scales = scales) + theme_bw() + theme(panel.grid.minor = element_blank())
