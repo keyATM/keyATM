@@ -11,6 +11,7 @@
   by = c("topic", "covariate"),
   quantile_vec = c(0.05, 0.5, 0.95),
   width = 0.1,
+  show_mean = TRUE,
   ...
 )
 }
@@ -26,6 +27,8 @@
 \item{quantile_vec}{a numeric. Quantiles to visualize}
 
 \item{width}{numeric. Width of the error bars.}
+
+\item{show_mean}{logical. The default is \code{TRUE}.}
 
 \item{...}{additional arguments not used}
 }

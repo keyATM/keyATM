@@ -160,6 +160,7 @@
   <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time"</span>,
   <span class='kw'>scales</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>,
   <span class='kw'>width</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
+  <span class='kw'>show_mean</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='no'>...</span>
 )</pre>
     
@@ -193,6 +194,10 @@
     <tr>
       <th>width</th>
       <td><p>numeric. Width of the error bars.</p></td>
+    </tr>
+    <tr>
+      <th>show_mean</th>
+      <td><p>logical. The default is <code>TRUE</code>. This is an option when calculating credible intervals (you need to set <code>store_theta = TRUE</code> in <code>keyATN()</code>).</p></td>
     </tr>
     <tr>
       <th>...</th>

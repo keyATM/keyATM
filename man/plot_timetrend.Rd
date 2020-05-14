@@ -12,6 +12,7 @@ plot_timetrend(
   xlab = "Time",
   scales = "fixed",
   width = 0.5,
+  show_mean = TRUE,
   ...
 )
 }
@@ -29,6 +30,8 @@ plot_timetrend(
 \item{scales}{character. Control the scale of y-axis (the parameter in \link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}): \code{free} adjusts y-axis for parameters. Default is \code{fixed}.}
 
 \item{width}{numeric. Width of the error bars.}
+
+\item{show_mean}{logical. The default is \code{TRUE}. This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in \code{\link[=keyATN]{keyATN()}}).}
 
 \item{...}{additional arguments not used}
 }
