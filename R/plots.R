@@ -344,7 +344,7 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, quanti
     dplyr::bind_rows(lapply(x$values_iter$theta_iter, format_theta, time_index, tnames[show_topic])) %>%
       dplyr::group_by(time_index, Topic) %>%
       dplyr::summarise(x = list(tibble::enframe(quantile(Proportion, probs = quantile_vec), "q", "value"))) %>% 
-      tidyr::unnest(x) %>% ungroup() %>%
+      tidyr::unnest(x) %>% dplyr::ungroup() %>%
       tidyr::pivot_wider(names_from = q, values_from = value) -> dat
     p <- ggplot(dat, aes(x = .data$time_index, y = .data$`50%`, group = .data$Topic)) +
           geom_ribbon(aes(ymin = .data$`5%`, ymax = .data$`95%`), fill = "gray75") +
