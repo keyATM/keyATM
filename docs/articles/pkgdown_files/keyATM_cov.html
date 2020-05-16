@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -129,23 +129,29 @@
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>bills_cov &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>cov <span class="co"># dummy variable indicating the party proposed the bill</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(bills_cov)  <span class="co"># We have 140 documents and a single covariate for each document</span></span></code></pre></div>
 <pre><code>## [1] 140   1</code></pre>
-<p>Please make sure that <strong>the order of covariates is the same as the order of documents</strong>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(bills_cov) <span class="co"># this is a binary indicator</span></span></code></pre></div>
+<pre><code>## bills_cov
+##  0  1 
+## 54 86</code></pre>
+<p>Please make sure that <strong>the order of covariates is the same as the order of documents</strong>. The easiest way to match the order and the dimension of covariats with the documents is to use the <a href="https://quanteda.io/reference/corpus.html"><code>docvars</code></a> argument in <strong>quanteda</strong> when you construct a corpus object.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>CORPUS &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(raw_docs, <span class="dt">text_field =</span> <span class="st">"text"</span>, <span class="dt">docvars =</span> COVARIATES)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>[...preprocessing and make a dfm object...]</span>
+<span id="cb6-3"><a href="#cb6-3"></a>covariates &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(DFM_OBJECT)</span></code></pre></div>
 </div>
 <div id="fitting-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(</span>
-<span id="cb4-2"><a href="#cb4-2"></a>              <span class="dt">docs              =</span> keyATM_docs,                            <span class="co"># text input</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,                                      <span class="co"># number of topics without keywords</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>              <span class="dt">keywords          =</span> bills_keywords,                         <span class="co"># keywords (a list)</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>              <span class="dt">model             =</span> <span class="st">"covariates"</span>,                           <span class="co"># select the model</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariates_data    =</span> bills_cov,    <span class="co"># covariate data</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>                                       <span class="dt">covariates_formula =</span> <span class="op">~</span><span class="st"> </span>RepParty,   <span class="co"># formula to fit covarite</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a>                                       <span class="dt">mh_use             =</span> <span class="ot">FALSE</span>),       <span class="co"># use Metloporis Hastings</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">250</span>)</span>
-<span id="cb4-10"><a href="#cb4-10"></a>             )</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(</span>
+<span id="cb7-2"><a href="#cb7-2"></a>              <span class="dt">docs              =</span> keyATM_docs,                            <span class="co"># text input</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,                                      <span class="co"># number of topics without keywords</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>              <span class="dt">keywords          =</span> bills_keywords,                         <span class="co"># keywords (a list)</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>              <span class="dt">model             =</span> <span class="st">"covariates"</span>,                           <span class="co"># select the model</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariates_data    =</span> bills_cov,    <span class="co"># covariate data</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>                                       <span class="dt">covariates_formula =</span> <span class="op">~</span><span class="st"> </span>RepParty,   <span class="co"># formula to fit covarite</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>                                       <span class="dt">mh_use             =</span> <span class="ot">FALSE</span>),       <span class="co"># use Metloporis Hastings</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">250</span>)</span>
+<span id="cb7-10"><a href="#cb7-10"></a>             )</span></code></pre></div>
 <p>The <code>covariates_formula</code> takes the same form of a <a href="https://rdrr.io/r/stats/formula.html"><code>formula</code></a> for <code><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix()</a></code> function. You do not need to specify the left hand side of the formula. The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options.</p>
-<p>If you set <code>mh_use = TRUE</code>, the estimation process will speed up.</p>
 </div>
 <div id="saving-the-model" class="section level2">
 <h2 class="hasAnchor">
@@ -155,7 +161,7 @@
 <div id="checking-top-words" class="section level2">
 <h2 class="hasAnchor">
 <a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
 <pre><code>##      1_Education     2_Law     3_Health        4_Drug       Other_1     Other_2
 ## 1  education [✓]    action   public [✓]      drug [✓]       law [2]     project
 ## 2         school court [✓]   health [✓]      facility   enforcement  technology
