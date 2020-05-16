@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Read files from the quanteda dfm (this is the same as dgCMatrix) — read_dfm_cpp • keyATM</title>
+<title>Version 0.2 • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -38,11 +38,7 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Read files from the quanteda dfm (this is the same as dgCMatrix) — read_dfm_cpp" />
-
-<meta property="og:description" content="Read files from the quanteda dfm (this is the same as dgCMatrix)" />
-
-
+<meta property="og:title" content="Version 0.2" />
 
 
 
@@ -60,7 +56,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -146,43 +142,51 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Read files from the quanteda dfm (this is the same as dgCMatrix)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/keyATM/keyATM/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
-    <div class="hidden name"><code>read_dfm_cpp.Rd</code></div>
+      <h1 data-toc-skip>Changelog <small>0.2</small></h1>
+      
     </div>
 
-    <div class="ref-description">
-    
-    <p>Read files from the quanteda dfm (this is the same as dgCMatrix)</p>
-    
-    </div>
-
-    <pre class="usage"><span class='fu'>read_dfm_cpp</span>(<span class='no'>dfm</span>, <span class='no'>W_raw</span>, <span class='no'>vocab</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>dfm</th>
-      <td><p>a dfm input (sparse Matrix)</p></td>
-    </tr>
-    <tr>
-      <th>W_raw</th>
-      <td><p>an object to return</p></td>
-    </tr>
-    <tr>
-      <th>vocab</th>
-      <td><p>a vector of vocabulary</p></td>
-    </tr>
-    </table>
-    
-
+    <div id="keyatm-020" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.0">
+<a href="#keyatm-020" class="anchor"></a>keyATM 0.2.0<small> Unreleased </small>
+</h1>
+<p><a href="https://github.com/keyATM/keyATM/projects/1">Roadmap</a> for this version.</p>
+<div id="major-changes" class="section level3">
+<h3 class="hasAnchor">
+<a href="#major-changes" class="anchor"></a>Major changes</h3>
+<ul>
+<li>Update <code>by_strata_DocTopic</code>
+</li>
+<li>Make examples runnable (thank you <a href="https://github.com/chainsawriot">Chung-hong Chan</a> for the suggestion!)</li>
+<li>Speed up (about 15% faster)</li>
+<li>
+<code>save_fig</code> function</li>
+<li>Automatically drops documents with length 0, raising a warning (thank you <a href="https://github.com/contefranz">Francesco Grossetti</a> for the suggestion!)</li>
+<li>Update <code>plot.strata_doctopic</code>: showing by topic by default (thank you <a href="https://soichiroy.github.io/">Soichiro Yamauchi</a> for the suggestion!)</li>
+</ul>
+</div>
+<div id="bug-fix" class="section level3">
+<h3 class="hasAnchor">
+<a href="#bug-fix" class="anchor"></a>Bug fix</h3>
+<ul>
+<li>
+<code>weightedLDA</code> without specifying the number of iterations (<a href="https://github.com/chainsawriot">Chung-hong Chan</a> independently reported this bug, thank you!)</li>
+<li>log-likelihood of dynamic models</li>
+<li>saving figures</li>
+<li>topic labels when there is no keyword topic</li>
+<li>
+<code>summary.strata_doctopic</code>: the last topic is removed when the number of no-keyword topic is 0 (thank you <a href="https://gov.harvard.edu/people/emma-ebowe">Emma Ebowe</a> for pointing out this issue!)</li>
+</ul>
+</div>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
+
 </div>
 
 
