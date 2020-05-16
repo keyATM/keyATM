@@ -3,10 +3,27 @@
 #' @param x the object
 #' @param filename file name to create on disk
 #' @param ... other arguments passed on to the [ggplot2::ggsave()][ggplot2::ggsave] function
-#' @seealso [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [by_strata_DocTopic()]
+#' @seealso [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()], [values_fig()]
 #' @export
 save_fig <- function(x, filename, ...) {
   UseMethod("save_fig")
+}
+
+
+#' Get values used to create a figure
+#' 
+#' @param x the object
+#' @seealso [save_fig()], [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()]
+#' @export
+values_fig <- function(x, filename, ...) {
+  UseMethod("values_fig")
+}
+
+#' @noRd
+#' @export
+values_fig.keyATM_fig <- function(x)
+{
+  return(x$values) 
 }
 
 
@@ -14,7 +31,15 @@ save_fig <- function(x, filename, ...) {
 #' @export
 save_fig.keyATM_fig <- function(x, filename, ...)
 {
-  ggplot2::ggsave(filename = filename, plot = x, ...)
+  ggplot2::ggsave(filename = filename, plot = x$figure, ...)
+}
+
+
+#' @noRd
+#' @export
+print.keyATM_fig <- function(x)
+{
+  print(x$figure) 
 }
 
 
@@ -23,15 +48,14 @@ save_fig.keyATM_fig <- function(x, filename, ...)
 #' @param x the output from a keyATM model (see [keyATM()])
 #' @param start integer. The start of slice iteration. Default is \code{0}.
 #' @param show_topic a vector to specify topic indexes to show. Default is \code{NULL}.
-#' @param scale character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
-#'
+#' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
 #' @seealso [save_fig()]
 #' @export
-plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
+plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
 {
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
@@ -62,7 +86,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
     p <- ggplot(res_alpha, aes(x = .data$Iteration, y = .data$alpha, group = .data$Topic)) +
           geom_line() +
           geom_point(size = 0.3) +
-          facet_wrap(~ .data$Topic, ncol = 2, scales = scale) +
+          facet_wrap(~ .data$Topic, ncol = 2, scales = scales) +
           xlab("Iteration") + ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
@@ -74,11 +98,13 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
     p <- ggplot(res_alpha, aes(x = .data$Iteration, y = .data$alpha, group = .data$State, colour = .data$State)) +
           geom_line() +
           geom_point(size = 0.3) +
-          facet_wrap(~ .data$Topic, ncol = 2, scales = scale) +
+          facet_wrap(~ .data$Topic, ncol = 2, scales = scales) +
           xlab("Iteration") + ylab("Value") +
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))  
   }
+
+  p <- list(figure = p, values = res_alpha)
   class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
@@ -88,7 +114,6 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scale = "fixed")
 #' 
 #' @param x the output from a keyATM model (see [keyATM()])
 #' @param start integer. The starting value of iteration to use in plot. Default is \code{1}.
-#'
 #' @return ggplot2 object
 #' @import ggplot2
 #' @importFrom stats as.formula
@@ -117,6 +142,7 @@ plot_modelfit <- function(x, start = 1)
      xlab("Iteration") + ylab("Value")
   p <- p + ggtitle("Model Fit") + theme_bw() + theme(plot.title = element_text(hjust = 0.5))
 
+  p <- list(figure = p, values = modelfit)
   class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
@@ -127,7 +153,6 @@ plot_modelfit <- function(x, start = 1)
 #' @param x the output from a keyATM model (see [keyATM()])
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param start integer. The starting value of iteration to use in the plot. Default is \code{0}.
-#'
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import magrittr
@@ -156,7 +181,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
   tnames <- c(names(x$keywords_raw))[show_topic]
 
   if (!is.null(x$values_iter$pi_iter)) {
-    pi_mat <- t(sapply(x$values_iter$pi_iter, unlist, use.names = FALSE))[, show_topic]
+    pi_mat <- t(sapply(x$values_iter$pi_iter, unlist, use.names = FALSE))[, show_topic, drop = FALSE]
     pi_mat %>%
       tibble::as_tibble(.name_repair = ~ tnames) %>%
       dplyr::mutate(Iteration = x$values_iter$used_iter) %>%
@@ -192,6 +217,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
         ggtitle("Probability of words drawn from keyword topic-word distribution") +
         theme(plot.title = element_text(hjust = 0.5))    
   }
+  p <- list(figure = p, values = temp)
   class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
@@ -199,22 +225,22 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 
 #' Plot document-topic distribution by strata (for covariate models)
 #' 
-#'
 #' @param x a strata_doctopic object (see [by_strata_DocTopic()])
-#' @param topics a vector or an integer. Indicate topics to visualize.
+#' @param show_topic a vector or an integer. Indicate topics to visualize.
 #' @param var_name the name of the variable in the plot.
+#' @param by `topic` or `covariate`. Default is by `topic`.
 #' @param quantile_vec a numeric. Quantiles to visualize
-#' @param by `covariate` or `topic`. Default is by `topic`.
+#' @param width numeric. Width of the error bars.
+#' @param show_mean logical. The default is \code{TRUE}.
 #' @param ... additional arguments not used
-#'
 #' @return ggplot2 object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
 #' @seealso [save_fig()], [by_strata_DocTopic()]
 #' @export
-plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, by = c("covariate", "topic"),
-                                 quantile_vec = c(0.05, 0.5, 0.95), ...)
+plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("topic", "covariate"),
+                                 quantile_vec = c(0.05, 0.5, 0.95), width = 0.1, show_mean = TRUE, ...)
 {
   by <- match.arg(by)
   tables <- summary.strata_doctopic(x, quantile_vec = quantile_vec)
@@ -224,19 +250,15 @@ plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, by = c("cova
     by_var <- var_name
   }
 
-  if (is.null(topics)) {
-    topics <- 1:nrow(tables[[1]]) 
+  if (is.null(show_topic)) {
+    show_topic <- 1:nrow(tables[[1]]) 
   }
 
   tables <- dplyr::bind_rows(tables) %>%
-              dplyr::filter(.data$TopicId %in% topics)
+              dplyr::filter(.data$TopicId %in% show_topic)
   variables <- unique(tables$label)
 
   p <- ggplot(tables) +
-        geom_linerange(aes(x = .data$label,
-                           ymin = .data$Lower, ymax = .data$Upper,
-                           group = .data$Topic, colour = .data$Topic),
-                       position = position_dodge(width = -1/2)) +
         coord_flip() +
         scale_x_discrete(limits = rev(variables)) +
         xlab(paste0(by_var)) +
@@ -244,10 +266,98 @@ plot.strata_doctopic <- function(x, topics = NULL, var_name = NULL, by = c("cova
         guides(color = guide_legend(title = "Topic")) +
         theme_bw()
 
-  if (by == "covariate") {
-    p <- p + facet_wrap(~Topic, scale = "free") 
+  if (by == "topic") {
+    p <- p + geom_errorbar(width = width, aes(x = .data$label, ymin = .data$Lower, ymax = .data$Upper,
+                group = .data$Topic), position = position_dodge(width = -1/2)) + facet_wrap(~Topic, scale = "free") 
+    if (show_mean)
+      p <- p + geom_point(aes(x = .data$label, y = .data$Point))
+  } else {
+    p <- p + geom_errorbar(width = width, aes(x = .data$label, ymin = .data$Lower, ymax = .data$Upper,
+                group = .data$Topic, colour = .data$Topic), position = position_dodge(width = -1/2))   
+    if (show_mean)
+      p <- p + geom_point(aes(x = .data$label, y = .data$Point, colour = .data$Topic), position = position_dodge(width = -1/2))
   }
 
+  p <- list(figure = p, values = tables)
   class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
+
+
+#' Plot time trend
+#' 
+#' @param x the output from the dynamic keyATM model (see [keyATM()])
+#' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
+#' @param time_index_label a vector. The label for time index. The length should be equal to the number of documents (time index provided to [keyATM()]). 
+#' @param quantile_vec a numeric. Quantiles to visualize
+#' @param xlab a character.
+#' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
+#' @param width numeric. Width of the error bars.
+#' @param show_mean logical. The default is \code{TRUE}. This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in [keyATN()]).
+#' @param ... additional arguments not used
+#' @return ggplot2 object
+#' @import ggplot2
+#' @import magrittr
+#' @importFrom rlang .data
+#' @seealso [save_fig()]
+#' @export
+plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, quantile_vec = c(0.05, 0.5, 0.95), 
+                           xlab = "Time", scales = "fixed", width = 0.5, show_mean = TRUE, ...)
+{
+  check_arg_type(x, "keyATM_output")
+  modelname <- extract_full_model_name(x)
+
+  if (!is.null(time_index_label)) {
+    if (length(x$values_iter$time_index) != length(time_index_label)) {
+      stop("The length of `time_index_label` does not match with the number of documents.")
+    }
+    time_index <- time_index_label
+  } else {
+    time_index <- x$values_iter$time_index
+  }
+
+  if (is.null(show_topic)) {
+    show_topic <- 1:x$keyword_k
+  }
+
+  if (!modelname %in% c("hmm", "ldahmm")) {
+    stop(paste0("This is not a model with keywords.")) 
+  }
+
+  format_theta <- function(theta, time_index, tnames) {
+    theta[ , show_topic, drop = FALSE] %>%
+      tibble::as_tibble(.name_repair = ~tnames) %>%
+      dplyr::mutate(time_index = time_index) %>%
+      tidyr::pivot_longer(-time_index, names_to = "Topic", values_to = "Proportion") %>%
+      dplyr::group_by(time_index, Topic) %>%
+      dplyr::summarize(Proportion = base::mean(Proportion)) -> res
+    return(res)
+  }
+
+  tnames <- colnames(x$theta)
+
+  if (is.null(x$values_iter$theta_iter)) {
+    dat <- format_theta(x$theta, time_index, tnames[show_topic])
+    p <- ggplot(dat, aes(x = .data$time_index, y = .data$Proportion, group = .data$Topic)) + 
+          geom_line(size = 0.8, color = "blue") + geom_point(size = 0.9)
+  } else {
+    dplyr::bind_rows(lapply(x$values_iter$theta_iter, format_theta, time_index, tnames[show_topic])) %>%
+      dplyr::group_by(time_index, Topic) %>%
+      dplyr::summarise(x = list(tibble::enframe(stats::quantile(Proportion, probs = quantile_vec), "q", "value"))) %>% 
+      tidyr::unnest(x) %>% dplyr::ungroup() %>%
+      tidyr::pivot_wider(names_from = q, values_from = value) -> dat
+    p <- ggplot(dat, aes(x = .data$time_index, y = .data$`50%`, group = .data$Topic)) +
+          geom_ribbon(aes(ymin = .data$`5%`, ymax = .data$`95%`), fill = "gray75") +
+          geom_line(size = 0.8, color = "blue")
+          # geom_errorbar(width = width, size = 0.5, aes(ymin = .data$`5%`, ymax = .data$`95%`), colour = "gray30")
+
+    if (show_mean)
+      p <- p + geom_point(size = 0.9)
+  }
+  p <- p + xlab(xlab) + ylab(expression(paste("Mean of ", theta))) +
+        facet_wrap(~Topic, scales = scales) + theme_bw() + theme(panel.grid.minor = element_blank())
+  p <- list(figure = p, values = dat)
+  class(p) <- c("keyATM_fig", class(p))
+  return(p)
+}
+

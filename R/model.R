@@ -238,10 +238,9 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
       theme_bw()
 
   keyATM_viz <- list(figure = visualize_keywords, values = temp, keywords = keywords)
-  class(keyATM_viz) <- c("keyATM_viz", class(keyATM_viz))
+  class(keyATM_viz) <- c("keyATM_fig", "keyATM_viz", class(keyATM_viz))
   
   return(keyATM_viz)
-
 }
 
 
@@ -291,34 +290,6 @@ check_keywords <- function(unique_words, keywords, prune)
   }
 
   return(keywords)
-}
-
-
-#' Print a keyword plot
-#' 
-#' @noRd
-#' @export
-print.keyATM_viz <- function(x, ...)
-{
-  print(x$figure)  
-}
-
-
-#' Check summary statistics of the keywords
-#' 
-#' @noRd
-#' @export
-summary.keyATM_viz <- function(object, ...)
-{
-  return(object$values)  
-}
-
-
-#' @noRd
-#' @export
-save_fig.keyATM_viz <- function(x, filename, ...)
-{
-  ggplot2::ggsave(filename = filename, plot = x$figure, ...)
 }
 
 

@@ -4,7 +4,7 @@
 \alias{plot_alpha}
 \title{Show a diagnosis plot of alpha}
 \usage{
-plot_alpha(x, start = 0, show_topic = NULL, scale = "fixed")
+plot_alpha(x, start = 0, show_topic = NULL, scales = "fixed")
 }
 \arguments{
 \item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}})}
@@ -13,7 +13,7 @@ plot_alpha(x, start = 0, show_topic = NULL, scale = "fixed")
 
 \item{show_topic}{a vector to specify topic indexes to show. Default is \code{NULL}.}
 
-\item{scale}{character. Control the scale of y-axis (the parameter in \link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}): \code{free} adjusts y-axis for parameters. Default is \code{fixed}.}
+\item{scales}{character. Control the scale of y-axis (the parameter in \link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}): \code{free} adjusts y-axis for parameters. Default is \code{fixed}.}
 }
 \value{
 ggplot2 object

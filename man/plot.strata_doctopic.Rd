@@ -6,23 +6,29 @@
 \usage{
 \method{plot}{strata_doctopic}(
   x,
-  topics = NULL,
+  show_topic = NULL,
   var_name = NULL,
-  by = c("covariate", "topic"),
+  by = c("topic", "covariate"),
   quantile_vec = c(0.05, 0.5, 0.95),
+  width = 0.1,
+  show_mean = TRUE,
   ...
 )
 }
 \arguments{
 \item{x}{a strata_doctopic object (see \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}})}
 
-\item{topics}{a vector or an integer. Indicate topics to visualize.}
+\item{show_topic}{a vector or an integer. Indicate topics to visualize.}
 
 \item{var_name}{the name of the variable in the plot.}
 
-\item{by}{\code{covariate} or \code{topic}. Default is by \code{topic}.}
+\item{by}{\code{topic} or \code{covariate}. Default is by \code{topic}.}
 
 \item{quantile_vec}{a numeric. Quantiles to visualize}
+
+\item{width}{numeric. Width of the error bars.}
+
+\item{show_mean}{logical. The default is \code{TRUE}.}
 
 \item{...}{additional arguments not used}
 }

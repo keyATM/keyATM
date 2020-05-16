@@ -51,6 +51,7 @@ keyATM_output <- function(model)
   # alpha_iter
   if (model$model %in% c("hmm", "ldahmm")) {
     values_iter$alpha_iter <- keyATM_output_alpha_iter_hmm(model, info)
+    values_iter$time_index <- model$model_settings$time_index
   }
 
   if ((model$model %in% c("base", "lda", "label"))) {
@@ -561,14 +562,7 @@ print.keyATM_output <- function(x, ...)
 #' @export
 summary.keyATM_output <- function(object, ...)
 {
-  cat(
-      paste0(
-             "keyATM_output object for the ",
-             object$model,
-             " model. ",
-             "\n"
-            )
-     )
+  print(object) 
 }
 
 
@@ -581,16 +575,6 @@ summary.keyATM_output <- function(object, ...)
 save.keyATM_output <- function(x, file = stop("'file' must be specified"))
 {
   saveRDS(x, file = file)
-}
-
-
-#' Show a diagnosis plot of log-likelihood and perplexity
-#'
-#' @noRd
-#' @export
-plot.keyATM_output <- function(x, ...)
-{
-  print(plot_modelfit(x, ...))
 }
 
 
@@ -901,7 +885,6 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NU
                                                                        new_data,
                                                                        Lambda_iter[[use_index[s]]]
                                                                      ))
-
                                                         rowsum <- Matrix::rowSums(Alpha)
                                                         thetas <- Alpha / rowsum
                                                         thetas <- as.data.frame(thetas)
@@ -929,7 +912,6 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NU
                                                                        new_data,
                                                                        Lambda_iter[[use_index[s]]]
                                                                      ))
-                                                       
                                                         thetas <- t(apply(Alpha, 1, rdirichlet))
                                                         thetas <- Matrix::colMeans(thetas)
                                                         thetas <- t(as.data.frame(thetas))
