@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -135,21 +135,24 @@
 <span id="cb1-8"><a href="#cb1-8"></a><span class="co"># Preprocessing with quanteda and create a dfm object</span></span>
 <span id="cb1-9"><a href="#cb1-9"></a>key_corpus &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(raw_docs, <span class="dt">text_field =</span> <span class="st">"text"</span>)</span>
 <span id="cb1-10"><a href="#cb1-10"></a></span>
-<span id="cb1-11"><a href="#cb1-11"></a>key_tokens &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(key_corpus,</span>
-<span id="cb1-12"><a href="#cb1-12"></a>                     <span class="dt">remove_numbers =</span> <span class="ot">TRUE</span>, </span>
-<span id="cb1-13"><a href="#cb1-13"></a>                     <span class="dt">remove_punct =</span> <span class="ot">TRUE</span>, </span>
-<span id="cb1-14"><a href="#cb1-14"></a>                     <span class="dt">remove_symbols =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb1-15"><a href="#cb1-15"></a>                     <span class="dt">remove_separators =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb1-16"><a href="#cb1-16"></a>                     <span class="dt">remove_url =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_tolower.html">tokens_tolower</a></span>() <span class="op">%&gt;%</span></span>
-<span id="cb1-18"><a href="#cb1-18"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_select.html">tokens_remove</a></span>(<span class="kw"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"english"</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_select.html">tokens_select</a></span>(<span class="dt">min_nchar =</span> <span class="dv">3</span>)</span>
-<span id="cb1-20"><a href="#cb1-20"></a></span>
-<span id="cb1-21"><a href="#cb1-21"></a>key_dfm &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(key_tokens) <span class="op">%&gt;%</span></span>
-<span id="cb1-22"><a href="#cb1-22"></a><span class="st">             </span><span class="kw"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="dt">min_termfreq =</span> <span class="dv">5</span>, <span class="dt">min_docfreq =</span> <span class="dv">2</span>)</span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="co"># If you use the covariate model, please consider using `docvars` argument</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>key_corpus &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(raw_docs, <span class="dt">text_field =</span> <span class="st">"text"</span>, <span class="dt">docvars =</span> COVARIATES)</span>
+<span id="cb1-13"><a href="#cb1-13"></a></span>
+<span id="cb1-14"><a href="#cb1-14"></a>key_tokens &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(key_corpus,</span>
+<span id="cb1-15"><a href="#cb1-15"></a>                     <span class="dt">remove_numbers =</span> <span class="ot">TRUE</span>, </span>
+<span id="cb1-16"><a href="#cb1-16"></a>                     <span class="dt">remove_punct =</span> <span class="ot">TRUE</span>, </span>
+<span id="cb1-17"><a href="#cb1-17"></a>                     <span class="dt">remove_symbols =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb1-18"><a href="#cb1-18"></a>                     <span class="dt">remove_separators =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb1-19"><a href="#cb1-19"></a>                     <span class="dt">remove_url =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_tolower.html">tokens_tolower</a></span>() <span class="op">%&gt;%</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_select.html">tokens_remove</a></span>(<span class="kw"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"english"</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb1-22"><a href="#cb1-22"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_select.html">tokens_select</a></span>(<span class="dt">min_nchar =</span> <span class="dv">3</span>)</span>
 <span id="cb1-23"><a href="#cb1-23"></a></span>
-<span id="cb1-24"><a href="#cb1-24"></a><span class="co"># Read texts into keyATM</span></span>
-<span id="cb1-25"><a href="#cb1-25"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(key_dfm)</span></code></pre></div>
+<span id="cb1-24"><a href="#cb1-24"></a>key_dfm &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(key_tokens) <span class="op">%&gt;%</span></span>
+<span id="cb1-25"><a href="#cb1-25"></a><span class="st">             </span><span class="kw"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="dt">min_termfreq =</span> <span class="dv">5</span>, <span class="dt">min_docfreq =</span> <span class="dv">2</span>)</span>
+<span id="cb1-26"><a href="#cb1-26"></a></span>
+<span id="cb1-27"><a href="#cb1-27"></a><span class="co"># Read texts into keyATM</span></span>
+<span id="cb1-28"><a href="#cb1-28"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(key_dfm)</span></code></pre></div>
 <p>You can also use <code><a href="https://rdrr.io/r/base/c.html">c(stopwords("english"), "your", "stopwords")</a></code> if you want to add corpus specific stopwords.</p>
 </div>
 <div id="alternative-ways-to-read-texts" class="section level3">
