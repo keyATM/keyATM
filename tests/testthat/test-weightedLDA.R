@@ -20,7 +20,7 @@ test_that("weightedLDA base", {
   expect_error(plot_pi(base))
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(base$model_fit$Perplexity[3], 1978.213, tolerance = 0.001)
+  expect_equal(base$model_fit$Perplexity[3], 1978.213, tolerance = 0.0001)
   expect_equal(top_words(base)[3, 1], "library")
   expect_equal(base$pi, NULL)
 })
@@ -39,7 +39,7 @@ test_that("weightedLDA cov", {
   expect_error(plot_pi(cov))
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(cov$model_fit$Perplexity[2], 2179.786, tolerance = 0.001)
+  expect_equal(cov$model_fit$Perplexity[2], 2179.786, tolerance = 0.0001)
   expect_equal(top_words(cov)[3, 1], "research")
 })
 
@@ -57,6 +57,6 @@ test_that("weightedLDA dynamic", {
   expect_error(plot_pi(dyn))
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(dyn$model_fit$Perplexity[2], 2098.058, tolerance = 0.001)
+  expect_equal(dyn$model_fit$Perplexity[2], 2098.058, tolerance = 0.0001)
   expect_equal(top_words(dyn)[3, 1], "commission")
 })

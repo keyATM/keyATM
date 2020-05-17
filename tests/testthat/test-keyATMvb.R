@@ -20,7 +20,7 @@ out <- keyATMvb(docs = keyATM_docs,  # text input
 
 test_that("keyATMvb MCMC", {
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(out$vb_options$Perplexity_VB$value[3], 9255.628, tolerance = 0.001)
+  expect_equal(out$vb_options$Perplexity_VB$value[3], 9255.628, tolerance = 0.0001)
   expect_equal(top_words(out)[1, 1], "education [\U2713]")
   expect_equal(top_words(out)[2, 5], "technology")
   expect_equal(out$pi$Proportion[2], 6.181089, tolerance = 0.001)
@@ -35,8 +35,8 @@ out <- keyATMvb(docs = keyATM_docs,  # text input
 
 test_that("keyATMvb Random", {
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(out$vb_options$Perplexity_VB$value[3], 9757.913, tolerance = 0.001)
+  expect_equal(out$vb_options$Perplexity_VB$value[3], 9757.913, tolerance = 0.00001)
   expect_equal(top_words(out)[1, 1], "education [\U2713]")
   expect_equal(top_words(out)[2, 5], "facility")
-  expect_equal(out$pi$Proportion[2], 6.102534, tolerance = 0.001)
+  expect_equal(out$pi$Proportion[2], 6.102534, tolerance = 0.0001)
 })

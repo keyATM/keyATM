@@ -4,7 +4,7 @@
 \alias{values_fig}
 \title{Get values used to create a figure}
 \usage{
-values_fig(x, filename, ...)
+values_fig(x)
 }
 \arguments{
 \item{x}{the object}

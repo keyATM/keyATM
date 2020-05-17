@@ -31,7 +31,7 @@ plot_timetrend(
 
 \item{width}{numeric. Width of the error bars.}
 
-\item{show_mean}{logical. The default is \code{TRUE}. This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in \code{\link[=keyATN]{keyATN()}}).}
+\item{show_mean}{logical. The default is \code{TRUE}. This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in \code{\link[=keyATM]{keyATM()}}).}
 
 \item{...}{additional arguments not used}
 }

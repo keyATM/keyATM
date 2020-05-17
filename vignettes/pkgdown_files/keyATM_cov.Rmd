@@ -36,7 +36,7 @@ the [`docvars`](https://quanteda.io/reference/corpus.html) argument in **quanted
 construct a corpus object.
 ```{r, eval=FALSE, message=FALSE, fig.align='center'}
 CORPUS <- corpus(raw_docs, text_field = "text", docvars = COVARIATES)
-[...preprocessing and make a dfm object...]
+[...preprocess and make a dfm object...]
 covariates <- docvars(DFM_OBJECT)
 ```
 
