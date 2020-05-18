@@ -16,7 +16,7 @@ plot_alpha(x, start = 0, show_topic = NULL, scales = "fixed")
 \item{scales}{character. Control the scale of y-axis (the parameter in \link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}): \code{free} adjusts y-axis for parameters. Default is \code{fixed}.}
 }
 \value{
-ggplot2 object
+keyATM_fig object
 }
 \description{
 Show a diagnosis plot of alpha

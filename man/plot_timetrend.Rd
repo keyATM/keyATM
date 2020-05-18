@@ -36,7 +36,7 @@ plot_timetrend(
 \item{...}{additional arguments not used}
 }
 \value{
-ggplot2 object
+keyATM_fig object
 }
 \description{
 Plot time trend

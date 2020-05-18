@@ -33,7 +33,7 @@
 \item{...}{additional arguments not used}
 }
 \value{
-ggplot2 object
+keyATM_fig object
 }
 \description{
 Plot document-topic distribution by strata (for covariate models)

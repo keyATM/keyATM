@@ -1,6 +1,6 @@
 #' Save a figure
 #' 
-#' @param x the object
+#' @param x the keyATM_fig object
 #' @param filename file name to create on disk
 #' @param ... other arguments passed on to the [ggplot2::ggsave()][ggplot2::ggsave] function
 #' @seealso [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()], [values_fig()]
@@ -12,7 +12,7 @@ save_fig <- function(x, filename, ...) {
 
 #' Get values used to create a figure
 #' 
-#' @param x the object
+#' @param x the keyATM_fig object
 #' @seealso [save_fig()], [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()]
 #' @export
 values_fig <- function(x) {
@@ -49,7 +49,7 @@ print.keyATM_fig <- function(x, ...)
 #' @param start integer. The start of slice iteration. Default is \code{0}.
 #' @param show_topic a vector to specify topic indexes to show. Default is \code{NULL}.
 #' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
-#' @return ggplot2 object
+#' @return keyATM_fig object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
@@ -114,7 +114,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
 #' 
 #' @param x the output from a keyATM model (see [keyATM()])
 #' @param start integer. The starting value of iteration to use in plot. Default is \code{1}.
-#' @return ggplot2 object
+#' @return keyATM_fig object
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @importFrom rlang .data
@@ -153,7 +153,7 @@ plot_modelfit <- function(x, start = 1)
 #' @param x the output from a keyATM model (see [keyATM()])
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param start integer. The starting value of iteration to use in the plot. Default is \code{0}.
-#' @return ggplot2 object
+#' @return keyATM_fig object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
@@ -233,7 +233,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' @param width numeric. Width of the error bars.
 #' @param show_mean logical. The default is \code{TRUE}.
 #' @param ... additional arguments not used
-#' @return ggplot2 object
+#' @return keyATM_fig object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
@@ -295,7 +295,7 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 #' @param width numeric. Width of the error bars.
 #' @param show_mean logical. The default is \code{TRUE}. This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in [keyATM()]).
 #' @param ... additional arguments not used
-#' @return ggplot2 object
+#' @return keyATM_fig object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data

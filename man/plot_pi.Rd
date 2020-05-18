@@ -14,7 +14,7 @@ plot_pi(x, show_topic = NULL, start = 0)
 \item{start}{integer. The starting value of iteration to use in the plot. Default is \code{0}.}
 }
 \value{
-ggplot2 object
+keyATM_fig object
 }
 \description{
 Show a diagnosis plot of pi
