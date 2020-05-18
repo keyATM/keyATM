@@ -22,7 +22,7 @@ Imports: Rcpp,
   stats,
   stringr,
   tibble,
-  tidyr
+  tidyr (>= 1.0.0)
 LinkingTo: Rcpp,
   RcppEigen,
   RcppProgress
@@ -35,3 +35,4 @@ BugReports: https://github.com/keyATM/keyATM/issues
 LazyData: TRUE
 RoxygenNote: 7.1.0
 SystemRequirements: C++11
+Roxygen: list(markdown = TRUE)

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Read files from the quanteda dfm (this is the same as dgCMatrix) — read_dfm_cpp • keyATM</title>
+<title>Plot time trend — plot_timetrend • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -38,9 +38,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Read files from the quanteda dfm (this is the same as dgCMatrix) — read_dfm_cpp" />
+<meta property="og:title" content="Plot time trend — plot_timetrend" />
 
-<meta property="og:description" content="Read files from the quanteda dfm (this is the same as dgCMatrix)" />
+<meta property="og:description" content="Plot time trend" />
 
 
 
@@ -146,35 +146,77 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Read files from the quanteda dfm (this is the same as dgCMatrix)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/keyATM/keyATM/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
-    <div class="hidden name"><code>read_dfm_cpp.Rd</code></div>
+    <h1>Plot time trend</h1>
+    <small class="dont-index">Source: <a href='https://github.com/keyATM/keyATM/blob/master/R/plots.R'><code>R/plots.R</code></a></small>
+    <div class="hidden name"><code>plot_timetrend.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Read files from the quanteda dfm (this is the same as dgCMatrix)</p>
+    <p>Plot time trend</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>read_dfm_cpp</span>(<span class='no'>dfm</span>, <span class='no'>W_raw</span>, <span class='no'>vocab</span>)</pre>
+    <pre class="usage"><span class='fu'>plot_timetrend</span>(
+  <span class='no'>x</span>,
+  <span class='kw'>show_topic</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>time_index_label</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>quantile_vec</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.05</span>, <span class='fl'>0.5</span>, <span class='fl'>0.95</span>),
+  <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time"</span>,
+  <span class='kw'>scales</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>,
+  <span class='kw'>width</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
+  <span class='kw'>show_mean</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='no'>...</span>
+)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>dfm</th>
-      <td><p>a dfm input (sparse Matrix)</p></td>
+      <th>x</th>
+      <td><p>the output from the dynamic keyATM model (see <code><a href='keyATM.html'>keyATM()</a></code>)</p></td>
     </tr>
     <tr>
-      <th>W_raw</th>
-      <td><p>an object to return</p></td>
+      <th>show_topic</th>
+      <td><p>an integer or a vector. Indicate topics to visualize. Default is <code>NULL</code>.</p></td>
     </tr>
     <tr>
-      <th>vocab</th>
-      <td><p>a vector of vocabulary</p></td>
+      <th>time_index_label</th>
+      <td><p>a vector. The label for time index. The length should be equal to the number of documents (time index provided to <code><a href='keyATM.html'>keyATM()</a></code>).</p></td>
+    </tr>
+    <tr>
+      <th>quantile_vec</th>
+      <td><p>a numeric. Quantiles to visualize</p></td>
+    </tr>
+    <tr>
+      <th>xlab</th>
+      <td><p>a character.</p></td>
+    </tr>
+    <tr>
+      <th>scales</th>
+      <td><p>character. Control the scale of y-axis (the parameter in <a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>ggplot2::facet_wrap()</a>): <code>free</code> adjusts y-axis for parameters. Default is <code>fixed</code>.</p></td>
+    </tr>
+    <tr>
+      <th>width</th>
+      <td><p>numeric. Width of the error bars.</p></td>
+    </tr>
+    <tr>
+      <th>show_mean</th>
+      <td><p>logical. The default is <code>TRUE</code>. This is an option when calculating credible intervals (you need to set <code>store_theta = TRUE</code> in <code><a href='keyATM.html'>keyATM()</a></code>).</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional arguments not used</p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>keyATM_fig object</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='save_fig.html'>save_fig()</a></code></p></div>
     
 
   </div>

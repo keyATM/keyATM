@@ -31,8 +31,14 @@ table(bills_cov) # this is a binary indicator
 ```
 
 Please make sure that **the order of covariates is the same as the order of documents**.
-
-
+The easiest way to match the order and the dimension of covariats with the documents is to use
+the [`docvars`](https://quanteda.io/reference/corpus.html) argument in **quanteda** when you
+construct a corpus object.
+```{r, eval=FALSE, message=FALSE, fig.align='center'}
+CORPUS <- corpus(raw_docs, text_field = "text", docvars = COVARIATES)
+[...preprocess and make a dfm object...]
+covariates <- docvars(DFM_OBJECT)
+```
 
 
 ## Fitting the model
@@ -49,8 +55,6 @@ out <- keyATM(
              )
 ```
 The `covariates_formula` takes the same form of a [`formula`](https://rdrr.io/r/stats/formula.html) for `model.matrix()` function. You do not need to specify the left hand side of the formula. The default number of iterations is `1500`. Please check [this page](Options.html) for available options.
-
-If you set `mh_use = TRUE`, the estimation process will speed up.
 
 
 ## Saving the model

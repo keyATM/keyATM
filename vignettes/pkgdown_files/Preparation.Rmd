@@ -18,7 +18,7 @@ By making a `token` object from a `corpus` object, **quanteda** can perform vari
 Lastly, you can make a `dfm` object with a function `dfm()` in **quanteda**.
 
 Here is an example preprocessing steps with **quanteda**. In this example, we read texts with **readtext** package.
-```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
 library(quanteda)
 library(readtext)
 
@@ -28,6 +28,9 @@ raw_docs <- readtext("PATH_TO_THE_FOLDER/*.txt",
 
 # Preprocessing with quanteda and create a dfm object
 key_corpus <- corpus(raw_docs, text_field = "text")
+
+# If you use the covariate model, please consider using `docvars` argument
+key_corpus <- corpus(raw_docs, text_field = "text", docvars = COVARIATES)
 
 key_tokens <- tokens(key_corpus,
                      remove_numbers = TRUE, 

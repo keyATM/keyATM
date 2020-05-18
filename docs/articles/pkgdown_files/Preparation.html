@@ -6,20 +6,20 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Preparation • keyATM</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../../bootstrap-toc.css">
+<script src="../../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
 <script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
 <meta property="og:title" content="Preparation">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="keyATM">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -104,10 +104,10 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Preparation</h1>
+      <h1 data-toc-skip>Preparation</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/master/vignettes/pkgdown_files/Preparation.Rmd"><code>vignettes/pkgdown_files/Preparation.Rmd</code></a></small>
       <div class="hidden name"><code>Preparation.Rmd</code></div>
 
     </div>
@@ -125,31 +125,34 @@
 <p>By making a <code>token</code> object from a <code>corpus</code> object, <strong>quanteda</strong> can perform various preprocessing methods (<a href="https://quanteda.io/articles/quickstart.html#tokenizing-texts">quanteda Quick Start: Tokenizing texts</a>).</p>
 <p>Lastly, you can make a <code>dfm</code> object with a function <code><a href="https://quanteda.io/reference/dfm.html">dfm()</a></code> in <strong>quanteda</strong>.</p>
 <p>Here is an example preprocessing steps with <strong>quanteda</strong>. In this example, we read texts with <strong>readtext</strong> package.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(quanteda)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(readtext)</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># Read text files</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>raw_docs &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/readtext/man/readtext.html">readtext</a></span>(<span class="st">"PATH_TO_THE_FOLDER/*.txt"</span>,</span>
-<span id="cb1-6"><a href="#cb1-6"></a>                     <span class="dt">encoding =</span> <span class="st">"UTF-8"</span>)</span>
-<span id="cb1-7"><a href="#cb1-7"></a></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="co"># Preprocessing with quanteda and create a dfm object</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a>key_corpus &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(raw_docs, <span class="dt">text_field =</span> <span class="st">"text"</span>)</span>
-<span id="cb1-10"><a href="#cb1-10"></a></span>
-<span id="cb1-11"><a href="#cb1-11"></a>key_tokens &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(key_corpus,</span>
-<span id="cb1-12"><a href="#cb1-12"></a>                     <span class="dt">remove_numbers =</span> <span class="ot">TRUE</span>, </span>
-<span id="cb1-13"><a href="#cb1-13"></a>                     <span class="dt">remove_punct =</span> <span class="ot">TRUE</span>, </span>
-<span id="cb1-14"><a href="#cb1-14"></a>                     <span class="dt">remove_symbols =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb1-15"><a href="#cb1-15"></a>                     <span class="dt">remove_separators =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb1-16"><a href="#cb1-16"></a>                     <span class="dt">remove_url =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_tolower.html">tokens_tolower</a></span>() <span class="op">%&gt;%</span></span>
-<span id="cb1-18"><a href="#cb1-18"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_select.html">tokens_remove</a></span>(<span class="kw"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"english"</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a><span class="st">                </span><span class="kw"><a href="https://quanteda.io/reference/tokens_select.html">tokens_select</a></span>(<span class="dt">min_nchar =</span> <span class="dv">3</span>)</span>
-<span id="cb1-20"><a href="#cb1-20"></a></span>
-<span id="cb1-21"><a href="#cb1-21"></a>key_dfm &lt;-<span class="st"> </span><span class="kw"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(key_tokens) <span class="op">%&gt;%</span></span>
-<span id="cb1-22"><a href="#cb1-22"></a><span class="st">             </span><span class="kw"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="dt">min_termfreq =</span> <span class="dv">5</span>, <span class="dt">min_docfreq =</span> <span class="dv">2</span>)</span>
-<span id="cb1-23"><a href="#cb1-23"></a></span>
-<span id="cb1-24"><a href="#cb1-24"></a><span class="co"># Read texts into keyATM</span></span>
-<span id="cb1-25"><a href="#cb1-25"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(key_dfm)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">quanteda</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">readtext</span>)
+
+<span class="co"># Read text files</span>
+<span class="no">raw_docs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/readtext/man/readtext.html">readtext</a></span>(<span class="st">"PATH_TO_THE_FOLDER/*.txt"</span>,
+                     <span class="kw">encoding</span> <span class="kw">=</span> <span class="st">"UTF-8"</span>)
+
+<span class="co"># Preprocessing with quanteda and create a dfm object</span>
+<span class="no">key_corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(<span class="no">raw_docs</span>, <span class="kw">text_field</span> <span class="kw">=</span> <span class="st">"text"</span>)
+
+<span class="co"># If you use the covariate model, please consider using `docvars` argument</span>
+<span class="no">key_corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(<span class="no">raw_docs</span>, <span class="kw">text_field</span> <span class="kw">=</span> <span class="st">"text"</span>, <span class="kw">docvars</span> <span class="kw">=</span> <span class="no">COVARIATES</span>)
+
+<span class="no">key_tokens</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(<span class="no">key_corpus</span>,
+                     <span class="kw">remove_numbers</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
+                     <span class="kw">remove_punct</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
+                     <span class="kw">remove_symbols</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
+                     <span class="kw">remove_separators</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
+                     <span class="kw">remove_url</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
+                <span class="fu"><a href="https://quanteda.io/reference/tokens_tolower.html">tokens_tolower</a></span>() <span class="kw">%&gt;%</span>
+                <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html">tokens_remove</a></span>(<span class="fu"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"english"</span>)) <span class="kw">%&gt;%</span>
+                <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html">tokens_select</a></span>(<span class="kw">min_nchar</span> <span class="kw">=</span> <span class="fl">3</span>)
+
+<span class="no">key_dfm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(<span class="no">key_tokens</span>) <span class="kw">%&gt;%</span>
+             <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="kw">min_termfreq</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">min_docfreq</span> <span class="kw">=</span> <span class="fl">2</span>)
+
+<span class="co"># Read texts into keyATM</span>
+<span class="no">keyATM_docs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(<span class="no">key_dfm</span>)</pre></body></html></div>
 <p>You can also use <code><a href="https://rdrr.io/r/base/c.html">c(stopwords("english"), "your", "stopwords")</a></code> if you want to add corpus specific stopwords.</p>
 </div>
 <div id="alternative-ways-to-read-texts" class="section level3">
@@ -167,14 +170,14 @@
 4 h.r h.r one one one hundred hundred first first congress cong...
 5 congress congress one united united united united united unit...
 6 h.r h.r one one one one one hundred hundred first congress co...</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Read texts into keyATM</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(docs)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co"># Read texts into keyATM</span>
+<span class="no">keyATM_docs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(<span class="no">docs</span>)</pre></body></html></div>
 <p>Reading directly from files: If you have preprocessed text files, you can pass a list of files to <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Create a list of paths to text files</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>textfiles &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span>(PATH_TO_THE_FOLDER, <span class="dt">pattern =</span> <span class="st">"*.txt"</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb4-3"><a href="#cb4-3"></a></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="co"># Read texts into keyATM</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(textfiles)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co"># Create a list of paths to text files</span>
+<span class="no">textfiles</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span>(<span class="no">PATH_TO_THE_FOLDER</span>, <span class="kw">pattern</span> <span class="kw">=</span> <span class="st">"*.txt"</span>, <span class="kw">full.names</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+
+<span class="co"># Read texts into keyATM</span>
+<span class="no">keyATM_docs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(<span class="no">textfiles</span>)</pre></body></html></div>
 </div>
 </div>
 <div id="reading-documents-into-keyatm" class="section level2">
@@ -182,11 +185,11 @@
 <a href="#reading-documents-into-keyatm" class="anchor"></a>Reading documents into keyATM</h2>
 <p>Before fitting the model, we need to read texts and keywords into <strong>keyATM</strong>. Here we use <strong>quanteda</strong>’s <code>dfm</code>.</p>
 <p><strong>keyATM</strong> package includes a tidy dataset for illustration purpose. In this example, we use text data of the Congressional Bills scraped from <a href="https://www.congress.gov/">congress.gov</a> (in total 140 documents). You can load this data by <code><a href="https://rdrr.io/r/utils/data.html">data(keyATM_data_bills)</a></code>.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(quanteda)</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</span>
-<span id="cb5-4"><a href="#cb5-4"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda dfm object</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">quanteda</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">keyATM</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">keyATM_data_bills</span>)
+<span class="no">bills_dfm</span> <span class="kw">&lt;-</span> <span class="no">keyATM_data_bills</span>$<span class="no">doc_dfm</span>  <span class="co"># quanteda dfm object</span>
+<span class="no">keyATM_docs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(<span class="no">bills_dfm</span>)</pre></body></html></div>
 </div>
 <div id="preparing-keywords" class="section level2">
 <h2 class="hasAnchor">
@@ -195,17 +198,17 @@
 <h3 class="hasAnchor">
 <a href="#keywords-list" class="anchor"></a>Keywords list</h3>
 <p>Keywords should be in a list. For example, we prepare four keyword-topics. Keywrods should be stored in a list. Each element in the list is a character vector, which corresponds to a single keyword-topic. The number of keywords can vary between topics.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>bills_keywords &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</span>
-<span id="cb6-2"><a href="#cb6-2"></a>                       <span class="dt">Education =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"education"</span>, <span class="st">"child"</span>, <span class="st">"student"</span>),</span>
-<span id="cb6-3"><a href="#cb6-3"></a>                       <span class="dt">Law       =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"court"</span>, <span class="st">"law"</span>, <span class="st">"attorney"</span>),</span>
-<span id="cb6-4"><a href="#cb6-4"></a>                       <span class="dt">Health    =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"public"</span>, <span class="st">"health"</span>),</span>
-<span id="cb6-5"><a href="#cb6-5"></a>                       <span class="dt">Drug      =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"drug"</span>)</span>
-<span id="cb6-6"><a href="#cb6-6"></a>                      )</span></code></pre></div>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">bills_keywords</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
+                       <span class="kw">Education</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"education"</span>, <span class="st">"child"</span>, <span class="st">"student"</span>),
+                       <span class="kw">Law</span>       <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"court"</span>, <span class="st">"law"</span>, <span class="st">"attorney"</span>),
+                       <span class="kw">Health</span>    <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"public"</span>, <span class="st">"health"</span>),
+                       <span class="kw">Drug</span>      <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"drug"</span>)
+                      )</pre></body></html></div>
 </div>
 <div id="checking-keywords" class="section level3">
 <h3 class="hasAnchor">
 <a href="#checking-keywords" class="anchor"></a>Checking keywords</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw"><a href="../../reference/visualize_keywords.html">visualize_keywords</a></span>(keyATM_docs, bills_keywords)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="../../reference/visualize_keywords.html">visualize_keywords</a></span>(<span class="no">keyATM_docs</span>, <span class="no">bills_keywords</span>)</pre></body></html></div>
 <p><img src="Preparation_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"> The figure helps you to check the frequency of keywords. Including low-frequency keywords do not help the model in general. <strong>keyATM</strong> automatically prune keywords that do not appear in the documents.</p>
 <p>Proportion is defined as a number of times a keyword occurs in the corpus divided by the total length of documents. This measures the frequency of the keyword in the corpus. Formally, the proportion of the keyword <span class="math inline">\(v\)</span> is, <span class="math display">\[
 \begin{align*}
@@ -244,18 +247,10 @@
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#preparing-texts">Preparing Texts</a></li>
-      <li><a href="#reading-documents-into-keyatm">Reading documents into keyATM</a></li>
-      <li><a href="#preparing-keywords">Preparing keywords</a></li>
-      <li><a href="#next-step">Next Step</a></li>
-      </ul>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
 
@@ -266,7 +261,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

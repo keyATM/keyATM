@@ -16,6 +16,7 @@ test_that("Reading documents from quanteda dfm", {
 test_that("Visualizing keywords", {
   p <- visualize_keywords(keyATM_docs, bills_keywords)
   expect_s3_class(p, "keyATM_viz")
+  expect_identical(values_fig(p)$WordCount[2], 318L)
   skip_on_cran()
   expect_message(save_fig(p, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
 })
@@ -63,7 +64,7 @@ test_that("Documents with length 0: covariate", {
                   no_keyword_topics = 3,  # number of regular topics
                   keywords = bills_keywords,  # keywords
                   model = "covariates",
-                  model_settings = list(covariates_data = bills_cov, standardize = T, 
+                  model_settings = list(covariates_data = bills_cov, standardize = TRUE, 
                                       covariates_formula = ~.),
                   options = list(seed = 250, iterations = 0))
   )

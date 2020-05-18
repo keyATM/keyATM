@@ -7,15 +7,15 @@
 save_fig(x, filename, ...)
 }
 \arguments{
-\item{x}{the object}
+\item{x}{the keyATM_fig object}
 
 \item{filename}{file name to create on disk}
 
-\item{...}{other arguments passed on to the \code{ggsave()} function}
+\item{...}{other arguments passed on to the \link[ggplot2:ggsave]{ggplot2::ggsave()} function}
 }
 \description{
 Save a figure
 }
 \seealso{
-\code{visualize_keywords()}, \code{plot_alpha()}, \code{plot_modelfit()}, \code{plot_pi()}, and \code{by_strata_DocTopic()}
+\code{\link[=visualize_keywords]{visualize_keywords()}}, \code{\link[=plot_alpha]{plot_alpha()}}, \code{\link[=plot_modelfit]{plot_modelfit()}}, \code{\link[=plot_pi]{plot_pi()}}, \code{\link[=plot_timetrend]{plot_timetrend()}}, \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}}, \code{\link[=values_fig]{values_fig()}}
 }

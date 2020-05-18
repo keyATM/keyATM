@@ -79,7 +79,9 @@ reference:
   - '`plot_alpha`'
   - '`plot_modelfit`'
   - '`plot_pi`'
+  - '`plot_timetrend`'
   - '`save_fig`'
+  - '`values_fig`'
 - title: Additional analyses
   desc: ~
   contents:
