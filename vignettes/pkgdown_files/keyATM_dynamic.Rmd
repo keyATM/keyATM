@@ -38,6 +38,7 @@ table(bills_time_index)
 
 Please make sure that **the order of time index is the same as the order of documents**.
 
+
 ## Fitting the model
 Researchers need to specify the number of states in addition to keywords.
 

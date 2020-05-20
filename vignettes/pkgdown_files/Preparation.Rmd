@@ -5,17 +5,47 @@ output:
     toc: false
 ---
 
-
 ## Preparing Texts
 To fit topic models with **keyATM**, users need to prepare texts for `keyATM_read()`. `keyATM_read()` has three ways to input texts. If you want to check an example with a built-in dataset, please proceed to [the next section](Preparation.html#reading-documents-into-keyatm).
 
 ### Using quanteda dfm (**recommended**)
 
-**keyATM** can read a `dfm` object created by **quanteda** package (**this method is strongly recommended**). Since **keyATM** does not provide preprocessing functions, we recommend users to preprocess documents with **quanteda**. Please visit [quanteda Quick Start: Creating a Corpus](https://quanteda.io/articles/quickstart.html#creating-a-corpus) to see how to create a `corpus` object.
-
+**keyATM** can read a `dfm` object created by **quanteda** package (**this method is strongly recommended**). Since **keyATM** does not provide preprocessing functions, we recommend users to preprocess documents with **quanteda**. 
 By making a `token` object from a `corpus` object, **quanteda** can perform various preprocessing methods ([quanteda Quick Start: Tokenizing texts](https://quanteda.io/articles/quickstart.html#tokenizing-texts)).
 
-Lastly, you can make a `dfm` object with a function `dfm()` in **quanteda**.
+We show a concrete example of preprocessing data and loading it into the **keyATM**. 
+We use the US presidential inaugural address data that is one of the built-in datasets of the **quanteda**.
+```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+library(keyATM)
+library(quanteda)
+library(magrittr)
+data(data_corpus_inaugural, package = "quanteda")
+```
+
+`tokens` and related functions in the **quanteda** provide various preprocessing functions. Preprocessing can reduce the number of unique features (words) in the corpus, which is critical for increasing the interpretability. In the example below, we adopt some of the most common preprocessing steps.
+
+
+```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+data_tokens <- tokens(data_corpus_inaugural,
+                      remove_numbers = TRUE, 
+                      remove_punct = TRUE, 
+                      remove_symbols = TRUE,
+                      remove_separators = TRUE,
+                      remove_url = TRUE) %>%
+                 tokens_tolower() %>%
+                 tokens_remove(c(stopwords("english"), 
+                               "may", "shall", "can",
+                               "must", "upon", "with", "without")) %>%
+                 tokens_select(min_nchar = 3)
+```
+`tokens` removes punctuations and unnecessary characters, 
+`tokens_tolower` convert all characters into lower cases,
+`tokens_remove` remove general stop words (e.g, the, is, at, with `stopwords("english")`)
+and corpus specific high frequent words ("may"", "shall"", ..., "without" in this example), 
+and `tokens_select` drops
+short words that do not usually contribute to interpreting topics.
+
+
 
 Here is an example preprocessing steps with **quanteda**. In this example, we read texts with **readtext** package.
 ```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
