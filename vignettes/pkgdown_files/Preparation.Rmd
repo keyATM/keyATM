@@ -15,8 +15,7 @@ By making a `token` object from a `corpus` object, **quanteda** can perform vari
 
 
 #### Loading data for **quanteda**
-Here is an example of loading text data and transform it into the **quanteda** `dfm` format 
-while preprocessing the text.
+Here is an example of loading text data and transform it into the **quanteda** `corpus` format.
 We use the **readtext** package in this example.
 ```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
 library(quanteda)
@@ -31,21 +30,6 @@ key_corpus <- corpus(raw_docs, text_field = "text")
 
 # If you use the covariate model, please consider using `docvars` argument
 key_corpus <- corpus(raw_docs, text_field = "text", docvars = COVARIATES)
-
-key_tokens <- tokens(key_corpus,
-                     remove_numbers = TRUE, 
-                     remove_punct = TRUE, 
-                     remove_symbols = TRUE,
-                     remove_separators = TRUE,
-                     remove_url = TRUE) %>%
-                tokens_tolower() %>%
-                tokens_remove(stopwords("english")) %>%
-                tokens_select(min_nchar = 3)
-
-key_dfm <- dfm(key_tokens) %>%
-             dfm_trim(min_termfreq = 5, min_docfreq = 2)
-
-keyATM_docs <- keyATM_read(texts = key_dfm)
 ```
 
 

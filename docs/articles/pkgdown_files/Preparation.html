@@ -126,7 +126,7 @@
 <h4 class="hasAnchor">
 <a href="#loading-data-for-quanteda" class="anchor"></a>Loading data for <strong>quanteda</strong>
 </h4>
-<p>Here is an example of loading text data and transform it into the <strong>quanteda</strong> <code>dfm</code> format while preprocessing the text. We use the <strong>readtext</strong> package in this example.</p>
+<p>Here is an example of loading text data and transform it into the <strong>quanteda</strong> <code>corpus</code> format. We use the <strong>readtext</strong> package in this example.</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">quanteda</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">readtext</span>)
 
@@ -138,22 +138,7 @@
 <span class="no">key_corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(<span class="no">raw_docs</span>, <span class="kw">text_field</span> <span class="kw">=</span> <span class="st">"text"</span>)
 
 <span class="co"># If you use the covariate model, please consider using `docvars` argument</span>
-<span class="no">key_corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(<span class="no">raw_docs</span>, <span class="kw">text_field</span> <span class="kw">=</span> <span class="st">"text"</span>, <span class="kw">docvars</span> <span class="kw">=</span> <span class="no">COVARIATES</span>)
-
-<span class="no">key_tokens</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(<span class="no">key_corpus</span>,
-                     <span class="kw">remove_numbers</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-                     <span class="kw">remove_punct</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-                     <span class="kw">remove_symbols</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-                     <span class="kw">remove_separators</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-                     <span class="kw">remove_url</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
-                <span class="fu"><a href="https://quanteda.io/reference/tokens_tolower.html">tokens_tolower</a></span>() <span class="kw">%&gt;%</span>
-                <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html">tokens_remove</a></span>(<span class="fu"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"english"</span>)) <span class="kw">%&gt;%</span>
-                <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html">tokens_select</a></span>(<span class="kw">min_nchar</span> <span class="kw">=</span> <span class="fl">3</span>)
-
-<span class="no">key_dfm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(<span class="no">key_tokens</span>) <span class="kw">%&gt;%</span>
-             <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="kw">min_termfreq</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">min_docfreq</span> <span class="kw">=</span> <span class="fl">2</span>)
-
-<span class="no">keyATM_docs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(<span class="kw">texts</span> <span class="kw">=</span> <span class="no">key_dfm</span>)</pre></body></html></div>
+<span class="no">key_corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(<span class="no">raw_docs</span>, <span class="kw">text_field</span> <span class="kw">=</span> <span class="st">"text"</span>, <span class="kw">docvars</span> <span class="kw">=</span> <span class="no">COVARIATES</span>)</pre></body></html></div>
 </div>
 <div id="preprocessing-data" class="section level4">
 <h4 class="hasAnchor">
