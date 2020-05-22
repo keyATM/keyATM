@@ -153,7 +153,7 @@ textfiles <- list.files(PATH_TO_THE_FOLDER, pattern = "*.txt", full.names = TRUE
 keyATM_docs <- keyATM_read(textfiles)
 ```
 
-## Prepare keywords
+## Preparing keywords
 ### Create keywords list
 Feeding keywords into models plays an essential role in the **keyATM**. 
 Researchers are expected to use their substantive knowledge and

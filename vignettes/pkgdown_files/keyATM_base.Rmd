@@ -6,12 +6,53 @@ output:
 ---
 
 ```{r setup II, include=FALSE, eval=TRUE}
-knitr::opts_chunk$set(eval = T, echo = TRUE)
+knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+```
+
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\balpha}{\boldsymbol{\alpha}}
+\newcommand{\bsigma}{\boldsymbol{\sigma}}
+\newcommand{\bgamma}{\boldsymbol{\gamma}}
+\newcommand{\blambda}{\boldsymbol{\lambda}}
+\newcommand{\bphi}{\boldsymbol{\phi}}
+\newcommand{\bpsi}{\boldsymbol{\psi}}
+\newcommand{\bpi}{\boldsymbol{\pi}}
+
+
+```{r, include=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+library(keyATM)
+library(quanteda)
+library(magrittr)
+data(data_corpus_inaugural, package = "quanteda")
+
+data_tokens <- tokens(data_corpus_inaugural,
+                      remove_numbers = TRUE, 
+                      remove_punct = TRUE, 
+                      remove_symbols = TRUE,
+                      remove_separators = TRUE,
+                      remove_url = TRUE) %>%
+                 tokens_tolower() %>%
+                 tokens_remove(c(stopwords("english"), 
+                               "may", "shall", "can",
+                               "must", "upon", "with", "without")) %>%
+                 tokens_select(min_nchar = 3)
+                
+data_dfm <- dfm(data_tokens) %>%
+               dfm_trim(min_termfreq = 5, min_docfreq = 2)
+
+keywords <- list(Government     = c("laws", "law", "executive"),
+                 Congress       = c("congress", "party"),
+                 Peace          = c("peace", "world", "freedom"),
+                 Constitution   = c("constitution", "rights"),
+                 ForeignAffairs  = c("foreign", "war"))
+
+keyATM_docs <- keyATM_read(data_dfm)
 ```
 
 ## Preparing documents and keywords
 Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. 
-We use the US Presidential inaugural address data we prapared ([documents](Preparation.html#reading-documents-into-keyatm) and [keywords](Preparation.html#preparing-keywords)).
+We use the US Presidential inaugural address data we prapared ([documents](Preparation.html#preparing-texts) and [keywords](Preparation.html#preparing-keywords)).
 
 ## Fitting the model
 
@@ -29,21 +70,20 @@ out <- keyATM(docs              = keyATM_docs,    # text input
               no_keyword_topics = 5,              # number of topics without keywords
               keywords          = keywords, # keywords
               model             = "base",         # select the model
-              options           = list(seed = 250)
-             )
+              options           = list(seed = 250))
 ```
 The default number of iterations is `1500`. Please check [this page](Options.html) for available options.
 
 
 ## Saving the model
 
-Once you fit the model, you can save the model with `save()` for replication.
-```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+Once you fit the model, you can save the model with the `save()` function for replication.
+```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
 save(out, file = "SAVENAME.rds")
 ```
 
 To load the model, you can use `readRDS()` function.
-```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
 out <- readRDS(file = "SAVENAME.rds")
 ```
 
@@ -57,69 +97,24 @@ The `top_words` function returns a table of top words for each of estimated topi
 Keywords assigned to a keyword topic are suffixed with a check mark.
 Keywords from another keyword topic are labeled with the topic id of that category.
 In the table below, "law", "laws", and "executive" are keywords of the 
-*Government* topic, while ``peace'' appears in top words of the *Other_3* topic,
+*Government* topic, while "peace" appears in top words of the *Other_3* topic,
 it is a keyword of the *peace* topic. 
 
-```{r, eval = FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
 top_words(out)
-
-#     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
-# 1        law [✓]        great   world [✓]           states           public
-# 2       laws [✓]      justice         new       government            union
-# 3          state congress [✓] freedom [✓] constitution [✓]          war [✓]
-# 4  executive [✓]       united     america            power          nations
-# 5         policy      service         let         citizens      foreign [✓]
-# 6          whole    party [✓]   peace [✓]       rights [✓]       principles
-# 7       american        force        life             duty           duties
-# 8        however       office        time        interests             good
-# 9         spirit        means        work           united             just
-# 10          full   prosperity    american           powers         interest
-#      Other_1        Other_2   Other_3  Other_4    Other_5
-# 1      years       national   country   nation     people
-# 2     fellow      political peace [3]      men government
-# 3    purpose administration      time     hope      every
-# 4  president         system   support    first        one
-# 5     spirit     confidence    secure progress        now
-# 6        day        federal important      man       made
-# 7        yet        liberty     since    power      right
-# 8   strength          whose   respect  country       well
-# 9       come           take    future   change       many
-# 10   believe          given resources     find       much
 ```
 
-To explore documents that are highly associated with each topic, the `top_docs`
+To explore documents that are highly associated with each topic, the `top_docs()`
 function returns a table of document indexes in which a topic has high proportion.
 The table below indicates, for example, that the ninth document in the corpus has the 
 highest proportion of the *Government* topic among all other documents. 
 
-```{r, eval = FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
 top_docs(out)
-#    1_Government 2_Congress 3_Peace 4_Constitution 5_ForeignAffairs
-# 1             9         31      52              2                5
-# 2            14         35      47             15               10
-# 3             8         34      53             12               11
-# 4            26         32      58             11                6
-# 5            16         36      46             14                3
-# 6            13         29      40             18               15
-# 7            19         28      57             19                7
-# 8            12         41      51              9                8
-# 9            28         33      50             23               20
-# 10           36         30      54             17               16
-#    Other_1 Other_2 Other_3 Other_4 Other_5
-# 1       46       1      28      45      19
-# 2       47      31       8      44      21
-# 3       54      27       6      38       2
-# 4       48      11      31      58       4
-# 5       53      36      35      51      20
-# 6       49      33      22      30       1
-# 7       50      23      23      55      53
-# 8       56      17      10      39      32
-# 9       57      37       9      46      45
-# 10      43      25      16      52      58
 ```
 
 Researchers may want to obtain the entire document-topic distribution and
-topic-word distribution. The output of the `keyATM` function contains both
+topic-word distribution. The output of the `keyATM()` function contains both
 quantities.
 
 ```{r, eval = FALSE, warning=FALSE, message=FALSE, fig.align='center'}
@@ -132,24 +127,31 @@ First, it is important to check the model fitting.
 If the model is working as expected, we would observe an increase trend for 
 the log-likelihood and an decrease trend for the perplexity.
 Also the fluctuation of these values get smaller as iteration increases. 
-The `plot_modelfit` function visualizes
+The `plot_modelfit()` function visualizes
 the within sample log-likelihood and perplexity and the created figure
-can be saved with the `save_fig` function. 
+can be saved with the `save_fig()` function. 
 <!-- The figure shows that the increase of log-likelihood and the decrease of perplexity.  -->
 <!-- Also, the lines get flatter as iteration increases. These results indicate an example of  -->
 <!-- the good model fit. -->
 
-```{r, eval = FALSE, warning = FALSE, message = FALSE}
+```{r, warning = FALSE, message = FALSE}
 fig_modelfit <- plot_modelfit(out)
+fig_modelfit
+```
+
+```{r, eval = FALSE, warning = FALSE, message = FALSE}
 save_fig(fig_modelfit, "figures/base_modelfit.pdf", width = 7, height = 5)
 ```
 
 Furthermore, the **keyATM** can visualize $\balpha$, the prior for the document-topic distribution, and $\bpi$, the probability that each topic uses keyword topic-word distribution.
 Values of these parameters should also stabilize over time.
 
-```{r, eval = FALSE, warning = FALSE, message = FALSE}
+```{r, warning = FALSE, message = FALSE}
 plot_alpha(out)
+```
+
+```{r, warning = FALSE, message = FALSE}
 plot_pi(out)
 ```
 
-
+We can use the `save_fig()` function for both the `plot_alpha()` and the `plot_pi()` functions.
