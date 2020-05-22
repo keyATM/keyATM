@@ -10,35 +10,25 @@ knitr::opts_chunk$set(eval = T, echo = TRUE)
 ```
 
 ## Preparing documents and covariates
-Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. We use bills data we prapared ([documents](Preparation.html#reading-documents-into-keyatm) and [keywords](Preparation.html#preparing-keywords)).
+The `docvar` function in the **quanteda** package is especially useful 
+to construct a `vector` or a `dataframe` of covariates because it ensures that
+documents and covariates are corresponding to each other. 
+Since the **keyATM** does not take missing values,
+we recommend researchers to remove any missing values from 
+covariates before extracting them using the `docvars`.
+Moreover, we strongly recommend researchers to 
+extract covariates *after* preprocessing texts 
+because preprocessing steps will remove documents without any terms,
+which may result in any discrepancies between documents and covariates.
+Therefore, the recommended procedure is
+(1) removing missing values from covariates, (2) preprocessing texts 
+(including the process to discard documents that do not contain any words),
+and (3) extracting covariates using `docvar` function.
 
-```{r, include = T, warning=FALSE, message=FALSE, fig.align='center'}
-library(keyATM)
-library(quanteda)
-
-data(keyATM_data_bills)
-bills_keywords <- keyATM_data_bills$keywords
-bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda dfm object
-keyATM_docs <- keyATM_read(bills_dfm)
-```
-
-For the covariate data, we use the dummy variable which takes one if the bill is proposesd by the Republican party and zero otherwise (Adler and Wilkerson 2018). **keyATM** takes `matrix` or `data.frame` (`tibble`) type covariates data. If you have $D$ documents and $M$ covariates, the matrix should be $D \times M$. In this example, we have a dummy variable that indicates party identification.
-
-```{r, warning=FALSE, message=FALSE, fig.align='center'}
-bills_cov <- keyATM_data_bills$cov # dummy variable indicating the party proposed the bill
-dim(bills_cov)  # We have 140 documents and a single covariate for each document
-table(bills_cov) # this is a binary indicator
-```
-
-Please make sure that **the order of covariates is the same as the order of documents**.
-The easiest way to match the order and the dimension of covariats with the documents is to use
-the [`docvars`](https://quanteda.io/reference/corpus.html) argument in **quanteda** when you
-construct a corpus object.
-```{r, eval=FALSE, message=FALSE, fig.align='center'}
-CORPUS <- corpus(raw_docs, text_field = "text", docvars = COVARIATES)
-[...preprocess and make a dfm object...]
-covariates <- docvars(DFM_OBJECT)
-```
+In this example, we create a period dummy and a party dummy from the corpus
+and use them as covariates for the covariate keyATM. 
+First, we extract covariates attached to each document in the corpus 
+with the `docvar` function.
 
 
 ## Fitting the model
