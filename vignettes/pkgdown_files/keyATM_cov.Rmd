@@ -39,6 +39,12 @@ keywords <- list(Government     = c("laws", "law", "executive"),
 keyATM_docs <- keyATM_read(data_dfm)
 ```
 
+Scholars often have meta information about documents (e.g., authorship). 
+The **keyATM** provides a way to incorporate covariate for document-topic distribution, using a
+Dirichlet-Multinomial regression ([Mimno and McCallum 2008](https://dl.acm.org/doi/abs/10.5555/3023476.3023525)).
+Section 3 of [Eshima et al. (2020)](https://arxiv.org/abs/2004.05964) explain the covariate keyATM in details.
+
+
 ## Preparing covariates
 We follow the same procedure for the text preparation
 explained in [Preparation](Preparation.html) and explain
@@ -239,3 +245,7 @@ strata_tw <- by_strata_TopicWord(out, keyATM_docs,
 ```{r, warning=FALSE, message=FALSE}
 top_words(strata_tw, n = 3)
 ```
+
+## Reference
+* Eshima, S., Imai, K., & Sasaki, T. (2020). Keyword Assisted Topic Models. arXiv preprint arXiv:2004.05964.
+* Mimno D. McCallum A. (2008). “Topic models conditioned on arbitrary features with Dirichlet-Multinomial regression.” In *Proceedings of the 24th Conference on Uncertainty in Artificial Intelligence*, pp. 411–418.
