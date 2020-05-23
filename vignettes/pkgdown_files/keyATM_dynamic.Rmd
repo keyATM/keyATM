@@ -54,8 +54,8 @@ keyATM_docs <- keyATM_read(data_dfm)
 
 
 Researchers are often interested in investigating how the prevalence of topics change
-over time. The \pkg{keyATM} can use time stamps for the prior for
-document-topic distribution through Hidden Markov Model [Chib (1998)](https://doi.org/10.1016/S0304-4076(97)00115-2).
+over time. The **keyATM** can use time stamps for the prior for
+document-topic distribution through Hidden Markov Model ([Chib 1998](https://doi.org/10.1016/S0304-4076(97)00115-2)).
 
 Section 4 of [Eshima et al. (2020)](https://arxiv.org/abs/2004.05964) explains the dynamic keyATM in details.
 As explained in [keyATM Covariates](keyATM_cov.html), we recommend researchers to
@@ -130,3 +130,5 @@ fig_timetrend
 ```
 
 
+## Reference
+Chib, S. (1998). "Estimation and comparison of multiple change-point models." *Journal of econometrics*, 86(2), 221-241.
