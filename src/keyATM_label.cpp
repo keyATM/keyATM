@@ -40,8 +40,13 @@ void keyATMlabel::initialize_specific()
   Alpha = MatrixXd::Zero(num_doc, num_topics);
 }
 
-void keyATMlabel::iteration_single(int &it)
+void keyATMlabel::iteration_single(int it)
 { // Single iteration
+  int doc_id_;
+  int doc_length;
+  int w_, z_, s_;
+  int new_z, new_s;
+  int w_position;
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
   Alpha = label_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
@@ -51,7 +56,7 @@ void keyATMlabel::iteration_single(int &it)
     doc_s = S[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
 
-    alpha_ = Alpha.row(doc_id_).transpose(); // chooose document specific alpha
+    alpha = Alpha.row(doc_id_).transpose(); // chooose document specific alpha
     token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
     
     // Iterate each word in the document
@@ -77,7 +82,7 @@ void keyATMlabel::iteration_single(int &it)
 }
 
 
-void keyATMlabel::sample_parameters(int &it)
+void keyATMlabel::sample_parameters(int it)
 {
   if (estimate_alpha)
     sample_alpha();
@@ -137,7 +142,7 @@ void keyATMlabel::sample_alpha()
 }
 
 
-double keyATMlabel::alpha_loglik_label(int &k)
+double keyATMlabel::alpha_loglik_label(int k)
 {
   loglik = 0.0;
   

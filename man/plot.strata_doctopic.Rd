@@ -4,20 +4,40 @@
 \alias{plot.strata_doctopic}
 \title{Plot document-topic distribution by strata (for covariate models)}
 \usage{
-\method{plot}{strata_doctopic}(x, topics = NULL, quantile_vec = c(0.05, 0.5, 0.95), ...)
+\method{plot}{strata_doctopic}(
+  x,
+  show_topic = NULL,
+  var_name = NULL,
+  by = c("topic", "covariate"),
+  quantile_vec = c(0.05, 0.5, 0.95),
+  width = 0.1,
+  show_mean = TRUE,
+  ...
+)
 }
 \arguments{
-\item{x}{a strata_doctopic object (see \code{by_strata_DocTopic()})}
+\item{x}{a strata_doctopic object (see \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}})}
 
-\item{topics}{a vector or an integer. Indicate topics to visualize.}
+\item{show_topic}{a vector or an integer. Indicate topics to visualize.}
+
+\item{var_name}{the name of the variable in the plot.}
+
+\item{by}{\code{topic} or \code{covariate}. Default is by \code{topic}.}
 
 \item{quantile_vec}{a numeric. Quantiles to visualize}
+
+\item{width}{numeric. Width of the error bars.}
+
+\item{show_mean}{logical. The default is \code{TRUE}.}
 
 \item{...}{additional arguments not used}
 }
 \value{
-ggplot2 object
+keyATM_fig object
 }
 \description{
 Plot document-topic distribution by strata (for covariate models)
+}
+\seealso{
+\code{\link[=save_fig]{save_fig()}}, \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}}
 }

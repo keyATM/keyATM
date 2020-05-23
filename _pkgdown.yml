@@ -36,8 +36,6 @@ navbar:
           href: articles/pkgdown_files/keyATM_label.html
         - text: "Weighted LDA"
           href: articles/pkgdown_files/Weighted_LDA.html
-        - text: "Heterogeneity"
-          href: articles/pkgdown_files/Heterogeneity.html
         - text: "Options"
           href: articles/pkgdown_files/Options.html
     - text: "FAQ"
@@ -61,21 +59,34 @@ reference:
   desc: ~
   contents:
   - '`keyATM`'
+  - '`keyATMvb`'
   - '`weightedLDA`'
-- title: Check results
+  - '`save.keyATM_output`'
+- title: Checking results
   desc: ~
   contents:
   - '`plot_alpha`'
   - '`plot_modelfit`'
   - '`plot_pi`'
   - '`top_docs`'
-  - '`top_words`'
   - '`top_topics`'
+  - '`top_words`'
+- title: Making plots
+  desc: ~
+  contents:
+  - '`plot_alpha`'
+  - '`plot_modelfit`'
+  - '`plot_pi`'
+  - '`plot_timetrend`'
+  - '`save_fig`'
+  - '`values_fig`'
 - title: Additional analyses
   desc: ~
   contents:
   - '`by_strata_DocTopic`'
   - '`by_strata_TopicWord`'
+  - '`covariates_get`'
+  - '`covariates_info`'
   - '`plot.strata_doctopic`'
 - title: Built-in data
   desc: ~

@@ -15,9 +15,9 @@ weightedLDA(
 )
 }
 \arguments{
-\item{docs}{texts read via \code{keyATM_read()}}
+\item{docs}{texts read via \code{\link[=keyATM_read]{keyATM_read()}}}
 
-\item{model}{Weighted LDA model: "base", "covariates", and "dynamic"}
+\item{model}{Weighted LDA model: \code{base}, \code{covariates}, and \code{dynamic}}
 
 \item{number_of_topics}{the number of regular topics}
 
@@ -25,60 +25,68 @@ weightedLDA(
 
 \item{priors}{a list of priors of parameters}
 
-\item{options}{a list of options (details are in the documentation of \code{keyATM()})}
+\item{options}{a list of options (details are in the documentation of \code{\link[=keyATM]{keyATM()}})}
 
 \item{keep}{a vector of the names of elements you want to keep in output}
 }
 \value{
-A keyATM_output object containing:
-  \describe{
-    \item{V}{number of terms (number of unique words)}
-    \item{N}{number of documents}
-    \item{model}{the name of the model}
-    \item{theta}{topic proportions for each document (document-topic distribution)}
-    \item{phi}{topic specific word generation probabilities (topic-word distribution)}
-    \item{topic_counts}{number of tokens assigned to each topic}
-    \item{word_counts}{number of times each word type appears}
-    \item{doc_lens}{length of each document in tokens}
-    \item{vocab}{words in the vocabulary (a vector of unique words)}
-    \item{priors}{priors}
-    \item{options}{options}
-    \item{keywords_raw}{\code{NULL} for LDA models}
-    \item{model_fit}{perplexity and log-likelihood}
-    \item{pi}{estimated pi for the last iteration (\code{NULL} for LDA models)}
-    \item{values_iter}{values stored during iterations}
-    \item{number_of_topics}{number of topics}
-    \item{kept_values}{outputs you specified to store in \code{keep} option}
-    \item{information}{information about the fitting}
-  }
+A \code{keyATM_output} object containing:
+\describe{
+\item{V}{number of terms (number of unique words)}
+\item{N}{number of documents}
+\item{model}{the name of the model}
+\item{theta}{topic proportions for each document (document-topic distribution)}
+\item{phi}{topic specific word generation probabilities (topic-word distribution)}
+\item{topic_counts}{number of tokens assigned to each topic}
+\item{word_counts}{number of times each word type appears}
+\item{doc_lens}{length of each document in tokens}
+\item{vocab}{words in the vocabulary (a vector of unique words)}
+\item{priors}{priors}
+\item{options}{options}
+\item{keywords_raw}{\code{NULL} for LDA models}
+\item{model_fit}{perplexity and log-likelihood}
+\item{pi}{estimated pi for the last iteration (\code{NULL} for LDA models)}
+\item{values_iter}{values stored during iterations}
+\item{number_of_topics}{number of topics}
+\item{kept_values}{outputs you specified to store in \code{keep} option}
+\item{information}{information about the fitting}
+}
 }
 \description{
-Run weighted LDA models.
+Fit weighted LDA models.
 }
 \examples{
 \dontrun{
+  library(keyATM)
+  library(quanteda)
+  data(keyATM_data_bills)
+  bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda dfm object
+  keyATM_docs <- keyATM_read(bills_dfm)
+
   # Weighted LDA
-  out <- weightedLDA(
-                     keyATM_docs, model = "base", number_of_topics = 5
-                    )
+  out <- weightedLDA(docs = keyATM_docs, model = "base",
+                     number_of_topics = 5)
 
   # Weighted LDA Covariates
-  out <- weightedLDA(
-                     keyATM_docs, model = "covariates", number_of_topics = 5,
-                     model_settings(covariates_data = cov, covariates_formula = ~ .)
-                    )                   
+  bills_cov <- as.data.frame(keyATM_data_bills$cov)
+  out <- weightedLDA(docs = keyATM_docs, model = "covariates",
+                     number_of_topics = 5,
+                     model_settings = list(covariates_data = bills_cov,
+                                           covariates_formula = ~ RepParty))                   
 
   # Weighted LDA Dynamic
-  out <- weightedLDA(
-                     keyATM_docs, model = "dynamic", number_of_topics = 5,
-                     model_settings(time_index = time_index_vec, num_states = 5)
-                    )
+  bills_time_index <- keyATM_data_bills$time_index
+  # Time index should start from 1 and increase by 1
+  bills_time_index <- as.integer(bills_time_index - 100)
+  out <- weightedLDA(docs = keyATM_docs, model = "dynamic",
+                     number_of_topics = 5,
+                     model_settings = list(num_states = 5,
+                                           time_index = bills_time_index))
 
   # Visit our website for full examples: https://keyatm.github.io/keyATM/
-
 }
 
 }
 \seealso{
-\url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+\code{\link[=save.keyATM_output]{save.keyATM_output()}}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 }

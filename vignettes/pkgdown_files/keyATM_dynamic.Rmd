@@ -9,57 +9,124 @@ output:
 knitr::opts_chunk$set(eval = T, echo = TRUE)
 ```
 
-## Preparing documents and time index
-Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. We use bills data we prapared ([documents](Preparation.html#reading-documents-into-keyatm) and [keywords](Preparation.html#preparing-keywords)).
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\balpha}{\boldsymbol{\alpha}}
+\newcommand{\bsigma}{\boldsymbol{\sigma}}
+\newcommand{\bgamma}{\boldsymbol{\gamma}}
+\newcommand{\blambda}{\boldsymbol{\lambda}}
+\newcommand{\bphi}{\boldsymbol{\phi}}
+\newcommand{\bpsi}{\boldsymbol{\psi}}
+\newcommand{\bpi}{\boldsymbol{\pi}}
+
+
+```{r, include=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+library(keyATM)
+library(quanteda)
+library(magrittr)
+library(dplyr)
+library(tibble)
+data(data_corpus_inaugural, package = "quanteda")
+
+data_tokens <- tokens(data_corpus_inaugural,
+                      remove_numbers = TRUE, 
+                      remove_punct = TRUE, 
+                      remove_symbols = TRUE,
+                      remove_separators = TRUE,
+                      remove_url = TRUE) %>%
+                 tokens_tolower() %>%
+                 tokens_remove(c(stopwords("english"), 
+                               "may", "shall", "can",
+                               "must", "upon", "with", "without")) %>%
+                 tokens_select(min_nchar = 3)
+                
+data_dfm <- dfm(data_tokens) %>%
+               dfm_trim(min_termfreq = 5, min_docfreq = 2)
+
+keywords <- list(Government     = c("laws", "law", "executive"),
+                 Congress       = c("congress", "party"),
+                 Peace          = c("peace", "world", "freedom"),
+                 Constitution   = c("constitution", "rights"),
+                 ForeignAffairs  = c("foreign", "war"))
+
+keyATM_docs <- keyATM_read(data_dfm)
+```
+
+
+Researchers are often interested in investigating how the prevalence of topics change
+over time. The \pkg{keyATM} can use time stamps for the prior for
+document-topic distribution through Hidden Markov Model [Chib (1998)](https://doi.org/10.1016/S0304-4076(97)00115-2).
+
+Section 4 of [Eshima et al. (2020)](https://arxiv.org/abs/2004.05964) explains the dynamic keyATM in details.
+As explained in [keyATM Covariates](keyATM_cov.html), we recommend researchers to
+construct a numeric or an integer vector of time stamps after preprocessing texts. 
+
+## Preparing time index
+Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. 
+
+We use the US Presidential inaugural address data we prapared ([documents](Preparation.html#preparing-texts) and [keywords](Preparation.html#preparing-keywords)).
 
 
 ```{r, include = T, warning=FALSE, message=FALSE, fig.align='center'}
-library(keyATM)
-library(quanteda)
+# Get meta information (time stamp)
+vars <- docvars(data_corpus_inaugural)
+head(vars)
 
-data(keyATM_data_bills)
-bills_keywords <- keyATM_data_bills$keywords
-bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda dfm object
-keyATM_docs <- keyATM_read(bills_dfm)
+# Divide by a decade
+# Timestamp should start with 1 (the variable "Period")
+vars %>%
+  as_tibble() %>%
+  mutate(Period = (vars$Year - 1780) %/% 10 + 1) -> vars_period
+vars_period %>% select(Year, Period)
 ```
 
-HMM model needs a vector of time indexes. This is an "index" and not the actual time stamps (year and date). For example, `bills` data contain session information, which ranges from `101` to `114`. 
+We pass the time index to the `keyATM()` function, specifying
+the number of hidden states with the `num_states` in the
+`model_settings` argument.
+
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-bills_time_index <- keyATM_data_bills$time_index
-table(bills_time_index)
+out <- keyATM(docs              = keyATM_docs,                         
+              no_keyword_topics = 3,                                   
+              keywords          = keywords,                      
+              model             = "dynamic",                           
+              model_settings    = list(time_index = vars_period$Period,
+                                       num_states = 5),                
+              options           = list(seed = 250))
 ```
 
-Time index should start from `1`, increment by $1$, and have the same value if they are in the same time (for example the session of congress).
-```{r, warning=FALSE, message=FALSE, fig.align='center'}
-bills_time_index <- as.integer(bills_time_index - 100)
-table(bills_time_index)
-```
+We can use the `top_words()`, `top_docs()`, `plot_modelfit()`, `plot_alpha()`,
+and `plot_pi()` functions
+as in [the base keyATM](keyATM_base.html). 
 
-Please make sure that **the order of time index is the same as the order of documents**.
 
-## Fitting the model
-Researchers need to specify the number of states in addition to keywords.
-
-```{r, warning=FALSE, message=FALSE, fig.align='center'}
-out <- keyATM(    
-              docs              = keyATM_docs,                         # text input
-              no_keyword_topics = 3,                                   # number of topics without keywords
-              keywords          = bills_keywords,                      # keywords
-              model             = "dynamic",                           # select the model
-              model_settings    = list(time_index = bills_time_index,  # time index
-                                       num_states = 5),                # number of (latent) states in the model 
-              options           = list(seed = 250)
-             )
-```
-
-## Saving the model
-
-Once you fit the model, you can save the model with `save()` for replication. This is the same as the [Base model](keyATM_base.html#saving-the-model).
-
-## Checking top words
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 top_words(out)
+```
+
+Since each state has a unique prior for the document-topic distributions, the `plot_alpha()`
+function produces a different figure from [the base keyATM](keyATM_base.html).
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+fig_alpha <- plot_alpha(out)
+fig_alpha
+```
+
+Finally, we can plot the time trend of topics with the `plot_timetrend()` function.
+With the `time_index_label` argument, you can label each time index. Note that `store_theta` option
+in the `keyATM()` function should be `TRUE` to show 90% credible intervals.
+
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+out <- keyATM(docs              = keyATM_docs,                         
+              no_keyword_topics = 3,                                   
+              keywords          = keywords,                      
+              model             = "dynamic",                           
+              model_settings    = list(time_index = vars_period$Period,
+                                       num_states = 5),                
+              options           = list(seed = 250, store_theta = TRUE, thinning = 5))
+fig_timetrend <- plot_timetrend(out, time_index_label = vars$Year, xlab = "Year", width = 5)
+fig_timetrend
 ```
 
 

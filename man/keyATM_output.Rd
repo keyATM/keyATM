@@ -2,11 +2,11 @@
 % Please edit documentation in R/posterior.R
 \name{keyATM_output}
 \alias{keyATM_output}
-\title{\code{keyATM_fit()} calls \code{keyATM_output()}}
+\title{Create an output object}
 \usage{
 keyATM_output(model)
 }
 \description{
-\code{keyATM_fit()} calls \code{keyATM_output()}
+Create an output object
 }
 \keyword{internal}

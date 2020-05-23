@@ -5,20 +5,19 @@ output:
     toc: false
 ---
 
-
 ## Preparing Texts
 To fit topic models with **keyATM**, users need to prepare texts for `keyATM_read()`. `keyATM_read()` has three ways to input texts. If you want to check an example with a built-in dataset, please proceed to [the next section](Preparation.html#reading-documents-into-keyatm).
 
 ### Using quanteda dfm (**recommended**)
 
-**keyATM** can read a `dfm` object created by **quanteda** package (**this method is strongly recommended**). Since **keyATM** does not provide preprocessing functions, we recommend users to preprocess documents with **quanteda**. Please visit [quanteda Quick Start: Creating a Corpus](https://quanteda.io/articles/quickstart.html#creating-a-corpus) to see how to create a `corpus` object.
-
+**keyATM** can read a `dfm` object created by **quanteda** package (**this method is strongly recommended**). Since **keyATM** does not provide preprocessing functions, we recommend users to preprocess documents with **quanteda**. 
 By making a `token` object from a `corpus` object, **quanteda** can perform various preprocessing methods ([quanteda Quick Start: Tokenizing texts](https://quanteda.io/articles/quickstart.html#tokenizing-texts)).
 
-Lastly, you can make a `dfm` object with a function `dfm()` in **quanteda**.
 
-Here is an example preprocessing steps with **quanteda**. In this example, we read texts with **readtext** package.
-```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
+#### Loading data for **quanteda**
+Here is an example of loading text data and transform it into the **quanteda** `corpus` format.
+We use the **readtext** package in this example.
+```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
 library(quanteda)
 library(readtext)
 
@@ -29,32 +28,103 @@ raw_docs <- readtext("PATH_TO_THE_FOLDER/*.txt",
 # Preprocessing with quanteda and create a dfm object
 key_corpus <- corpus(raw_docs, text_field = "text")
 
-key_tokens <- tokens(key_corpus,
-                     remove_numbers = TRUE, 
-                     remove_punct = TRUE, 
-                     remove_symbols = TRUE,
-                     remove_separators = TRUE,
-                     remove_url = TRUE) %>%
-                tokens_tolower() %>%
-                tokens_remove(stopwords("english")) %>%
-                tokens_select(min_nchar = 3)
-
-key_dfm <- dfm(key_tokens) %>%
-             dfm_trim(min_termfreq = 5, min_docfreq = 2)
-
-# Read texts into keyATM
-keyATM_docs <- keyATM_read(key_dfm)
+# If you use the covariate model, please consider using `docvars` argument
+key_corpus <- corpus(raw_docs, text_field = "text", docvars = COVARIATES)
 ```
 
-You can also use `c(stopwords("english"), "your", "stopwords")` if you want to add corpus specific stopwords.
 
-### Alternative ways to read texts
+#### Preprocessing data
+We show a concrete example of preprocessing data and loading it into the **keyATM**. 
+We use the US presidential inaugural address data that is one of the built-in datasets of the **quanteda**.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+library(keyATM)
+library(quanteda)
+library(magrittr)
+data(data_corpus_inaugural, package = "quanteda")
+```
+
+The `tokens()` and related functions in the **quanteda** provide various preprocessing functions. Preprocessing can reduce the number of unique features (words) in the corpus, which is critical for increasing the interpretability. In the example below, we adopt some of the most common preprocessing steps.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+data_tokens <- tokens(data_corpus_inaugural,
+                      remove_numbers = TRUE, 
+                      remove_punct = TRUE, 
+                      remove_symbols = TRUE,
+                      remove_separators = TRUE,
+                      remove_url = TRUE) %>%
+                 tokens_tolower() %>%
+                 tokens_remove(c(stopwords("english"), 
+                               "may", "shall", "can",
+                               "must", "upon", "with", "without")) %>%
+                 tokens_select(min_nchar = 3)
+```
+The `tokens()` function removes punctuations and unnecessary characters, 
+
+The `tokens_tolower()` function converts all characters into lower cases,
+The `tokens_remove()` function removes general stop words (e.g, the, is, at, with `stopwords("english")`)
+and corpus specific high frequent words ("may", "shall", ..., "without" in this example), 
+and `tokens_select` drops
+short words that do not usually contribute to interpreting topics.
+
+Before loading data into the **keyATM**, we construct a document-feature matrix 
+with the `dfm()` function in the **quanteda**. We trim infrequent terms with the `dfm_trim()` function.
+
+```{r, warning=FALSE, message=FALSE}
+data_dfm <- dfm(data_tokens) %>%
+              dfm_trim(min_termfreq = 5, min_docfreq = 2)
+```
+
+Finally, `keyATM_read` function reads your data for **keyATM**.
+
+```{r, warning=FALSE, message=FALSE}
+keyATM_docs <- keyATM_read(texts = data_dfm)
+```
+
+Researchers are required to remove any documents 
+that do not contain any terms
+before using the `keyATM_read()` function.
+If there are documents that do not contain any terms, 
+the `keyATM_read()` function raises a warning.
+It is highly recommended to manually check documents with length 0
+before fitting the model, otherwise, the **keyATM** will
+automatically drop these documents when fitting a model.
+Even so, we suggest users to remove documents that do not contain
+any words as a part of preprocessing. As explained in the later section, 
+this process is especially 
+critical when the covariate model or the dynamic model is fitted. 
+The example below shows the warning that the
+`keyATM_read()` function displays.
+
+
+```{r, include=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+data_dfm_len0 <- data_dfm
+data_dfm_len0[10, ] <- rep(0, ncol(data_dfm_len0))
+data_dfm_len0[50, ] <- rep(0, ncol(data_dfm_len0))
+class(data_dfm_len0) <- c("dfm")
+```
+
+```{r, warning=TRUE, message=FALSE, fig.align='center'}
+keyATM_docs0 <- keyATM_read(texts = data_dfm_len0)
+```
+
+The warning message above indicates that there are two documents 
+in `data_dfm_len0` that do not contain any terms (the index 10 and 50). 
+In the **quanteda**, we can easily remove documents 
+without any word counts with the following function.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+summary(keyATM_docs)
+```
+
+
+### Alternative ways to load texts into **keyATM**
 There are two other ways to read texts, which we do not recommend. 
 Please make sure to preprocess texts with other packages or softwares. 
 In both methods, each word should be separated by a single space. 
 
-Using data.frame or tibble:
-`keyATM_read()` can read `data.frame` and `tibble` if you preprocess texts without **quanteda**. Please store texts in a column named `text`.
+#### Using data.frame or tibble:
+`keyATM_read()` can read `data.frame` and `tibble` if you preprocess texts without **quanteda**. 
+Please store texts in a column named `text`.
+Below shows the example of the required data format.
 
 ```
 > head(docs)  # `docs` stores preprocessed texts
@@ -69,15 +139,13 @@ Using data.frame or tibble:
 6 h.r h.r one one one one one hundred hundred first congress co...
 ```
 
-```{r, eval=F, warning=FALSE, message=FALSE}
+```{r, eval=FALSE, warning=FALSE, message=FALSE}
 # Read texts into keyATM
 keyATM_docs <- keyATM_read(docs)
 ```
 
-
-Reading directly from files:
+#### Reading directly from files:
 If you have preprocessed text files, you can pass a list of files to `keyATM_read()`.
-
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 # Create a list of paths to text files
 textfiles <- list.files(PATH_TO_THE_FOLDER, pattern = "*.txt", full.names = TRUE)
@@ -86,38 +154,35 @@ textfiles <- list.files(PATH_TO_THE_FOLDER, pattern = "*.txt", full.names = TRUE
 keyATM_docs <- keyATM_read(textfiles)
 ```
 
-## Reading documents into keyATM
-Before fitting the model, we need to read texts and keywords into **keyATM**. Here we use **quanteda**'s `dfm`.
-
-**keyATM** package includes a tidy dataset for illustration purpose. In this example, we use text data of the Congressional Bills scraped from [congress.gov](https://www.congress.gov/) (in total 140 documents). You can load this data by `data(keyATM_data_bills)`.
-```{r, warning=FALSE, message=FALSE, fig.align='center'}
-library(quanteda)
-library(keyATM)
-data(keyATM_data_bills)
-bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda dfm object
-keyATM_docs <- keyATM_read(bills_dfm)
-```
-
 ## Preparing keywords
+### Create keywords list
+Feeding keywords into models plays an essential role in the **keyATM**. 
+Researchers are expected to use their substantive knowledge and
+to carefully select keywords.
 
-### Keywords list
-Keywords should be in a list. For example, we prepare four keyword-topics. Keywrods should be stored in a list. Each element in the list is a character vector, which corresponds to a single keyword-topic. The number of keywords can vary between topics. 
-
+In this application, suppose we are interested in five topics, 
+*Government*, *Congress*, *Peace*, *Constitution*, and *Foreign affairs*
+and choose keywords for each of these topics.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-bills_keywords <- list(
-                       Education = c("education", "child", "student"),
-                       Law       = c("court", "law", "attorney"),
-                       Health    = c("public", "health"),
-                       Drug      = c("drug")
-                      )
+keywords <- list(Government     = c("laws", "law", "executive"),
+                 Congress       = c("congress", "party"),
+                 Peace          = c("peace", "world", "freedom"),
+                 Constitution   = c("constitution", "rights"),
+                 ForeignAffairs = c("foreign", "war"))
 ```
 
+A set of keywords should be stored in a list object, and we recommend users to name each topic for clarity.
+Each keyword-topic can have a different number of keywords.
 
 ### Checking keywords
+Keywords should appear reasonable times (typically more than 0.1% of the corpus) in the documents.
+The `visualize_keywords()` function plots the frequency of keywords by topic.
+
 ```{r, warning=FALSE, message=FALSE, fig.align='center', height=3, width=3}
-visualize_keywords(keyATM_docs, bills_keywords)
+key_viz <- visualize_keywords(docs = keyATM_docs, keywords = keywords)
+key_viz
 ```
-The figure helps you to check the frequency of keywords. Including low-frequency keywords do not help the model in general. **keyATM** automatically prune keywords that do not appear in the documents.
+The figure helps you to check the frequency of keywords. Including low-frequency keywords do not help the model in general. 
 
 Proportion is defined as a number of times a keyword occurs in the corpus divided by the total length of documents. This measures the frequency of the keyword in the corpus. Formally, the proportion of the keyword $v$ is,
 $$
@@ -125,11 +190,36 @@ $$
     \text{Proportion of }v = \frac{\sum_{d=1}^{D} \sum_{i=1}^{N_d} I(w_{di} = v) }{\sum_{d=1}^{D} N_d}
 \end{align*}
 $$
-where $N_d$ is the length of the document $d$ and $I$ is an indicator function. Keywords of each toopic are ordered by the proportion (x-axsis).
+where $N_d$ is the length of the document $d$ and $I$ is an indicator function. Keywords of each topic are ordered by the proportion (x-axis).
 
+You can save the plot with the `save_fig()` function,
+```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center', height=3, width=3}
+key_viz <- visualize_keywords(docs = keyATM_docs, keywords = keywords)
+save_fig(key_viz, "figures/keyword.pdf", width = 6.5, height = 4)
+```
+
+and get the actual values with the `values_fig()` function.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+values_fig(key_viz) 
+```
+
+The `prune` argument of the `visualize_keywords()` function is `TRUE` by default. 
+It drops keywords that do not appear in the corpus 
+and raises a warning if there is any.
+```{r, warning=TRUE, message=FALSE}
+keywords_2 <- list(Government = c("laws", "law", "non-exist"))
+key_viz2 <- visualize_keywords(docs = keyATM_docs, keywords = keywords_2)
+```
+
+If all keywords assigned to a topic is pruned, it raises an error.
+```{r, warning=FALSE, error = TRUE, message=FALSE}
+keywords_3 <- list(Government = c("non-exist", "non-exist2"))
+key_viz3 <- visualize_keywords(docs = keyATM_docs, keywords = keywords_3)
+```
 
 ## Next Step
-Now you have texts and keywords! The next step is to fit a model `keyATM()`. **keyATM** has three models:
+Now you have texts and keywords! The next step is to fit a model with the `keyATM()` function. **keyATM** has three models:
 
 * [keyATM Base](keyATM_base.html)
   * This is an extension of the most famous topic model, Latent Dirichlet Allocation.

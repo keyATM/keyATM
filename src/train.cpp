@@ -87,6 +87,7 @@ List keyATM_fit_HMM(List model, int iter = 0)
 // [[Rcpp::export]]
 List keyATM_fit_label(List model, int iter = 0)
 {
+  Rcpp::Rcout << "Label model is an experimental function." << std::endl;
   keyATMlabel keyATMlabel_model(model, iter);
   keyATMlabel_model.fit();
   model = keyATMlabel_model.return_model();

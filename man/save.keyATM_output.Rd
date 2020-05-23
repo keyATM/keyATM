@@ -7,10 +7,13 @@
 save.keyATM_output(x, file = stop("'file' must be specified"))
 }
 \arguments{
-\item{x}{a keyATM_output object (see \code{keyATM()})}
+\item{x}{a keyATM_output object (see \code{\link[=keyATM]{keyATM()}})}
 
-\item{file}{a character}
+\item{file}{file name to create on disk}
 }
 \description{
 Save a keyATM_output object
+}
+\seealso{
+\code{\link[=keyATM]{keyATM()}}, \code{\link[=weightedLDA]{weightedLDA()}}, \code{\link[=keyATMvb]{keyATMvb()}}
 }

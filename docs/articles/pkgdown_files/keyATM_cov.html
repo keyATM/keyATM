@@ -6,20 +6,20 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>keyATM Covariates • keyATM</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../../bootstrap-toc.css">
+<script src="../../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
 <script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
 <meta property="og:title" content="keyATM Covariates">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="keyATM">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -65,9 +65,6 @@
     </li>
     <li>
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
-    </li>
-    <li>
-      <a href="../../articles/pkgdown_files/Heterogeneity.html">Heterogeneity</a>
     </li>
     <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
@@ -104,101 +101,195 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>keyATM Covariates</h1>
+      <h1 data-toc-skip>keyATM Covariates</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/master/vignettes/pkgdown_files/keyATM_cov.Rmd"><code>vignettes/pkgdown_files/keyATM_cov.Rmd</code></a></small>
       <div class="hidden name"><code>keyATM_cov.Rmd</code></div>
 
     </div>
 
     
     
-<div id="preparing-documents-and-covariates" class="section level2">
+<div id="preparing-covariates" class="section level2">
 <h2 class="hasAnchor">
-<a href="#preparing-documents-and-covariates" class="anchor"></a>Preparing documents and covariates</h2>
-<p>Please read <a href="Preparation.html">Preparation</a> for the reading of documents and creating a list of keywords. We use bills data we prapared (<a href="Preparation.html#reading-documents-into-keyatm">documents</a> and <a href="Preparation.html#preparing-keywords">keywords</a>).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(quanteda)</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</span>
-<span id="cb1-5"><a href="#cb1-5"></a>bills_keywords &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>keywords</span>
-<span id="cb1-6"><a href="#cb1-6"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda dfm object</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<p>For the covariate data, we use the dummy variable which takes one if the bill is proposesd by the Republican party and zero otherwise (Adler and Wilkerson 2018). <strong>keyATM</strong> takes <code>matrix</code> or <code>data.frame</code> (<code>tibble</code>) type covariates data. If you have <span class="math inline">\(D\)</span> documents and <span class="math inline">\(M\)</span> covariates, the matrix should be <span class="math inline">\(D \times M\)</span>. In this example, we have a dummy variable that indicates party identification.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>bills_cov &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>cov <span class="co"># dummy variable indicating the party proposed the bill</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(bills_cov)  <span class="co"># We have 140 documents and a single covariate for each document</span></span></code></pre></div>
-<pre><code>## [1] 140   1</code></pre>
-<p>Please make sure that <strong>the order of covariates is the same as the order of documents</strong>.</p>
+<a href="#preparing-covariates" class="anchor"></a>Preparing covariates</h2>
+<p>We follow the same procedure for the text preparation explained in <a href="Preparation.html">Preparation</a> and explain how to prepare covariates in this section.</p>
+<p>The <code>docvars()</code> function in the <strong>quanteda</strong> package is especially useful to construct a <code>vector</code> or a <code>dataframe</code> of covariates because it ensures that documents and covariates are corresponding to each other. Since the <strong>keyATM</strong> does not take missing values, we recommend researchers to remove any missing values from covariates before extracting them using the <code>docvars()</code>.</p>
+<p>Moreover, we strongly recommend researchers to extract covariates <em>after</em> preprocessing texts because preprocessing steps will remove documents without any terms, which may result in any discrepancies between documents and covariates.</p>
+<p>Therefore, the recommended procedure is (1) removing missing values from covariates, (2) preprocessing texts (including the process to discard documents that do not contain any words), and (3) extracting covariates using <code>docvars()</code> function.</p>
+<p>In this example, we create a period dummy and a party dummy from the corpus and use them as covariates for the covariate keyATM. First, we extract covariates attached to each document in the corpus with the <code>docvars()</code> function.</p>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">vars</span> <span class="kw">&lt;-</span> <span class="fu">docvars</span>(<span class="no">data_corpus_inaugural</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">vars</span>)</pre></body></html></div>
+<pre><code>##   Year  President FirstName                 Party
+## 1 1789 Washington    George                  none
+## 2 1793 Washington    George                  none
+## 3 1797      Adams      John            Federalist
+## 4 1801  Jefferson    Thomas Democratic-Republican
+## 5 1805  Jefferson    Thomas Democratic-Republican
+## 6 1809    Madison     James Democratic-Republican</code></pre>
+<p>There are six unique parties and 58 unique years. We categorize them and create a new set of covariates. First, we divide years into two period, before and after 1900. Then, we categorize parties into Democratic, Republican, and Others.</p>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>)
+<span class="no">vars</span> <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/reexports.html">as_tibble</a></span>() <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">Period</span> <span class="kw">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span>(<span class="no">Year</span> <span class="kw">&lt;=</span> <span class="fl">1899</span> ~ <span class="st">"18_19c"</span>,
+                            <span class="fl">TRUE</span> ~ <span class="st">"20_21c"</span>)) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">Party</span> <span class="kw">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span>(<span class="no">Party</span> <span class="kw">==</span> <span class="st">"Democratic"</span> ~ <span class="st">"Democratic"</span>,
+                           <span class="no">Party</span> <span class="kw">==</span> <span class="st">"Republican"</span> ~ <span class="st">"Republican"</span>,
+                           <span class="fl">TRUE</span> ~ <span class="st">"Other"</span>)) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="no">Party</span>, <span class="no">Period</span>) <span class="kw">-&gt;</span> <span class="no">vars_selected</span>
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">vars_selected</span>)</pre></body></html></div>
+<pre><code>##             Period
+## Party        18_19c 20_21c
+##   Democratic      7     14
+##   Other          13      0
+##   Republican      8     16</code></pre>
+<p>Since we have categorical variables, we set baselines with the <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code> function.</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">vars_selected</span> <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">Party</span>  <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">Party</span>,
+                         <span class="kw">levels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Other"</span>, <span class="st">"Republican"</span>, <span class="st">"Democratic"</span>)),
+         <span class="kw">Period</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">Period</span>,
+                         <span class="kw">levels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"18_19c"</span>, <span class="st">"20_21c"</span>))) <span class="kw">-&gt;</span> <span class="no">vars_selected</span></pre></body></html></div>
+<p>The <strong>keyATM</strong> internally uses the <code><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix()</a></code> function so that researchers can pass a formula to model covariates (for more detailed information, refer to <a href="https://rdrr.io/r/stats/formula.html">formula</a>). For example, in this example, we have a following matrix.</p>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span>(~ <span class="no">Party</span> + <span class="no">Period</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">vars_selected</span>))</pre></body></html></div>
+<pre><code>##   (Intercept) PartyRepublican PartyDemocratic Period20_21c
+## 1           1               0               0            0
+## 2           1               0               0            0
+## 3           1               0               0            0
+## 4           1               0               0            0
+## 5           1               0               0            0
+## 6           1               0               0            0</code></pre>
 </div>
 <div id="fitting-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(</span>
-<span id="cb4-2"><a href="#cb4-2"></a>              <span class="dt">docs              =</span> keyATM_docs,                            <span class="co"># text input</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,                                      <span class="co"># number of topics without keywords</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>              <span class="dt">keywords          =</span> bills_keywords,                         <span class="co"># keywords (a list)</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>              <span class="dt">model             =</span> <span class="st">"covariates"</span>,                           <span class="co"># select the model</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariates_data    =</span> bills_cov,    <span class="co"># covariate data</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>                                       <span class="dt">covariates_formula =</span> <span class="op">~</span><span class="st"> </span>RepParty,   <span class="co"># formula to fit covarite</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a>                                       <span class="dt">mh_use             =</span> <span class="ot">FALSE</span>),       <span class="co"># use Metloporis Hastings</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">250</span>)</span>
-<span id="cb4-10"><a href="#cb4-10"></a>             )</span></code></pre></div>
-<p>The <code>covariates_formula</code> takes the same form of a <a href="https://rdrr.io/r/stats/formula.html"><code>formula</code></a> for <code><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix()</a></code> function. You do not need to specify the left hand side of the formula. The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options.</p>
-<p>If you set <code>mh_use = TRUE</code>, the estimation process will speed up.</p>
-</div>
-<div id="saving-the-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#saving-the-model" class="anchor"></a>Saving the model</h2>
+<p>We fit the model with the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function, passing covariates data and the formula with the <code>model_settings</code> argument. The text data is the same as what we use in the <a href="keyATM_base.html">Base model</a>. Please check <a href="Options.html">this page</a> for available options.</p>
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,
+              <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">5</span>,
+              <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords</span>,
+              <span class="kw">model</span>             <span class="kw">=</span> <span class="st">"covariates"</span>,
+              <span class="kw">model_settings</span>    <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">covariates_data</span>    <span class="kw">=</span> <span class="no">vars_selected</span>,
+                                       <span class="kw">covariates_formula</span> <span class="kw">=</span> ~ <span class="no">Party</span> + <span class="no">Period</span>),
+              <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>))</pre></body></html></div>
 <p>Once you fit the model, you can save the model with <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">Base model</a>.</p>
 </div>
-<div id="checking-top-words" class="section level2">
+<div id="interpreting-results" class="section level2">
 <h2 class="hasAnchor">
-<a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##      1_Education     2_Law     3_Health        4_Drug       Other_1     Other_2
-## 1  education [✓]    action   public [✓]      drug [✓]       law [2]     project
-## 2         school court [✓]   health [✓]      facility   enforcement  technology
-## 3    educational   law [✓] subparagraph       control   information        term
-## 4    student [✓]    person       follow administrator    electronic appropriate
-## 5          grant  district         care    commission      security    director
-## 6          local      code         date        report         crime      member
-## 7           part     civil          end         water    commission information
-## 8        library  property    amendment       coastal          term       carry
-## 9      child [✓]     minor      respect   application communication      report
-## 10          high    damage       period   requirement        person  assistance
-##        Other_3
-## 1     national
-## 2     research
-## 3       center
-## 4         area
-## 5  development
-## 6     wildlife
-## 7       system
-## 8         plan
-## 9         land
-## 10       grant</code></pre>
+<a href="#interpreting-results" class="anchor"></a>Interpreting results</h2>
+<p>We can use the <code><a href="../../reference/top_words.html">top_words()</a></code>, <code><a href="../../reference/top_docs.html">top_docs()</a></code>, <code><a href="../../reference/plot_modelfit.html">plot_modelfit()</a></code>, and <code><a href="../../reference/plot_pi.html">plot_pi()</a></code> functions as in the base keyATM. The <code><a href="../../reference/plot_alpha.html">plot_alpha()</a></code> is not defined for the covariate keyATM because we use covariates to model the prior for the document-topic distribution and <span class="math inline">\(\alpha\)</span> does not explicitly appear in the model.</p>
+<div id="check-coefficients-of-covariates" class="section level3">
+<h3 class="hasAnchor">
+<a href="#check-coefficients-of-covariates" class="anchor"></a>Check coefficients of covariates</h3>
+<p>First, we use the output from the <a href="keyATM_cov.html#fitting-the-model">previous section</a> and check the covariates used in the model. Note that covariates are standardized by default (i.e., each covariates to have zero mean and a standard deviation one).</p>
+<p>This transformation does not change the substantive results as it is a linear transformation. Researchers can use raw values with <code>standardize = FALSE</code> in the <code>model_settings</code> argument.</p>
+<p>Researchers can glance covariate information with the <code><a href="../../reference/covariates_info.html">covariates_info()</a></code> and the <code><a href="../../reference/covariates_get.html">covariates_get()</a></code> function will return covariates used in the fitted output.</p>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="../../reference/covariates_info.html">covariates_info</a></span>(<span class="no">out</span>)</pre></body></html></div>
+<pre><code>## Colnames: (Intercept), PartyRepublican, PartyDemocratic, Period20_21c
+## Standardized: TRUE
+## Formula: ~ Party + Period
+## 
+## Preview:
+##   (Intercept) PartyRepublican PartyDemocratic Period20_21c
+## 1           1      -0.8328937       -0.746848    -1.026136
+## 2           1      -0.8328937       -0.746848    -1.026136
+## 3           1      -0.8328937       -0.746848    -1.026136
+## 4           1      -0.8328937       -0.746848    -1.026136
+## 5           1      -0.8328937       -0.746848    -1.026136
+## 6           1      -0.8328937       -0.746848    -1.026136</code></pre>
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">used_covariates</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/covariates_get.html">covariates_get</a></span>(<span class="no">out</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">used_covariates</span>)</pre></body></html></div>
+<pre><code>##   (Intercept) PartyRepublican PartyDemocratic Period20_21c
+## 1           1      -0.8328937       -0.746848    -1.026136
+## 2           1      -0.8328937       -0.746848    -1.026136
+## 3           1      -0.8328937       -0.746848    -1.026136
+## 4           1      -0.8328937       -0.746848    -1.026136
+## 5           1      -0.8328937       -0.746848    -1.026136
+## 6           1      -0.8328937       -0.746848    -1.026136</code></pre>
 </div>
-<div id="reference" class="section level2">
-<h2 class="hasAnchor">
-<a href="#reference" class="anchor"></a>Reference</h2>
-<pre><code>Adler, E Scott and John Wilkerson. 2018. ``Congressional bills project.'' NSF 880066 and 0080061:213–227.</code></pre>
+<div id="covariates-and-document-topic-distributions" class="section level3">
+<h3 class="hasAnchor">
+<a href="#covariates-and-document-topic-distributions" class="anchor"></a>Covariates and document-topic distributions</h3>
+<p>The covariate keyATM can characterize the relations between covariates and document-topic distributions. We can obtain the marginal posterior mean of document-topic distribution conditioned on the covariates.</p>
+<p>Suppose that we want to know document-topic distributions for each period. We use a binary variable <code>Period20_21c</code>, which indicates the period for this purpose.</p>
+<p>The <code><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic()</a></code> function can display the marginal posterior means of document-topic distributions for each value of (discrete) covariates.</p>
+<p>In the <code><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic()</a></code> function, we specify the variable we focus on in <code>by_var</code> argument and label each value in the variable (ascending order).</p>
+<p>In this case, the <code>Period20_21c</code> equals zero indicates speeches in the 18th and 19th century and equals one for the speeches in the 20th and 21st century.</p>
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">strata_topic</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span>(<span class="no">out</span>, <span class="kw">by_var</span> <span class="kw">=</span> <span class="st">"Period20_21c"</span>,
+                                   <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"18_19c"</span>, <span class="st">"20_21c"</span>))</pre></body></html></div>
+<p>We can visualize results with the <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code> function. The figure shows the marginal posterior means of document-topic distributions and the 90% credible intervals of them for each value of covariates.</p>
+<p>The figure indicates that both topics are more likely to appear in the 18th and 19th century.</p>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">fig_doctopic</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">strata_topic</span>, <span class="kw">var_name</span> <span class="kw">=</span> <span class="st">"Period"</span>, <span class="kw">show_topic</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">5</span>))
+<span class="no">fig_doctopic</span></pre></body></html></div>
+<p><img src="keyATM_cov_files/figure-html/unnamed-chunk-10-1.png" width="700" style="display: block; margin: auto;"></p>
+<p>The figure can be saved with the <code><a href="../../reference/save_fig.html">save_fig()</a></code> function.</p>
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="../../reference/save_fig.html">save_fig</a></span>(<span class="no">fig_doctopic</span>, <span class="st">"figures/doctopic.pdf"</span>, <span class="kw">width</span> <span class="kw">=</span> <span class="fl">7</span>, <span class="kw">height</span> <span class="kw">=</span> <span class="fl">3.5</span>)</pre></body></html></div>
+<p>We can visualize results by covariate with <code>by = "covariate"</code> argument. The plot below combines two panels in the previous plot and display in the same panel.</p>
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">fig_doctopic</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">strata_topic</span>, <span class="kw">var_name</span> <span class="kw">=</span> <span class="st">"Period"</span>,
+                     <span class="kw">show_topic</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">5</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="st">"covariate"</span>)</pre></body></html></div>
+<p>Using the output of the <code>keyATM</code>, we can calculate 95% credible intervals of the differences in the mean of document-topic distribution.</p>
+<p>Since we set the 18th and 19th century dummy as the baseline when constructing <code>factor</code> for this variable, the comparison is the relative increase or decrease from the 18th and 19th century to the 20th and 21st century.</p>
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">theta1</span> <span class="kw">&lt;-</span> <span class="no">strata_topic</span>$<span class="no">theta</span><span class="kw">[[</span><span class="fl">1</span>]]  <span class="co"># 18_19c</span>
+<span class="no">theta2</span> <span class="kw">&lt;-</span> <span class="no">strata_topic</span>$<span class="no">theta</span><span class="kw">[[</span><span class="fl">2</span>]]  <span class="co"># 20_21c</span>
+<span class="no">theta_diff</span> <span class="kw">&lt;-</span> <span class="no">theta1</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">5</span>)] - <span class="no">theta2</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">5</span>)]  <span class="co"># focus on two topics</span>
+<span class="no">theta_diff_quantile</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="no">theta_diff</span>, <span class="fl">2</span>, <span class="no">quantile</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.05</span>, <span class="fl">0.5</span>, <span class="fl">0.95</span>))
+<span class="no">theta_diff_quantile</span></pre></body></html></div>
+<pre><code>##     4_Constitution 5_ForeignAffairs
+## 5%       0.1650697        0.0553605
+## 50%      0.2485459        0.1192158
+## 95%      0.3571780        0.1847093</code></pre>
+</div>
+<div id="covariates-and-topic-word-distribution" class="section level3">
+<h3 class="hasAnchor">
+<a href="#covariates-and-topic-word-distribution" class="anchor"></a>Covariates and topic-word distribution</h3>
+<p>Although the covariate keyATM does not directly model topic-word distributions, the model can examine how topic-word distributions change across different values of document-level covariates. For this analysis, we need to use the <code>keep</code> argument in the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function to store <code>Z</code> and <code>S</code>. Then we pass the output with these stored values to the <code><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord()</a></code> function. The example below demonstrates top words associated to each topic for speeches from different parties using the <code>Party</code> covariate.</p>
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,
+              <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">5</span>,
+              <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords</span>,
+              <span class="kw">model</span>             <span class="kw">=</span> <span class="st">"covariates"</span>,
+              <span class="kw">model_settings</span>    <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">covariates_data</span>    <span class="kw">=</span> <span class="no">vars_selected</span>,
+                                       <span class="kw">covariates_formula</span> <span class="kw">=</span> ~ <span class="no">Party</span> + <span class="no">Period</span>),
+              <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>),
+              <span class="kw">keep</span>              <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Z"</span>, <span class="st">"S"</span>))
+<span class="no">strata_tw</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span>(<span class="no">out</span>, <span class="no">keyATM_docs</span>,
+                                 <span class="kw">by</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(<span class="no">vars_selected</span>$<span class="no">Party</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span>(<span class="no">strata_tw</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
+<pre><code>## $Other
+##    1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
+## 1    government congress [✓]   world [✓]           states          country
+## 2 executive [✓]       policy freedom [✓]            union         citizens
+## 3        within    party [✓]         let constitution [✓]          war [✓]
+##      Other_1  Other_2   Other_3 Other_4 Other_5
+## 1 government national      best  nation     one
+## 2      every     made necessary  people liberty
+## 3     united   system   justice   human    time
+## 
+## $Democratic
+##   1_Government   2_Congress   3_Peace   4_Constitution 5_ForeignAffairs
+## 1   government congress [✓] world [✓]           states          country
+## 2          now       policy       new           people          war [✓]
+## 3       action        trade       let constitution [✓]           public
+##      Other_1  Other_2   Other_3  Other_4 Other_5
+## 1 government national political   people    time
+## 2      every      men      best   nation   every
+## 3     united     many   service american     one
+## 
+## $Republican
+##   1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
+## 1   government congress [✓]   world [✓]           states          country
+## 2      law [✓]     business     america           people          war [✓]
+## 3     laws [✓]       policy freedom [✓] constitution [✓]             free
+##      Other_1  Other_2   Other_3 Other_4 Other_5
+## 1 government national      best  people     one
+## 2      every     made political  nation    time
+## 3     united     many    secure    make   never</code></pre>
+</div>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#preparing-documents-and-covariates">Preparing documents and covariates</a></li>
-      <li><a href="#fitting-the-model">Fitting the model</a></li>
-      <li><a href="#saving-the-model">Saving the model</a></li>
-      <li><a href="#checking-top-words">Checking top words</a></li>
-      <li><a href="#reference">Reference</a></li>
-      </ul>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
 
@@ -209,7 +300,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

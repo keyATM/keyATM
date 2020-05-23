@@ -6,20 +6,20 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>keyATM Base • keyATM</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../../bootstrap-toc.css">
+<script src="../../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
 <script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
 <meta property="og:title" content="keyATM Base">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="keyATM">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -65,9 +65,6 @@
     </li>
     <li>
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
-    </li>
-    <li>
-      <a href="../../articles/pkgdown_files/Heterogeneity.html">Heterogeneity</a>
     </li>
     <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
@@ -104,88 +101,120 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>keyATM Base</h1>
+      <h1 data-toc-skip>keyATM Base</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/master/vignettes/pkgdown_files/keyATM_base.Rmd"><code>vignettes/pkgdown_files/keyATM_base.Rmd</code></a></small>
       <div class="hidden name"><code>keyATM_base.Rmd</code></div>
 
     </div>
 
     
     
+
 <div id="preparing-documents-and-keywords" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preparing-documents-and-keywords" class="anchor"></a>Preparing documents and keywords</h2>
-<p>Please read <a href="Preparation.html">Preparation</a> for the reading of documents and creating a list of keywords. We use bills data we prapared (<a href="Preparation.html#reading-documents-into-keyatm">documents</a> and <a href="Preparation.html#preparing-keywords">keywords</a>).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(quanteda)</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</span>
-<span id="cb1-5"><a href="#cb1-5"></a>bills_keywords &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>keywords</span>
-<span id="cb1-6"><a href="#cb1-6"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda dfm object</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
+<p>Please read <a href="Preparation.html">Preparation</a> for the reading of documents and creating a list of keywords. We use the US Presidential inaugural address data we prapared (<a href="Preparation.html#preparing-texts">documents</a> and <a href="Preparation.html#preparing-keywords">keywords</a>).</p>
 </div>
 <div id="fitting-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="dt">docs              =</span> keyATM_docs,    <span class="co"># text input</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,              <span class="co"># number of topics without keywords</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>              <span class="dt">keywords          =</span> bills_keywords, <span class="co"># keywords</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>              <span class="dt">model             =</span> <span class="st">"base"</span>,         <span class="co"># select the model</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">250</span>)</span>
-<span id="cb2-6"><a href="#cb2-6"></a>             )</span></code></pre></div>
+<p>We pass the output of the <code>keyATM_read</code> function and keywords to the <code>keyATM</code> function.</p>
+<p>Additionally, we need to specify the number of topics without keywords (the <code>no_keyword_topics</code> argument) and model. Since this example does not use covariates or time stamps, <code>base</code> is the appropriate model.</p>
+<p>To guarantee the replicability, we recommend to set the random seed in the <code>option</code> argument (see <a href="Options.html">here</a> for other options). The default number of iterations is 1500.</p>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,    <span class="co"># text input</span>
+              <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">5</span>,              <span class="co"># number of topics without keywords</span>
+              <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords</span>, <span class="co"># keywords</span>
+              <span class="kw">model</span>             <span class="kw">=</span> <span class="st">"base"</span>,         <span class="co"># select the model</span>
+              <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>))</pre></body></html></div>
 <p>The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options.</p>
 </div>
 <div id="saving-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#saving-the-model" class="anchor"></a>Saving the model</h2>
-<p>Once you fit the model, you can save the model with <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> for replication.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw"><a href="https://rdrr.io/r/base/save.html">save</a></span>(out, <span class="dt">file =</span> <span class="st">"SAVENAME.rds"</span>)</span></code></pre></div>
+<p>Once you fit the model, you can save the model with the <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> function for replication.</p>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/save.html">save</a></span>(<span class="no">out</span>, <span class="kw">file</span> <span class="kw">=</span> <span class="st">"SAVENAME.rds"</span>)</pre></body></html></div>
 <p>To load the model, you can use <code><a href="https://rdrr.io/r/base/readRDS.html">readRDS()</a></code> function.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="dt">file =</span> <span class="st">"SAVENAME.rds"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="kw">file</span> <span class="kw">=</span> <span class="st">"SAVENAME.rds"</span>)</pre></body></html></div>
 </div>
-<div id="checking-top-words" class="section level2">
+<div id="interpreting-results" class="section level2">
 <h2 class="hasAnchor">
-<a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##      1_Education        2_Law     3_Health      4_Drug        Other_1
-## 1  education [✓]      law [✓]   health [✓]    drug [✓]       congress
-## 2         school       action         care     control         report
-## 3    educational    court [✓] subparagraph      person         senate
-## 4    student [✓]       person       follow    facility          house
-## 5          local         code          end       crime     commission
-## 6          grant         term      veteran information    information
-## 7       eligible     district         date   treatment     government
-## 8        library         mean   individual       grant        require
-## 9      child [✓]        civil     describe       local     public [3]
-## 10          high attorney [✓]      respect application representative
-##        Other_2      Other_3
-## 1     national   management
-## 2     research     wildlife
-## 3     director         land
-## 4       center        water
-## 5   technology     national
-## 6    establish      project
-## 7  appropriate      coastal
-## 8       member       system
-## 9     activity conservation
-## 10  public [3]          air</code></pre>
+<a href="#interpreting-results" class="anchor"></a>Interpreting results</h2>
+<p>There are two main quantities of interest in topic models. First, topic-word distribution represents the relative frequency of words for each topics, characterizing the topic content. Second, document-topic distribution represents the proportions of topics for each document, reflecting the main themes of the document and often called topic prevalence.</p>
+<p>Since typical corpus contains several thousands of unique terms, we usually scrutinize ten to fifteen words that have high probabilities in a given topic, which is called top words of a topic.</p>
+<p>The <code><a href="../../reference/top_words.html">top_words()</a></code> function returns a table of top words for each of estimated topics. Keywords assigned to a keyword topic are suffixed with a check mark. Keywords from another keyword topic are labeled with the topic id of that category.</p>
+<p>In the table below, “law”, “laws”, and “executive” are keywords of the <em>Government</em> topic, while “peace” appears in top words of the <em>Other_3</em> topic, it is a keyword of the <em>peace</em> topic.</p>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span>(<span class="no">out</span>)</pre></body></html></div>
+<pre><code>##     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
+## 1        law [✓]        great   world [✓]           states           public
+## 2       laws [✓]      justice         new       government            union
+## 3          state congress [✓] freedom [✓] constitution [✓]          war [✓]
+## 4  executive [✓]       united     america            power          nations
+## 5         policy      service         let         citizens      foreign [✓]
+## 6          whole    party [✓]   peace [✓]       rights [✓]       principles
+## 7       american        force        life             duty           duties
+## 8        however       office        time        interests             good
+## 9         spirit        means        work           united             just
+## 10          full   prosperity    american           powers         interest
+##      Other_1        Other_2   Other_3  Other_4    Other_5
+## 1      years       national   country   nation     people
+## 2     fellow      political peace [3]      men government
+## 3    purpose administration      time     hope      every
+## 4  president         system   support    first        one
+## 5     spirit     confidence    secure progress        now
+## 6        day        federal important      man       made
+## 7        yet        liberty     since    power      right
+## 8   strength          whose   respect  country       well
+## 9       come           take    future   change       many
+## 10   believe          given resources     find       much</code></pre>
+<p>To explore documents that are highly associated with each topic, the <code><a href="../../reference/top_docs.html">top_docs()</a></code> function returns a table of document indexes in which a topic has high proportion.</p>
+<p>The table below indicates, for example, that the ninth document in the corpus has the highest proportion of the <em>Government</em> topic among all other documents.</p>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_docs.html">top_docs</a></span>(<span class="no">out</span>)</pre></body></html></div>
+<pre><code>##    1_Government 2_Congress 3_Peace 4_Constitution 5_ForeignAffairs Other_1
+## 1             9         31      52              2                5      46
+## 2            14         35      47             15               10      47
+## 3             8         34      53             12               11      54
+## 4            26         32      58             11                6      48
+## 5            16         36      46             14                3      53
+## 6            13         29      40             18               15      49
+## 7            19         28      57             19                7      50
+## 8            12         41      51              9                8      56
+## 9            28         33      50             23               20      57
+## 10           36         30      54             17               16      43
+##    Other_2 Other_3 Other_4 Other_5
+## 1        1      28      45      19
+## 2       31       8      44      21
+## 3       27       6      38       2
+## 4       11      31      58       4
+## 5       36      35      51      20
+## 6       33      22      30       1
+## 7       23      23      55      53
+## 8       17      10      39      32
+## 9       37       9      46      45
+## 10      25      16      52      58</code></pre>
+<p>Researchers may want to obtain the entire document-topic distribution and topic-word distribution. The output of the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function contains both quantities.</p>
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">out</span>$<span class="no">theta</span>  <span class="co"># Document-topic distribution</span>
+<span class="no">out</span>$<span class="no">phi</span>    <span class="co"># Topic-word distribution</span></pre></body></html></div>
+<p>The <strong>keyATM</strong> provides other functions to diagnose and explore the fitted model. First, it is important to check the model fitting. If the model is working as expected, we would observe an increase trend for the log-likelihood and an decrease trend for the perplexity.</p>
+<p>Also the fluctuation of these values get smaller as iteration increases. The <code><a href="../../reference/plot_modelfit.html">plot_modelfit()</a></code> function visualizes the within sample log-likelihood and perplexity and the created figure can be saved with the <code><a href="../../reference/save_fig.html">save_fig()</a></code> function.</p>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">fig_modelfit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/plot_modelfit.html">plot_modelfit</a></span>(<span class="no">out</span>)
+<span class="no">fig_modelfit</span></pre></body></html></div>
+<p><img src="keyATM_base_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="../../reference/save_fig.html">save_fig</a></span>(<span class="no">fig_modelfit</span>, <span class="st">"figures/base_modelfit.pdf"</span>, <span class="kw">width</span> <span class="kw">=</span> <span class="fl">7</span>, <span class="kw">height</span> <span class="kw">=</span> <span class="fl">5</span>)</pre></body></html></div>
+<p>Furthermore, the <strong>keyATM</strong> can visualize <span class="math inline">\(\boldsymbol{\alpha}\)</span>, the prior for the document-topic distribution, and <span class="math inline">\(\boldsymbol{\pi}\)</span>, the probability that each topic uses keyword topic-word distribution. Values of these parameters should also stabilize over time.</p>
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="../../reference/plot_alpha.html">plot_alpha</a></span>(<span class="no">out</span>)</pre></body></html></div>
+<p><img src="keyATM_base_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="../../reference/plot_pi.html">plot_pi</a></span>(<span class="no">out</span>)</pre></body></html></div>
+<p><img src="keyATM_base_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p>We can use the <code><a href="../../reference/save_fig.html">save_fig()</a></code> function for both the <code><a href="../../reference/plot_alpha.html">plot_alpha()</a></code> and the <code><a href="../../reference/plot_pi.html">plot_pi()</a></code> functions.</p>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#preparing-documents-and-keywords">Preparing documents and keywords</a></li>
-      <li><a href="#fitting-the-model">Fitting the model</a></li>
-      <li><a href="#saving-the-model">Saving the model</a></li>
-      <li><a href="#checking-top-words">Checking top words</a></li>
-      </ul>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
 
@@ -196,7 +225,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

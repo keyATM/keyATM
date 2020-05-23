@@ -6,20 +6,23 @@
 \usage{
 by_strata_DocTopic(
   x,
-  by_name,
-  by_values,
+  by_var,
+  labels,
+  by_values = NULL,
   burn_in = NULL,
   parallel = TRUE,
   mc.cores = NULL,
-  posterior_mean = FALSE
+  posterior_mean = TRUE
 )
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM()})}
+\item{x}{the output from the covariate keyATM model (see \code{\link[=keyATM]{keyATM()}})}
 
-\item{by_name}{character. The name of the variable to use.}
+\item{by_var}{character. The name of the variable to use.}
 
-\item{by_values}{numeric. The values of the variable specified in `by_name`}
+\item{labels}{character. The labels for the values specified in \code{by_var} (ascending order).}
+
+\item{by_values}{numeric. Specific values for \code{by_var}, ordered from small to large. If it is not specified, all values in \code{by_var} will be used.}
 
 \item{burn_in}{integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.}
 
@@ -27,7 +30,7 @@ by_strata_DocTopic(
 
 \item{mc.cores}{integer. The number of cores to use. Default is \code{NULL}.}
 
-\item{posterior_mean}{logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{FALSE}.}
+\item{posterior_mean}{logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{TRUE}.}
 }
 \value{
 strata_topicword object (a list)

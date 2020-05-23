@@ -4,20 +4,23 @@
 \alias{plot_alpha}
 \title{Show a diagnosis plot of alpha}
 \usage{
-plot_alpha(x, start = 0, show_topic = NULL, scale = "fixed")
+plot_alpha(x, start = 0, show_topic = NULL, scales = "fixed")
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{keyATM()})}
+\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}})}
 
-\item{start}{integer. The start of slice iteration. Default is 0.}
+\item{start}{integer. The start of slice iteration. Default is \code{0}.}
 
 \item{show_topic}{a vector to specify topic indexes to show. Default is \code{NULL}.}
 
-\item{scale}{character. Control the scale of y-axis (the parameter in \code{facet_wrap()}): 'free' adjusts y-axis for parameters. Default is "fixed".}
+\item{scales}{character. Control the scale of y-axis (the parameter in \link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}): \code{free} adjusts y-axis for parameters. Default is \code{fixed}.}
 }
 \value{
-ggplot2 object
+keyATM_fig object
 }
 \description{
 Show a diagnosis plot of alpha
+}
+\seealso{
+\code{\link[=save_fig]{save_fig()}}
 }

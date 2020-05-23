@@ -37,8 +37,6 @@ class keyATMhmm : virtual public keyATMmeta
       // so we just store the count of each state
     MatrixXd P_est;  // (num_states, num_states)
     MatrixXd alphas;  // (num_states, num_topics)
-    double loglik;
-    double fixed_part;
 
     // Constructor
     keyATMhmm(List model_, const int iter_) :
@@ -50,42 +48,35 @@ class keyATMhmm : virtual public keyATMmeta
       VectorXd rt_1l;
       VectorXd rt_k;
       VectorXd logrt_k;
-      double logsum;
-      int added;
 
-      int state_id;
       VectorXd state_prob_vec;
-      double pii;
 
       // Sample alpha
       VectorXi states_start;
       VectorXi states_end;
 
         // Slice Sampling
-        double start, end, previous_p, new_p, newlikelihood, slice_;
         std::vector<int> topic_ids;
         VectorXd keep_current_param;
-        double store_loglik;
-        double newalphallk;
         MatrixXd ndk_a;
   
     // 
     // Functions
     //
     // Utilities
-    int get_state_index(const int &doc_id);
+    int get_state_index(const int doc_id);
   
     // Read data and Initialize
     void read_data_specific() final;
     void initialize_specific() final;
   
     // Iteration
-    virtual void iteration_single(int &it);
-    void sample_parameters(int &it);
+    virtual void iteration_single(int it);
+    void sample_parameters(int it);
 
     void sample_alpha();
-    void sample_alpha_state(int &state, int &state_start, int &state_end);
-    double alpha_loglik(int &k, int &state_start, int &state_end);
+    void sample_alpha_state(int state, int state_start, int state_end);
+    double alpha_loglik(int k, int state_start, int state_end);
 
     void sample_forward();  // calculate Prk
     void sample_backward();  // sample R_est
@@ -93,10 +84,10 @@ class keyATMhmm : virtual public keyATMmeta
     void store_R_est();
     void store_P_est();
 
-    double polyapdfln(int &t, VectorXd &alpha);
+    double polyapdfln(int t, VectorXd &alpha);
     virtual double loglik_total();
     double loglik_total_label();
-    void verbose_special(int &r_index);
+    void verbose_special(int r_index);
 };
 
 #endif

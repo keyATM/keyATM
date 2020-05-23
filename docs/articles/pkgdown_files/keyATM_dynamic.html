@@ -6,20 +6,20 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>keyATM Dynamic • keyATM</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../../bootstrap-toc.css">
+<script src="../../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
 <script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
 <meta property="og:title" content="keyATM Dynamic">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="keyATM">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -65,9 +65,6 @@
     </li>
     <li>
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
-    </li>
-    <li>
-      <a href="../../articles/pkgdown_files/Heterogeneity.html">Heterogeneity</a>
     </li>
     <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
@@ -104,101 +101,108 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>keyATM Dynamic</h1>
+      <h1 data-toc-skip>keyATM Dynamic</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/master/vignettes/pkgdown_files/keyATM_dynamic.Rmd"><code>vignettes/pkgdown_files/keyATM_dynamic.Rmd</code></a></small>
       <div class="hidden name"><code>keyATM_dynamic.Rmd</code></div>
 
     </div>
 
     
     
-<div id="preparing-documents-and-time-index" class="section level2">
+
+<p>Researchers are often interested in investigating how the prevalence of topics change over time. The  can use time stamps for the prior for document-topic distribution through Hidden Markov Model <a href="https://doi.org/10.1016/S0304-4076(97)00115-2">Chib (1998)</a>.</p>
+<p>Section 4 of <a href="https://arxiv.org/abs/2004.05964">Eshima et al. (2020)</a> explains the dynamic keyATM in details. As explained in <a href="keyATM_cov.html">keyATM Covariates</a>, we recommend researchers to construct a numeric or an integer vector of time stamps after preprocessing texts.</p>
+<div id="preparing-time-index" class="section level2">
 <h2 class="hasAnchor">
-<a href="#preparing-documents-and-time-index" class="anchor"></a>Preparing documents and time index</h2>
-<p>Please read <a href="Preparation.html">Preparation</a> for the reading of documents and creating a list of keywords. We use bills data we prapared (<a href="Preparation.html#reading-documents-into-keyatm">documents</a> and <a href="Preparation.html#preparing-keywords">keywords</a>).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(keyATM)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(quanteda)</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(keyATM_data_bills)</span>
-<span id="cb1-5"><a href="#cb1-5"></a>bills_keywords &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>keywords</span>
-<span id="cb1-6"><a href="#cb1-6"></a>bills_dfm &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>doc_dfm  <span class="co"># quanteda dfm object</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>keyATM_docs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(bills_dfm)</span></code></pre></div>
-<p>HMM model needs a vector of time indexes. This is an “index” and not the actual time stamps (year and date). For example, <code>bills</code> data contain session information, which ranges from <code>101</code> to <code>114</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>bills_time_index &lt;-<span class="st"> </span>keyATM_data_bills<span class="op">$</span>time_index</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(bills_time_index)</span></code></pre></div>
-<pre><code>## bills_time_index
-## 101 102 103 104 105 106 107 108 109 110 111 112 113 114 
-##  10  10  10  10  10  10  10  10  10  10  10  10  10  10</code></pre>
-<p>Time index should start from <code>1</code>, increment by <span class="math inline">\(1\)</span>, and have the same value if they are in the same time (for example the session of congress).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>bills_time_index &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span>(bills_time_index <span class="op">-</span><span class="st"> </span><span class="dv">100</span>)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(bills_time_index)</span></code></pre></div>
-<pre><code>## bills_time_index
-##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 
-## 10 10 10 10 10 10 10 10 10 10 10 10 10 10</code></pre>
-<p>Please make sure that <strong>the order of time index is the same as the order of documents</strong>.</p>
-</div>
-<div id="fitting-the-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
-<p>Researchers need to specify the number of states in addition to keywords.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>out &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keyATM.html">keyATM</a></span>(    </span>
-<span id="cb6-2"><a href="#cb6-2"></a>              <span class="dt">docs              =</span> keyATM_docs,                         <span class="co"># text input</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a>              <span class="dt">no_keyword_topics =</span> <span class="dv">3</span>,                                   <span class="co"># number of topics without keywords</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a>              <span class="dt">keywords          =</span> bills_keywords,                      <span class="co"># keywords</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a>              <span class="dt">model             =</span> <span class="st">"dynamic"</span>,                           <span class="co"># select the model</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a>              <span class="dt">model_settings    =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">time_index =</span> bills_time_index,  <span class="co"># time index</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a>                                       <span class="dt">num_states =</span> <span class="dv">5</span>),                <span class="co"># number of (latent) states in the model </span></span>
-<span id="cb6-8"><a href="#cb6-8"></a>              <span class="dt">options           =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">seed =</span> <span class="dv">250</span>)</span>
-<span id="cb6-9"><a href="#cb6-9"></a>             )</span></code></pre></div>
-</div>
-<div id="saving-the-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#saving-the-model" class="anchor"></a>Saving the model</h2>
-<p>Once you fit the model, you can save the model with <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">Base model</a>.</p>
-</div>
-<div id="checking-top-words" class="section level2">
-<h2 class="hasAnchor">
-<a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw"><a href="../../reference/top_words.html">top_words</a></span>(out)</span></code></pre></div>
-<pre><code>##      1_Education        2_Law     3_Health        4_Drug       Other_1
-## 1  education [✓]      law [✓]   public [✓]      drug [✓]    commission
-## 2         school    court [✓]   health [✓]       control   information
-## 3    educational       action subparagraph      facility    electronic
-## 4    student [✓]       person         care        report          rule
-## 5          local         code         date   application      congress
-## 6        library     district   individual administrator      security
-## 7           high  enforcement      veteran      describe communication
-## 8       eligible        crime       follow        submit         party
-## 9    institution        civil       period   requirement          term
-## 10      describe attorney [✓]      respect        person          mean
-##        Other_2    Other_3
-## 1  appropriate   national
-## 2        grant   research
-## 3       report     center
-## 4     congress technology
-## 5      project management
-## 6       follow     system
-## 7        carry   director
-## 8       office       area
-## 9     activity   wildlife
-## 10     amended       land</code></pre>
+<a href="#preparing-time-index" class="anchor"></a>Preparing time index</h2>
+<p>Please read <a href="Preparation.html">Preparation</a> for the reading of documents and creating a list of keywords.</p>
+<p>We use the US Presidential inaugural address data we prapared (<a href="Preparation.html#preparing-texts">documents</a> and <a href="Preparation.html#preparing-keywords">keywords</a>).</p>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="co"># Get meta information (time stamp)</span>
+<span class="no">vars</span> <span class="kw">&lt;-</span> <span class="fu">docvars</span>(<span class="no">data_corpus_inaugural</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">vars</span>)</pre></body></html></div>
+<pre><code>##   Year  President FirstName                 Party
+## 1 1789 Washington    George                  none
+## 2 1793 Washington    George                  none
+## 3 1797      Adams      John            Federalist
+## 4 1801  Jefferson    Thomas Democratic-Republican
+## 5 1805  Jefferson    Thomas Democratic-Republican
+## 6 1809    Madison     James Democratic-Republican</code></pre>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co"># Divide by a decade</span>
+<span class="co"># Timestamp should start with 1 (the variable "Period")</span>
+<span class="no">vars</span> <span class="kw">%&gt;%</span>
+  <span class="fu">as_tibble</span>() <span class="kw">%&gt;%</span>
+  <span class="fu">mutate</span>(<span class="kw">Period</span> <span class="kw">=</span> (<span class="no">vars</span>$<span class="no">Year</span> - <span class="fl">1780</span>) <span class="kw">%/%</span> <span class="fl">10</span> + <span class="fl">1</span>) <span class="kw">-&gt;</span> <span class="no">vars_period</span>
+<span class="no">vars_period</span> <span class="kw">%&gt;%</span> <span class="fu">select</span>(<span class="no">Year</span>, <span class="no">Period</span>)</pre></body></html></div>
+<pre><code>## # A tibble: 58 x 2
+##     Year Period
+##    &lt;int&gt;  &lt;dbl&gt;
+##  1  1789      1
+##  2  1793      2
+##  3  1797      2
+##  4  1801      3
+##  5  1805      3
+##  6  1809      3
+##  7  1813      4
+##  8  1817      4
+##  9  1821      5
+## 10  1825      5
+## # … with 48 more rows</code></pre>
+<p>We pass the time index to the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function, specifying the number of hidden states with the <code>num_states</code> in the <code>model_settings</code> argument.</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,
+              <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">3</span>,
+              <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords</span>,
+              <span class="kw">model</span>             <span class="kw">=</span> <span class="st">"dynamic"</span>,
+              <span class="kw">model_settings</span>    <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">time_index</span> <span class="kw">=</span> <span class="no">vars_period</span>$<span class="no">Period</span>,
+                                       <span class="kw">num_states</span> <span class="kw">=</span> <span class="fl">5</span>),
+              <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>))</pre></body></html></div>
+<p>We can use the <code><a href="../../reference/top_words.html">top_words()</a></code>, <code><a href="../../reference/top_docs.html">top_docs()</a></code>, <code><a href="../../reference/plot_modelfit.html">plot_modelfit()</a></code>, <code><a href="../../reference/plot_alpha.html">plot_alpha()</a></code>, and <code><a href="../../reference/plot_pi.html">plot_pi()</a></code> functions as in <a href="keyATM_base.html">the base keyATM</a>.</p>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span>(<span class="no">out</span>)</pre></body></html></div>
+<pre><code>##     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
+## 1          power        great   world [✓]           states           united
+## 2           made        union   peace [✓]           public          country
+## 3            now        every         new       government          war [✓]
+## 4       laws [✓]          one freedom [✓] constitution [✓]          nations
+## 5        law [✓] congress [✓]     america         citizens             best
+## 6           many         duty         let       rights [✓]      foreign [✓]
+## 7  executive [✓]       powers        work        interests           within
+## 8            far       policy         one            state           duties
+## 9         office        whole        know         national       confidence
+## 10         order    political     history   administration             free
+##       Other_1    Other_2  Other_3
+## 1      people       just   nation
+## 2  government    country     time
+## 3      spirit      first american
+## 4       among principles    every
+## 5        much     common      men
+## 6    progress       well     life
+## 7      system       make  justice
+## 8     service      equal    great
+## 9         yet   republic    years
+## 10      force       like    human</code></pre>
+<p>Since each state has a unique prior for the document-topic distributions, the <code><a href="../../reference/plot_alpha.html">plot_alpha()</a></code> function produces a different figure from <a href="keyATM_base.html">the base keyATM</a>.</p>
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">fig_alpha</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/plot_alpha.html">plot_alpha</a></span>(<span class="no">out</span>)
+<span class="no">fig_alpha</span></pre></body></html></div>
+<p><img src="keyATM_dynamic_files/figure-html/unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;"></p>
+<p>Finally, we can plot the time trend of topics with the <code><a href="../../reference/plot_timetrend.html">plot_timetrend()</a></code> function. With the <code>time_index_label</code> argument, you can label each time index. Note that <code>store_theta</code> option in the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function should be <code>TRUE</code> to show 90% credible intervals.</p>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,
+              <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">3</span>,
+              <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords</span>,
+              <span class="kw">model</span>             <span class="kw">=</span> <span class="st">"dynamic"</span>,
+              <span class="kw">model_settings</span>    <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">time_index</span> <span class="kw">=</span> <span class="no">vars_period</span>$<span class="no">Period</span>,
+                                       <span class="kw">num_states</span> <span class="kw">=</span> <span class="fl">5</span>),
+              <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>, <span class="kw">store_theta</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">thinning</span> <span class="kw">=</span> <span class="fl">5</span>))
+<span class="no">fig_timetrend</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/plot_timetrend.html">plot_timetrend</a></span>(<span class="no">out</span>, <span class="kw">time_index_label</span> <span class="kw">=</span> <span class="no">vars</span>$<span class="no">Year</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"Year"</span>, <span class="kw">width</span> <span class="kw">=</span> <span class="fl">5</span>)
+<span class="no">fig_timetrend</span></pre></body></html></div>
+<p><img src="keyATM_dynamic_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#preparing-documents-and-time-index">Preparing documents and time index</a></li>
-      <li><a href="#fitting-the-model">Fitting the model</a></li>
-      <li><a href="#saving-the-model">Saving the model</a></li>
-      <li><a href="#checking-top-words">Checking top words</a></li>
-      </ul>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
 
@@ -209,7 +213,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
