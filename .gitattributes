@@ -1,1 +1,1 @@
-man/* linguist-documentation
+man/*.Rd linguist-documentation=true
