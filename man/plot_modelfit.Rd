@@ -12,7 +12,7 @@ plot_modelfit(x, start = 1)
 \item{start}{integer. The starting value of iteration to use in plot. Default is \code{1}.}
 }
 \value{
-ggplot2 object
+keyATM_fig object
 }
 \description{
 Show a diagnosis plot of log-likelihood and perplexity

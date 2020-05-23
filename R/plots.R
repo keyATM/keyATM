@@ -1,6 +1,6 @@
 #' Save a figure
 #' 
-#' @param x the object
+#' @param x the keyATM_fig object
 #' @param filename file name to create on disk
 #' @param ... other arguments passed on to the [ggplot2::ggsave()][ggplot2::ggsave] function
 #' @seealso [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()], [values_fig()]
@@ -12,7 +12,7 @@ save_fig <- function(x, filename, ...) {
 
 #' Get values used to create a figure
 #' 
-#' @param x the object
+#' @param x the keyATM_fig object
 #' @seealso [save_fig()], [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()]
 #' @export
 values_fig <- function(x) {
@@ -49,7 +49,7 @@ print.keyATM_fig <- function(x, ...)
 #' @param start integer. The start of slice iteration. Default is \code{0}.
 #' @param show_topic a vector to specify topic indexes to show. Default is \code{NULL}.
 #' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
-#' @return ggplot2 object
+#' @return keyATM_fig object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
@@ -114,7 +114,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
 #' 
 #' @param x the output from a keyATM model (see [keyATM()])
 #' @param start integer. The starting value of iteration to use in plot. Default is \code{1}.
-#' @return ggplot2 object
+#' @return keyATM_fig object
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @importFrom rlang .data
@@ -153,7 +153,7 @@ plot_modelfit <- function(x, start = 1)
 #' @param x the output from a keyATM model (see [keyATM()])
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param start integer. The starting value of iteration to use in the plot. Default is \code{0}.
-#' @return ggplot2 object
+#' @return keyATM_fig object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
@@ -233,7 +233,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 #' @param width numeric. Width of the error bars.
 #' @param show_mean logical. The default is \code{TRUE}.
 #' @param ... additional arguments not used
-#' @return ggplot2 object
+#' @return keyATM_fig object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
@@ -295,13 +295,13 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 #' @param width numeric. Width of the error bars.
 #' @param show_mean logical. The default is \code{TRUE}. This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in [keyATM()]).
 #' @param ... additional arguments not used
-#' @return ggplot2 object
+#' @return keyATM_fig object
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
 #' @seealso [save_fig()]
 #' @export
-plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, quantile_vec = c(0.05, 0.5, 0.95), 
+plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, quantile_vec = c(0.05, 0.5, 0.95),
                            xlab = "Time", scales = "fixed", width = 0.5, show_mean = TRUE, ...)
 {
   check_arg_type(x, "keyATM_output")
@@ -345,11 +345,11 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, quanti
       dplyr::group_by(.data$time_index, .data$Topic) %>%
       dplyr::summarise(x = list(tibble::enframe(stats::quantile(.data$Proportion, probs = quantile_vec), "q", "value"))) %>% 
       tidyr::unnest(.data$x) %>% dplyr::ungroup() %>%
-      tidyr::pivot_wider(names_from = .data$q, values_from = .data$value) -> dat
-    p <- ggplot(dat, aes(x = .data$time_index, y = .data$`50%`, group = .data$Topic)) +
-          geom_ribbon(aes(ymin = .data$`5%`, ymax = .data$`95%`), fill = "gray75") +
+      tidyr::pivot_wider(names_from = .data$q, values_from = .data$value) %>%
+      stats::setNames(c("time_index", "Topic", "Lower", "Median", "Upper")) -> dat
+    p <- ggplot(dat, aes(x = .data$time_index, y = .data$Median, group = .data$Topic)) +
+          geom_ribbon(aes(ymin = .data$Lower, ymax = .data$Upper), fill = "gray75") +
           geom_line(size = 0.8, color = "blue")
-          # geom_errorbar(width = width, size = 0.5, aes(ymin = .data$`5%`, ymax = .data$`95%`), colour = "gray30")
 
     if (show_mean)
       p <- p + geom_point(size = 0.9)
@@ -360,4 +360,3 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, quanti
   class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
-

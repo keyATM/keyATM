@@ -60,7 +60,7 @@ test_that("Time series: with intervals", {
   skip_on_cran()
   expect_message(save_fig(p, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(values_fig(p)$`5%`[2], 0.04844414, tolerance = 0.001)
+  expect_equal(values_fig(p)$Lower[2], 0.04844414, tolerance = 0.001)
 })
 
 

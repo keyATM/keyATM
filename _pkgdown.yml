@@ -36,8 +36,6 @@ navbar:
           href: articles/pkgdown_files/keyATM_label.html
         - text: "Weighted LDA"
           href: articles/pkgdown_files/Weighted_LDA.html
-        - text: "Heterogeneity"
-          href: articles/pkgdown_files/Heterogeneity.html
         - text: "Options"
           href: articles/pkgdown_files/Options.html
     - text: "FAQ"

@@ -7,7 +7,7 @@
 save_fig(x, filename, ...)
 }
 \arguments{
-\item{x}{the object}
+\item{x}{the keyATM_fig object}
 
 \item{filename}{file name to create on disk}
 
