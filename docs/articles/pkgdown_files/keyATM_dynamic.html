@@ -112,7 +112,7 @@
     
     
 
-<p>Researchers are often interested in investigating how the prevalence of topics change over time. The  can use time stamps for the prior for document-topic distribution through Hidden Markov Model <a href="https://doi.org/10.1016/S0304-4076(97)00115-2">Chib (1998)</a>.</p>
+<p>Researchers are often interested in investigating how the prevalence of topics change over time. The <strong>keyATM</strong> can use time stamps for the prior for document-topic distribution through Hidden Markov Model (<a href="https://doi.org/10.1016/S0304-4076(97)00115-2">Chib 1998</a>).</p>
 <p>Section 4 of <a href="https://arxiv.org/abs/2004.05964">Eshima et al. (2020)</a> explains the dynamic keyATM in details. As explained in <a href="keyATM_cov.html">keyATM Covariates</a>, we recommend researchers to construct a numeric or an integer vector of time stamps after preprocessing texts.</p>
 <div id="preparing-time-index" class="section level2">
 <h2 class="hasAnchor">
@@ -196,6 +196,14 @@
 <span class="no">fig_timetrend</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/plot_timetrend.html">plot_timetrend</a></span>(<span class="no">out</span>, <span class="kw">time_index_label</span> <span class="kw">=</span> <span class="no">vars</span>$<span class="no">Year</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"Year"</span>, <span class="kw">width</span> <span class="kw">=</span> <span class="fl">5</span>)
 <span class="no">fig_timetrend</span></pre></body></html></div>
 <p><img src="keyATM_dynamic_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
+</div>
+<div id="reference" class="section level2">
+<h2 class="hasAnchor">
+<a href="#reference" class="anchor"></a>Reference</h2>
+<ul>
+<li>Chib, S. (1998). “Estimation and comparison of multiple change-point models.” <em>Journal of econometrics</em>, 86(2), 221-241.</li>
+<li>Eshima, S., Imai, K., &amp; Sasaki, T. (2020). Keyword Assisted Topic Models. arXiv preprint arXiv:2004.05964.</li>
+</ul>
 </div>
   </div>
 
