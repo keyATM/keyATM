@@ -58,9 +58,11 @@ We use the US Presidential inaugural address data we prapared ([documents](Prepa
 
 We pass the output of the `keyATM_read` function and 
 keywords to the `keyATM` function.
+
 Additionally, we need to specify the number of topics
 without keywords (the `no_keyword_topics` argument) and model.
 Since this example does not use covariates or time stamps, `base` is the appropriate model.
+
 To guarantee the replicability, we recommend to set the random seed
 in the `option` argument (see [here](Options.html)
 for other options). The default number of iterations is 1500.
@@ -93,9 +95,11 @@ First, topic-word distribution represents the relative frequency of words for ea
 Second, document-topic distribution represents the proportions of topics for each document, reflecting the main themes of the document and often called topic prevalence.
 
 Since typical corpus contains several thousands of unique terms, we usually scrutinize ten to fifteen words that have high probabilities in a given topic, which is called top words of a topic. 
-The `top_words` function returns a table of top words for each of estimated topics.
+
+The `top_words()` function returns a table of top words for each of estimated topics.
 Keywords assigned to a keyword topic are suffixed with a check mark.
 Keywords from another keyword topic are labeled with the topic id of that category.
+
 In the table below, "law", "laws", and "executive" are keywords of the 
 *Government* topic, while "peace" appears in top words of the *Other_3* topic,
 it is a keyword of the *peace* topic. 
@@ -106,6 +110,7 @@ top_words(out)
 
 To explore documents that are highly associated with each topic, the `top_docs()`
 function returns a table of document indexes in which a topic has high proportion.
+
 The table below indicates, for example, that the ninth document in the corpus has the 
 highest proportion of the *Government* topic among all other documents. 
 
@@ -126,13 +131,11 @@ The **keyATM** provides other functions to diagnose and explore the fitted model
 First, it is important to check the model fitting. 
 If the model is working as expected, we would observe an increase trend for 
 the log-likelihood and an decrease trend for the perplexity.
+
 Also the fluctuation of these values get smaller as iteration increases. 
 The `plot_modelfit()` function visualizes
 the within sample log-likelihood and perplexity and the created figure
 can be saved with the `save_fig()` function. 
-<!-- The figure shows that the increase of log-likelihood and the decrease of perplexity.  -->
-<!-- Also, the lines get flatter as iteration increases. These results indicate an example of  -->
-<!-- the good model fit. -->
 
 ```{r, warning = FALSE, message = FALSE}
 fig_modelfit <- plot_modelfit(out)

@@ -44,25 +44,27 @@ We follow the same procedure for the text preparation
 explained in [Preparation](Preparation.html) and explain
 how to prepare covariates in this section.
 
-The `docvar()` function in the **quanteda** package is especially useful 
+The `docvars()` function in the **quanteda** package is especially useful 
 to construct a `vector` or a `dataframe` of covariates because it ensures that
 documents and covariates are corresponding to each other. 
 Since the **keyATM** does not take missing values,
 we recommend researchers to remove any missing values from 
 covariates before extracting them using the `docvars()`.
+
 Moreover, we strongly recommend researchers to 
 extract covariates *after* preprocessing texts 
 because preprocessing steps will remove documents without any terms,
 which may result in any discrepancies between documents and covariates.
+
 Therefore, the recommended procedure is
 (1) removing missing values from covariates, (2) preprocessing texts 
 (including the process to discard documents that do not contain any words),
-and (3) extracting covariates using `docvar()` function.
+and (3) extracting covariates using `docvars()` function.
 
 In this example, we create a period dummy and a party dummy from the corpus
 and use them as covariates for the covariate keyATM. 
 First, we extract covariates attached to each document in the corpus 
-with the `docvar()` function.
+with the `docvars()` function.
 
 ```{r, warning=FALSE, message=FALSE}
 vars <- docvars(data_corpus_inaugural)
@@ -97,7 +99,7 @@ vars_selected %>%
 
 The **keyATM** internally uses the `model.matrix()` function so that researchers can pass
 a formula to model covariates 
-(for more detailed information, refer to [`formula`](https://rdrr.io/r/stats/formula.html)). 
+(for more detailed information, refer to [formula](https://rdrr.io/r/stats/formula.html)). 
 For example, in this example, we have a following matrix.
 ```{r, warning=FALSE, message=FALSE}
 head(model.matrix(~ Party + Period, data = vars_selected))
@@ -130,10 +132,13 @@ and $\alpha$ does not explicitly appear in the model.
 First, we use the output from the [previous section](keyATM_cov.html#fitting-the-model) and check the
 covariates used in the model. Note that covariates are standardized by default
 (i.e., each covariates to have zero mean and a standard deviation one).
+
 This transformation does not change the substantive results as it is a 
 linear transformation. 
 Researchers can use raw values with `standardize = FALSE` in the `model_settings`
-argument. Researchers can glance covariate information with the 
+argument.
+
+Researchers can glance covariate information with the 
 `covariates_info()` and the `covariates_get()` function
 will return covariates used in the fitted output.
 
@@ -154,10 +159,13 @@ document-topic distribution conditioned on the covariates.
 Suppose that we want to know document-topic distributions for each period.
 We use a binary variable `Period20_21c`, which indicates the period
 for this purpose. 
+
 The `by_strata_DocTopic()` function can display the marginal posterior means of 
 document-topic distributions for each value of (discrete) covariates.
+
 In the `by_strata_DocTopic()` function, we specify the variable we focus on
 in `by_var` argument and label each value in the variable (ascending order).
+
 In this case, the `Period20_21c` equals zero indicates speeches in the 18th 
 and 19th century and equals one for the speeches in the 20th and 21st century.
 ```{r, warning=FALSE, message=FALSE}
@@ -165,9 +173,10 @@ strata_topic <- by_strata_DocTopic(out, by_var = "Period20_21c",
                                    labels = c("18_19c", "20_21c"))
 ```
 
-We can visualize results with the `plot` function.
+We can visualize results with the `plot()` function.
 The figure shows the marginal posterior means of document-topic distributions and
-the 95% credible intervals of them for each value of covariates. 
+the 90% credible intervals of them for each value of covariates. 
+
 The figure indicates that both topics are more likely to
 appear in the 18th and 19th century.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
@@ -186,12 +195,12 @@ display in the same panel.
 ```{r, message=FALSE, warning=FALSE, fig.align='center'}
 fig_doctopic <- plot(strata_topic, var_name = "Period",
                      show_topic = c(4, 5), by = "covariate")
-fig_doctopic
 ```
 
 Using the output of the `keyATM`, we can calculate 95% credible intervals 
 of the differences in the
 mean of document-topic distribution.
+
 Since we set the 18th and 19th century dummy as the 
 baseline when constructing `factor` for this variable, 
 the comparison is the relative increase or decrease 
@@ -203,6 +212,7 @@ theta_diff <- theta1[, c(4, 5)] - theta2[, c(4, 5)]  # focus on two topics
 theta_diff_quantile <- apply(theta_diff, 2, quantile, c(0.05, 0.5, 0.95))
 theta_diff_quantile
 ```
+
 
 ### Covariates and topic-word distribution
 Although the covariate keyATM does not directly model topic-word distributions,

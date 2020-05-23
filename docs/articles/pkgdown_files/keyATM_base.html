@@ -67,9 +67,6 @@
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_files/Heterogeneity.html">Heterogeneity</a>
-    </li>
-    <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -101,7 +98,7 @@
 
       
 
-      </header><script src="keyATM_base_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>keyATM Base</h1>
@@ -114,6 +111,7 @@
 
     
     
+
 <div id="preparing-documents-and-keywords" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preparing-documents-and-keywords" class="anchor"></a>Preparing documents and keywords</h2>
@@ -122,7 +120,9 @@
 <div id="fitting-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
-<p>We pass the output of the <code>keyATM_read</code> function and keywords to the <code>keyATM</code> function. Additionally, we need to specify the number of topics without keywords (the <code>no_keyword_topics</code> argument) and model. Since this example does not use covariates or time stamps, <code>base</code> is the appropriate model. To guarantee the replicability, we recommend to set the random seed in the <code>option</code> argument (see <a href="Options.html">here</a> for other options). The default number of iterations is 1500.</p>
+<p>We pass the output of the <code>keyATM_read</code> function and keywords to the <code>keyATM</code> function.</p>
+<p>Additionally, we need to specify the number of topics without keywords (the <code>no_keyword_topics</code> argument) and model. Since this example does not use covariates or time stamps, <code>base</code> is the appropriate model.</p>
+<p>To guarantee the replicability, we recommend to set the random seed in the <code>option</code> argument (see <a href="Options.html">here</a> for other options). The default number of iterations is 1500.</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,    <span class="co"># text input</span>
               <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">5</span>,              <span class="co"># number of topics without keywords</span>
               <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords</span>, <span class="co"># keywords</span>
@@ -142,7 +142,9 @@
 <h2 class="hasAnchor">
 <a href="#interpreting-results" class="anchor"></a>Interpreting results</h2>
 <p>There are two main quantities of interest in topic models. First, topic-word distribution represents the relative frequency of words for each topics, characterizing the topic content. Second, document-topic distribution represents the proportions of topics for each document, reflecting the main themes of the document and often called topic prevalence.</p>
-<p>Since typical corpus contains several thousands of unique terms, we usually scrutinize ten to fifteen words that have high probabilities in a given topic, which is called top words of a topic. The <code>top_words</code> function returns a table of top words for each of estimated topics. Keywords assigned to a keyword topic are suffixed with a check mark. Keywords from another keyword topic are labeled with the topic id of that category. In the table below, “law”, “laws”, and “executive” are keywords of the <em>Government</em> topic, while “peace” appears in top words of the <em>Other_3</em> topic, it is a keyword of the <em>peace</em> topic.</p>
+<p>Since typical corpus contains several thousands of unique terms, we usually scrutinize ten to fifteen words that have high probabilities in a given topic, which is called top words of a topic.</p>
+<p>The <code><a href="../../reference/top_words.html">top_words()</a></code> function returns a table of top words for each of estimated topics. Keywords assigned to a keyword topic are suffixed with a check mark. Keywords from another keyword topic are labeled with the topic id of that category.</p>
+<p>In the table below, “law”, “laws”, and “executive” are keywords of the <em>Government</em> topic, while “peace” appears in top words of the <em>Other_3</em> topic, it is a keyword of the <em>peace</em> topic.</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span>(<span class="no">out</span>)</pre></body></html></div>
 <pre><code>##     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
 ## 1        law [✓]        great   world [✓]           states           public
@@ -166,7 +168,8 @@
 ## 8   strength          whose   respect  country       well
 ## 9       come           take    future   change       many
 ## 10   believe          given resources     find       much</code></pre>
-<p>To explore documents that are highly associated with each topic, the <code><a href="../../reference/top_docs.html">top_docs()</a></code> function returns a table of document indexes in which a topic has high proportion. The table below indicates, for example, that the ninth document in the corpus has the highest proportion of the <em>Government</em> topic among all other documents.</p>
+<p>To explore documents that are highly associated with each topic, the <code><a href="../../reference/top_docs.html">top_docs()</a></code> function returns a table of document indexes in which a topic has high proportion.</p>
+<p>The table below indicates, for example, that the ninth document in the corpus has the highest proportion of the <em>Government</em> topic among all other documents.</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_docs.html">top_docs</a></span>(<span class="no">out</span>)</pre></body></html></div>
 <pre><code>##    1_Government 2_Congress 3_Peace 4_Constitution 5_ForeignAffairs Other_1
 ## 1             9         31      52              2                5      46
@@ -193,7 +196,8 @@
 <p>Researchers may want to obtain the entire document-topic distribution and topic-word distribution. The output of the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function contains both quantities.</p>
 <div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">out</span>$<span class="no">theta</span>  <span class="co"># Document-topic distribution</span>
 <span class="no">out</span>$<span class="no">phi</span>    <span class="co"># Topic-word distribution</span></pre></body></html></div>
-<p>The <strong>keyATM</strong> provides other functions to diagnose and explore the fitted model. First, it is important to check the model fitting. If the model is working as expected, we would observe an increase trend for the log-likelihood and an decrease trend for the perplexity. Also the fluctuation of these values get smaller as iteration increases. The <code><a href="../../reference/plot_modelfit.html">plot_modelfit()</a></code> function visualizes the within sample log-likelihood and perplexity and the created figure can be saved with the <code><a href="../../reference/save_fig.html">save_fig()</a></code> function. <!-- The figure shows that the increase of log-likelihood and the decrease of perplexity.  --> <!-- Also, the lines get flatter as iteration increases. These results indicate an example of  --> <!-- the good model fit. --></p>
+<p>The <strong>keyATM</strong> provides other functions to diagnose and explore the fitted model. First, it is important to check the model fitting. If the model is working as expected, we would observe an increase trend for the log-likelihood and an decrease trend for the perplexity.</p>
+<p>Also the fluctuation of these values get smaller as iteration increases. The <code><a href="../../reference/plot_modelfit.html">plot_modelfit()</a></code> function visualizes the within sample log-likelihood and perplexity and the created figure can be saved with the <code><a href="../../reference/save_fig.html">save_fig()</a></code> function.</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">fig_modelfit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/plot_modelfit.html">plot_modelfit</a></span>(<span class="no">out</span>)
 <span class="no">fig_modelfit</span></pre></body></html></div>
 <p><img src="keyATM_base_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
@@ -208,7 +212,6 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
         <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
     </nav>
 </div>
@@ -222,7 +225,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

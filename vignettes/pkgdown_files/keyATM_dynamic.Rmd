@@ -56,12 +56,14 @@ keyATM_docs <- keyATM_read(data_dfm)
 Researchers are often interested in investigating how the prevalence of topics change
 over time. The \pkg{keyATM} can use time stamps for the prior for
 document-topic distribution through Hidden Markov Model [Chib (1998)](https://doi.org/10.1016/S0304-4076(97)00115-2).
+
 Section 4 of [Eshima et al. (2020)](https://arxiv.org/abs/2004.05964) explains the dynamic keyATM in details.
 As explained in [keyATM Covariates](keyATM_cov.html), we recommend researchers to
 construct a numeric or an integer vector of time stamps after preprocessing texts. 
 
 ## Preparing time index
 Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. 
+
 We use the US Presidential inaugural address data we prapared ([documents](Preparation.html#preparing-texts) and [keywords](Preparation.html#preparing-keywords)).
 
 
@@ -112,7 +114,7 @@ fig_alpha
 
 Finally, we can plot the time trend of topics with the `plot_timetrend()` function.
 With the `time_index_label` argument, you can label each time index. Note that `store_theta` option
-in the `keyATM()` function should be `TRUE` to show credible intervals.
+in the `keyATM()` function should be `TRUE` to show 90% credible intervals.
 
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}

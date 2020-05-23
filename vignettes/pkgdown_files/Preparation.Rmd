@@ -57,9 +57,10 @@ data_tokens <- tokens(data_corpus_inaugural,
                                "must", "upon", "with", "without")) %>%
                  tokens_select(min_nchar = 3)
 ```
-`tokens` removes punctuations and unnecessary characters, 
-`tokens_tolower` convert all characters into lower cases,
-`tokens_remove` remove general stop words (e.g, the, is, at, with `stopwords("english")`)
+The `tokens()` function removes punctuations and unnecessary characters, 
+
+The `tokens_tolower()` function converts all characters into lower cases,
+The `tokens_remove()` function removes general stop words (e.g, the, is, at, with `stopwords("english")`)
 and corpus specific high frequent words ("may", "shall", ..., "without" in this example), 
 and `tokens_select` drops
 short words that do not usually contribute to interpreting topics.
@@ -158,6 +159,7 @@ keyATM_docs <- keyATM_read(textfiles)
 Feeding keywords into models plays an essential role in the **keyATM**. 
 Researchers are expected to use their substantive knowledge and
 to carefully select keywords.
+
 In this application, suppose we are interested in five topics, 
 *Government*, *Congress*, *Peace*, *Constitution*, and *Foreign affairs*
 and choose keywords for each of these topics.
@@ -174,13 +176,14 @@ Each keyword-topic can have a different number of keywords.
 
 ### Checking keywords
 Keywords should appear reasonable times (typically more than 0.1% of the corpus) in the documents.
-The `visualize_keywords` function plots the frequency of keywords by topic.
+The `visualize_keywords()` function plots the frequency of keywords by topic.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center', height=3, width=3}
 key_viz <- visualize_keywords(docs = keyATM_docs, keywords = keywords)
 key_viz
 ```
 The figure helps you to check the frequency of keywords. Including low-frequency keywords do not help the model in general. 
+
 Proportion is defined as a number of times a keyword occurs in the corpus divided by the total length of documents. This measures the frequency of the keyword in the corpus. Formally, the proportion of the keyword $v$ is,
 $$
 \begin{align*}

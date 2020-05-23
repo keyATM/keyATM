@@ -67,9 +67,6 @@
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_files/Heterogeneity.html">Heterogeneity</a>
-    </li>
-    <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -101,7 +98,7 @@
 
       
 
-      </header><script src="Preparation_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Preparation</h1>
@@ -160,7 +157,8 @@
                                <span class="st">"may"</span>, <span class="st">"shall"</span>, <span class="st">"can"</span>,
                                <span class="st">"must"</span>, <span class="st">"upon"</span>, <span class="st">"with"</span>, <span class="st">"without"</span>)) <span class="kw">%&gt;%</span>
                  <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html">tokens_select</a></span>(<span class="kw">min_nchar</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
-<p><code>tokens</code> removes punctuations and unnecessary characters, <code>tokens_tolower</code> convert all characters into lower cases, <code>tokens_remove</code> remove general stop words (e.g, the, is, at, with <code><a href="https://quanteda.io/reference/reexports.html">stopwords("english")</a></code>) and corpus specific high frequent words (“may”, “shall”, …, “without” in this example), and <code>tokens_select</code> drops short words that do not usually contribute to interpreting topics.</p>
+<p>The <code><a href="https://quanteda.io/reference/tokens.html">tokens()</a></code> function removes punctuations and unnecessary characters,</p>
+<p>The <code><a href="https://quanteda.io/reference/tokens_tolower.html">tokens_tolower()</a></code> function converts all characters into lower cases, The <code><a href="https://quanteda.io/reference/tokens_select.html">tokens_remove()</a></code> function removes general stop words (e.g, the, is, at, with <code><a href="https://quanteda.io/reference/reexports.html">stopwords("english")</a></code>) and corpus specific high frequent words (“may”, “shall”, …, “without” in this example), and <code>tokens_select</code> drops short words that do not usually contribute to interpreting topics.</p>
 <p>Before loading data into the <strong>keyATM</strong>, we construct a document-feature matrix with the <code><a href="https://quanteda.io/reference/dfm.html">dfm()</a></code> function in the <strong>quanteda</strong>. We trim infrequent terms with the <code><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim()</a></code> function.</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">data_dfm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(<span class="no">data_tokens</span>) <span class="kw">%&gt;%</span>
               <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="kw">min_termfreq</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">min_docfreq</span> <span class="kw">=</span> <span class="fl">2</span>)</pre></body></html></div>
@@ -223,7 +221,8 @@
 <div id="create-keywords-list" class="section level3">
 <h3 class="hasAnchor">
 <a href="#create-keywords-list" class="anchor"></a>Create keywords list</h3>
-<p>Feeding keywords into models plays an essential role in the <strong>keyATM</strong>. Researchers are expected to use their substantive knowledge and to carefully select keywords. In this application, suppose we are interested in five topics, <em>Government</em>, <em>Congress</em>, <em>Peace</em>, <em>Constitution</em>, and <em>Foreign affairs</em> and choose keywords for each of these topics.</p>
+<p>Feeding keywords into models plays an essential role in the <strong>keyATM</strong>. Researchers are expected to use their substantive knowledge and to carefully select keywords.</p>
+<p>In this application, suppose we are interested in five topics, <em>Government</em>, <em>Congress</em>, <em>Peace</em>, <em>Constitution</em>, and <em>Foreign affairs</em> and choose keywords for each of these topics.</p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">keywords</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">Government</span>     <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"laws"</span>, <span class="st">"law"</span>, <span class="st">"executive"</span>),
                  <span class="kw">Congress</span>       <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"congress"</span>, <span class="st">"party"</span>),
                  <span class="kw">Peace</span>          <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"peace"</span>, <span class="st">"world"</span>, <span class="st">"freedom"</span>),
@@ -234,10 +233,11 @@
 <div id="checking-keywords" class="section level3">
 <h3 class="hasAnchor">
 <a href="#checking-keywords" class="anchor"></a>Checking keywords</h3>
-<p>Keywords should appear reasonable times (typically more than 0.1% of the corpus) in the documents. The <code>visualize_keywords</code> function plots the frequency of keywords by topic.</p>
+<p>Keywords should appear reasonable times (typically more than 0.1% of the corpus) in the documents. The <code><a href="../../reference/visualize_keywords.html">visualize_keywords()</a></code> function plots the frequency of keywords by topic.</p>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">key_viz</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/visualize_keywords.html">visualize_keywords</a></span>(<span class="kw">docs</span> <span class="kw">=</span> <span class="no">keyATM_docs</span>, <span class="kw">keywords</span> <span class="kw">=</span> <span class="no">keywords</span>)
 <span class="no">key_viz</span></pre></body></html></div>
-<p><img src="Preparation_files/figure-html/unnamed-chunk-12-1.png" width="700" style="display: block; margin: auto;"> The figure helps you to check the frequency of keywords. Including low-frequency keywords do not help the model in general. Proportion is defined as a number of times a keyword occurs in the corpus divided by the total length of documents. This measures the frequency of the keyword in the corpus. Formally, the proportion of the keyword <span class="math inline">\(v\)</span> is, <span class="math display">\[
+<p><img src="Preparation_files/figure-html/unnamed-chunk-12-1.png" width="700" style="display: block; margin: auto;"> The figure helps you to check the frequency of keywords. Including low-frequency keywords do not help the model in general.</p>
+<p>Proportion is defined as a number of times a keyword occurs in the corpus divided by the total length of documents. This measures the frequency of the keyword in the corpus. Formally, the proportion of the keyword <span class="math inline">\(v\)</span> is, <span class="math display">\[
 \begin{align*}
     \text{Proportion of }v = \frac{\sum_{d=1}^{D} \sum_{i=1}^{N_d} I(w_{di} = v) }{\sum_{d=1}^{D} N_d}
 \end{align*}
@@ -305,7 +305,6 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
         <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
     </nav>
 </div>
@@ -319,7 +318,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
