@@ -131,4 +131,5 @@ fig_timetrend
 
 
 ## Reference
-Chib, S. (1998). "Estimation and comparison of multiple change-point models." *Journal of econometrics*, 86(2), 221-241.
+* Chib, S. (1998). "Estimation and comparison of multiple change-point models." *Journal of econometrics*, 86(2), 221-241.
+* Eshima, S., Imai, K., & Sasaki, T. (2020). Keyword Assisted Topic Models. arXiv preprint arXiv:2004.05964.

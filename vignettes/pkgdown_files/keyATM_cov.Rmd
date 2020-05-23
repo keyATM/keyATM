@@ -247,4 +247,5 @@ top_words(strata_tw, n = 3)
 ```
 
 ## Reference
-Mimno D. McCallum A. (2008). “Topic models conditioned on arbitrary features with Dirichlet-Multinomial regression.” In *Proceedings of the 24th Conference on Uncertainty in Artificial Intelligence*, pp. 411–418.
+* Eshima, S., Imai, K., & Sasaki, T. (2020). Keyword Assisted Topic Models. arXiv preprint arXiv:2004.05964.
+* Mimno D. McCallum A. (2008). “Topic models conditioned on arbitrary features with Dirichlet-Multinomial regression.” In *Proceedings of the 24th Conference on Uncertainty in Artificial Intelligence*, pp. 411–418.
