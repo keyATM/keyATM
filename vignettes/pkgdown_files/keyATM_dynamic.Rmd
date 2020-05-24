@@ -95,10 +95,11 @@ out <- keyATM(docs              = keyATM_docs,
               options           = list(seed = 250))
 ```
 
+
+## Interpreting results
 We can use the `top_words()`, `top_docs()`, `plot_modelfit()`, `plot_alpha()`,
 and `plot_pi()` functions
 as in [the base keyATM](keyATM_base.html). 
-
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 top_words(out)
@@ -115,7 +116,6 @@ fig_alpha
 Finally, we can plot the time trend of topics with the `plot_timetrend()` function.
 With the `time_index_label` argument, you can label each time index. Note that `store_theta` option
 in the `keyATM()` function should be `TRUE` to show 90% credible intervals.
-
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(docs              = keyATM_docs,                         
