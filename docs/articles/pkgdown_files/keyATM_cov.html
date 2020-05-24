@@ -178,9 +178,9 @@
 <h2 class="hasAnchor">
 <a href="#interpreting-results" class="anchor"></a>Interpreting results</h2>
 <p>We can use the <code><a href="../../reference/top_words.html">top_words()</a></code>, <code><a href="../../reference/top_docs.html">top_docs()</a></code>, <code><a href="../../reference/plot_modelfit.html">plot_modelfit()</a></code>, and <code><a href="../../reference/plot_pi.html">plot_pi()</a></code> functions as in the base keyATM. The <code><a href="../../reference/plot_alpha.html">plot_alpha()</a></code> is not defined for the covariate keyATM because we use covariates to model the prior for the document-topic distribution and <span class="math inline">\(\alpha\)</span> does not explicitly appear in the model.</p>
-<div id="check-coefficients-of-covariates" class="section level3">
+<div id="getting-covariates-from-the-output-object" class="section level3">
 <h3 class="hasAnchor">
-<a href="#check-coefficients-of-covariates" class="anchor"></a>Check coefficients of covariates</h3>
+<a href="#getting-covariates-from-the-output-object" class="anchor"></a>Getting covariates from the output object</h3>
 <p>First, we use the output from the <a href="keyATM_cov.html#fitting-the-model">previous section</a> and check the covariates used in the model. Note that covariates are standardized by default (i.e., each covariates to have zero mean and a standard deviation one).</p>
 <p>This transformation does not change the substantive results as it is a linear transformation. Researchers can use raw values with <code>standardize = FALSE</code> in the <code>model_settings</code> argument.</p>
 <p>Researchers can glance covariate information with the <code><a href="../../reference/covariates_info.html">covariates_info()</a></code> and the <code><a href="../../reference/covariates_get.html">covariates_get()</a></code> function will return covariates used in the fitted output.</p>

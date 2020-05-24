@@ -134,7 +134,7 @@ as in the base keyATM. The `plot_alpha()` is not defined for the covariate keyAT
 we use covariates to model the prior for the document-topic distribution
 and $\alpha$ does not explicitly appear in the model.
 
-### Check coefficients of covariates
+### Getting covariates from the output object
 First, we use the output from the [previous section](keyATM_cov.html#fitting-the-model) and check the
 covariates used in the model. Note that covariates are standardized by default
 (i.e., each covariates to have zero mean and a standard deviation one).
