@@ -8,10 +8,12 @@
 
 <title>Show the top words for each topic — top_words • keyATM</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
@@ -38,12 +40,11 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Show the top words for each topic — top_words" />
 
+<meta property="og:title" content="Show the top words for each topic — top_words" />
 <meta property="og:description" content="If show_keyword is TRUE then words in their keyword topics
 are suffixed with a check mark. Words from another keyword topic
 are labeled with the name of that category." />
-
 
 
 
@@ -124,7 +125,6 @@ are labeled with the name of that category." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/keyATM/keyATM">
@@ -151,15 +151,13 @@ are labeled with the name of that category." />
     </div>
 
     <div class="ref-description">
-    
     <p>If <code>show_keyword</code> is <code>TRUE</code> then words in their keyword topics
 are suffixed with a check mark. Words from another keyword topic
 are labeled with the name of that category.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>top_words</span>(<span class='no'>x</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>measure</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"probability"</span>, <span class='st'>"lift"</span>), <span class='kw'>show_keyword</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -180,11 +178,10 @@ are labeled with the name of that category.</p>
       <td><p>logical. If <code>TRUE</code>, mark keywords. Default is <code>TRUE</code>.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>An n x k table of the top n words in each topic</p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

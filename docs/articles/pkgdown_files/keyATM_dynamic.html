@@ -98,7 +98,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="keyATM_dynamic_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>keyATM Dynamic</h1>
@@ -111,7 +111,6 @@
 
     
     
-
 <p>Researchers are often interested in investigating how the prevalence of topics change over time. The <strong>keyATM</strong> can use time stamps for the prior for document-topic distribution through Hidden Markov Model (<a href="https://doi.org/10.1016/S0304-4076(97)00115-2">Chib 1998</a>).</p>
 <p>Section 4 of <a href="https://arxiv.org/abs/2004.05964">Eshima et al. (2020)</a> explains the dynamic keyATM in details. As explained in <a href="keyATM_cov.html">keyATM Covariates</a>, we recommend researchers to construct a numeric or an integer vector of time stamps after preprocessing texts.</p>
 <div id="preparing-time-index" class="section level2">
@@ -157,6 +156,10 @@
               <span class="kw">model_settings</span>    <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">time_index</span> <span class="kw">=</span> <span class="no">vars_period</span>$<span class="no">Period</span>,
                                        <span class="kw">num_states</span> <span class="kw">=</span> <span class="fl">5</span>),
               <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>))</pre></body></html></div>
+</div>
+<div id="interpreting-results" class="section level2">
+<h2 class="hasAnchor">
+<a href="#interpreting-results" class="anchor"></a>Interpreting results</h2>
 <p>We can use the <code><a href="../../reference/top_words.html">top_words()</a></code>, <code><a href="../../reference/top_docs.html">top_docs()</a></code>, <code><a href="../../reference/plot_modelfit.html">plot_modelfit()</a></code>, <code><a href="../../reference/plot_alpha.html">plot_alpha()</a></code>, and <code><a href="../../reference/plot_pi.html">plot_pi()</a></code> functions as in <a href="keyATM_base.html">the base keyATM</a>.</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span>(<span class="no">out</span>)</pre></body></html></div>
 <pre><code>##     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
@@ -208,6 +211,7 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
         <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
     </nav>
 </div>

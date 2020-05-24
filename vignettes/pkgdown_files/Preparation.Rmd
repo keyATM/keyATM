@@ -6,13 +6,13 @@ output:
 ---
 
 ## Preparing Texts
-To fit topic models with **keyATM**, users need to prepare texts for `keyATM_read()`. `keyATM_read()` has three ways to input texts. If you want to check an example with a built-in dataset, please proceed to [the next section](Preparation.html#reading-documents-into-keyatm).
+To fit topic models with **keyATM**, users need to transform their text data using `keyATM_read()`. 
+This page explains three ways to input text data into `keyATM_read()`. 
 
 ### Using quanteda dfm (**recommended**)
-
-**keyATM** can read a `dfm` object created by **quanteda** package (**this method is strongly recommended**). Since **keyATM** does not provide preprocessing functions, we recommend users to preprocess documents with **quanteda**. 
-By making a `token` object from a `corpus` object, **quanteda** can perform various preprocessing methods ([quanteda Quick Start: Tokenizing texts](https://quanteda.io/articles/quickstart.html#tokenizing-texts)).
-
+**keyATM** can read a document-feature matrix (`dfm` object) created by **quanteda** package (**this method is strongly recommended**). Since **keyATM** does not provide preprocessing functions, we recommend users to preprocess texts with **quanteda**. 
+By making a `token` object from a `corpus` object, **quanteda** can perform various preprocessing methods ([quanteda Quick Start: Tokenizing texts](https://quanteda.io/articles/quickstart.html#tokenizing-texts)). 
+Users can create a `dfm` object from a `token` object.
 
 #### Loading data for **quanteda**
 Here is an example of loading text data and transform it into the **quanteda** `corpus` format.
@@ -30,8 +30,13 @@ key_corpus <- corpus(raw_docs, text_field = "text")
 
 # If you use the covariate model, please consider using `docvars` argument
 key_corpus <- corpus(raw_docs, text_field = "text", docvars = COVARIATES)
-```
 
+# You can conduct a variety of preprocessing in this step as shown in the next section
+key_token <- tokens(key_corpus)
+
+# Create a document-feature matrix (a dfm object) from a token object
+key_dfm <- dfm(key_token)
+```
 
 #### Preprocessing data
 We show a concrete example of preprocessing data and loading it into the **keyATM**. 
@@ -43,6 +48,8 @@ library(magrittr)
 data(data_corpus_inaugural, package = "quanteda")
 ```
 
+Since the US presidential speech dataset is a `corpus` object, we use the `tokens()` function to convert this data
+into a `token` object and to preprocess texts before creating a `dfm` object.
 The `tokens()` and related functions in the **quanteda** provide various preprocessing functions. Preprocessing can reduce the number of unique features (words) in the corpus, which is critical for increasing the interpretability. In the example below, we adopt some of the most common preprocessing steps.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 data_tokens <- tokens(data_corpus_inaugural,
@@ -65,7 +72,7 @@ and corpus specific high frequent words ("may", "shall", ..., "without" in this 
 and `tokens_select` drops
 short words that do not usually contribute to interpreting topics.
 
-Before loading data into the **keyATM**, we construct a document-feature matrix 
+Before loading data into the **keyATM**, we construct a document-feature matrix (`dfm` object) 
 with the `dfm()` function in the **quanteda**. We trim infrequent terms with the `dfm_trim()` function.
 
 ```{r, warning=FALSE, message=FALSE}
@@ -114,7 +121,6 @@ without any word counts with the following function.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 summary(keyATM_docs)
 ```
-
 
 ### Alternative ways to load texts into **keyATM**
 There are two other ways to read texts, which we do not recommend. 
@@ -226,11 +232,9 @@ Now you have texts and keywords! The next step is to fit a model with the `keyAT
   * If you do not have covariates, this model is your first option.
 * [keyATM Covariates](keyATM_cov.html)
   * If you have covariates, please use this model.
-  * This model uses covariates to model topic prevalence (the prior of document-topic distribution).
+  * This model uses document-level meta data (document-level covariates) to model topic prevalence (the prior of document-topic distribution).
 * [keyATM Dynamic](keyATM_dynamic.html)
   * If you want to explicitly consider time structure, please use this model.
 
 
 You can find details in [FAQ](FAQ.html#which-model-to-use).
-
-

@@ -98,7 +98,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="Preparation_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Preparation</h1>
@@ -114,11 +114,11 @@
 <div id="preparing-texts" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preparing-texts" class="anchor"></a>Preparing Texts</h2>
-<p>To fit topic models with <strong>keyATM</strong>, users need to prepare texts for <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code>. <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code> has three ways to input texts. If you want to check an example with a built-in dataset, please proceed to <a href="Preparation.html#reading-documents-into-keyatm">the next section</a>.</p>
+<p>To fit topic models with <strong>keyATM</strong>, users need to transform their text data using <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code>. This page explains three ways to input text data into <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code>.</p>
 <div id="using-quanteda-dfm-recommended" class="section level3">
 <h3 class="hasAnchor">
 <a href="#using-quanteda-dfm-recommended" class="anchor"></a>Using quanteda dfm (<strong>recommended</strong>)</h3>
-<p><strong>keyATM</strong> can read a <code>dfm</code> object created by <strong>quanteda</strong> package (<strong>this method is strongly recommended</strong>). Since <strong>keyATM</strong> does not provide preprocessing functions, we recommend users to preprocess documents with <strong>quanteda</strong>. By making a <code>token</code> object from a <code>corpus</code> object, <strong>quanteda</strong> can perform various preprocessing methods (<a href="https://quanteda.io/articles/quickstart.html#tokenizing-texts">quanteda Quick Start: Tokenizing texts</a>).</p>
+<p><strong>keyATM</strong> can read a document-feature matrix (<code>dfm</code> object) created by <strong>quanteda</strong> package (<strong>this method is strongly recommended</strong>). Since <strong>keyATM</strong> does not provide preprocessing functions, we recommend users to preprocess texts with <strong>quanteda</strong>. By making a <code>token</code> object from a <code>corpus</code> object, <strong>quanteda</strong> can perform various preprocessing methods (<a href="https://quanteda.io/articles/quickstart.html#tokenizing-texts">quanteda Quick Start: Tokenizing texts</a>). Users can create a <code>dfm</code> object from a <code>token</code> object.</p>
 <div id="loading-data-for-quanteda" class="section level4">
 <h4 class="hasAnchor">
 <a href="#loading-data-for-quanteda" class="anchor"></a>Loading data for <strong>quanteda</strong>
@@ -135,7 +135,13 @@
 <span class="no">key_corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(<span class="no">raw_docs</span>, <span class="kw">text_field</span> <span class="kw">=</span> <span class="st">"text"</span>)
 
 <span class="co"># If you use the covariate model, please consider using `docvars` argument</span>
-<span class="no">key_corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(<span class="no">raw_docs</span>, <span class="kw">text_field</span> <span class="kw">=</span> <span class="st">"text"</span>, <span class="kw">docvars</span> <span class="kw">=</span> <span class="no">COVARIATES</span>)</pre></body></html></div>
+<span class="no">key_corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span>(<span class="no">raw_docs</span>, <span class="kw">text_field</span> <span class="kw">=</span> <span class="st">"text"</span>, <span class="kw">docvars</span> <span class="kw">=</span> <span class="no">COVARIATES</span>)
+
+<span class="co"># You can conduct a variety of preprocessing in this step as shown in the next section</span>
+<span class="no">key_token</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(<span class="no">key_corpus</span>)
+
+<span class="co"># Create a document-feature matrix (a dfm object) from a token object</span>
+<span class="no">key_dfm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(<span class="no">key_token</span>)</pre></body></html></div>
 </div>
 <div id="preprocessing-data" class="section level4">
 <h4 class="hasAnchor">
@@ -145,7 +151,7 @@
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">quanteda</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">magrittr</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">data_corpus_inaugural</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"quanteda"</span>)</pre></body></html></div>
-<p>The <code><a href="https://quanteda.io/reference/tokens.html">tokens()</a></code> and related functions in the <strong>quanteda</strong> provide various preprocessing functions. Preprocessing can reduce the number of unique features (words) in the corpus, which is critical for increasing the interpretability. In the example below, we adopt some of the most common preprocessing steps.</p>
+<p>Since the US presidential speech dataset is a <code>corpus</code> object, we use the <code><a href="https://quanteda.io/reference/tokens.html">tokens()</a></code> function to convert this data into a <code>token</code> object and to preprocess texts before creating a <code>dfm</code> object. The <code><a href="https://quanteda.io/reference/tokens.html">tokens()</a></code> and related functions in the <strong>quanteda</strong> provide various preprocessing functions. Preprocessing can reduce the number of unique features (words) in the corpus, which is critical for increasing the interpretability. In the example below, we adopt some of the most common preprocessing steps.</p>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">data_tokens</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(<span class="no">data_corpus_inaugural</span>,
                       <span class="kw">remove_numbers</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
                       <span class="kw">remove_punct</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
@@ -159,7 +165,7 @@
                  <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html">tokens_select</a></span>(<span class="kw">min_nchar</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
 <p>The <code><a href="https://quanteda.io/reference/tokens.html">tokens()</a></code> function removes punctuations and unnecessary characters,</p>
 <p>The <code><a href="https://quanteda.io/reference/tokens_tolower.html">tokens_tolower()</a></code> function converts all characters into lower cases, The <code><a href="https://quanteda.io/reference/tokens_select.html">tokens_remove()</a></code> function removes general stop words (e.g, the, is, at, with <code><a href="https://quanteda.io/reference/reexports.html">stopwords("english")</a></code>) and corpus specific high frequent words (“may”, “shall”, …, “without” in this example), and <code>tokens_select</code> drops short words that do not usually contribute to interpreting topics.</p>
-<p>Before loading data into the <strong>keyATM</strong>, we construct a document-feature matrix with the <code><a href="https://quanteda.io/reference/dfm.html">dfm()</a></code> function in the <strong>quanteda</strong>. We trim infrequent terms with the <code><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim()</a></code> function.</p>
+<p>Before loading data into the <strong>keyATM</strong>, we construct a document-feature matrix (<code>dfm</code> object) with the <code><a href="https://quanteda.io/reference/dfm.html">dfm()</a></code> function in the <strong>quanteda</strong>. We trim infrequent terms with the <code><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim()</a></code> function.</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">data_dfm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(<span class="no">data_tokens</span>) <span class="kw">%&gt;%</span>
               <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="kw">min_termfreq</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">min_docfreq</span> <span class="kw">=</span> <span class="fl">2</span>)</pre></body></html></div>
 <p>Finally, <code>keyATM_read</code> function reads your data for <strong>keyATM</strong>.</p>
@@ -290,7 +296,7 @@
 <a href="keyATM_cov.html">keyATM Covariates</a>
 <ul>
 <li>If you have covariates, please use this model.</li>
-<li>This model uses covariates to model topic prevalence (the prior of document-topic distribution).</li>
+<li>This model uses document-level meta data (document-level covariates) to model topic prevalence (the prior of document-topic distribution).</li>
 </ul>
 </li>
 <li>
@@ -305,6 +311,7 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
         <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
     </nav>
 </div>
