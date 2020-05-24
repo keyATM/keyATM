@@ -1,5 +1,5 @@
 pandoc: 2.9.2.1
-pkgdown: 1.5.0
+pkgdown: 1.5.1
 pkgdown_sha: ~
 articles:
   FAQ: pkgdown_files/FAQ.html
@@ -12,5 +12,5 @@ articles:
   keyATM_dynamic: pkgdown_files/keyATM_dynamic.html
   keyATM_label: pkgdown_files/keyATM_label.html
   keyATMvb: pkgdown_files/keyATMvb.html
-last_built: 2020-05-24T03:52Z
+last_built: 2020-05-24T18:32Z
 
