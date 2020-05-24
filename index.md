@@ -49,7 +49,7 @@ Please wrap output with triple backticks.
 ## A minimal reproducible example or a reprex (it helps us a lot):
 Please wrap your code with triple backticks.
 ```
-If you've never heard of a [reprex](http://reprex.tidyverse.org/) before, start by reading [this reference](https://www.tidyverse.org/help/#reprex).
+If you've never heard of a [reprex](http://reprex.tidyverse.org/) before, please check [this reference](https://www.tidyverse.org/help/#reprex).
 
 
 

@@ -18,3 +18,5 @@ devtools::install_github("keyATM/keyATM", ref = "v0.3.0")
 
 If you want to try the latest development version, please specify the name of the branch with `ref` argument in `devtools::install_github`. You can find branches in our [GitHub repository](https://github.com/keyATM/keyATM/branches).
 
+Please visit [Preparation](Preparation.html) to check how to prepare text data to fit models with **keyATM**.
+

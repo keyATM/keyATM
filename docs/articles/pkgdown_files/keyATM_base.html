@@ -98,7 +98,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="keyATM_base_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>keyATM Base</h1>
@@ -111,7 +111,6 @@
 
     
     
-
 <div id="preparing-documents-and-keywords" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preparing-documents-and-keywords" class="anchor"></a>Preparing documents and keywords</h2>
@@ -125,7 +124,7 @@
 <p>To guarantee the replicability, we recommend to set the random seed in the <code>option</code> argument (see <a href="Options.html">here</a> for other options). The default number of iterations is 1500.</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,    <span class="co"># text input</span>
               <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">5</span>,              <span class="co"># number of topics without keywords</span>
-              <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords</span>, <span class="co"># keywords</span>
+              <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords</span>,       <span class="co"># keywords</span>
               <span class="kw">model</span>             <span class="kw">=</span> <span class="st">"base"</span>,         <span class="co"># select the model</span>
               <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>))</pre></body></html></div>
 <p>The default number of iterations is <code>1500</code>. Please check <a href="Options.html">this page</a> for available options.</p>
@@ -212,6 +211,7 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
         <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
     </nav>
 </div>
@@ -225,7 +225,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
 </div>
 
       </footer>
