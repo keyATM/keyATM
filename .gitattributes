@@ -1,1 +1,1 @@
-man/*.Rd linguist-documentation=true
+man/* linguist-vendored

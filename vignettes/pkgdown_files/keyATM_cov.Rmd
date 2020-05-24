@@ -157,7 +157,6 @@ used_covariates <- covariates_get(out)
 head(used_covariates)
 ```
 
-
 ### Covariates and document-topic distributions
 The covariate keyATM can characterize the relations between covariates
 and document-topic distributions. We can obtain the marginal posterior mean of
