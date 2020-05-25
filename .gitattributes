@@ -1,1 +1,1 @@
-*.rd linguist-language=Text
+tests/* linguist-vendored
