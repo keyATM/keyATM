@@ -14,7 +14,7 @@ test_that("Reading documents from quanteda dfm", {
 
 
 test_that("Visualizing keywords", {
-  skip_on_cran()  # temporary change
+  skip_on_cran()  # temporal change
   p <- visualize_keywords(keyATM_docs, bills_keywords)
   expect_s3_class(p, "keyATM_viz")
   expect_identical(values_fig(p)$WordCount[2], 318L)
@@ -46,6 +46,7 @@ class(bills_dfm_0) <- c("dfm")
 test_that("Documents with length 0: base", {
   expect_warning(docs0 <- keyATM_read(bills_dfm_0))
 
+  skip_on_cran()
   expect_warning(
     out <- keyATM(docs = docs0,  # text input
                   no_keyword_topics = 3,  # number of regular topics
@@ -77,6 +78,8 @@ test_that("Documents with length 0: covariate", {
 
 test_that("Documents with length 0: dynamic", {
   expect_warning(docs0 <- keyATM_read(bills_dfm_0))
+
+  skip_on_cran()
   expect_warning(
     out <- keyATM(docs = docs0,  # text input
                   no_keyword_topics = 3,  # number of regular topics
@@ -94,6 +97,8 @@ test_that("Documents with length 0: dynamic", {
 
 test_that("Documents with length 0: label", {
   expect_warning(docs0 <- keyATM_read(bills_dfm_0))
+
+  skip_on_cran()
   expect_warning(
     out <- keyATM(docs = docs0,  # text input
                   no_keyword_topics = 3,  # number of regular topics

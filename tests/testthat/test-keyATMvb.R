@@ -1,6 +1,7 @@
 if (compareVersion(paste0(version$major, ".", version$minor), "3.6") < 0) {
   skip("Randomization algorithm has changed from R 3.6")
 }
+skip_on_cran()
 
 # Read Data
 data(keyATM_data_bills)
