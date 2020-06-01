@@ -178,7 +178,6 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
     dplyr::rename(Word = .data$text_split) %>%
     dplyr::group_by(.data$Word) %>%
     dplyr::summarize(WordCount = dplyr::n()) %>%
-    dplyr::ungroup(.data) %>%
     dplyr::mutate(`Proportion(%)` = round(.data$WordCount / totalwords * 100, 3)) %>%
     dplyr::arrange(dplyr::desc(.data$WordCount)) %>%
     dplyr::mutate(Ranking = 1:(dplyr::n())) -> data

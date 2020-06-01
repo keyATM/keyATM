@@ -29,7 +29,6 @@ test_that("Parallel initialization", {
                 no_keyword_topics = 3,  # number of regular topics
                 keywords = bills_keywords,  # keywords
                 model = "base",  # select the model
-                # model_settings = list(labels = labels_use),
                 options = list(seed = 250, iterations = 0, parallel_init = TRUE))
   expect_identical(out$Z[[1]][3], 1L)
   expect_identical(out$Z[[140]][15], 6L)
