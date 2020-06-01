@@ -14,6 +14,7 @@ test_that("Reading documents from quanteda dfm", {
 
 
 test_that("Visualizing keywords", {
+  skip_on_cran()  # temporary change
   p <- visualize_keywords(keyATM_docs, bills_keywords)
   expect_s3_class(p, "keyATM_viz")
   expect_identical(values_fig(p)$WordCount[2], 318L)

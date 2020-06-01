@@ -1,3 +1,24 @@
+# keyATM 0.2.1
+### Major changes
+* Temporary update `test-Initialization.R` to deal with the following error.
+```
+`...` is not empty.
+
+We detected these problematic arguments:
+* `..1`
+
+These dots only exist to allow future extensions and should be empty.
+Did you misspecify an argument?
+Backtrace:
+1. keyATM::visualize_keywords(keyATM_docs, bills_keywords)
+2. dplyr::rename(., Word = .data$text_split)
+2. dplyr::group_by(., .data$Word)
+2. dplyr::summarize(., WordCount = dplyr::n())
+9. dplyr::ungroup(., .data)
+11. ellipsis::check_dots_empty()
+12. ellipsis:::action_dots(...)
+```
+
 # keyATM 0.2.0
 [Roadmap](https://github.com/keyATM/keyATM/projects/1) for this version.
 
