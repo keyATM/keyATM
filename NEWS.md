@@ -31,7 +31,7 @@
 * Organize functions into a package
 * Add keyATM Label
 * Replace `hashmap` with `fastmap`
-* Thank you [Santiago Olivella](http://santiagoolivella.info/) for finding several bugs!
+* Thank you [Santiago Olivella](https://github.com/solivella) for finding several bugs!
 
 # keyATM 0.0.7
 ### Major changes
