@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
       </span>
     </div>
 
@@ -98,7 +98,7 @@
 
       
 
-      </header><script src="FAQ_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>FAQ</h1>
@@ -252,10 +252,14 @@
 <a href="#can-i-run-keyatm-on-cloud-computing-services" class="anchor"></a>Can I run keyATM on cloud computing services?</h2>
 <p>Yes! For example, <a href="http://www.louisaslett.com/">Professor Louis Aslett</a> provides an easy to use Amazon Machine Image of RStudio <a href="http://www.louisaslett.com/RStudio_AMI/">here</a>. When you select an instance, please note that <strong>keyATM</strong> does not need multiple cores (one or two cores would be enough because we cannot parallelize Collapsed Gibbs Sampling), but make sure the memory can handle your data.</p>
 </div>
+<div id="can-a-theta-matrix-stored-with-store_theta-to-true-directly-interpretable-as-samples-from-the-posterior-and-thus-appropriate-for-estimating-uncertainty" class="section level2">
+<h2 class="hasAnchor">
+<a href="#can-a-theta-matrix-stored-with-store_theta-to-true-directly-interpretable-as-samples-from-the-posterior-and-thus-appropriate-for-estimating-uncertainty" class="anchor"></a>Can a theta matrix stored with <code>store_theta</code> to <code>TRUE</code> directly interpretable as samples from the posterior and thus appropriate for estimating uncertainty?</h2>
+<p>Yes. Since we use Collapsed Gibbs sampling, thetas are not sampled directly from the posterior distribution. <code>store_theta</code> option calculates marginal posterior (Equation 11 in <a href="https://arxiv.org/pdf/2004.05964.pdf">our paper</a>) for each iteration, so we can use it to consider uncertainty.</p>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
         <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
     </nav>
 </div>

@@ -42,7 +42,7 @@ test_that("Plot pi", {
   skip_on_cran()
   expect_message(save_fig(p, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(values_fig(p)$uq[2], 0.03964407, tolerance = 0.001)
+  expect_equal(as.numeric(values_fig(p)$uq[2]), 0.03964407, tolerance = 0.001)
 })
 
 # Dynamic
