@@ -74,7 +74,7 @@ test_that("Covariates get", {
 
 
 test_that("Doc Topic", {
-  sskip_on_cran()
+  skip_on_cran()
   strata_topic <- by_strata_DocTopic(out, by_var = "Period20_21c",
                                           labels = c("18_19c", "20_21c"),
                                           posterior_mean = TRUE)

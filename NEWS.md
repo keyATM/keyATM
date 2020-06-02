@@ -1,10 +1,11 @@
 # keyATM 0.2.2
 ### Major changes
 * Updated for dplyr 1.0.0
+* Update tests
 
 # keyATM 0.2.1
 ### Major changes
-* Temporary update `test-Initialization.R` to deal with the following error.
+* Temporary update `test-Initialization.R` to deal with some errors.
 
 # keyATM 0.2.0
 [Roadmap](https://github.com/keyATM/keyATM/projects/1) for this version.
