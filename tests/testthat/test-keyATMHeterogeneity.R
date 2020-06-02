@@ -79,13 +79,13 @@ test_that("Doc Topic", {
                                           posterior_mean = TRUE)
   p <- plot(strata_topic, var_name = "Period", show_topic = c(1,2,3,4))
   expect_s3_class(p, "keyATM_fig")
-  skip_on_os("linux")
+  skip_on_os("linux") ; ; skip_on_cran()
   expect_equal(summary(strata_topic)[[2]]$Point[1], 0.07443097, tolerance = 0.000001)
 })
 
 
 test_that("Topic Word", {
-  skip_on_os("linux")
+  skip_on_os("linux") ; skip_on_cran()
   strata_tw <- by_strata_TopicWord(out, keyATM_docs, by = as.vector(vars_selected$Party))
   top <- top_words(strata_tw, n = 3) 
   expect_equivalent(top$Democratic[1, 3], "world [\U2713]")
