@@ -45,7 +45,7 @@ void keyATMmeta::read_data_common()
   vocab = model["vocab"];
   regular_k = model["no_keyword_topics"];
   keywords_list = model["keywords"];
-  keyword_k = keywords_list.size();
+  keyword_k = model["keyword_k"];
   model_fit = model["model_fit"];
 
   num_topics = keyword_k + regular_k;
