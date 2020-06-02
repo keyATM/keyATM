@@ -45,9 +45,9 @@ Please note that the number of unique words, the total lenght of documents, and 
 If you want to speed up fitting, the first thing you can do is to review preprocessing processes. Usually, documents include a lot of low frequency words that do not help interpretation. **quanteda** provides various functions to trim those words.
 
 
-
 ## Can I run keyATM on cloud computing services?
 Yes! For example, [Professor Louis Aslett](http://www.louisaslett.com/) provides an easy to use Amazon Machine Image of RStudio [here](http://www.louisaslett.com/RStudio_AMI/). When you select an instance, please note that **keyATM** does not need multiple cores (one or two cores would be enough because we cannot parallelize Collapsed Gibbs Sampling), but make sure the memory can handle your data.
 
 
-
+## Can a theta matrix stored with `store_theta` to `TRUE` directly interpretable as samples from the posterior and thus appropriate for estimating uncertainty?
+Yes. Since we use Collapsed Gibbs sampling, thetas are not sampled directly from the posterior distribution. `store_theta` option calculates marginal posterior (Equation 11 in [our paper](https://arxiv.org/pdf/2004.05964.pdf)) for each iteration, so we can use it to consider uncertainty.
