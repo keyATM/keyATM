@@ -1,6 +1,6 @@
 # keyATM 0.2.2
 ### Major changes
-* Updated for dplyr 1.0.0
+* Update for dplyr 1.0.0
 * Update tests
 
 # keyATM 0.2.1

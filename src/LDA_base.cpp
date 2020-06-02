@@ -13,6 +13,7 @@ void LDAbase::read_data_common()
   regular_k = model["no_keyword_topics"];
   model_fit = model["model_fit"];
 
+  keyword_k = 0;
   num_topics = regular_k;
 
   // document-related constants
