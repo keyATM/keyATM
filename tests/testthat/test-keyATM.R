@@ -2,6 +2,7 @@ if (compareVersion(paste0(version$major, ".", version$minor), "3.6") < 0) {
   skip("Randomization algorithm has changed from R 3.6")
 }
 
+
 # Read Data
 data(keyATM_data_bills)
 bills_dfm <- keyATM_data_bills$doc_dfm

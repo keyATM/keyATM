@@ -28,7 +28,6 @@ test_that("Parallel initialization", {
                 no_keyword_topics = 3,  # number of regular topics
                 keywords = bills_keywords,  # keywords
                 model = "base",  # select the model
-                # model_settings = list(labels = labels_use),
                 options = list(seed = 250, iterations = 0, parallel_init = TRUE))
   expect_identical(out$Z[[1]][3], 1L)
   expect_identical(out$Z[[140]][15], 6L)
@@ -45,6 +44,7 @@ class(bills_dfm_0) <- c("dfm")
 test_that("Documents with length 0: base", {
   expect_warning(docs0 <- keyATM_read(bills_dfm_0))
 
+  skip_on_cran()
   expect_warning(
     out <- keyATM(docs = docs0,  # text input
                   no_keyword_topics = 3,  # number of regular topics
@@ -76,6 +76,8 @@ test_that("Documents with length 0: covariate", {
 
 test_that("Documents with length 0: dynamic", {
   expect_warning(docs0 <- keyATM_read(bills_dfm_0))
+
+  skip_on_cran()
   expect_warning(
     out <- keyATM(docs = docs0,  # text input
                   no_keyword_topics = 3,  # number of regular topics
@@ -93,6 +95,8 @@ test_that("Documents with length 0: dynamic", {
 
 test_that("Documents with length 0: label", {
   expect_warning(docs0 <- keyATM_read(bills_dfm_0))
+
+  skip_on_cran()
   expect_warning(
     out <- keyATM(docs = docs0,  # text input
                   no_keyword_topics = 3,  # number of regular topics

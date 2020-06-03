@@ -1,6 +1,7 @@
 if (compareVersion(paste0(version$major, ".", version$minor), "3.6") < 0) {
   skip("Randomization algorithm has changed from R 3.6")
 }
+skip_on_cran()
 
 # Read Data
 data(keyATM_data_bills)
@@ -20,8 +21,8 @@ test_that("weightedLDA base", {
   expect_error(plot_pi(base))
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(base$model_fit$Perplexity[3], 1978.213, tolerance = 0.0001)
-  expect_equal(top_words(base)[3, 1], "library")
+  expect_equal(base$model_fit$Perplexity[3], 1981.469, tolerance = 0.0001)
+  expect_equal(top_words(base)[3, 1], "end")
   expect_equal(base$pi, NULL)
 })
 
@@ -57,6 +58,6 @@ test_that("weightedLDA dynamic", {
   expect_error(plot_pi(dyn))
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(dyn$model_fit$Perplexity[2], 2098.058, tolerance = 0.0001)
+  expect_equal(dyn$model_fit$Perplexity[2], 2087.217, tolerance = 0.0001)
   expect_equal(top_words(dyn)[3, 1], "commission")
 })

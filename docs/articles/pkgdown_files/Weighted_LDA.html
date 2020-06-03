@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
       </span>
     </div>
 
@@ -98,7 +98,7 @@
 
       
 
-      </header><script src="Weighted_LDA_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Weighted LDA Models</h1>
@@ -142,16 +142,16 @@
                    <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>))</pre></body></html></div>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span>(<span class="no">out</span>)</pre></body></html></div>
 <pre><code>##    Topic_1      Topic_2  Topic_3    Topic_4    Topic_5
-## 1    world       states    every government     people
-## 2   nation constitution     good      great     public
-## 3      new        union    years    country government
-## 4   people       united      men        one   congress
-## 5  freedom       rights  justice      power       laws
-## 6  america     citizens    never       made  interests
-## 7    peace          war      law     spirit      among
-## 8      let        state  liberty       just    foreign
-## 9     life       powers     time       best     policy
-## 10     now    executive national      right        now</code></pre>
+## 1    world       states      war      great     people
+## 2      new      country      men      every government
+## 3   nation constitution   spirit government     public
+## 4   people       united    never       made       laws
+## 5  freedom        union     long   congress        law
+## 6  america     citizens progress       just       duty
+## 7    peace       rights   common       best  interests
+## 8      let          one  purpose      power  political
+## 9     time        power american       much    nations
+## 10    life          now      yet       part     policy</code></pre>
 </div>
 <div id="weighted-lda-covariates" class="section level2">
 <h2 class="hasAnchor">
@@ -207,22 +207,21 @@
                                            <span class="kw">num_states</span> <span class="kw">=</span> <span class="fl">5</span>),
                    <span class="kw">options</span>          <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>))</pre></body></html></div>
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span>(<span class="no">out</span>)</pre></body></html></div>
-<pre><code>##     Topic_1  Topic_2      Topic_3
-## 1   country    world   government
-## 2     every   nation       states
-## 3     power   people       people
-## 4  citizens    peace        great
-## 5       one      new       public
-## 6     union     time constitution
-## 7       war  nations       united
-## 8      made  freedom     national
-## 9      just  america       rights
-## 10     best american     congress</code></pre>
+<pre><code>##       Topic_1 Topic_2      Topic_3
+## 1  government   world       states
+## 2       great  nation       people
+## 3       every  people      country
+## 4         war   peace        power
+## 5        made     new       public
+## 6        laws    time constitution
+## 7         law nations       united
+## 8        well freedom        union
+## 9   interests america     national
+## 10       many    free       rights</code></pre>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
         <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
     </nav>
 </div>
