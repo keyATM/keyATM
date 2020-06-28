@@ -81,7 +81,8 @@ test_that("Doc Topic", {
   p <- plot(strata_topic, var_name = "Period", show_topic = c(1,2,3,4))
   expect_s3_class(p, "keyATM_fig")
   skip_on_os("linux") ;
-  expect_equal(summary(strata_topic)[[2]]$Point[1], 0.07443097, tolerance = 0.000001)
+  expect_equal(summary(strata_topic, method = "eti", point = "median")[[2]]$Point[1], 0.07443097, tolerance = 0.000001)
+  expect_equal(summary(strata_topic)[[2]]$Lower[3], 0.04950795, tolerance = 0.000001)
 })
 
 
