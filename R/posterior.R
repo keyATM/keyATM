@@ -969,6 +969,11 @@ calc_ci <- function(vec, ci, method, point) {
     window_size <- ceiling(ci * length(sorted_points))
     nCIs <-  length(sorted_points) - window_size
 
+    if (window_size < 2 | nCIs < 1) {
+      warning("`ci` is too small or interations are not enough, using `eti` option instead.") 
+      return(calc_ci(vec, ci, method = "eti", point))
+    }
+
     ci_width <- sapply(1:nCIs, function(x) {sorted_points[x + window_size] - sorted_points[x]})
     slice_min <- which.min(ci_width)
   

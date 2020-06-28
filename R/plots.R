@@ -199,8 +199,8 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 
     pi_mat %>%
       tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Topic") %>%
-      dplyr::group_by(.data$Topic) %>%
-      dplyr::summarise(x = list(tibble::enframe(calc_ci(.data$value, ci, method, point), "q", "value"))) %>%
+      dplyr::group_by(.data$Topic) %>% 
+      dplyr::summarise(x = list(tibble::enframe(calc_ci(.data$value, ci, method, point), "q", "value")), .groups = "drop_last") %>%
       tidyr::unnest(x) %>% tidyr::pivot_wider(names_from = .data$q, values_from = .data$value) -> temp
     
     p <- ggplot(temp, aes(y = .data$Point, x = .data$Topic)) + 
