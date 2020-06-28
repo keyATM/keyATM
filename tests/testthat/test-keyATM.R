@@ -22,7 +22,7 @@ base <- keyATM(docs = keyATM_docs,
 
 test_that("keyATM base", {
   expect_s3_class(plot_alpha(base, start = 10), "keyATM_fig")
-  expect_s3_class(plot_pi(base), "keyATM_fig")
+  expect_s3_class(plot_pi(base, method = "eti"), "keyATM_fig")
 
   skip_on_os("linux") ; skip_on_cran()
   expect_equal(base$model_fit$Perplexity[3], 1861.29, tolerance = 0.00001)
@@ -83,9 +83,9 @@ test_that("keyATM Heterogeneity Doc-Topic", {
   strata_topic <- by_strata_DocTopic(cov, by_var = "RepParty", labels = c("Dem", "Rep"), parallel = FALSE, posterior_mean = FALSE)
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(summary(strata_topic)[[2]]$Lower[2], 0.1387664, tolerance = 0.00001)
+  expect_equal(summary(strata_topic, method = "eti")[[2]]$Lower[2], 0.1387664, tolerance = 0.00001)
 
-  p <- plot(strata_topic, show_topic = c(1,2,3,4), by = "covariate")
+  p <- plot(strata_topic, show_topic = c(1,2,3,4), by = "covariate", method = "eti")
   expect_s3_class(p, "keyATM_fig")
 
   expect_message(suppressWarnings(save_fig(p, paste0(tempdir(), "/test.pdf"))), "Saving 7 x 7 in image")

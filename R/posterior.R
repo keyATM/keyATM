@@ -935,17 +935,17 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NU
 #' @noRd
 #' @importFrom rlang .data
 #' @export
-summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), ...)
+summary.strata_doctopic <- function(object, ci = 0.9, method = "hdi", point = "mean", ...)
 {
   tables <- lapply(1:length(object$by_values),
                   function(index) {
                      theta <- object$theta[[index]]
                      theta_ <- theta[, 1:(ncol(theta)-1)]
-                     q <- as.data.frame(apply(theta_, 2, stats::quantile, quantile_vec))
-                     q$Percentile <- c("Lower", "Point", "Upper")
+                     q <- as.data.frame(apply(theta_, 2, calc_ci, ci, method, point))
+                     q$CI <- c("Lower", "Point", "Upper")
                      q %>% 
-                       tidyr::gather(key = "Topic", value = "Value", -"Percentile") %>%
-                       tidyr::spread(key = "Percentile", value = "Value") %>%
+                       tidyr::gather(key = "Topic", value = "Value", -"CI") %>%
+                       tidyr::spread(key = "CI", value = "Value") %>%
                        dplyr::mutate(TopicId = 1:(dplyr::n()),
                                      val = object$by_values[index],
                                      label = object$labels[index]) %>%
@@ -953,3 +953,39 @@ summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), .
                   })
   return(tables)
 }
+
+
+calc_ci <- function(vec, ci, method, point) {
+  # Check bayestestR package and Kruschke's book
+  if (point == "mean") {
+    point <- mean(vec)
+  }
+  if (point == "median") {
+    point <- median(vec) 
+  }
+
+  if (method == "hdi") {
+    sorted_points <- sort.int(vec, method = "quick")
+    window_size <- ceiling(ci * length(sorted_points))
+    nCIs <-  length(sorted_points) - window_size
+
+    if (window_size < 2 | nCIs < 1) {
+      warning("`ci` is too small or interations are not enough, using `eti` option instead.") 
+      return(calc_ci(vec, ci, method = "eti", point))
+    }
+
+    ci_width <- sapply(1:nCIs, function(x) {sorted_points[x + window_size] - sorted_points[x]})
+    slice_min <- which.min(ci_width)
+  
+    res <- c(sorted_points[slice_min], point, sorted_points[slice_min + window_size]) 
+  }
+
+  if (method == "eti") {
+    qua <- stats::quantile(vec, probs = c((1 - ci) / 2, (1 + ci) / 2))
+    res <- c(qua[1], point, qua[2]) 
+  }
+ 
+  names(res) <- c("Lower", "Point", "Upper")
+  return(res)
+}
+

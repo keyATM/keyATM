@@ -1,6 +1,12 @@
+# keyATM 0.3.0
+[Roadmap](https://github.com/keyATM/keyATM/projects/2) for this version.
+
+### Major changes
+* Use the Highest Density Interval as a default in `plot.strata_doctopic`, `plot_timetrend`, and `plot_pi`. The previous version uses the Equal-tailed Interval.
+
 # keyATM 0.2.2
 ### Major changes
-* Update for dplyr 1.0.0
+* Updates for dplyr 1.0.0
 * Update tests
 
 # keyATM 0.2.1
