@@ -119,7 +119,7 @@ In the **quanteda**, we can easily remove documents
 without any word counts with the following function.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-summary(keyATM_docs)
+data_dfm_len0_rm <- dfm_subset(data_dfm_len0, ntoken(data_dfm_len0) > 0)
 ```
 
 ### Alternative ways to load texts into **keyATM**
