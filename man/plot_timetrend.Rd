@@ -19,7 +19,7 @@ plot_timetrend(
 )
 }
 \arguments{
-\item{x}{the output from the dynamic keyATM model (see \code{\link[=keyATM]{keyATM()}})}
+\item{x}{the output from the dynamic keyATM model (see \code{\link[=keyATM]{keyATM()}}).}
 
 \item{show_topic}{an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.}
 
@@ -39,10 +39,10 @@ plot_timetrend(
 
 \item{show_point}{logical. The default is \code{TRUE}. This is an option when calculating credible intervals.}
 
-\item{...}{additional arguments not used}
+\item{...}{additional arguments not used.}
 }
 \value{
-keyATM_fig object
+keyATM_fig object.
 }
 \description{
 Plot time trend

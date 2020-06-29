@@ -7,11 +7,11 @@
 save_fig(x, filename, ...)
 }
 \arguments{
-\item{x}{the keyATM_fig object}
+\item{x}{the keyATM_fig object.}
 
-\item{filename}{file name to create on disk}
+\item{filename}{file name to create on disk.}
 
-\item{...}{other arguments passed on to the \link[ggplot2:ggsave]{ggplot2::ggsave()} function}
+\item{...}{other arguments passed on to the \link[ggplot2:ggsave]{ggplot2::ggsave()} function.}
 }
 \description{
 Save a figure

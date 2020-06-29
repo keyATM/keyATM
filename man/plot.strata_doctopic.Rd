@@ -18,7 +18,7 @@
 )
 }
 \arguments{
-\item{x}{a strata_doctopic object (see \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}})}
+\item{x}{a strata_doctopic object (see \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}}).}
 
 \item{show_topic}{a vector or an integer. Indicate topics to visualize.}
 
@@ -36,10 +36,10 @@
 
 \item{show_point}{logical. Show point estimates. The default is \code{TRUE}.}
 
-\item{...}{additional arguments not used}
+\item{...}{additional arguments not used.}
 }
 \value{
-keyATM_fig object
+keyATM_fig object.
 }
 \description{
 Plot document-topic distribution by strata (for covariate models)

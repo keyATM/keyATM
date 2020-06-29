@@ -7,12 +7,12 @@
 top_docs(x, n = 10)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}})}
+\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}}).}
 
 \item{n}{How many documents to show. Default is \code{10}.}
 }
 \value{
-An n x k table of the top n documents for each topic, each number is a document index
+An n x k table of the top n documents for each topic, each number is a document index.
 }
 \description{
 Show the top documents for each topic

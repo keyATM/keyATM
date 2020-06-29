@@ -14,7 +14,7 @@ plot_pi(
 )
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}})}
+\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}}).}
 
 \item{show_topic}{an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.}
 
@@ -27,7 +27,7 @@ plot_pi(
 \item{point}{method for computing the point estimate. \code{mean} (default) or \code{median}. This is an option when calculating credible intervals (you need to set \code{store_pi = TRUE} in \code{\link[=keyATM]{keyATM()}}).}
 }
 \value{
-keyATM_fig object
+keyATM_fig object.
 }
 \description{
 Show a diagnosis plot of pi
