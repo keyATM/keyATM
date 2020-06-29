@@ -836,14 +836,15 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NU
 {
   # Check inputs
   variables <- colnames(x$kept_values$model_settings$covariates_data_use)
+  if (length(by_var) != 1)
+    stop("`by_var` should be a single variable.")
   if (!by_var %in% variables)
     stop(paste0(by_var, " is not in the set of covariates in keyATM model. Check with `covariates_info()`.",
                 "Covariates provided are: ", 
                 paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse=" , ")))
 
-  if (is.null(burn_in)) {
+  if (is.null(burn_in))
     burn_in <- floor(max(x$model_fit$Iteration) / 2) 
-  }
   
   # Get info for parallelization
   if (parallel) {
