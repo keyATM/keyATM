@@ -16,17 +16,17 @@ keyATM(
 )
 }
 \arguments{
-\item{docs}{texts read via \code{\link[=keyATM_read]{keyATM_read()}}}
+\item{docs}{texts read via \code{\link[=keyATM_read]{keyATM_read()}}.}
 
-\item{model}{keyATM model: \code{base}, \code{covariates}, \code{dynamic}, and \code{label}}
+\item{model}{keyATM model: \code{base}, \code{covariates}, \code{dynamic}, and \code{label}.}
 
-\item{no_keyword_topics}{the number of regular topics}
+\item{no_keyword_topics}{the number of regular topics.}
 
-\item{keywords}{a list of keywords}
+\item{keywords}{a list of keywords.}
 
-\item{model_settings}{a list of model specific settings (details are in the online documentation)}
+\item{model_settings}{a list of model specific settings (details are in the online documentation).}
 
-\item{priors}{a list of priors of parameters}
+\item{priors}{a list of priors of parameters.}
 
 \item{options}{a list of options \itemize{
 \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
@@ -48,7 +48,7 @@ keyATM(
 \item \strong{parallel_init}: Parallelize processes to speed up initialization. Default is \code{FALSE}. Note that even if you use the same \code{seed}, the initialization will become different between with and without parallelization.
 }}
 
-\item{keep}{a vector of the names of elements you want to keep in output}
+\item{keep}{a vector of the names of elements you want to keep in output.}
 }
 \value{
 A \code{keyATM_output} object containing:

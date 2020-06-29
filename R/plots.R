@@ -1,8 +1,8 @@
 #' Save a figure
 #' 
-#' @param x the keyATM_fig object
-#' @param filename file name to create on disk
-#' @param ... other arguments passed on to the [ggplot2::ggsave()][ggplot2::ggsave] function
+#' @param x the keyATM_fig object.
+#' @param filename file name to create on disk.
+#' @param ... other arguments passed on to the [ggplot2::ggsave()][ggplot2::ggsave] function.
 #' @seealso [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()], [values_fig()]
 #' @export
 save_fig <- function(x, filename, ...) {
@@ -12,7 +12,7 @@ save_fig <- function(x, filename, ...) {
 
 #' Get values used to create a figure
 #' 
-#' @param x the keyATM_fig object
+#' @param x the keyATM_fig object.
 #' @seealso [save_fig()], [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()]
 #' @export
 values_fig <- function(x) {
@@ -45,7 +45,7 @@ print.keyATM_fig <- function(x, ...)
 
 #' Show a diagnosis plot of alpha
 #'
-#' @param x the output from a keyATM model (see [keyATM()])
+#' @param x the output from a keyATM model (see [keyATM()]).
 #' @param start integer. The start of slice iteration. Default is \code{0}.
 #' @param show_topic a vector to specify topic indexes to show. Default is \code{NULL}.
 #' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
@@ -112,9 +112,9 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
 
 #' Show a diagnosis plot of log-likelihood and perplexity
 #' 
-#' @param x the output from a keyATM model (see [keyATM()])
+#' @param x the output from a keyATM model (see [keyATM()]).
 #' @param start integer. The starting value of iteration to use in plot. Default is \code{1}.
-#' @return keyATM_fig object
+#' @return keyATM_fig object.
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @importFrom rlang .data
@@ -150,13 +150,13 @@ plot_modelfit <- function(x, start = 1)
 
 #' Show a diagnosis plot of pi
 #'
-#' @param x the output from a keyATM model (see [keyATM()])
+#' @param x the output from a keyATM model (see [keyATM()]).
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param start integer. The starting value of iteration to use in the plot. Default is \code{0}.
 #' @param ci value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90%). This is an option when calculating credible intervals (you need to set \code{store_pi = TRUE} in [keyATM()]).
 #' @param method method for computing the credible interval. The Highest Density Interval (\code{hdi}, default) or Equal-tailed Interval (\code{eti}). This is an option when calculating credible intervals (you need to set \code{store_pi = TRUE} in [keyATM()]).
 #' @param point method for computing the point estimate. \code{mean} (default) or \code{median}. This is an option when calculating credible intervals (you need to set \code{store_pi = TRUE} in [keyATM()]).
-#' @return keyATM_fig object
+#' @return keyATM_fig object.
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
@@ -230,7 +230,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 
 #' Plot document-topic distribution by strata (for covariate models)
 #' 
-#' @param x a strata_doctopic object (see [by_strata_DocTopic()])
+#' @param x a strata_doctopic object (see [by_strata_DocTopic()]).
 #' @param show_topic a vector or an integer. Indicate topics to visualize.
 #' @param var_name the name of the variable in the plot.
 #' @param by `topic` or `covariate`. Default is by `topic`.
@@ -239,8 +239,8 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #' @param point method for computing the point estimate. \code{mean} (default) or \code{median}.
 #' @param width numeric. Width of the error bars.
 #' @param show_point logical. Show point estimates. The default is \code{TRUE}.
-#' @param ... additional arguments not used
-#' @return keyATM_fig object
+#' @param ... additional arguments not used.
+#' @return keyATM_fig object.
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
@@ -297,7 +297,7 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 
 #' Plot time trend
 #' 
-#' @param x the output from the dynamic keyATM model (see [keyATM()])
+#' @param x the output from the dynamic keyATM model (see [keyATM()]).
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param time_index_label a vector. The label for time index. The length should be equal to the number of documents (time index provided to [keyATM()]). 
 #' @param ci value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90%). This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in [keyATM()]).
@@ -307,8 +307,8 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 #' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
 #' @param width numeric. Width of the error bars.
 #' @param show_point logical. The default is \code{TRUE}. This is an option when calculating credible intervals.
-#' @param ... additional arguments not used
-#' @return keyATM_fig object
+#' @param ... additional arguments not used.
+#' @return keyATM_fig object.
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data

@@ -2,12 +2,12 @@
 #'
 #' Fit keyATM models.
 #'
-#' @param docs texts read via [keyATM_read()]
-#' @param model keyATM model: \code{base}, \code{covariates}, \code{dynamic}, and \code{label}
-#' @param no_keyword_topics the number of regular topics
-#' @param keywords a list of keywords
-#' @param model_settings a list of model specific settings (details are in the online documentation)
-#' @param priors a list of priors of parameters
+#' @param docs texts read via [keyATM_read()].
+#' @param model keyATM model: \code{base}, \code{covariates}, \code{dynamic}, and \code{label}.
+#' @param no_keyword_topics the number of regular topics.
+#' @param keywords a list of keywords.
+#' @param model_settings a list of model specific settings (details are in the online documentation).
+#' @param priors a list of priors of parameters.
 #' @param options a list of options \itemize{
 #'      \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
 #'      \item \strong{iterations}: An integer. Number of iterations. Default is \code{1500}.
@@ -27,7 +27,7 @@
 #'      }
 #'      \item \strong{parallel_init}: Parallelize processes to speed up initialization. Default is \code{FALSE}. Note that even if you use the same \code{seed}, the initialization will become different between with and without parallelization.
 #' }
-#' @param keep a vector of the names of elements you want to keep in output
+#' @param keep a vector of the names of elements you want to keep in output.
 #' 
 #' @return A \code{keyATM_output} object containing:
 #'   \describe{
@@ -151,13 +151,13 @@ check_arg_keep <- function(obj, model)
 #'
 #' Fit weighted LDA models.
 #'
-#' @param docs texts read via [keyATM_read()]
-#' @param model Weighted LDA model: \code{base}, \code{covariates}, and \code{dynamic}
-#' @param number_of_topics the number of regular topics
-#' @param model_settings a list of model specific settings (details are in the online documentation)
-#' @param priors a list of priors of parameters
-#' @param options a list of options (details are in the documentation of [keyATM()])
-#' @param keep a vector of the names of elements you want to keep in output
+#' @param docs texts read via [keyATM_read()].
+#' @param model Weighted LDA model: \code{base}, \code{covariates}, and \code{dynamic}.
+#' @param number_of_topics the number of regular topics.
+#' @param model_settings a list of model specific settings (details are in the online documentation).
+#' @param priors a list of priors of parameters.
+#' @param options a list of options (details are in the documentation of [keyATM()]).
+#' @param keep a vector of the names of elements you want to keep in output.
 #'
 #' @return A \code{keyATM_output} object containing:
 #'   \describe{

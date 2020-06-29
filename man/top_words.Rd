@@ -7,7 +7,7 @@
 top_words(x, n = 10, measure = c("probability", "lift"), show_keyword = TRUE)
 }
 \arguments{
-\item{x}{the output (see \code{\link[=keyATM]{keyATM()}} and \code{\link[=by_strata_TopicWord]{by_strata_TopicWord()}})}
+\item{x}{the output (see \code{\link[=keyATM]{keyATM()}} and \code{\link[=by_strata_TopicWord]{by_strata_TopicWord()}}).}
 
 \item{n}{integer. The number terms to visualize. Default is \code{10}.}
 
