@@ -45,7 +45,7 @@ keywords <- list(Government     = c("laws", "law", "executive"),
                  Congress       = c("congress", "party"),
                  Peace          = c("peace", "world", "freedom"),
                  Constitution   = c("constitution", "rights"),
-                 ForeignAffairs  = c("foreign", "war"))
+                 ForeignAffairs = c("foreign", "war"))
 
 keyATM_docs <- keyATM_read(data_dfm)
 ```

@@ -5,6 +5,37 @@ output:
     toc: true
 ---
 
+```{r, include=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+library(keyATM)
+library(quanteda)
+library(magrittr)
+data(data_corpus_inaugural, package = "quanteda")
+
+data_tokens <- tokens(data_corpus_inaugural,
+                      remove_numbers = TRUE, 
+                      remove_punct = TRUE, 
+                      remove_symbols = TRUE,
+                      remove_separators = TRUE,
+                      remove_url = TRUE) %>%
+                 tokens_tolower() %>%
+                 tokens_remove(c(stopwords("english"), 
+                               "may", "shall", "can",
+                               "must", "upon", "with", "without")) %>%
+                 tokens_select(min_nchar = 3)
+                
+data_dfm <- dfm(data_tokens) %>%
+               dfm_trim(min_termfreq = 5, min_docfreq = 2)
+
+keywords <- list(Government     = c("laws", "law", "executive"),
+                 Congress       = c("congress", "party"),
+                 Peace          = c("peace", "world", "freedom"),
+                 Constitution   = c("constitution", "rights"),
+                 ForeignAffairs  = c("foreign", "war"))
+
+keyATM_docs <- keyATM_read(data_dfm)
+```
+
+# Model
 
 ## Which model to use?
 
@@ -12,7 +43,7 @@ The table below summarizes keyATM models and other popular models based on the i
 
 |                                   | Keywords  | Covariate  | Time Structure |   
 |----------------------------------:|:---------:|:----------:|:--------------:|
-|[keyATM Basic](keyATM_base.html)  |     ○    |     ×     |        ×      |
+|[keyATM Base](keyATM_base.html)  |     ○    |     ×     |        ×      |
 |[keyATM Covariate](keyATM_cov.html)|     ○    |     ○     |        △      |
 |    [keyATM HMM](keyATM_hmm.html)  |     ○    |     ×     |        ○      |
 |[keyATM Label](keyATM_label.html)  |     ○    |     ×     |        ×      |
@@ -28,7 +59,7 @@ The next table compares inference methods and speeds. CGS stands for Collapsed G
 
 |                                   |        Inference      |                  Speed                 |
 |----------------------------------:|:----------------------|:---------------------------------------|
-|[keyATM Basic](keyATM_base.html)  |        CGS + SS       |                  Fast                  |
+|[keyATM Base](keyATM_base.html)  |        CGS + SS       |                  Fast                  |
 |[keyATM Covariate](keyATM_cov.html)|        CGS + SS       | Moderate  (Depends on # of covariates) |
 |[keyATM HMM](keyATM_hmm.html)      |        CGS + SS       |                  Fast                  |
 |[keyATM Label](keyATM_label.html)  |        CGS + SS       |                  Fast                  |
@@ -38,6 +69,43 @@ The next table compares inference methods and speeds. CGS stands for Collapsed G
 | Latent Dirichlet Allocation (LDA) |  Variational EM / CGS |        Depends on implementation       |
 |    Structural Topic Model (STM)   |     Variational EM    |               Very Fast                |
 
+
+# Preprocessing
+
+## Can we use n-grams?
+Yes, but you need an extra step in the preprocessing. Let's try a bigram model. You need a tokens object (see [Preparation](Preparation.html)).
+Then, **quanteda** will create a n-gram tokens object (see [quanteda's manual](https://tutorials.quanteda.io/basic-operations/tokens/tokens_ngrams/) for details),
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+data_tokens_n2 <- tokens_ngrams(data_tokens, n = 2)  # bigram
+head(data_tokens_n2[[1]], 3)
+```
+
+You can pass this preprocessed object to **keyATM** just as the unigram model.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+data_dfm_n2 <- dfm(data_tokens_n2) %>%
+                 dfm_trim(min_termfreq = 3, min_docfreq = 2)
+keyATM_docs_n2 <- keyATM_read(data_dfm_n2)
+```
+
+Keywords should respect the n-gram.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+keywords_n2 <- list(Government = c("federal_government", "vice_president"),
+                    People     = c("men_women", "fellow_citizens"),
+                    Peace      = c("peace_world"))
+```
+
+Then, you can fit the keyATM models (here we use [the base]((keyATM_base.html) model). 
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+out <- keyATM(docs              = keyATM_docs_n2,    # text input
+              no_keyword_topics = 3,                 # number of topics without keywords
+              keywords          = keywords_n2,       # keywords
+              model             = "base",            # select the model
+              options           = list(seed = 250))
+top_words(out, 5)
+```
+
+
+# Fitting
 
 ## It takes time to fit the model. What should I do?
 Please note that the number of unique words, the total lenght of documents, and the number of topics affect the speed. If you use `cov` model, the number of covariates matters as well, because we need to estimate coefficieitns for covariates.
