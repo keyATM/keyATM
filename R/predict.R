@@ -22,13 +22,15 @@ predict.keyATM_output <- function(x, newdata, burn_in = NULL, parallel = TRUE, m
   method <- match.arg(method)
   point <- match.arg(point)
 
-  if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
+  if (x$model != "covariates" | !("keyATM_output" %in% class(x)))
     stop("This is not an output of covariate model")
-  }
 
-  if (is.null(burn_in)) {
+  data_used <- covariates_get(x)
+  if (dim(newdata)[1] != dim(data_used)[1] | dim(newdata)[2] != dim(data_used)[2])
+    stop("Dimension of the `newdata` should match with the fitted data. Check the output of `covariates_get()`")
+
+  if (is.null(burn_in))
     burn_in <- floor(max(x$model_fit$Iteration) / 2) 
-  }
 
   if (parallel) {
     if (is.null(mc.cores)) {
