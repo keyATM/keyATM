@@ -3,7 +3,7 @@
 
 ### Major changes
 * Use the Highest Density Interval as a default in `plot.strata_doctopic`, `plot_timetrend`, and `plot_pi`. The previous version uses the Equal-tailed Interval.
-* Add the `predict()` function for the covariate keyATM.
+* Add the `predict()` function for the covariate keyATM (thank you [Sanja Hajdinjak](https://sanjahajdinjak.wordpress.com/) for the suggestion!)
 
 # keyATM 0.2.2
 ### Major changes
