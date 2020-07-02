@@ -276,8 +276,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
               dplyr::group_by(.data$Topic, .data$Word) %>%
               dplyr::summarize(Count = dplyr::n())  
   
-    temp %>%
-      tidyr::spread(key = "Word", value = "Count") -> phi
+    temp %>% tidyr::spread(key = "Word", value = "Count") -> phi
 
     # Check unused topic
     if (nrow(phi) != length(tnames)) {
@@ -326,8 +325,6 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
       phi_[1:nrow(phi), which(colnames(phi_) %in% colnames(phi))] <- 
           phi[, which(colnames(phi) %in% colnames(phi_))]
       phi <- phi_
-
-
     } else {
       # no-keyword topic-word dist
       # Should have the same dimension as vocab
@@ -386,8 +383,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
   if (ncol(phi) == length(vocab)) {
     phi <- phi[, vocab]
   } else {
-    # This can happen in `by_strata_TopicWord`
-    # Do nothing
+    # This can happen in `by_strata_TopicWord`, does nothing
   }
   return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
 }
@@ -418,10 +414,8 @@ keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tna
   if (ncol(phi) == length(vocab)) {
     phi <- phi[, vocab]
   } else {
-    # This can happen in `by_strata_TopicWord`
-    # Do nothing
+    # This can happen in `by_strata_TopicWord`, does nothing
   }
-  
 
   phi <- phi / Matrix::rowSums(phi)
   rownames(phi) <- tnames
