@@ -253,7 +253,7 @@ labels <- unique(res$label)
 
 library(ggplot2)
 ggplot(res, aes(x = label, ymin = Lower, ymax = Upper, group = Topic)) +
-  geom_errorbar(width = 0.1, position = position_dodge(width = -1/2)) +
+  geom_errorbar(width = 0.1) +
   coord_flip() +
   facet_wrap(~Topic) +
   geom_point(aes(x = label, y = Point)) +
@@ -286,6 +286,7 @@ strata_tw <- by_strata_TopicWord(out, keyATM_docs,
                                  by = as.vector(vars_selected$Party))
 ```
 
+We check the result.
 ```{r, warning=FALSE, message=FALSE}
 top_words(strata_tw, n = 3)
 ```
