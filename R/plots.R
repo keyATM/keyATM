@@ -279,7 +279,7 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 
   if (by == "topic") {
     p <- p + geom_errorbar(width = width, aes(x = .data$label, ymin = .data$Lower, ymax = .data$Upper,
-                group = .data$Topic), position = position_dodge(width = -1/2)) + facet_wrap(~Topic, scales = "free") 
+                group = .data$Topic), position = position_dodge(width = -1/2)) + facet_wrap(~Topic) 
     if (show_point)
       p <- p + geom_point(aes(x = .data$label, y = .data$Point))
   } else {
