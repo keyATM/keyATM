@@ -82,7 +82,7 @@ keyATM_output <- function(model)
 
   # Rescale lambda
   if (model$model %in% c("cov", "ldacov")) {
-    values_iter$Lambda_iter_rescaled <- keyATM_output_rescale_Lambda(model, info) 
+    values_iter$Lambda_iter <- model$stored_values$Lambda_iter 
   }
 
   # Add information
@@ -511,39 +511,6 @@ keyATM_output_alpha_iter_hmm <- function(model, info)
 
 
 #' @noRd
-#' @import magrittr
-keyATM_output_rescale_Lambda <- function(model, info)
-{
-  if (!model$model_settings$standardize) {
-    # If it is not standardized, no need to rescale 
-    return(model$stored_values$Lambda_iter)
-  }
-
-  # Prepare original_data (before standardization)
-  if (is.null(model$model_settings$covariates_formula)) {
-    original_data <- as.matrix(model$model_settings$covariates_data) 
-  } else if (is.formula(model$model_settings$covariates_formula)) {
-    original_data <- stats::model.matrix(model$model_settings$covariates_formula,
-                                         as.data.frame(model$model_settings$covariates_data))
-  }
-
-  standardized_data <- model$model_settings$covariates_data_use
-
-  # Get rescaled Lambda
-  Lambda <- lapply(model$stored_values$Lambda_iter,
-                   function(L_s) {
-                     y <- Matrix::tcrossprod(standardized_data, L_s)  # x %*% t(y)
-                     L <- Matrix::solve(Matrix::crossprod(original_data),  # t(x) %*% x
-                                        Matrix::crossprod(original_data, y)  # t(x) %*% y
-                                       )
-                     return(t(L))  # L_s is K \times M
-                   }
-                  )
-  return(Lambda)
-}
-
-
-#' @noRd
 #' @export
 print.keyATM_output <- function(x, ...)
 {
@@ -796,10 +763,10 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 #' @export
 covariates_info <- function(x) {
   if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
-    stop("This is not an output of covariate model")
+    stop("This is not an output of the covariate model")
   }
   cat(paste0("Colnames: ", paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse = ", "),
-             "\nStandardized: ", as.character(as.logical(x$kept_values$model_settings$standardize)),
+             "\nStandardization: ", as.character(x$kept_values$model_settings$standardize),
              "\nFormula: ", paste(as.character(x$kept_values$model_settings$covariates_formula), collapse = " "), "\n\nPreview:\n"))
   print(utils::head(x$kept_values$model_settings$covariates_data_use))
 }
@@ -811,7 +778,7 @@ covariates_info <- function(x) {
 #' @export
 covariates_get <- function(x) {
   if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
-    stop("This is not an output of covariate model")
+    stop("This is not an output of the covariate model")
   }
   return(x$kept_values$model_settings$covariates_data_use) 
 }

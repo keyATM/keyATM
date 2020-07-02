@@ -2,6 +2,7 @@
 #' 
 #' @param x the keyATM_output object for the covariate model.
 #' @param newdata New observations which should be predicted.
+#' @param transform Transorm and standardize the `newdata` with the same formula and option as `model_settings` used in [keyATM()].
 #' @param burn_in integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.
 #' @param parallel logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}.
 #' @param mc.cores integer. The number of cores to use. Default is \code{NULL}.
@@ -14,7 +15,7 @@
 #' @param label a character. Add a `label` column to the output. The default is \code{NULL} (do not add it).
 #' @param raw_values a logical. Returns raw values. The default is \code{FALSE}.
 #' @export
-predict.keyATM_output <- function(x, newdata, burn_in = NULL, parallel = TRUE, mc.cores = NULL, 
+predict.keyATM_output <- function(x, newdata, transform = FALSE, burn_in = NULL, parallel = TRUE, mc.cores = NULL, 
                                   posterior_mean = TRUE, ci = 0.9, method = c("hdi", "eti"), 
                                   point = c("mean", "median"), label = NULL, raw_values = FALSE
                                   )
@@ -22,13 +23,22 @@ predict.keyATM_output <- function(x, newdata, burn_in = NULL, parallel = TRUE, m
   method <- match.arg(method)
   point <- match.arg(point)
 
-  if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
+  if (x$model != "covariates" | !("keyATM_output" %in% class(x)))
     stop("This is not an output of covariate model")
-  }
 
-  if (is.null(burn_in)) {
-    burn_in <- floor(max(x$model_fit$Iteration) / 2) 
+  if (transform) {
+    if (!identical(colnames(newdata), colnames(x$kept_values$model_settings$covariates_data)))
+      stop("Column names in `newdata` are different from the data provided to `keyATM()` when fitting the model.")
+    newdata <- covariates_standardize(newdata, type = x$kept_values$model_settings$standardize,
+                                      cov_formula = x$kept_values$model_settings$covariates_formula)
   }
+  
+  data_used <- covariates_get(x)
+  if (dim(newdata)[1] != dim(data_used)[1] | dim(newdata)[2] != dim(data_used)[2])
+    stop("Dimension of the `newdata` should match with the fitted data. Check the output of `covariates_get()`")
+
+  if (is.null(burn_in))
+    burn_in <- floor(max(x$model_fit$Iteration) / 2) 
 
   if (parallel) {
     if (is.null(mc.cores)) {
@@ -44,7 +54,7 @@ predict.keyATM_output <- function(x, newdata, burn_in = NULL, parallel = TRUE, m
   used_iter <- used_iter[used_iter > burn_in]
   use_index <- which(x$values_iter$used_iter %in% used_iter)
   tnames <- rownames(x$phi)
-  Lambda_iter <- x$values_iter$Lambda_iter_rescaled
+  Lambda_iter <- x$values_iter$Lambda_iter
 
   if (posterior_mean) {
     obj <- do.call(dplyr::bind_rows,

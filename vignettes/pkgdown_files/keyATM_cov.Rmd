@@ -128,6 +128,9 @@ out <- keyATM(docs              = keyATM_docs,
 
 Once you fit the model, you can save the model with `save()` for replication. This is the same as the [Base model](keyATM_base.html#saving-the-model).
 
+**keyATM** automatically standardizes non-factor covariates. The `standardize` option in `model_settings` argument of the `keyATM()` function now takes one of `"all"`, `"none"`, or `"non-factor"` (default). `"all"` standardizes all covariates (except the intercept), `"none"` does not standardize any covariates, and `"non-factor"` standardizes non-factor covariates.
+
+
 ## Interpreting results
 We can use the `top_words()`, `top_docs()`,  `plot_modelfit()`, and `plot_pi()` functions
 as in the base keyATM. The `plot_alpha()` is not defined for the covariate keyATM because

@@ -7,6 +7,7 @@
 \method{predict}{keyATM_output}(
   x,
   newdata,
+  transform = FALSE,
   burn_in = NULL,
   parallel = TRUE,
   mc.cores = NULL,
@@ -22,6 +23,8 @@
 \item{x}{the keyATM_output object for the covariate model.}
 
 \item{newdata}{New observations which should be predicted.}
+
+\item{transform}{Transorm and standardize the \code{newdata} with the same formula and option as \code{model_settings} used in \code{\link[=keyATM]{keyATM()}}.}
 
 \item{burn_in}{integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.}
 
