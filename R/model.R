@@ -1035,7 +1035,6 @@ make_sz_key <- function(W, keywords, info)
     Z <- lapply(W, make_z, topicvec)
   }
  
- 
   return(list(S = S, Z = Z))
 }
 

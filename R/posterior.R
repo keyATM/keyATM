@@ -2,7 +2,7 @@
 #' 
 #' @keywords internal
 #' @import magrittr
-keyATM_output <- function(model)
+keyATM_output <- function(model, keep)
 {
   message("Creating an output object. It may take time...")
 
@@ -89,6 +89,31 @@ keyATM_output <- function(model)
   pd <- utils::packageDescription("keyATM")
   information <- list(date_output_made = Sys.time(), version_keyATM = pd$Version)
 
+  # Check what to keep
+  if (model$model %in% c("cov", "ldacov")) {
+    if (!"stored_values" %in% keep)
+      keep <- c("stored_values", keep) 
+
+    if (!"model_settings" %in% keep)
+      keep <- c("model_settings", keep) 
+  }
+
+  if (model$model %in% c("hmm", "ldahmm")) {
+    keep <- c("model_settings", keep) 
+  }
+
+  kept_values <- list()
+  if (length(keep) != 0) {
+    use_elements <- keep[keep %in% names(model)]
+    for (i in 1:length(use_elements)) {
+      kept_values[use_elements[i]]  <- model[use_elements[i]]
+    }
+  }
+
+  if (model$options$store_theta & "stored_values" %in% keep) {
+    kept_values$stored_values$Z_tables <- NULL  # duplicate information
+  }
+
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
              V = length(model$vocab), N = length(model$Z),
@@ -99,7 +124,7 @@ keyATM_output <- function(model)
              priors = model$priors, options = model$options,
              keywords_raw = model$keywords_raw,
              model_fit = modelfit, pi = pi_estimated,
-             values_iter = values_iter, information = information)
+             values_iter = values_iter, information = information, kept_values = kept_values)
   class(ll) <- c("keyATM_output", model$model, class(ll))
   return(ll)
 }
