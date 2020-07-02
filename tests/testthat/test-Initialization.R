@@ -64,7 +64,7 @@ test_that("Documents with length 0: covariate", {
                   no_keyword_topics = 3,  # number of regular topics
                   keywords = bills_keywords,  # keywords
                   model = "covariates",
-                  model_settings = list(covariates_data = bills_cov, standardize = TRUE, 
+                  model_settings = list(covariates_data = bills_cov, standardize = "all", 
                                       covariates_formula = ~.),
                   options = list(seed = 250, iterations = 0))
   )
