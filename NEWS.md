@@ -4,6 +4,10 @@
 ### Major changes
 * Use the Highest Density Interval as a default in `plot.strata_doctopic`, `plot_timetrend`, and `plot_pi`. The previous version uses the Equal-tailed Interval.
 * Add the `predict()` function for the covariate keyATM (thank you [Sanja Hajdinjak](https://sanjahajdinjak.wordpress.com/) for the suggestion!)
+* Detailed obtions for standardization in the covariate keyATM
+    * The `standardize` option in `model_settings` argument of the `keyATM()` function now takes one of `"all"`, `"none"`, or `"non-factor"` (default).
+    * `"all"` standardizes all covariates (except the intercept), `"none"` does not standardize any covariates, and `"non-factor"` standardizes non-factor covariates.
+    * In previous versions, this option takes either `TRUE` (default) or `FALSE`.
 
 # keyATM 0.2.2
 ### Major changes
