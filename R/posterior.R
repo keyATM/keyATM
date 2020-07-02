@@ -102,7 +102,7 @@ keyATM_output <- function(model, keep)
     keep <- c("model_settings", keep) 
   }
 
-  kept_values <- list()
+  kept_values <- list(doc_index_used = model$stored_values$doc_index)
   if (length(keep) != 0) {
     use_elements <- keep[keep %in% names(model)]
     for (i in 1:length(use_elements)) {
