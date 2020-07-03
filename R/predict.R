@@ -1,6 +1,6 @@
 #' Predict topic proportions for the covariate keyATM
 #' 
-#' @param x the keyATM_output object for the covariate model.
+#' @param object the keyATM_output object for the covariate model.
 #' @param newdata New observations which should be predicted.
 #' @param transform Transorm and standardize the `newdata` with the same formula and option as `model_settings` used in [keyATM()].
 #' @param burn_in integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.
@@ -10,12 +10,10 @@
 #' @param ci value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90%). 
 #' @param method method for computing the credible interval. The Highest Density Interval (\code{hdi}, default) or Equal-tailed Interval (\code{eti}).
 #' @param point method for computing the point estimate. \code{mean} (default) or \code{median}.
-#' @param xlab a character.
-#' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
 #' @param label a character. Add a `label` column to the output. The default is \code{NULL} (do not add it).
 #' @param raw_values a logical. Returns raw values. The default is \code{FALSE}.
 #' @export
-predict.keyATM_output <- function(x, newdata, transform = FALSE, burn_in = NULL, parallel = TRUE, mc.cores = NULL, 
+predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = NULL, parallel = TRUE, mc.cores = NULL, 
                                   posterior_mean = TRUE, ci = 0.9, method = c("hdi", "eti"), 
                                   point = c("mean", "median"), label = NULL, raw_values = FALSE
                                   )
