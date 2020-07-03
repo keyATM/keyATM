@@ -838,7 +838,7 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, ...)
                   value <- by_values[i] 
                   new_data <- x$kept_values$model_settings$covariates_data_use
                   new_data[, by_var] <- value
-                  obj <- predict.keyATM_output(x, new_data, raw_values = TRUE, ...)
+                  obj <- predict(x, new_data, raw_values = TRUE, ...)
                 })
 
   names(res) <- by_values
