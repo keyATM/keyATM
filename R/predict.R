@@ -16,8 +16,7 @@
 #' @export
 predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = NULL, parallel = TRUE, mc.cores = NULL, 
                                   posterior_mean = TRUE, ci = 0.9, method = c("hdi", "eti"), 
-                                  point = c("mean", "median"), label = NULL, raw_values = FALSE, ...
-                                  )
+                                  point = c("mean", "median"), label = NULL, raw_values = FALSE, ...)
 {
   method <- match.arg(method)
   point <- match.arg(point)

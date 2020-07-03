@@ -812,6 +812,7 @@ covariates_get <- function(x) {
 #' @param ... other arguments passed on to the [predict()] function.
 #' @return strata_topicword object (a list).
 #' @import magrittr
+#' @importFrom stats predict
 #' @export
 by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, ...)
 {
@@ -838,7 +839,7 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, ...)
                   value <- by_values[i] 
                   new_data <- x$kept_values$model_settings$covariates_data_use
                   new_data[, by_var] <- value
-                  obj <- call_predict(x, new_data, raw_values = TRUE, ...)
+                  obj <- predict(x, new_data, raw_values = TRUE, ...)
                 })
 
   names(res) <- by_values
@@ -847,7 +848,6 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, ...)
   return(obj)
 }
 
-call_predict <- function(...) {predict(...)}  # Aboid getting NOTE in CRAN check
 
 #' @noRd
 #' @export
