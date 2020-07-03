@@ -16,7 +16,8 @@
   method = c("hdi", "eti"),
   point = c("mean", "median"),
   label = NULL,
-  raw_values = FALSE
+  raw_values = FALSE,
+  ...
 )
 }
 \arguments{
@@ -43,6 +44,8 @@
 \item{label}{a character. Add a \code{label} column to the output. The default is \code{NULL} (do not add it).}
 
 \item{raw_values}{a logical. Returns raw values. The default is \code{FALSE}.}
+
+\item{...}{additional arguments not used.}
 }
 \description{
 Predict topic proportions for the covariate keyATM
