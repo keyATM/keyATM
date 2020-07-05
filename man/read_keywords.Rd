@@ -24,7 +24,7 @@ a named list which can be used as keywords for e.g. \code{\link[=keyATM]{keyATM(
 This function converts or reads a dictionary object from quanteda to a named list. "Glob"-style wildcard expressions (e.g. politic*) are resolved based on the available terms in your texts.
 }
 \examples{
-\donttest{
+\dontrun{
   library(keyATM)
   library(quanteda)
   ## using the moral foundation dictiionary example from quanteda

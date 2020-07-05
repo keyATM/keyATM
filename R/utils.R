@@ -144,7 +144,7 @@ myhashmap_getvec_keyint <- function(mapped, keys) {
 #' @seealso \code{\link{dictionary}}
 #' @export
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   library(keyATM)
 #'   library(quanteda)
 #'   ## using the moral foundation dictiionary example from quanteda
