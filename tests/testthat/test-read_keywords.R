@@ -57,9 +57,10 @@ test_that("Integration",{
     dictfile <- tempfile(fileext = ".yml")
     download.file("https://raw.githubusercontent.com/koheiw/quanteda.seededlda/master/tests/data/topics.yml", dictfile)
     kw <- read_keywords(dictfile, docs = docs)
+    set.seed(1234)
     res <- keyATM(docs, no_keyword_topics = 0, keywords = kw, model = "base")
-    ## Kim is related to military
-    expect_true("kim" %in% top_words(res, n = 20, show_keyword = FALSE)[,"5_military"])
+    ## syria is related to military
+    expect_true("syria" %in% top_words(res, n = 20, show_keyword = FALSE)[,"5_military"])
     ## German is not related to military
     expect_true(!"german" %in% top_words(res, n = 20, show_keyword = FALSE)[,"5_military"])
 })
