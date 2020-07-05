@@ -1,6 +1,6 @@
 #' Predict topic proportions for the covariate keyATM
 #' 
-#' @param x the keyATM_output object for the covariate model.
+#' @param object the keyATM_output object for the covariate model.
 #' @param newdata New observations which should be predicted.
 #' @param transform Transorm and standardize the `newdata` with the same formula and option as `model_settings` used in [keyATM()].
 #' @param burn_in integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.
@@ -10,35 +10,33 @@
 #' @param ci value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90%). 
 #' @param method method for computing the credible interval. The Highest Density Interval (\code{hdi}, default) or Equal-tailed Interval (\code{eti}).
 #' @param point method for computing the point estimate. \code{mean} (default) or \code{median}.
-#' @param xlab a character.
-#' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
 #' @param label a character. Add a `label` column to the output. The default is \code{NULL} (do not add it).
 #' @param raw_values a logical. Returns raw values. The default is \code{FALSE}.
+#' @param ... additional arguments not used.
 #' @export
-predict.keyATM_output <- function(x, newdata, transform = FALSE, burn_in = NULL, parallel = TRUE, mc.cores = NULL, 
+predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = NULL, parallel = TRUE, mc.cores = NULL, 
                                   posterior_mean = TRUE, ci = 0.9, method = c("hdi", "eti"), 
-                                  point = c("mean", "median"), label = NULL, raw_values = FALSE
-                                  )
+                                  point = c("mean", "median"), label = NULL, raw_values = FALSE, ...)
 {
   method <- match.arg(method)
   point <- match.arg(point)
 
-  if (x$model != "covariates" | !("keyATM_output" %in% class(x)))
+  if (object$model != "covariates" | !("keyATM_output" %in% class(object)))
     stop("This is not an output of covariate model")
 
   if (transform) {
-    if (!identical(colnames(newdata), colnames(x$kept_values$model_settings$covariates_data)))
+    if (!identical(colnames(newdata), colnames(object$kept_values$model_settings$covariates_data)))
       stop("Column names in `newdata` are different from the data provided to `keyATM()` when fitting the model.")
-    newdata <- covariates_standardize(newdata, type = x$kept_values$model_settings$standardize,
-                                      cov_formula = x$kept_values$model_settings$covariates_formula)
+    newdata <- covariates_standardize(newdata, type = object$kept_values$model_settings$standardize,
+                                      cov_formula = object$kept_values$model_settings$covariates_formula)
   }
   
-  data_used <- covariates_get(x)
+  data_used <- covariates_get(object)
   if (dim(newdata)[1] != dim(data_used)[1] | dim(newdata)[2] != dim(data_used)[2])
     stop("Dimension of the `newdata` should match with the fitted data. Check the output of `covariates_get()`")
 
   if (is.null(burn_in))
-    burn_in <- floor(max(x$model_fit$Iteration) / 2) 
+    burn_in <- floor(max(object$model_fit$Iteration) / 2) 
 
   if (parallel) {
     if (is.null(mc.cores)) {
@@ -50,11 +48,11 @@ predict.keyATM_output <- function(x, newdata, transform = FALSE, burn_in = NULL,
     num_core <- 1L
   }
 
-  used_iter <- x$values_iter$used_iter
+  used_iter <- object$values_iter$used_iter
   used_iter <- used_iter[used_iter > burn_in]
-  use_index <- which(x$values_iter$used_iter %in% used_iter)
-  tnames <- rownames(x$phi)
-  Lambda_iter <- x$values_iter$Lambda_iter
+  use_index <- which(object$values_iter$used_iter %in% used_iter)
+  tnames <- rownames(object$phi)
+  Lambda_iter <- object$values_iter$Lambda_iter
 
   if (posterior_mean) {
     obj <- do.call(dplyr::bind_rows,
@@ -93,7 +91,6 @@ predict.keyATM_output <- function(x, newdata, transform = FALSE, burn_in = NULL,
                                       mc.cores = num_core, mc.set.seed = FALSE
                                      )
                   )
-  
   }
   if (raw_values) {
     return(obj) 

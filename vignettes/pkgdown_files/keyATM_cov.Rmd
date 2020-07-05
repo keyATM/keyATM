@@ -206,7 +206,7 @@ fig_doctopic <- plot(strata_topic, var_name = "Period",
                      show_topic = c(4, 5), by = "covariate")
 ```
 
-Using the output of the `keyATM`, we can calculate 95% credible intervals 
+Using the output of the `keyATM`, we can calculate 90% credible intervals 
 of the differences in the
 mean of document-topic distribution.
 
@@ -220,6 +220,47 @@ theta2 <- strata_topic$theta[[2]]  # 20_21c
 theta_diff <- theta1[, c(4, 5)] - theta2[, c(4, 5)]  # focus on two topics
 theta_diff_quantile <- apply(theta_diff, 2, quantile, c(0.05, 0.5, 0.95))
 theta_diff_quantile
+```
+
+
+Furthermore, we can use the `predict()` function to get the predicted mean of
+the document-topic distribution for three party categories.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+strata_rep <- by_strata_DocTopic(out, by_var = "PartyRepublican",
+                                 labels = c("Non-Republican", "Republican"))
+strata_dem <- by_strata_DocTopic(out, by_var = "PartyDemocratic",
+                                 labels = c("Non-Democratic", "Democratic"))
+
+est_rep <- summary(strata_rep)[["Republican"]]  # Republican data
+est_dem <- summary(strata_dem)[["Democratic"]]  # Democratic data
+```
+
+Now we are missing the baseline (Others).
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+new_data <- covariates_get(out)
+
+# Setting both Republican and Democratic dummy to 0 means `Others`
+new_data[, "PartyRepublican"] <- 0
+new_data[, "PartyDemocratic"] <- 0
+pred <- predict(out, new_data, label = "Others")
+```
+
+Now, we combine three objects and make a plot.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+res <- bind_rows(est_rep, est_dem, pred) %>%
+          filter(TopicId %in% c(4, 5))  # Select two topics
+labels <- unique(res$label)
+
+library(ggplot2)
+ggplot(res, aes(x = label, ymin = Lower, ymax = Upper, group = Topic)) +
+  geom_errorbar(width = 0.1) +
+  coord_flip() +
+  facet_wrap(~Topic) +
+  geom_point(aes(x = label, y = Point)) +
+  scale_x_discrete(limits = rev(labels)) +
+  xlab("Party") +
+  ylab(expression(paste("Mean of ", theta))) +
+  theme_bw()
 ```
 
 
@@ -245,6 +286,7 @@ strata_tw <- by_strata_TopicWord(out, keyATM_docs,
                                  by = as.vector(vars_selected$Party))
 ```
 
+We check the result.
 ```{r, warning=FALSE, message=FALSE}
 top_words(strata_tw, n = 3)
 ```

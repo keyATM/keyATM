@@ -32,7 +32,6 @@ test_that("keyATM base", {
 })
 
 
-
 # Only one keyword
 out <- keyATM(docs = keyATM_docs,
               no_keyword_topics = 3,

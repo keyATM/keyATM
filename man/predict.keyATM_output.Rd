@@ -5,7 +5,7 @@
 \title{Predict topic proportions for the covariate keyATM}
 \usage{
 \method{predict}{keyATM_output}(
-  x,
+  object,
   newdata,
   transform = FALSE,
   burn_in = NULL,
@@ -16,11 +16,12 @@
   method = c("hdi", "eti"),
   point = c("mean", "median"),
   label = NULL,
-  raw_values = FALSE
+  raw_values = FALSE,
+  ...
 )
 }
 \arguments{
-\item{x}{the keyATM_output object for the covariate model.}
+\item{object}{the keyATM_output object for the covariate model.}
 
 \item{newdata}{New observations which should be predicted.}
 
@@ -44,9 +45,7 @@
 
 \item{raw_values}{a logical. Returns raw values. The default is \code{FALSE}.}
 
-\item{xlab}{a character.}
-
-\item{scales}{character. Control the scale of y-axis (the parameter in \link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}): \code{free} adjusts y-axis for parameters. Default is \code{fixed}.}
+\item{...}{additional arguments not used.}
 }
 \description{
 Predict topic proportions for the covariate keyATM

@@ -67,7 +67,6 @@ bills_cov_modified <- as.data.frame(bills_cov)
 bills_cov_modified$factor <- factor(rep(1:10, nrow(bills_cov_modified) / 10))
 bills_cov_modified$numerical <- 1:nrow(bills_cov_modified)
 
-
 cov <- suppressWarnings(keyATM(docs = keyATM_docs,
               no_keyword_topics = 3,
               keywords = bills_keywords,
@@ -82,7 +81,6 @@ cov <- suppressWarnings(keyATM(docs = keyATM_docs,
 test_that("Covariates settings: Standardize - none, no formula", {
   expect_identical(cov$kept_values$model_settings$covariates_data_use[2, 1], 0L)
   expect_identical(ncol(cov$kept_values$model_settings$covariates_data_use), 1L)
-  
   
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))

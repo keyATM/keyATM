@@ -2,7 +2,7 @@
 #' 
 #' @keywords internal
 #' @import magrittr
-keyATM_output <- function(model)
+keyATM_output <- function(model, keep)
 {
   message("Creating an output object. It may take time...")
 
@@ -89,6 +89,31 @@ keyATM_output <- function(model)
   pd <- utils::packageDescription("keyATM")
   information <- list(date_output_made = Sys.time(), version_keyATM = pd$Version)
 
+  # Check what to keep
+  if (model$model %in% c("cov", "ldacov")) {
+    if (!"stored_values" %in% keep)
+      keep <- c("stored_values", keep) 
+
+    if (!"model_settings" %in% keep)
+      keep <- c("model_settings", keep) 
+  }
+
+  if (model$model %in% c("hmm", "ldahmm")) {
+    keep <- c("model_settings", keep) 
+  }
+
+  kept_values <- list(doc_index_used = model$stored_values$doc_index)
+  if (length(keep) != 0) {
+    use_elements <- keep[keep %in% names(model)]
+    for (i in 1:length(use_elements)) {
+      kept_values[use_elements[i]]  <- model[use_elements[i]]
+    }
+  }
+
+  if (model$options$store_theta & "stored_values" %in% keep) {
+    kept_values$stored_values$Z_tables <- NULL  # duplicate information
+  }
+
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
              V = length(model$vocab), N = length(model$Z),
@@ -99,7 +124,7 @@ keyATM_output <- function(model)
              priors = model$priors, options = model$options,
              keywords_raw = model$keywords_raw,
              model_fit = modelfit, pi = pi_estimated,
-             values_iter = values_iter, information = information)
+             values_iter = values_iter, information = information, kept_values = kept_values)
   class(ll) <- c("keyATM_output", model$model, class(ll))
   return(ll)
 }
@@ -276,8 +301,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
               dplyr::group_by(.data$Topic, .data$Word) %>%
               dplyr::summarize(Count = dplyr::n())  
   
-    temp %>%
-      tidyr::spread(key = "Word", value = "Count") -> phi
+    temp %>% tidyr::spread(key = "Word", value = "Count") -> phi
 
     # Check unused topic
     if (nrow(phi) != length(tnames)) {
@@ -326,8 +350,6 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
       phi_[1:nrow(phi), which(colnames(phi_) %in% colnames(phi))] <- 
           phi[, which(colnames(phi) %in% colnames(phi_))]
       phi <- phi_
-
-
     } else {
       # no-keyword topic-word dist
       # Should have the same dimension as vocab
@@ -386,8 +408,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
   if (ncol(phi) == length(vocab)) {
     phi <- phi[, vocab]
   } else {
-    # This can happen in `by_strata_TopicWord`
-    # Do nothing
+    # This can happen in `by_strata_TopicWord`, does nothing
   }
   return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
 }
@@ -418,10 +439,8 @@ keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tna
   if (ncol(phi) == length(vocab)) {
     phi <- phi[, vocab]
   } else {
-    # This can happen in `by_strata_TopicWord`
-    # Do nothing
+    # This can happen in `by_strata_TopicWord`, does nothing
   }
-  
 
   phi <- phi / Matrix::rowSums(phi)
   rownames(phi) <- tnames
@@ -793,6 +812,7 @@ covariates_get <- function(x) {
 #' @param ... other arguments passed on to the [predict()] function.
 #' @return strata_topicword object (a list).
 #' @import magrittr
+#' @importFrom stats predict
 #' @export
 by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, ...)
 {
@@ -882,7 +902,7 @@ calc_ci <- function(vec, ci, method, point)
     point <- mean(vec)
   }
   if (point == "median") {
-    point <- median(vec) 
+    point <- stats::median(vec) 
   }
 
   if (method == "hdi") {

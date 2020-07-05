@@ -52,13 +52,23 @@ test_that("Documents with length 0: base", {
                   model = "base",  # select the model
                   options = list(seed = 250, iterations = 0))
   )
-
   expect_identical(length(out$Z), 138L)
+
+  expect_warning(
+    out <- keyATM(docs = docs0,  # text input
+                  no_keyword_topics = 3,  # number of regular topics
+                  keywords = bills_keywords,  # keywords
+                  model = "base",  # select the model
+                  options = list(seed = 250, iterations = 1))
+  )
+  expect_identical(length(out$kept_values$doc_index_used), 138L)
 })
 
 
 test_that("Documents with length 0: covariate", {
   expect_warning(docs0 <- keyATM_read(bills_dfm_0))
+
+  skip_on_cran()
   expect_warning(
     out <- keyATM(docs = docs0,  # text input
                   no_keyword_topics = 3,  # number of regular topics
@@ -71,6 +81,17 @@ test_that("Documents with length 0: covariate", {
 
   expect_identical(length(out$Z), 138L)
   expect_identical(nrow(out$model_settings$covariates_data_use), 138L)
+
+  expect_warning(
+    out <- keyATM(docs = docs0,  # text input
+                  no_keyword_topics = 3,  # number of regular topics
+                  keywords = bills_keywords,  # keywords
+                  model = "covariates",
+                  model_settings = list(covariates_data = bills_cov, standardize = "all", 
+                                      covariates_formula = ~.),
+                  options = list(seed = 250, iterations = 1))
+  )
+  expect_identical(length(out$kept_values$doc_index_used), 138L)
 })
 
 
@@ -90,6 +111,18 @@ test_that("Documents with length 0: dynamic", {
 
   expect_identical(length(out$Z), 138L)
   expect_identical(length(out$model_settings$time_index), 138L)
+
+  expect_warning(
+    out <- keyATM(docs = docs0,  # text input
+                  no_keyword_topics = 3,  # number of regular topics
+                  keywords = bills_keywords,  # keywords
+                  model = "dynamic",
+                  model_settings = list(time_index = bills_time_index - 100,
+                                        num_states = 5),
+                  options = list(seed = 250, iterations = 1))
+  )
+  expect_identical(length(out$kept_values$doc_index_used), 138L)
+  expect_identical(length(out$kept_values$model_settings$time_index), 138L)
 })
 
 
