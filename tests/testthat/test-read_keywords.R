@@ -32,7 +32,7 @@ test_that("resolving and split", {
 
 test_that("file I/O", {
     ## the example of the function
-    skip_on_cran()
+    skip_on_cran() ; skip_on_os("linux")
     dictfile <- tempfile()
     download.file("http://bit.ly/37cV95h", dictfile)
     ## first position is file.
@@ -41,7 +41,7 @@ test_that("file I/O", {
 })
 
 test_that("Integration",{
-    skip_on_cran()
+    skip_on_cran() ; skip_on_os("linux")
     ## exact example: koheiw/quanteda.seededlda
     rdsfile <- tempfile()
     download.file("https://github.com/koheiw/quanteda.seededlda/raw/master/tests/data/data_corpus_sputnik.RDS", rdsfile)
