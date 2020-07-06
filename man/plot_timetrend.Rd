@@ -8,22 +8,28 @@ plot_timetrend(
   x,
   show_topic = NULL,
   time_index_label = NULL,
-  quantile_vec = c(0.05, 0.5, 0.95),
+  ci = 0.9,
+  method = c("hdi", "eti"),
+  point = c("mean", "median"),
   xlab = "Time",
   scales = "fixed",
   width = 0.5,
-  show_mean = TRUE,
+  show_point = TRUE,
   ...
 )
 }
 \arguments{
-\item{x}{the output from the dynamic keyATM model (see \code{\link[=keyATM]{keyATM()}})}
+\item{x}{the output from the dynamic keyATM model (see \code{\link[=keyATM]{keyATM()}}).}
 
 \item{show_topic}{an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.}
 
 \item{time_index_label}{a vector. The label for time index. The length should be equal to the number of documents (time index provided to \code{\link[=keyATM]{keyATM()}}).}
 
-\item{quantile_vec}{a numeric. Quantiles to visualize}
+\item{ci}{value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90\%). This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in \code{\link[=keyATM]{keyATM()}}).}
+
+\item{method}{method for computing the credible interval. The Highest Density Interval (\code{hdi}, default) or Equal-tailed Interval (\code{eti}). This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in \code{\link[=keyATM]{keyATM()}}).}
+
+\item{point}{method for computing the point estimate. \code{mean} (default) or \code{median}. This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in \code{\link[=keyATM]{keyATM()}}).}
 
 \item{xlab}{a character.}
 
@@ -31,12 +37,12 @@ plot_timetrend(
 
 \item{width}{numeric. Width of the error bars.}
 
-\item{show_mean}{logical. The default is \code{TRUE}. This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in \code{\link[=keyATM]{keyATM()}}).}
+\item{show_point}{logical. The default is \code{TRUE}. This is an option when calculating credible intervals.}
 
-\item{...}{additional arguments not used}
+\item{...}{additional arguments not used.}
 }
 \value{
-keyATM_fig object
+keyATM_fig object.
 }
 \description{
 Plot time trend

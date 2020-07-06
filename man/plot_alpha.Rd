@@ -7,7 +7,7 @@
 plot_alpha(x, start = 0, show_topic = NULL, scales = "fixed")
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}})}
+\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}}).}
 
 \item{start}{integer. The start of slice iteration. Default is \code{0}.}
 

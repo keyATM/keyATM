@@ -31,7 +31,7 @@ test_that("weightedLDA base", {
 cov <- weightedLDA(docs = keyATM_docs,
                    number_of_topics = 3,
                    model="covariates",
-                   model_settings = list(covariates_data = bills_cov, standardize = FALSE,
+                   model_settings = list(covariates_data = bills_cov, standardize = "none",
                                          covariates_formula = ~.),
                    options = list(seed = 100, iterations = 10))
 

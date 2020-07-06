@@ -175,7 +175,6 @@ covariates_standardize <- function(data, type, cov_formula = NULL) {
   }
 }
 
-
 #' Convert a quanteda dictionary to keywords
 #'
 #' This function converts or reads a dictionary object from quanteda to a named list. "Glob"-style wildcard expressions (e.g. politic*) are resolved based on the available terms in your texts.

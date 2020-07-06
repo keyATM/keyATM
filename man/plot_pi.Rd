@@ -4,17 +4,30 @@
 \alias{plot_pi}
 \title{Show a diagnosis plot of pi}
 \usage{
-plot_pi(x, show_topic = NULL, start = 0)
+plot_pi(
+  x,
+  show_topic = NULL,
+  start = 0,
+  ci = 0.9,
+  method = c("hdi", "eti"),
+  point = c("mean", "median")
+)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}})}
+\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}}).}
 
 \item{show_topic}{an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.}
 
 \item{start}{integer. The starting value of iteration to use in the plot. Default is \code{0}.}
+
+\item{ci}{value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90\%). This is an option when calculating credible intervals (you need to set \code{store_pi = TRUE} in \code{\link[=keyATM]{keyATM()}}).}
+
+\item{method}{method for computing the credible interval. The Highest Density Interval (\code{hdi}, default) or Equal-tailed Interval (\code{eti}). This is an option when calculating credible intervals (you need to set \code{store_pi = TRUE} in \code{\link[=keyATM]{keyATM()}}).}
+
+\item{point}{method for computing the point estimate. \code{mean} (default) or \code{median}. This is an option when calculating credible intervals (you need to set \code{store_pi = TRUE} in \code{\link[=keyATM]{keyATM()}}).}
 }
 \value{
-keyATM_fig object
+keyATM_fig object.
 }
 \description{
 Show a diagnosis plot of pi

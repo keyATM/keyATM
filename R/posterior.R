@@ -2,7 +2,7 @@
 #' 
 #' @keywords internal
 #' @import magrittr
-keyATM_output <- function(model)
+keyATM_output <- function(model, keep)
 {
   message("Creating an output object. It may take time...")
 
@@ -82,12 +82,37 @@ keyATM_output <- function(model)
 
   # Rescale lambda
   if (model$model %in% c("cov", "ldacov")) {
-    values_iter$Lambda_iter_rescaled <- keyATM_output_rescale_Lambda(model, info) 
+    values_iter$Lambda_iter <- model$stored_values$Lambda_iter 
   }
 
   # Add information
   pd <- utils::packageDescription("keyATM")
   information <- list(date_output_made = Sys.time(), version_keyATM = pd$Version)
+
+  # Check what to keep
+  if (model$model %in% c("cov", "ldacov")) {
+    if (!"stored_values" %in% keep)
+      keep <- c("stored_values", keep) 
+
+    if (!"model_settings" %in% keep)
+      keep <- c("model_settings", keep) 
+  }
+
+  if (model$model %in% c("hmm", "ldahmm")) {
+    keep <- c("model_settings", keep) 
+  }
+
+  kept_values <- list(doc_index_used = model$stored_values$doc_index)
+  if (length(keep) != 0) {
+    use_elements <- keep[keep %in% names(model)]
+    for (i in 1:length(use_elements)) {
+      kept_values[use_elements[i]]  <- model[use_elements[i]]
+    }
+  }
+
+  if (model$options$store_theta & "stored_values" %in% keep) {
+    kept_values$stored_values$Z_tables <- NULL  # duplicate information
+  }
 
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
@@ -99,7 +124,7 @@ keyATM_output <- function(model)
              priors = model$priors, options = model$options,
              keywords_raw = model$keywords_raw,
              model_fit = modelfit, pi = pi_estimated,
-             values_iter = values_iter, information = information)
+             values_iter = values_iter, information = information, kept_values = kept_values)
   class(ll) <- c("keyATM_output", model$model, class(ll))
   return(ll)
 }
@@ -276,8 +301,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
               dplyr::group_by(.data$Topic, .data$Word) %>%
               dplyr::summarize(Count = dplyr::n())  
   
-    temp %>%
-      tidyr::spread(key = "Word", value = "Count") -> phi
+    temp %>% tidyr::spread(key = "Word", value = "Count") -> phi
 
     # Check unused topic
     if (nrow(phi) != length(tnames)) {
@@ -326,8 +350,6 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
       phi_[1:nrow(phi), which(colnames(phi_) %in% colnames(phi))] <- 
           phi[, which(colnames(phi) %in% colnames(phi_))]
       phi <- phi_
-
-
     } else {
       # no-keyword topic-word dist
       # Should have the same dimension as vocab
@@ -386,8 +408,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
   if (ncol(phi) == length(vocab)) {
     phi <- phi[, vocab]
   } else {
-    # This can happen in `by_strata_TopicWord`
-    # Do nothing
+    # This can happen in `by_strata_TopicWord`, does nothing
   }
   return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
 }
@@ -418,10 +439,8 @@ keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tna
   if (ncol(phi) == length(vocab)) {
     phi <- phi[, vocab]
   } else {
-    # This can happen in `by_strata_TopicWord`
-    # Do nothing
+    # This can happen in `by_strata_TopicWord`, does nothing
   }
-  
 
   phi <- phi / Matrix::rowSums(phi)
   rownames(phi) <- tnames
@@ -511,39 +530,6 @@ keyATM_output_alpha_iter_hmm <- function(model, info)
 
 
 #' @noRd
-#' @import magrittr
-keyATM_output_rescale_Lambda <- function(model, info)
-{
-  if (!model$model_settings$standardize) {
-    # If it is not standardized, no need to rescale 
-    return(model$stored_values$Lambda_iter)
-  }
-
-  # Prepare original_data (before standardization)
-  if (is.null(model$model_settings$covariates_formula)) {
-    original_data <- as.matrix(model$model_settings$covariates_data) 
-  } else if (is.formula(model$model_settings$covariates_formula)) {
-    original_data <- stats::model.matrix(model$model_settings$covariates_formula,
-                                         as.data.frame(model$model_settings$covariates_data))
-  }
-
-  standardized_data <- model$model_settings$covariates_data_use
-
-  # Get rescaled Lambda
-  Lambda <- lapply(model$stored_values$Lambda_iter,
-                   function(L_s) {
-                     y <- Matrix::tcrossprod(standardized_data, L_s)  # x %*% t(y)
-                     L <- Matrix::solve(Matrix::crossprod(original_data),  # t(x) %*% x
-                                        Matrix::crossprod(original_data, y)  # t(x) %*% y
-                                       )
-                     return(t(L))  # L_s is K \times M
-                   }
-                  )
-  return(Lambda)
-}
-
-
-#' @noRd
 #' @export
 print.keyATM_output <- function(x, ...)
 {
@@ -568,8 +554,8 @@ summary.keyATM_output <- function(object, ...)
 
 #' Save a keyATM_output object
 #'
-#' @param x a keyATM_output object (see [keyATM()])
-#' @param file file name to create on disk
+#' @param x a keyATM_output object (see [keyATM()]).
+#' @param file file name to create on disk.
 #' @seealso [keyATM()], [weightedLDA()], [keyATMvb()]
 #' @export
 save.keyATM_output <- function(x, file = stop("'file' must be specified"))
@@ -584,7 +570,7 @@ save.keyATM_output <- function(x, file = stop("'file' must be specified"))
 #' are suffixed with a check mark. Words from another keyword topic
 #' are labeled with the name of that category.
 #'
-#' @param x the output (see [keyATM()] and [by_strata_TopicWord()])
+#' @param x the output (see [keyATM()] and [by_strata_TopicWord()]).
 #' @param n integer. The number terms to visualize. Default is \code{10}.
 #' @param measure character. The way to sort the terms: \code{probability} (default) or \code{lift}.
 #' @param show_keyword logical. If \code{TRUE}, mark keywords. Default is \code{TRUE}.
@@ -687,10 +673,10 @@ top_words_calc <- function(n, measure, show_keyword,
 
 #' Show the top topics for each document
 #'
-#' @param x the output from a keyATM model (see [keyATM()])
+#' @param x the output from a keyATM model (see [keyATM()]).
 #' @param n integer. The number of topics to show. Default is \code{2}.
 #'
-#' @return An n x k table of the top n topics in each document
+#' @return An n x k table of the top n topics in each document.
 #' @import magrittr
 #' @export
 #'
@@ -714,10 +700,10 @@ top_topics <- function(x, n = 2)
 
 #' Show the top documents for each topic
 #'
-#' @param x the output from a keyATM model (see [keyATM()])
+#' @param x the output from a keyATM model (see [keyATM()]).
 #' @param n How many documents to show. Default is \code{10}.
 #'
-#' @return An n x k table of the top n documents for each topic, each number is a document index
+#' @return An n x k table of the top n documents for each topic, each number is a document index.
 #' @import magrittr
 #' @export
 top_docs <- function(x, n = 10)
@@ -737,11 +723,11 @@ top_docs <- function(x, n = 10)
 
 #' Estimate subsetted topic-word distribution
 #'
-#' @param x the output from a keyATM model (see [keyATM()])
-#' @param keyATM_docs an object generated by [keyATM_read()]
-#' @param by a vector whose length is the number of documents
+#' @param x the output from a keyATM model (see [keyATM()]).
+#' @param keyATM_docs an object generated by [keyATM_read()].
+#' @param by a vector whose length is the number of documents.
 #'
-#' @return strata_topicword object (a list)
+#' @return strata_topicword object (a list).
 #' @import magrittr
 #' @export
 by_strata_TopicWord <- function(x, keyATM_docs, by)
@@ -792,14 +778,14 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 
 #' Show covariates information
 #'
-#' @param x the output from the covariate keyATM model (see [keyATM()])
+#' @param x the output from the covariate keyATM model (see [keyATM()]).
 #' @export
 covariates_info <- function(x) {
   if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
-    stop("This is not an output of covariate model")
+    stop("This is not an output of the covariate model")
   }
   cat(paste0("Colnames: ", paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse = ", "),
-             "\nStandardized: ", as.character(as.logical(x$kept_values$model_settings$standardize)),
+             "\nStandardization: ", as.character(x$kept_values$model_settings$standardize),
              "\nFormula: ", paste(as.character(x$kept_values$model_settings$covariates_formula), collapse = " "), "\n\nPreview:\n"))
   print(utils::head(x$kept_values$model_settings$covariates_data_use))
 }
@@ -811,7 +797,7 @@ covariates_info <- function(x) {
 #' @export
 covariates_get <- function(x) {
   if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
-    stop("This is not an output of covariate model")
+    stop("This is not an output of the covariate model")
   }
   return(x$kept_values$model_settings$covariates_data_use) 
 }
@@ -819,50 +805,27 @@ covariates_get <- function(x) {
 
 #' Estimate document-topic distribution by strata (for covariate models)
 #'
-#' @param x the output from the covariate keyATM model (see [keyATM()])
+#' @param x the output from the covariate keyATM model (see [keyATM()]).
 #' @param by_var character. The name of the variable to use.
 #' @param labels character. The labels for the values specified in `by_var` (ascending order).
 #' @param by_values numeric. Specific values for `by_var`, ordered from small to large. If it is not specified, all values in `by_var` will be used.
-#' @param burn_in integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.
-#' @param parallel logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}.
-#' @param mc.cores integer. The number of cores to use. Default is \code{NULL}.
-#' @param posterior_mean logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{TRUE}.
-#'
-#' @return strata_topicword object (a list)
+#' @param ... other arguments passed on to the [predict()] function.
+#' @return strata_topicword object (a list).
 #' @import magrittr
+#' @importFrom stats predict
 #' @export
-by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NULL,
-                               parallel = TRUE, mc.cores = NULL, posterior_mean = TRUE)
+by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, ...)
 {
   # Check inputs
   variables <- colnames(x$kept_values$model_settings$covariates_data_use)
+  if (length(by_var) != 1)
+    stop("`by_var` should be a single variable.")
   if (!by_var %in% variables)
     stop(paste0(by_var, " is not in the set of covariates in keyATM model. Check with `covariates_info()`.",
                 "Covariates provided are: ", 
                 paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse=" , ")))
 
-  if (is.null(burn_in)) {
-    burn_in <- floor(max(x$model_fit$Iteration) / 2) 
-  }
-  
-  # Get info for parallelization
-  if (parallel) {
-    if (is.null(mc.cores)) {
-      num_core <- max(1, parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L)
-    } else {
-      num_core <- mc.cores 
-    }
-  } else {
-    num_core <- 1L
-  }
-
   # Info
-  used_iter <- x$values_iter$used_iter
-  used_iter <- used_iter[used_iter > burn_in]
-  use_index <- which(x$values_iter$used_iter %in% used_iter)
-  tnames <- rownames(x$phi)
-  Lambda_iter <- x$values_iter$Lambda_iter_rescaled
-
   if (is.null(by_values)) {
     by_values <- sort(unique(x$kept_values$model_settings$covariates_data_use[, by_var]))
   }
@@ -870,61 +833,15 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NU
     stop("Length mismatches. Please check `labels`.")
   }
 
-  if (posterior_mean) {
-    res <- lapply(1:length(by_values),
-                  function(i) {
-                    value <- by_values[i]
-                    new_data <- x$kept_values$model_settings$covariates_data_use
-                    new_data[, by_var] <- value
+  set.seed(x$options$seed)
+  res <- lapply(1:length(by_values),
+                function(i) {
+                  value <- by_values[i] 
+                  new_data <- x$kept_values$model_settings$covariates_data_use
+                  new_data[, by_var] <- value
+                  obj <- predict(x, new_data, raw_values = TRUE, ...)
+                })
 
-                    # Draw theta
-                    obj <- do.call(dplyr::bind_rows,
-                                   parallel::mclapply(1:length(use_index),
-                                                      function(s) {
-                                                        Alpha <- exp(Matrix::tcrossprod(
-                                                                       new_data,
-                                                                       Lambda_iter[[use_index[s]]]
-                                                                     ))
-                                                        rowsum <- Matrix::rowSums(Alpha)
-                                                        thetas <- Alpha / rowsum
-                                                        thetas <- as.data.frame(thetas)
-                                                        colnames(thetas) <- tnames
-                                                        thetas$Iteration <- used_iter[s]
-                                                        return(thetas)
-                                                      },
-                                                      mc.cores = num_core
-                                                     )
-                                  )
-                  })  
-  } else {
-    set.seed(x$options$seed)
-    res <- lapply(1:length(by_values),
-                  function(i) {
-                    value <- by_values[i] 
-                    new_data <- x$kept_values$model_settings$covariates_data_use
-                    new_data[, by_var] <- value
-
-                    # Draw theta
-                    obj <- do.call(dplyr::bind_rows,
-                                   parallel::mclapply(1:length(use_index),
-                                                      function(s) {
-                                                        Alpha <- exp(Matrix::tcrossprod(
-                                                                       new_data,
-                                                                       Lambda_iter[[use_index[s]]]
-                                                                     ))
-                                                        thetas <- t(apply(Alpha, 1, rdirichlet))
-                                                        thetas <- Matrix::colMeans(thetas)
-                                                        thetas <- t(as.data.frame(thetas))
-                                                        thetas <- as.data.frame(thetas)
-                                                        colnames(thetas) <- tnames
-                                                        thetas$Iteration <- used_iter[s]
-                                                        return(thetas)
-                                                      },
-                                                      mc.cores = num_core, mc.set.seed = FALSE
-                                                     )
-                                  )
-                  })
-  }
   names(res) <- by_values
   obj <- list(theta = tibble::as_tibble(res), by_values = by_values, by_var = by_var, labels = labels)
   class(obj) <- c("strata_doctopic", class(obj)) 
@@ -933,23 +850,83 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, burn_in = NU
 
 
 #' @noRd
-#' @importFrom rlang .data
 #' @export
-summary.strata_doctopic <- function(object, quantile_vec = c(0.05, 0.5, 0.95), ...)
+print.strata_doctopic <- function(x, ...)
+{
+  cat(paste0("strata_doctopic object for the ", x$by_var, "\n"))
+}
+
+
+#' @noRd
+#' @export
+summary.strata_doctopic <- function(object, ci = 0.9, method = "hdi", point = "mean", ...)
 {
   tables <- lapply(1:length(object$by_values),
                   function(index) {
                      theta <- object$theta[[index]]
-                     theta_ <- theta[, 1:(ncol(theta)-1)]
-                     q <- as.data.frame(apply(theta_, 2, stats::quantile, quantile_vec))
-                     q$Percentile <- c("Lower", "Point", "Upper")
-                     q %>% 
-                       tidyr::gather(key = "Topic", value = "Value", -"Percentile") %>%
-                       tidyr::spread(key = "Percentile", value = "Value") %>%
-                       dplyr::mutate(TopicId = 1:(dplyr::n()),
-                                     val = object$by_values[index],
-                                     label = object$labels[index]) %>%
-                       tibble::as_tibble() -> temp
+                     return(strata_doctopic_CI(theta[, 1:(ncol(theta)-1)],
+                                               ci, method, point,
+                                               label = object$labels[index]))
                   })
+  names(tables) <- object$labels 
   return(tables)
 }
+
+
+#' @noRd
+#' @importFrom rlang .data
+#' @import magrittr
+#' @keywords internal
+strata_doctopic_CI <- function(theta, ci, method, point, label)
+{
+  q <- as.data.frame(apply(theta, 2, calc_ci, ci, method, point))
+  q$CI <- c("Lower", "Point", "Upper")
+  q %>% 
+    tidyr::gather(key = "Topic", value = "Value", -"CI") %>%
+    tidyr::spread(key = "CI", value = "Value") %>%
+    dplyr::mutate(TopicId = 1:(dplyr::n())) %>% tibble::as_tibble() -> res
+
+  if (!is.null(label)) {
+    res %>% dplyr::mutate(label = label) -> res
+  }
+  return(res)
+}
+
+
+#' @noRd
+#' @keywords internal
+calc_ci <- function(vec, ci, method, point)
+{
+  # Check bayestestR package and Kruschke's book
+  if (point == "mean") {
+    point <- mean(vec)
+  }
+  if (point == "median") {
+    point <- stats::median(vec) 
+  }
+
+  if (method == "hdi") {
+    sorted_points <- sort.int(vec, method = "quick")
+    window_size <- ceiling(ci * length(sorted_points))
+    nCIs <-  length(sorted_points) - window_size
+
+    if (window_size < 2 | nCIs < 1) {
+      warning("`ci` is too small or interations are not enough, using `eti` option instead.") 
+      return(calc_ci(vec, ci, method = "eti", point))
+    }
+
+    ci_width <- sapply(1:nCIs, function(x) {sorted_points[x + window_size] - sorted_points[x]})
+    slice_min <- which.min(ci_width)
+  
+    res <- c(sorted_points[slice_min], point, sorted_points[slice_min + window_size]) 
+  }
+
+  if (method == "eti") {
+    qua <- stats::quantile(vec, probs = c((1 - ci) / 2, (1 + ci) / 2))
+    res <- c(qua[1], point, qua[2]) 
+  }
+ 
+  names(res) <- c("Lower", "Point", "Upper")
+  return(res)
+}
+

@@ -53,7 +53,8 @@ out <- keyATM(docs              = keyATM_docs,
               keywords          = keywords,
               model             = "covariates",
               model_settings    = list(covariates_data    = vars_selected, 
-                                       covariates_formula = ~ Party + Period),
+                                       covariates_formula = ~ Party + Period,
+                                       standardize = "all"),
               options           = list(seed = 250, iterations = 20),
               keep              = c("Z", "S")
              )
@@ -80,8 +81,10 @@ test_that("Doc Topic", {
                                           posterior_mean = TRUE)
   p <- plot(strata_topic, var_name = "Period", show_topic = c(1,2,3,4))
   expect_s3_class(p, "keyATM_fig")
-  skip_on_os("linux") ;
-  expect_equal(summary(strata_topic)[[2]]$Point[1], 0.07443097, tolerance = 0.000001)
+  skip_on_os("linux")
+  expect_equal(summary(strata_topic, method = "eti", point = "median")[[2]]$Point[1], 0.09026675, tolerance = 0.000001)
+  expect_equal(summary(strata_topic, method = "hdi", point = "median")[[2]]$Upper[2], 0.08066711, tolerance = 0.000001)
+  expect_equal(summary(strata_topic)[[2]]$Lower[3], 0.1319587, tolerance = 0.000001)
 })
 
 

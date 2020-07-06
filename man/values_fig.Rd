@@ -7,7 +7,7 @@
 values_fig(x)
 }
 \arguments{
-\item{x}{the keyATM_fig object}
+\item{x}{the keyATM_fig object.}
 }
 \description{
 Get values used to create a figure
