@@ -2,6 +2,7 @@
 ### Major changes
 * Update for dplyr 1.0.0
 * Update tests
+* Add `read_keywords` for reading dictionary files (e.g. YAML, LIWC)
 
 # keyATM 0.2.1
 ### Major changes

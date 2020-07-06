@@ -132,6 +132,50 @@ myhashmap_getvec_keyint <- function(mapped, keys) {
   return(unlist(lapply(keys, function(x) {mapped$get(x)}), use.names = FALSE, recursive = FALSE))
 }
 
+standardize <- function(x) {return((x - mean(x)) / stats::sd(x))}
+
+covariates_standardize <- function(data, type, cov_formula = NULL) {
+  if (is.null(cov_formula)) {
+    warning("`covariates_formula` is not provided. keyATM uses the matrix as it is.", immediate. = TRUE) 
+    return(as.matrix(data))
+  } else if (is.formula(cov_formula)) {
+    message("Convert covariates data using `model_settings$covariates_formula`.") 
+    covariates_data_use <- stats::model.matrix(cov_formula,
+                                               as.data.frame(data))
+  }
+
+  if (type == "none")
+    return(covariates_data_use)
+
+  colnames_keep <- colnames(covariates_data_use)
+
+  if (type == "all") {
+    if ("(Intercept)" %in% colnames(covariates_data_use)) {
+      standardize_cols <- colnames_keep[-which(colnames_keep == "(Intercept)")]
+    } else {
+      standardize_cols <- colnames_keep
+    }
+  }
+
+  if (type == "non-factor") {
+    # Ignore columns created from the factor 
+    factor_cols <- names(Filter(is.factor, data))
+    standardize_cols <- colnames_keep[!grepl(paste(c("^\\(Intercept\\)", paste0("^", factor_cols)), collapse = "|"), colnames_keep)]
+  }
+
+  if (length(standardize_cols) == 0) {
+    return(covariates_data_use) 
+  } else {
+    covariates_data_use <- sapply(colnames_keep, function(col) {
+                                  if (!col %in% standardize_cols)
+                                    return(as.vector(covariates_data_use[, col]))
+                                  return(standardize(as.vector(covariates_data_use[, col])))
+                           })
+    return(covariates_data_use)
+  }
+}
+
+
 #' Convert a quanteda dictionary to keywords
 #'
 #' This function converts or reads a dictionary object from quanteda to a named list. "Glob"-style wildcard expressions (e.g. politic*) are resolved based on the available terms in your texts.
