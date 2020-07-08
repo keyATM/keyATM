@@ -11,6 +11,7 @@
     * In previous versions, this option takes either `TRUE` (default, standardizing all covariates) or `FALSE`.
 * A bug fix in the `by_strata_DocTopic()` function.
 * The output of the `keyATM()` includes the index of documents used for fitting (this will be useful if the input includes documents with zero length).
+* Add a `progress_bar` option in the `keyATM_read()` function (thank you [Jae Yeon Kim](https://jaeyk.github.io/) for the suggestion!)
 
 # keyATM 0.2.2
 ### Major changes
