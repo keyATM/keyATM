@@ -27,6 +27,7 @@ Authors:
 Other contributors:
 \itemize{
   \item William Lowe \email{wlowe@princeton.edu} [contributor]
+  \item Chung-hong Chan \email{chainsawtiney@gmail.com} (\href{https://orcid.org/0000-0002-6232-7530}{ORCID}) [contributor]
 }
 
 }

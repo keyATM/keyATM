@@ -6,6 +6,7 @@
 #' @param texts input. keyATM takes quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
 #' @param encoding character. Only used when \code{texts} is a vector of file paths. Default is \code{UTF-8}.
 #' @param check logical. If \code{TRUE}, check whether there is anything wrong with the structure of texts. Default is \code{TRUE}.
+#' @param progress_bar logical. If \code{TRUE}, it shows a progress bar (currently it only supports a quanteda object). Default is \code{FALSE}.
 #'
 #' @return a list whose elements are splitted texts. The length of the list equals to the number of documents.
 #'
@@ -26,7 +27,7 @@
 #' @import magrittr
 #' @importFrom rlang .data
 #' @export
-keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
+keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = FALSE)
 {
 
   # Detect input
@@ -62,7 +63,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
   if (!is.null(text_dfm)) {
     vocabulary <- colnames(text_dfm)
     W_raw <- list()
-    W_raw <- read_dfm_cpp(text_dfm, W_raw, vocabulary)
+    W_raw <- read_dfm_cpp(text_dfm, W_raw, vocabulary, as.logical(progress_bar))
   } else {
     ## preprocess each text
     # Use files <- list.files(doc_folder, pattern = "txt", full.names = TRUE) when you pass

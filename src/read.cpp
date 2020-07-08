@@ -3,10 +3,13 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <progress.hpp>
+#include <progress_bar.hpp>
 
 
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::depends(RcppProgress)]]
 
 using namespace Eigen;
 using namespace Rcpp;
@@ -18,16 +21,19 @@ using namespace std;
 //' @param dfm a dfm input (sparse Matrix)
 //' @param W_raw an object to return
 //' @param vocab a vector of vocabulary
+//' @param show_progress_bar show a progress bar 
 //'
 //' @keywords internal
 // [[Rcpp::export]]
 List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, 
-                  List W_raw, CharacterVector vocab)
+                  List W_raw, CharacterVector vocab, bool show_progress_bar)
 {
   dfm = dfm.transpose();  // SparseMatrix is colmajor
   int doc_num = dfm.cols();
   string word_id;
   int count;
+
+  Progress progress_bar(doc_num, show_progress_bar);
 
   for (int doc_id = 0; doc_id < doc_num; ++doc_id) {
     vector<string> doc_words;
@@ -42,6 +48,9 @@ List read_dfm_cpp(Eigen::SparseMatrix<int> dfm,
 
     CharacterVector R_doc_words = Rcpp::wrap(doc_words);
     W_raw.push_back(R_doc_words);
+
+    // Progress bar
+    progress_bar.increment();
   }
 
   return W_raw;
