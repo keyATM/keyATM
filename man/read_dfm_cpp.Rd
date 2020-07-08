@@ -4,7 +4,7 @@
 \alias{read_dfm_cpp}
 \title{Read files from the quanteda dfm (this is the same as dgCMatrix)}
 \usage{
-read_dfm_cpp(dfm, W_raw, vocab)
+read_dfm_cpp(dfm, W_raw, vocab, show_progress_bar)
 }
 \arguments{
 \item{dfm}{a dfm input (sparse Matrix)}
@@ -12,6 +12,8 @@ read_dfm_cpp(dfm, W_raw, vocab)
 \item{W_raw}{an object to return}
 
 \item{vocab}{a vector of vocabulary}
+
+\item{show_progress_bar}{show a progress bar}
 }
 \description{
 Read files from the quanteda dfm (this is the same as dgCMatrix)

@@ -31,15 +31,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // read_dfm_cpp
-List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, List W_raw, CharacterVector vocab);
-RcppExport SEXP _keyATM_read_dfm_cpp(SEXP dfmSEXP, SEXP W_rawSEXP, SEXP vocabSEXP) {
+List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, List W_raw, CharacterVector vocab, bool show_progress_bar);
+RcppExport SEXP _keyATM_read_dfm_cpp(SEXP dfmSEXP, SEXP W_rawSEXP, SEXP vocabSEXP, SEXP show_progress_barSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Eigen::SparseMatrix<int> >::type dfm(dfmSEXP);
     Rcpp::traits::input_parameter< List >::type W_raw(W_rawSEXP);
     Rcpp::traits::input_parameter< CharacterVector >::type vocab(vocabSEXP);
-    rcpp_result_gen = Rcpp::wrap(read_dfm_cpp(dfm, W_raw, vocab));
+    Rcpp::traits::input_parameter< bool >::type show_progress_bar(show_progress_barSEXP);
+    rcpp_result_gen = Rcpp::wrap(read_dfm_cpp(dfm, W_raw, vocab, show_progress_bar));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -131,7 +132,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_keyATM_make_wsz_cpp", (DL_FUNC) &_keyATM_make_wsz_cpp, 3},
     {"_keyATM_keyATMvb_call", (DL_FUNC) &_keyATM_keyATMvb_call, 1},
-    {"_keyATM_read_dfm_cpp", (DL_FUNC) &_keyATM_read_dfm_cpp, 3},
+    {"_keyATM_read_dfm_cpp", (DL_FUNC) &_keyATM_read_dfm_cpp, 4},
     {"_keyATM_keyATM_fit_base", (DL_FUNC) &_keyATM_keyATM_fit_base, 2},
     {"_keyATM_keyATM_fit_cov", (DL_FUNC) &_keyATM_keyATM_fit_cov, 2},
     {"_keyATM_keyATM_fit_HMM", (DL_FUNC) &_keyATM_keyATM_fit_HMM, 2},
