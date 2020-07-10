@@ -34,6 +34,37 @@ test_that("Parallel initialization", {
 })
 
 
+
+# Time index
+test_that("keyATM Dynamic: Initialization (correct time index)", {
+  expect_message(
+    out <- keyATM(docs = keyATM_docs,  # text input
+                  no_keyword_topics = 3,  # number of regular topics
+                  keywords = bills_keywords,  # keywords
+                  model = "dynamic",
+                  model_settings = list(time_index = bills_time_index - 100,
+                                        num_states = 5),
+                  options = list(seed = 250, iterations = 0))
+  )
+})
+
+
+test_that("keyATM Dynamic: Initialization (wrong time index)", {
+  bills_time_index_wrong <- bills_time_index
+  bills_time_index_wrong[11] <- 103
+  expect_error(
+    out <- keyATM(docs = keyATM_docs,  # text input
+                  no_keyword_topics = 3,  # number of regular topics
+                  keywords = bills_keywords,  # keywords
+                  model = "dynamic",
+                  model_settings = list(time_index = bills_time_index_wrong - 100,
+                                        num_states = 5),
+                  options = list(seed = 250, iterations = 0))
+  )
+})
+
+
+
 # Documents with 0 length
 
 bills_dfm_0 <- bills_dfm

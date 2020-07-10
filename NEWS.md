@@ -13,6 +13,9 @@
 * The output of the `keyATM()` includes the index of documents used for fitting (this will be useful if the input includes documents with zero length).
 * Add a `progress_bar` option in the `keyATM_read()` function (thank you [Jae Yeon Kim](https://jaeyk.github.io/) for the suggestion!)
 
+### Bug fix
+* Fix checking time index input (thank you [Jae Yeon Kim](https://jaeyk.github.io/) for pointing out this issue!)
+
 # keyATM 0.2.2
 ### Major changes
 * Updates for dplyr 1.0.0
