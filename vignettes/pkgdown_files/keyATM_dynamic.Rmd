@@ -79,6 +79,8 @@ vars %>%
   mutate(Period = (vars$Year - 1780) %/% 10 + 1) -> vars_period
 vars_period %>% select(Year, Period)
 ```
+The time index (`Period`) should start from `1` and increment by 1 (ascending order).
+To properly process date, please consider using the [lubridate](https://lubridate.tidyverse.org/) package.
 
 We pass the time index to the `keyATM()` function, specifying
 the number of hidden states with the `num_states` in the
