@@ -692,9 +692,9 @@ check_arg_model_settings <- function(obj, model, info)
       stop("`model_settings$num_states` should not exceed the maximum of `model_settings$time_index`.")
 
 
-    check <- unique(obj$time_index[2:length(obj$time_index)] - stats::lag(obj$time_index)[2:length(obj$time_index)])
+    check <- unique(obj$time_index[2:length(obj$time_index)] - obj$time_index[1:(length(obj$time_index)-1)])
     if (sum(!unique(check) %in% c(0,1)) != 0)
-      stop("`model_settings$num_states` does not increment by 1.")
+      stop("`model_settings$time_index` does not increment by 1.")
 
     obj$time_index <- as.integer(obj$time_index)
 
