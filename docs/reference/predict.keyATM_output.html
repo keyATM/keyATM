@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Bills data — keyATM_data_bills • keyATM</title>
+<title>Predict topic proportions for the covariate keyATM — predict.keyATM_output • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -38,9 +38,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Bills data — keyATM_data_bills" />
+<meta property="og:title" content="Predict topic proportions for the covariate keyATM — predict.keyATM_output" />
 
-<meta property="og:description" content="Bills data" />
+<meta property="og:description" content="Predict topic proportions for the covariate keyATM" />
 
 
 
@@ -143,35 +143,90 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Bills data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/keyATM/keyATM/blob/master/R/data.R'><code>R/data.R</code></a></small>
-    <div class="hidden name"><code>keyATM_data_bills.Rd</code></div>
+    <h1>Predict topic proportions for the covariate keyATM</h1>
+    <small class="dont-index">Source: <a href='https://github.com/keyATM/keyATM/blob/master/R/predict.R'><code>R/predict.R</code></a></small>
+    <div class="hidden name"><code>predict.keyATM_output.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Bills data</p>
+    <p>Predict topic proportions for the covariate keyATM</p>
     
     </div>
 
-    <pre class="usage"><span class='no'>keyATM_data_bills</span></pre>
-        
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
-
-    <p>A list with following objects:</p><dl'>
-<dt>doc_dfm</dt><dd><p>A <code>quanteda</code> dfm object of 140 documents. The text data is a part of the Congressional Bills scraped from <a href='https://www.congress.gov'>https://www.congress.gov</a>.</p></dd>
-<dt>cov</dt><dd><p>An integer vector which takes one if the Republican proposed the bill.</p></dd>
-<dt>keywords</dt><dd><p>A list of length 4 which contains keywords for four selected topics.</p></dd>
-<dt>time_index</dt><dd><p>An integer vector indicating the session number of each bill.</p></dd>
-<dt>labels</dt><dd><p>An integer vector indicating 40 labels.</p></dd>
-<dt>labels_all</dt><dd><p>An integer vector indicating all labels.</p></dd>
-
-</dl>
-
+    <pre class="usage"><span class='co'># S3 method for keyATM_output</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(
+  <span class='no'>object</span>,
+  <span class='no'>newdata</span>,
+  <span class='kw'>transform</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>burn_in</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>parallel</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>posterior_mean</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>0.9</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hdi"</span>, <span class='st'>"eti"</span>),
+  <span class='kw'>point</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"mean"</span>, <span class='st'>"median"</span>),
+  <span class='kw'>label</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>raw_values</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='no'>...</span>
+)</pre>
     
-    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
-
-    <p><a href='https://www.congress.gov'>https://www.congress.gov</a></p>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>object</th>
+      <td><p>the keyATM_output object for the covariate model.</p></td>
+    </tr>
+    <tr>
+      <th>newdata</th>
+      <td><p>New observations which should be predicted.</p></td>
+    </tr>
+    <tr>
+      <th>transform</th>
+      <td><p>Transorm and standardize the <code>newdata</code> with the same formula and option as <code>model_settings</code> used in <code><a href='keyATM.html'>keyATM()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>burn_in</th>
+      <td><p>integer. Burn-in period. If not specified, it is the half of samples. Default is <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>parallel</th>
+      <td><p>logical. If <code>TRUE</code>, parallelization for speeding up. Default is <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>mc.cores</th>
+      <td><p>integer. The number of cores to use. Default is <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>posterior_mean</th>
+      <td><p>logical. If <code>TRUE</code>, the quantity of interest to estimate is the posterior mean. Default is <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>ci</th>
+      <td><p>value of the credible interval (between 0 and 1) to be estimated. Default is <code>0.9</code> (90%).</p></td>
+    </tr>
+    <tr>
+      <th>method</th>
+      <td><p>method for computing the credible interval. The Highest Density Interval (<code>hdi</code>, default) or Equal-tailed Interval (<code>eti</code>).</p></td>
+    </tr>
+    <tr>
+      <th>point</th>
+      <td><p>method for computing the point estimate. <code>mean</code> (default) or <code>median</code>.</p></td>
+    </tr>
+    <tr>
+      <th>label</th>
+      <td><p>a character. Add a <code>label</code> column to the output. The default is <code>NULL</code> (do not add it).</p></td>
+    </tr>
+    <tr>
+      <th>raw_values</th>
+      <td><p>a logical. Returns raw values. The default is <code>FALSE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional arguments not used.</p></td>
+    </tr>
+    </table>
     
 
   </div>

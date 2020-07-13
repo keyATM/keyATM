@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -173,6 +173,7 @@
                                        <span class="kw">covariates_formula</span> <span class="kw">=</span> ~ <span class="no">Party</span> + <span class="no">Period</span>),
               <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>))</pre></body></html></div>
 <p>Once you fit the model, you can save the model with <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">Base model</a>.</p>
+<p><strong>keyATM</strong> automatically standardizes non-factor covariates. The <code>standardize</code> option in <code>model_settings</code> argument of the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function now takes one of <code>"all"</code>, <code>"none"</code>, or <code>"non-factor"</code> (default). <code>"all"</code> standardizes all covariates (except the intercept), <code>"none"</code> does not standardize any covariates, and <code>"non-factor"</code> standardizes non-factor covariates.</p>
 </div>
 <div id="interpreting-results" class="section level2">
 <h2 class="hasAnchor">
@@ -186,26 +187,26 @@
 <p>Researchers can glance covariate information with the <code><a href="../../reference/covariates_info.html">covariates_info()</a></code> and the <code><a href="../../reference/covariates_get.html">covariates_get()</a></code> function will return covariates used in the fitted output.</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="../../reference/covariates_info.html">covariates_info</a></span>(<span class="no">out</span>)</pre></body></html></div>
 <pre><code>## Colnames: (Intercept), PartyRepublican, PartyDemocratic, Period20_21c
-## Standardized: TRUE
+## Standardization: non-factor
 ## Formula: ~ Party + Period
 ## 
 ## Preview:
 ##   (Intercept) PartyRepublican PartyDemocratic Period20_21c
-## 1           1      -0.8328937       -0.746848    -1.026136
-## 2           1      -0.8328937       -0.746848    -1.026136
-## 3           1      -0.8328937       -0.746848    -1.026136
-## 4           1      -0.8328937       -0.746848    -1.026136
-## 5           1      -0.8328937       -0.746848    -1.026136
-## 6           1      -0.8328937       -0.746848    -1.026136</code></pre>
+## 1           1               0               0            0
+## 2           1               0               0            0
+## 3           1               0               0            0
+## 4           1               0               0            0
+## 5           1               0               0            0
+## 6           1               0               0            0</code></pre>
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">used_covariates</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/covariates_get.html">covariates_get</a></span>(<span class="no">out</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">used_covariates</span>)</pre></body></html></div>
 <pre><code>##   (Intercept) PartyRepublican PartyDemocratic Period20_21c
-## 1           1      -0.8328937       -0.746848    -1.026136
-## 2           1      -0.8328937       -0.746848    -1.026136
-## 3           1      -0.8328937       -0.746848    -1.026136
-## 4           1      -0.8328937       -0.746848    -1.026136
-## 5           1      -0.8328937       -0.746848    -1.026136
-## 6           1      -0.8328937       -0.746848    -1.026136</code></pre>
+## 1           1               0               0            0
+## 2           1               0               0            0
+## 3           1               0               0            0
+## 4           1               0               0            0
+## 5           1               0               0            0
+## 6           1               0               0            0</code></pre>
 </div>
 <div id="covariates-and-document-topic-distributions" class="section level3">
 <h3 class="hasAnchor">
@@ -227,7 +228,7 @@
 <p>We can visualize results by covariate with <code>by = "covariate"</code> argument. The plot below combines two panels in the previous plot and display in the same panel.</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">fig_doctopic</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">strata_topic</span>, <span class="kw">var_name</span> <span class="kw">=</span> <span class="st">"Period"</span>,
                      <span class="kw">show_topic</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">5</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="st">"covariate"</span>)</pre></body></html></div>
-<p>Using the output of the <code>keyATM</code>, we can calculate 95% credible intervals of the differences in the mean of document-topic distribution.</p>
+<p>Using the output of the <code>keyATM</code>, we can calculate 90% credible intervals of the differences in the mean of document-topic distribution.</p>
 <p>Since we set the 18th and 19th century dummy as the baseline when constructing <code>factor</code> for this variable, the comparison is the relative increase or decrease from the 18th and 19th century to the 20th and 21st century.</p>
 <div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">theta1</span> <span class="kw">&lt;-</span> <span class="no">strata_topic</span>$<span class="no">theta</span><span class="kw">[[</span><span class="fl">1</span>]]  <span class="co"># 18_19c</span>
 <span class="no">theta2</span> <span class="kw">&lt;-</span> <span class="no">strata_topic</span>$<span class="no">theta</span><span class="kw">[[</span><span class="fl">2</span>]]  <span class="co"># 20_21c</span>
@@ -235,15 +236,46 @@
 <span class="no">theta_diff_quantile</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="no">theta_diff</span>, <span class="fl">2</span>, <span class="no">quantile</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.05</span>, <span class="fl">0.5</span>, <span class="fl">0.95</span>))
 <span class="no">theta_diff_quantile</span></pre></body></html></div>
 <pre><code>##     4_Constitution 5_ForeignAffairs
-## 5%       0.1650697        0.0553605
-## 50%      0.2485459        0.1192158
-## 95%      0.3571780        0.1847093</code></pre>
+## 5%       0.0906182       0.06250426
+## 50%      0.1153357       0.08576355
+## 95%      0.1424101       0.11659573</code></pre>
+<p>Furthermore, we can use the <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> function to get the predicted mean of the document-topic distribution for three party categories.</p>
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">strata_rep</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span>(<span class="no">out</span>, <span class="kw">by_var</span> <span class="kw">=</span> <span class="st">"PartyRepublican"</span>,
+                                 <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Non-Republican"</span>, <span class="st">"Republican"</span>))
+<span class="no">strata_dem</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span>(<span class="no">out</span>, <span class="kw">by_var</span> <span class="kw">=</span> <span class="st">"PartyDemocratic"</span>,
+                                 <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Non-Democratic"</span>, <span class="st">"Democratic"</span>))
+
+<span class="no">est_rep</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">strata_rep</span>)<span class="kw">[[</span><span class="st">"Republican"</span>]]  <span class="co"># Republican data</span>
+<span class="no">est_dem</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">strata_dem</span>)<span class="kw">[[</span><span class="st">"Democratic"</span>]]  <span class="co"># Democratic data</span></pre></body></html></div>
+<p>Now we are missing the baseline (Others).</p>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">new_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/covariates_get.html">covariates_get</a></span>(<span class="no">out</span>)
+
+<span class="co"># Setting both Republican and Democratic dummy to 0 means `Others`</span>
+<span class="no">new_data</span>[, <span class="st">"PartyRepublican"</span>] <span class="kw">&lt;-</span> <span class="fl">0</span>
+<span class="no">new_data</span>[, <span class="st">"PartyDemocratic"</span>] <span class="kw">&lt;-</span> <span class="fl">0</span>
+<span class="no">pred</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">out</span>, <span class="no">new_data</span>, <span class="kw">label</span> <span class="kw">=</span> <span class="st">"Others"</span>)</pre></body></html></div>
+<p>Now, we combine three objects and make a plot.</p>
+<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">res</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(<span class="no">est_rep</span>, <span class="no">est_dem</span>, <span class="no">pred</span>) <span class="kw">%&gt;%</span>
+          <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="no">TopicId</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">5</span>))  <span class="co"># Select two topics</span>
+<span class="no">labels</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">res</span>$<span class="no">label</span>)
+
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplot2</span>)
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">res</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">label</span>, <span class="kw">ymin</span> <span class="kw">=</span> <span class="no">Lower</span>, <span class="kw">ymax</span> <span class="kw">=</span> <span class="no">Upper</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="no">Topic</span>)) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_errorbar</a></span>(<span class="kw">width</span> <span class="kw">=</span> <span class="fl">0.1</span>) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html">coord_flip</a></span>() +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(~<span class="no">Topic</span>) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">label</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">Point</span>)) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html">scale_x_discrete</a></span>(<span class="kw">limits</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span>(<span class="no">labels</span>)) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Party"</span>) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"Mean of "</span>, <span class="no">theta</span>))) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</pre></body></html></div>
+<p><img src="keyATM_cov_files/figure-html/unnamed-chunk-16-1.png" width="700" style="display: block; margin: auto;"></p>
 </div>
 <div id="covariates-and-topic-word-distribution" class="section level3">
 <h3 class="hasAnchor">
 <a href="#covariates-and-topic-word-distribution" class="anchor"></a>Covariates and topic-word distribution</h3>
 <p>Although the covariate keyATM does not directly model topic-word distributions, the model can examine how topic-word distributions change across different values of document-level covariates. For this analysis, we need to use the <code>keep</code> argument in the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function to store <code>Z</code> and <code>S</code>. Then we pass the output with these stored values to the <code><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord()</a></code> function. The example below demonstrates top words associated to each topic for speeches from different parties using the <code>Party</code> covariate.</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,
               <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">5</span>,
               <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords</span>,
               <span class="kw">model</span>             <span class="kw">=</span> <span class="st">"covariates"</span>,
@@ -253,36 +285,37 @@
               <span class="kw">keep</span>              <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Z"</span>, <span class="st">"S"</span>))
 <span class="no">strata_tw</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span>(<span class="no">out</span>, <span class="no">keyATM_docs</span>,
                                  <span class="kw">by</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(<span class="no">vars_selected</span>$<span class="no">Party</span>))</pre></body></html></div>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span>(<span class="no">strata_tw</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
+<p>We check the result.</p>
+<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span>(<span class="no">strata_tw</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
 <pre><code>## $Other
-##    1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
-## 1    government congress [✓]   world [✓]           states          country
-## 2 executive [✓]       policy freedom [✓]            union         citizens
-## 3        within    party [✓]         let constitution [✓]          war [✓]
-##      Other_1  Other_2   Other_3 Other_4 Other_5
-## 1 government national      best  nation     one
-## 2      every     made necessary  people liberty
-## 3     united   system   justice   human    time
+##   1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
+## 1       people congress [✓]   world [✓]           states       government
+## 2          one      justice freedom [✓] constitution [✓]            union
+## 3       fellow        means         let           people           powers
+##   Other_1   Other_2 Other_3 Other_4 Other_5
+## 1   great      made  public  nation   power
+## 2  united peace [3] country   first    free
+## 3   every  national nations     men   might
 ## 
 ## $Democratic
-##   1_Government   2_Congress   3_Peace   4_Constitution 5_ForeignAffairs
-## 1   government congress [✓] world [✓]           states          country
-## 2          now       policy       new           people          war [✓]
-## 3       action        trade       let constitution [✓]           public
-##      Other_1  Other_2   Other_3  Other_4 Other_5
-## 1 government national political   people    time
-## 2      every      men      best   nation   every
-## 3     united     many   service american     one
+##   1_Government 2_Congress   3_Peace   4_Constitution 5_ForeignAffairs Other_1
+## 1       people government world [✓]           states       government   great
+## 2          now    service       new           people            union   every
+## 3     american    justice       let constitution [✓]      foreign [✓]  united
+##    Other_2    Other_3 Other_4 Other_5
+## 1 national     public  nation   power
+## 2     made    country     men    free
+## 3    right confidence  spirit   never
 ## 
 ## $Republican
-##   1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
-## 1   government congress [✓]   world [✓]           states          country
-## 2      law [✓]     business     america           people          war [✓]
-## 3     laws [✓]       policy freedom [✓] constitution [✓]             free
-##      Other_1  Other_2   Other_3 Other_4 Other_5
-## 1 government national      best  people     one
-## 2      every     made political  nation    time
-## 3     united     many    secure    make   never</code></pre>
+##   1_Government   2_Congress   3_Peace   4_Constitution 5_ForeignAffairs Other_1
+## 1       people congress [✓] world [✓]           states       government   great
+## 2          now   government       new constitution [✓]            union  united
+## 3          one      justice   america           people          war [✓]   every
+##    Other_2   Other_3 Other_4 Other_5
+## 1     made   country  nation   power
+## 2 national    public     men    free
+## 3    right political country   never</code></pre>
 </div>
 </div>
 <div id="reference" class="section level2">
