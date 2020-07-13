@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Bills data — keyATM_data_bills • keyATM</title>
+<title>Convert a quanteda dictionary to keywords — read_keywords • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -38,9 +38,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Bills data — keyATM_data_bills" />
+<meta property="og:title" content="Convert a quanteda dictionary to keywords — read_keywords" />
 
-<meta property="og:description" content="Bills data" />
+<meta property="og:description" content="This function converts or reads a dictionary object from quanteda to a named list. &quot;Glob&quot;-style wildcard expressions (e.g. politic*) are resolved based on the available terms in your texts." />
 
 
 
@@ -143,37 +143,65 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Bills data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/keyATM/keyATM/blob/master/R/data.R'><code>R/data.R</code></a></small>
-    <div class="hidden name"><code>keyATM_data_bills.Rd</code></div>
+    <h1>Convert a quanteda dictionary to keywords</h1>
+    <small class="dont-index">Source: <a href='https://github.com/keyATM/keyATM/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>read_keywords.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Bills data</p>
+    <p>This function converts or reads a dictionary object from quanteda to a named list. "Glob"-style wildcard expressions (e.g. politic*) are resolved based on the available terms in your texts.</p>
     
     </div>
 
-    <pre class="usage"><span class='no'>keyATM_data_bills</span></pre>
-        
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
-
-    <p>A list with following objects:</p><dl'>
-<dt>doc_dfm</dt><dd><p>A <code>quanteda</code> dfm object of 140 documents. The text data is a part of the Congressional Bills scraped from <a href='https://www.congress.gov'>https://www.congress.gov</a>.</p></dd>
-<dt>cov</dt><dd><p>An integer vector which takes one if the Republican proposed the bill.</p></dd>
-<dt>keywords</dt><dd><p>A list of length 4 which contains keywords for four selected topics.</p></dd>
-<dt>time_index</dt><dd><p>An integer vector indicating the session number of each bill.</p></dd>
-<dt>labels</dt><dd><p>An integer vector indicating 40 labels.</p></dd>
-<dt>labels_all</dt><dd><p>An integer vector indicating all labels.</p></dd>
-
-</dl>
-
+    <pre class="usage"><span class='fu'>read_keywords</span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>docs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dictionary</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>split</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
-    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>file</th>
+      <td><p>file identifier for a foreign dictionary, e.g. path to a dictionary in YAML or LIWC format</p></td>
+    </tr>
+    <tr>
+      <th>docs</th>
+      <td><p>texts read via <code><a href='keyATM_read.html'>keyATM_read()</a></code></p></td>
+    </tr>
+    <tr>
+      <th>dictionary</th>
+      <td><p>a quanteda dictionary object, ignore if file is not NULL</p></td>
+    </tr>
+    <tr>
+      <th>split</th>
+      <td><p>boolean, if multi-word terms be seperated, e.g. "air force" splits into "air" and "force".</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional parameters for <code><a href='https://quanteda.io/reference/dictionary.html'>quanteda::dictionary()</a></code></p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><a href='https://www.congress.gov'>https://www.congress.gov</a></p>
+    <p>a named list which can be used as keywords for e.g. <code><a href='keyATM.html'>keyATM()</a></code></p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='https://quanteda.io/reference/dictionary.html'>dictionary</a></code></p></div>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+  <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>keyATM</span>)
+  <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>quanteda</span>)
+  <span class='co'>## using the moral foundation dictiionary example from quanteda</span>
+  <span class='no'>dictfile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span>()
+  <span class='fu'><a href='https://rdrr.io/r/utils/download.file.html'>download.file</a></span>(<span class='st'>"http://bit.ly/37cV95h"</span>, <span class='no'>dictfile</span>)
+  <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>keyATM_data_bills</span>)
+  <span class='no'>bills_dfm</span> <span class='kw'>&lt;-</span> <span class='no'>keyATM_data_bills</span>$<span class='no'>doc_dfm</span>
+  <span class='no'>keyATM_docs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='keyATM_read.html'>keyATM_read</a></span>(<span class='no'>bills_dfm</span>)
+  <span class='fu'>read_keywords</span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='no'>dictfile</span>, <span class='kw'>docs</span> <span class='kw'>=</span> <span class='no'>keyATM_docs</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"LIWC"</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

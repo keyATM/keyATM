@@ -73,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -154,23 +154,14 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>by_strata_DocTopic</span>(
-  <span class='no'>x</span>,
-  <span class='no'>by_var</span>,
-  <span class='no'>labels</span>,
-  <span class='kw'>by_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>burn_in</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>parallel</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>posterior_mean</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>by_strata_DocTopic</span>(<span class='no'>x</span>, <span class='no'>by_var</span>, <span class='no'>labels</span>, <span class='kw'>by_values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>the output from the covariate keyATM model (see <code><a href='keyATM.html'>keyATM()</a></code>)</p></td>
+      <td><p>the output from the covariate keyATM model (see <code><a href='keyATM.html'>keyATM()</a></code>).</p></td>
     </tr>
     <tr>
       <th>by_var</th>
@@ -185,26 +176,14 @@
       <td><p>numeric. Specific values for <code>by_var</code>, ordered from small to large. If it is not specified, all values in <code>by_var</code> will be used.</p></td>
     </tr>
     <tr>
-      <th>burn_in</th>
-      <td><p>integer. Burn-in period. If not specified, it is the half of samples. Default is <code>NULL</code>.</p></td>
-    </tr>
-    <tr>
-      <th>parallel</th>
-      <td><p>logical. If <code>TRUE</code>, parallelization for speeding up. Default is <code>TRUE</code>.</p></td>
-    </tr>
-    <tr>
-      <th>mc.cores</th>
-      <td><p>integer. The number of cores to use. Default is <code>NULL</code>.</p></td>
-    </tr>
-    <tr>
-      <th>posterior_mean</th>
-      <td><p>logical. If <code>TRUE</code>, the quantity of interest to estimate is the posterior mean. Default is <code>TRUE</code>.</p></td>
+      <th>...</th>
+      <td><p>other arguments passed on to the <code><a href='https://rdrr.io/r/stats/predict.html'>predict()</a></code> function.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>strata_topicword object (a list)</p>
+    <p>strata_topicword object (a list).</p>
     
 
   </div>

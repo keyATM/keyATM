@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Bills data — keyATM_data_bills • keyATM</title>
+<title>Version 0.3 • keyATM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -38,11 +38,7 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Bills data — keyATM_data_bills" />
-
-<meta property="og:description" content="Bills data" />
-
-
+<meta property="og:title" content="Version 0.3" />
 
 
 
@@ -60,7 +56,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -143,43 +139,51 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Bills data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/keyATM/keyATM/blob/master/R/data.R'><code>R/data.R</code></a></small>
-    <div class="hidden name"><code>keyATM_data_bills.Rd</code></div>
+      <h1 data-toc-skip>Changelog <small>0.3</small></h1>
+      
     </div>
 
-    <div class="ref-description">
-    
-    <p>Bills data</p>
-    
-    </div>
-
-    <pre class="usage"><span class='no'>keyATM_data_bills</span></pre>
-        
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
-
-    <p>A list with following objects:</p><dl'>
-<dt>doc_dfm</dt><dd><p>A <code>quanteda</code> dfm object of 140 documents. The text data is a part of the Congressional Bills scraped from <a href='https://www.congress.gov'>https://www.congress.gov</a>.</p></dd>
-<dt>cov</dt><dd><p>An integer vector which takes one if the Republican proposed the bill.</p></dd>
-<dt>keywords</dt><dd><p>A list of length 4 which contains keywords for four selected topics.</p></dd>
-<dt>time_index</dt><dd><p>An integer vector indicating the session number of each bill.</p></dd>
-<dt>labels</dt><dd><p>An integer vector indicating 40 labels.</p></dd>
-<dt>labels_all</dt><dd><p>An integer vector indicating all labels.</p></dd>
-
-</dl>
-
-    
-    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
-
-    <p><a href='https://www.congress.gov'>https://www.congress.gov</a></p>
-    
-
+    <div id="keyatm-030" class="section level1">
+<h1 class="page-header" data-toc-text="0.3.0">
+<a href="#keyatm-030" class="anchor"></a>keyATM 0.3.0<small> 2020-07-12 </small>
+</h1>
+<p><a href="https://github.com/keyATM/keyATM/projects/2">Roadmap</a> for this version.</p>
+<div id="major-changes" class="section level3">
+<h3 class="hasAnchor">
+<a href="#major-changes" class="anchor"></a>Major changes</h3>
+<ul>
+<li>Use the Highest Density Interval as a default (<code>method = "hdi"</code>) in <code><a href="../reference/plot.strata_doctopic.html">plot.strata_doctopic()</a></code>, <code><a href="../reference/plot_timetrend.html">plot_timetrend()</a></code>, and <code><a href="../reference/plot_pi.html">plot_pi()</a></code>. The previous version uses the Equal-tailed Interval (<code>method = "eti"</code>).</li>
+<li>Add <code>read_keywords</code> for reading dictionary files (e.g. YAML, LIWC).</li>
+<li>Add the <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> function for the covariate keyATM (thank you <a href="https://sanjahajdinjak.wordpress.com/">Sanja Hajdinjak</a> for the suggestion!).</li>
+<li>Detailed options for standardization in the covariate keyATM
+<ul>
+<li>The <code>standardize</code> option in <code>model_settings</code> argument of the <code><a href="../reference/keyATM.html">keyATM()</a></code> function now takes one of <code>"all"</code>, <code>"none"</code>, or <code>"non-factor"</code> (default).</li>
+<li>
+<code>"all"</code> standardizes all covariates (except the intercept), <code>"none"</code> does not standardize any covariates, and <code>"non-factor"</code> standardizes non-factor covariates.</li>
+<li>In previous versions, this option takes either <code>TRUE</code> (default, standardizing all covariates) or <code>FALSE</code>.</li>
+</ul>
+</li>
+<li>A bug fix in the <code><a href="../reference/by_strata_DocTopic.html">by_strata_DocTopic()</a></code> function.</li>
+<li>The output of the <code><a href="../reference/keyATM.html">keyATM()</a></code> includes the index of documents used for fitting (this will be useful if the input includes documents with zero length).</li>
+<li>Add a <code>progress_bar</code> option in the <code><a href="../reference/keyATM_read.html">keyATM_read()</a></code> function (thank you <a href="https://jaeyk.github.io/">Jae Yeon Kim</a> for the suggestion!)</li>
+</ul>
+</div>
+<div id="bug-fix" class="section level3">
+<h3 class="hasAnchor">
+<a href="#bug-fix" class="anchor"></a>Bug fix</h3>
+<ul>
+<li>Fix checking time index input (thank you <a href="https://jaeyk.github.io/">Jae Yeon Kim</a> for pointing out this issue!)</li>
+</ul>
+</div>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
+
 </div>
 
 

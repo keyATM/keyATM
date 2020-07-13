@@ -89,6 +89,7 @@ reference:
   - '`covariates_get`'
   - '`covariates_info`'
   - '`plot.strata_doctopic`'
+  - '`predict.keyATM_output`'
 - title: Built-in data
   desc: ~
   contents:
