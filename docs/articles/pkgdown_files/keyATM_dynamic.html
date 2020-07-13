@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -149,6 +149,7 @@
 ##  9  1821      5
 ## 10  1825      5
 ## # … with 48 more rows</code></pre>
+<p>The time index (<code>Period</code>) should start from <code>1</code> and increment by 1 (ascending order). To properly process date, please consider using the <a href="https://lubridate.tidyverse.org/">lubridate</a> package.</p>
 <p>We pass the time index to the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function, specifying the number of hidden states with the <code>num_states</code> in the <code>model_settings</code> argument.</p>
 <div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,
               <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">3</span>,

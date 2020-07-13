@@ -1,8 +1,8 @@
 #' Save a figure
 #' 
-#' @param x the keyATM_fig object
-#' @param filename file name to create on disk
-#' @param ... other arguments passed on to the [ggplot2::ggsave()][ggplot2::ggsave] function
+#' @param x the keyATM_fig object.
+#' @param filename file name to create on disk.
+#' @param ... other arguments passed on to the [ggplot2::ggsave()][ggplot2::ggsave] function.
 #' @seealso [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()], [values_fig()]
 #' @export
 save_fig <- function(x, filename, ...) {
@@ -12,7 +12,7 @@ save_fig <- function(x, filename, ...) {
 
 #' Get values used to create a figure
 #' 
-#' @param x the keyATM_fig object
+#' @param x the keyATM_fig object.
 #' @seealso [save_fig()], [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()]
 #' @export
 values_fig <- function(x) {
@@ -45,7 +45,7 @@ print.keyATM_fig <- function(x, ...)
 
 #' Show a diagnosis plot of alpha
 #'
-#' @param x the output from a keyATM model (see [keyATM()])
+#' @param x the output from a keyATM model (see [keyATM()]).
 #' @param start integer. The start of slice iteration. Default is \code{0}.
 #' @param show_topic a vector to specify topic indexes to show. Default is \code{NULL}.
 #' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
@@ -112,9 +112,9 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
 
 #' Show a diagnosis plot of log-likelihood and perplexity
 #' 
-#' @param x the output from a keyATM model (see [keyATM()])
+#' @param x the output from a keyATM model (see [keyATM()]).
 #' @param start integer. The starting value of iteration to use in plot. Default is \code{1}.
-#' @return keyATM_fig object
+#' @return keyATM_fig object.
 #' @import ggplot2
 #' @importFrom stats as.formula
 #' @importFrom rlang .data
@@ -150,17 +150,22 @@ plot_modelfit <- function(x, start = 1)
 
 #' Show a diagnosis plot of pi
 #'
-#' @param x the output from a keyATM model (see [keyATM()])
+#' @param x the output from a keyATM model (see [keyATM()]).
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param start integer. The starting value of iteration to use in the plot. Default is \code{0}.
-#' @return keyATM_fig object
+#' @param ci value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90%). This is an option when calculating credible intervals (you need to set \code{store_pi = TRUE} in [keyATM()]).
+#' @param method method for computing the credible interval. The Highest Density Interval (\code{hdi}, default) or Equal-tailed Interval (\code{eti}). This is an option when calculating credible intervals (you need to set \code{store_pi = TRUE} in [keyATM()]).
+#' @param point method for computing the point estimate. \code{mean} (default) or \code{median}. This is an option when calculating credible intervals (you need to set \code{store_pi = TRUE} in [keyATM()]).
+#' @return keyATM_fig object.
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
 #' @seealso [save_fig()]
 #' @export
-plot_pi <- function(x, show_topic = NULL, start = 0)
+plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"))
 {
+  method <- match.arg(method)
+  point <- match.arg(point)
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
 
@@ -194,13 +199,13 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 
     pi_mat %>%
       tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Topic") %>%
-      dplyr::group_by(.data$Topic) %>%
-      dplyr::summarise(mean = mean(.data$value), uq = stats::quantile(.data$value, .975), 
-                       lq = stats::quantile(.data$value, 0.025)) -> temp
+      dplyr::group_by(.data$Topic) %>% 
+      dplyr::summarise(x = list(tibble::enframe(calc_ci(.data$value, ci, method, point), "q", "value")), .groups = "drop_last") %>%
+      tidyr::unnest(x) %>% tidyr::pivot_wider(names_from = .data$q, values_from = .data$value) -> temp
     
-    p <- ggplot(temp, aes(y = .data$mean, x = .data$Topic, color = .data$Topic)) + 
-         theme_bw() +
-         geom_errorbar(aes(ymin = .data$lq, ymax = .data$uq), data = temp, width = 0.01, size = 1) + 
+    p <- ggplot(temp, aes(y = .data$Point, x = .data$Topic)) + 
+         theme_bw() + geom_point() +
+         geom_errorbar(aes(ymin = .data$Lower, ymax = .data$Upper), data = temp, width = 0.01, size = 1) + 
          xlab("Topic") + ylab("Probability") +
          ggtitle("Probability of words drawn from keyword topic-word distribution") +
          theme(plot.title = element_text(hjust = 0.5))
@@ -211,11 +216,11 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
       dplyr::mutate(Topic = tnames) -> temp
 
     p <- ggplot(temp, aes(x = .data$Topic, y = .data$Probability)) +
-        geom_bar(stat = "identity") +
-        theme_bw() +
-        xlab("Topic") + ylab("Probability") +
-        ggtitle("Probability of words drawn from keyword topic-word distribution") +
-        theme(plot.title = element_text(hjust = 0.5))    
+         geom_bar(stat = "identity") +
+         theme_bw() +
+         xlab("Topic") + ylab("Probability") +
+         ggtitle("Probability of words drawn from keyword topic-word distribution") +
+         theme(plot.title = element_text(hjust = 0.5))    
   }
   p <- list(figure = p, values = temp)
   class(p) <- c("keyATM_fig", class(p))
@@ -225,25 +230,31 @@ plot_pi <- function(x, show_topic = NULL, start = 0)
 
 #' Plot document-topic distribution by strata (for covariate models)
 #' 
-#' @param x a strata_doctopic object (see [by_strata_DocTopic()])
+#' @param x a strata_doctopic object (see [by_strata_DocTopic()]).
 #' @param show_topic a vector or an integer. Indicate topics to visualize.
 #' @param var_name the name of the variable in the plot.
 #' @param by `topic` or `covariate`. Default is by `topic`.
-#' @param quantile_vec a numeric. Quantiles to visualize
+#' @param ci value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90%).
+#' @param method method for computing the credible interval. The Highest Density Interval (\code{hdi}, default) or Equal-tailed Interval (\code{eti}).
+#' @param point method for computing the point estimate. \code{mean} (default) or \code{median}.
 #' @param width numeric. Width of the error bars.
-#' @param show_mean logical. The default is \code{TRUE}.
-#' @param ... additional arguments not used
-#' @return keyATM_fig object
+#' @param show_point logical. Show point estimates. The default is \code{TRUE}.
+#' @param ... additional arguments not used.
+#' @return keyATM_fig object.
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
 #' @seealso [save_fig()], [by_strata_DocTopic()]
 #' @export
 plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("topic", "covariate"),
-                                 quantile_vec = c(0.05, 0.5, 0.95), width = 0.1, show_mean = TRUE, ...)
+                                 ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"),
+                                 width = 0.1, show_point = TRUE, ...)
 {
   by <- match.arg(by)
-  tables <- summary.strata_doctopic(x, quantile_vec = quantile_vec)
+  method <- match.arg(method)
+  point <- match.arg(point)
+
+  tables <- summary.strata_doctopic(x, ci, method, point)
   by_var <- x$by_var
   by_values <- x$by_values
   if (!is.null(var_name)) {
@@ -268,13 +279,13 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 
   if (by == "topic") {
     p <- p + geom_errorbar(width = width, aes(x = .data$label, ymin = .data$Lower, ymax = .data$Upper,
-                group = .data$Topic), position = position_dodge(width = -1/2)) + facet_wrap(~Topic, scales = "free") 
-    if (show_mean)
+                group = .data$Topic), position = position_dodge(width = -1/2)) + facet_wrap(~Topic) 
+    if (show_point)
       p <- p + geom_point(aes(x = .data$label, y = .data$Point))
   } else {
     p <- p + geom_errorbar(width = width, aes(x = .data$label, ymin = .data$Lower, ymax = .data$Upper,
                 group = .data$Topic, colour = .data$Topic), position = position_dodge(width = -1/2))   
-    if (show_mean)
+    if (show_point)
       p <- p + geom_point(aes(x = .data$label, y = .data$Point, colour = .data$Topic), position = position_dodge(width = -1/2))
   }
 
@@ -286,26 +297,34 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 
 #' Plot time trend
 #' 
-#' @param x the output from the dynamic keyATM model (see [keyATM()])
+#' @param x the output from the dynamic keyATM model (see [keyATM()]).
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param time_index_label a vector. The label for time index. The length should be equal to the number of documents (time index provided to [keyATM()]). 
-#' @param quantile_vec a numeric. Quantiles to visualize
+#' @param ci value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90%). This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in [keyATM()]).
+#' @param method method for computing the credible interval. The Highest Density Interval (\code{hdi}, default) or Equal-tailed Interval (\code{eti}). This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in [keyATM()]).
+#' @param point method for computing the point estimate. \code{mean} (default) or \code{median}. This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in [keyATM()]).
 #' @param xlab a character.
 #' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
 #' @param width numeric. Width of the error bars.
-#' @param show_mean logical. The default is \code{TRUE}. This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in [keyATM()]).
-#' @param ... additional arguments not used
-#' @return keyATM_fig object
+#' @param show_point logical. The default is \code{TRUE}. This is an option when calculating credible intervals.
+#' @param ... additional arguments not used.
+#' @return keyATM_fig object.
 #' @import ggplot2
 #' @import magrittr
 #' @importFrom rlang .data
 #' @seealso [save_fig()]
 #' @export
-plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, quantile_vec = c(0.05, 0.5, 0.95),
-                           xlab = "Time", scales = "fixed", width = 0.5, show_mean = TRUE, ...)
+plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, 
+                           ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"),
+                           xlab = "Time", scales = "fixed", width = 0.5, show_point = TRUE, ...)
 {
+  method <- match.arg(method)
+  point <- match.arg(point)
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
+  if (!modelname %in% c("hmm", "ldahmm")) {
+    stop(paste0("This is not a model with keywords.")) 
+  }
 
   if (!is.null(time_index_label)) {
     if (length(x$values_iter$time_index) != length(time_index_label)) {
@@ -320,17 +339,13 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, quanti
     show_topic <- 1:x$keyword_k
   }
 
-  if (!modelname %in% c("hmm", "ldahmm")) {
-    stop(paste0("This is not a model with keywords.")) 
-  }
-
   format_theta <- function(theta, time_index, tnames) {
     theta[ , show_topic, drop = FALSE] %>%
       tibble::as_tibble(.name_repair = ~tnames) %>%
       dplyr::mutate(time_index = time_index) %>%
       tidyr::pivot_longer(-.data$time_index, names_to = "Topic", values_to = "Proportion") %>%
       dplyr::group_by(.data$time_index, .data$Topic) %>%
-      dplyr::summarize(Proportion = base::mean(.data$Proportion)) -> res
+      dplyr::summarize(Proportion = base::mean(.data$Proportion), .groups = "drop_last") -> res
     return(res)
   }
 
@@ -343,15 +358,15 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, quanti
   } else {
     dplyr::bind_rows(lapply(x$values_iter$theta_iter, format_theta, time_index, tnames[show_topic])) %>%
       dplyr::group_by(.data$time_index, .data$Topic) %>%
-      dplyr::summarise(x = list(tibble::enframe(stats::quantile(.data$Proportion, probs = quantile_vec), "q", "value"))) %>% 
+      dplyr::summarise(x = list(tibble::enframe(calc_ci(.data$Proportion, ci, method, point), "q", "value"))) %>% 
       tidyr::unnest(.data$x) %>% dplyr::ungroup() %>%
       tidyr::pivot_wider(names_from = .data$q, values_from = .data$value) %>%
-      stats::setNames(c("time_index", "Topic", "Lower", "Median", "Upper")) -> dat
-    p <- ggplot(dat, aes(x = .data$time_index, y = .data$Median, group = .data$Topic)) +
+      stats::setNames(c("time_index", "Topic", "Lower", "Point", "Upper")) -> dat
+    p <- ggplot(dat, aes(x = .data$time_index, y = .data$Point, group = .data$Topic)) +
           geom_ribbon(aes(ymin = .data$Lower, ymax = .data$Upper), fill = "gray75") +
           geom_line(size = 0.8, color = "blue")
 
-    if (show_mean)
+    if (show_point)
       p <- p + geom_point(size = 0.9)
   }
   p <- p + xlab(xlab) + ylab(expression(paste("Mean of ", theta))) +

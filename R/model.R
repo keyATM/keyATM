@@ -6,6 +6,7 @@
 #' @param texts input. keyATM takes quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
 #' @param encoding character. Only used when \code{texts} is a vector of file paths. Default is \code{UTF-8}.
 #' @param check logical. If \code{TRUE}, check whether there is anything wrong with the structure of texts. Default is \code{TRUE}.
+#' @param progress_bar logical. If \code{TRUE}, it shows a progress bar (currently it only supports a quanteda object). Default is \code{FALSE}.
 #'
 #' @return a list whose elements are splitted texts. The length of the list equals to the number of documents.
 #'
@@ -26,7 +27,7 @@
 #' @import magrittr
 #' @importFrom rlang .data
 #' @export
-keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
+keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = FALSE)
 {
 
   # Detect input
@@ -62,7 +63,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE)
   if (!is.null(text_dfm)) {
     vocabulary <- colnames(text_dfm)
     W_raw <- list()
-    W_raw <- read_dfm_cpp(text_dfm, W_raw, vocabulary)
+    W_raw <- read_dfm_cpp(text_dfm, W_raw, vocabulary, as.logical(progress_bar))
   } else {
     ## preprocess each text
     # Use files <- list.files(doc_folder, pattern = "txt", full.names = TRUE) when you pass
@@ -608,21 +609,16 @@ check_arg_model_settings <- function(obj, model, info)
     }
 
     if (is.null(obj$covariates_formula)) {
-      warning("`covariates_formula` is not provided. keyATM uses the matrix as it is.", immediate. = TRUE)
       obj$covariates_formula <- NULL  # do not need to change the matrix
-      obj$covariates_data_use <- obj$covariates_data
-    } else if (is.formula(obj$covariates_formula)) {
-      message("Convert covariates data using `model_settings$covariates_formula`.")
-      obj$covariates_data_use <- stats::model.matrix(obj$covariates_formula,
-                                                     as.data.frame(obj$covariates_data))
-    } else {
-      stop("Check `model_settings$covariates_formula`.")  
     }
 
+    if (is.null(obj$standardize)) 
+      obj$standardize <- "non-factor" 
+    if (!obj$standardize %in% c("all", "none", "non-factor"))
+      stop('Unknown option in `standardize`. It should be one of "all", "none", or "non-factor".')
 
-    if (is.null(obj$standardize)) {
-      obj$standardize <- TRUE 
-    }
+    # Standardize
+    obj$covariates_data_use <- covariates_standardize(obj$covariates_data, obj$standardize, obj$covariates_formula)
 
     # Check if it works as a valid regression 
     temp <- as.data.frame(obj$covariates_data_use)
@@ -637,22 +633,6 @@ check_arg_model_settings <- function(obj, model, info)
       fit <- stats::lm(y ~ ., data = temp)  # data.frame does not have an itercept
       if (NA %in% fit$coefficients) {
         stop("Covariates are invalid.")    
-      }
-    }
-
-    if (obj$standardize) {
-      standardize <- function(x) {return((x - mean(x)) / stats::sd(x))}
-
-      if ("(Intercept)" %in% colnames(obj$covariates_data_use)) {
-        # Do not standardize the intercept
-        colnames_keep <- colnames(obj$covariates_data_use)
-        obj$covariates_data_use <- cbind(obj$covariates_data_use[, 1, drop=FALSE],
-                                         apply(as.matrix(obj$covariates_data_use[, -1]), 2,
-                                               standardize) 
-                                        )
-        colnames(obj$covariates_data_use) <- colnames_keep
-      } else {
-        obj$covariates_data_use <- apply(obj$covariates_data_use, 2, standardize)
       }
     }
 
@@ -712,9 +692,9 @@ check_arg_model_settings <- function(obj, model, info)
       stop("`model_settings$num_states` should not exceed the maximum of `model_settings$time_index`.")
 
 
-    check <- unique(obj$time_index[2:length(obj$time_index)] - stats::lag(obj$time_index)[2:length(obj$time_index)])
+    check <- unique(obj$time_index[2:length(obj$time_index)] - obj$time_index[1:(length(obj$time_index)-1)])
     if (sum(!unique(check) %in% c(0,1)) != 0)
-      stop("`model_settings$num_states` does not increment by 1.")
+      stop("`model_settings$time_index` does not increment by 1.")
 
     obj$time_index <- as.integer(obj$time_index)
 
@@ -1055,7 +1035,6 @@ make_sz_key <- function(W, keywords, info)
     S <- lapply(W, make_s)
     Z <- lapply(W, make_z, topicvec)
   }
- 
  
   return(list(S = S, Z = Z))
 }

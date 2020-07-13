@@ -7,12 +7,12 @@
 top_topics(x, n = 2)
 }
 \arguments{
-\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}})}
+\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}}).}
 
 \item{n}{integer. The number of topics to show. Default is \code{2}.}
 }
 \value{
-An n x k table of the top n topics in each document
+An n x k table of the top n topics in each document.
 }
 \description{
 Show the top topics for each document

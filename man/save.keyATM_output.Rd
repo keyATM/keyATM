@@ -7,9 +7,9 @@
 save.keyATM_output(x, file = stop("'file' must be specified"))
 }
 \arguments{
-\item{x}{a keyATM_output object (see \code{\link[=keyATM]{keyATM()}})}
+\item{x}{a keyATM_output object (see \code{\link[=keyATM]{keyATM()}}).}
 
-\item{file}{file name to create on disk}
+\item{file}{file name to create on disk.}
 }
 \description{
 Save a keyATM_output object

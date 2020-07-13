@@ -1,6 +1,5 @@
 #' Bills data
 #' 
-#' 
 #' @format A list with following objects:
 #' \describe{
 #'   \item{doc_dfm}{A \code{quanteda} dfm object of 140 documents. The text data is a part of the Congressional Bills scraped from \url{https://www.congress.gov}.}
@@ -10,6 +9,5 @@
 #'   \item{labels}{An integer vector indicating 40 labels.}
 #'   \item{labels_all}{An integer vector indicating all labels.}
 #' }
-#'
 #' @source \url{https://www.congress.gov}
 "keyATM_data_bills"

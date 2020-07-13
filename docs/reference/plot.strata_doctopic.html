@@ -73,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -160,9 +160,11 @@
   <span class='kw'>show_topic</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>var_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>by</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"topic"</span>, <span class='st'>"covariate"</span>),
-  <span class='kw'>quantile_vec</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.05</span>, <span class='fl'>0.5</span>, <span class='fl'>0.95</span>),
+  <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>0.9</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hdi"</span>, <span class='st'>"eti"</span>),
+  <span class='kw'>point</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"mean"</span>, <span class='st'>"median"</span>),
   <span class='kw'>width</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
-  <span class='kw'>show_mean</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>show_point</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='no'>...</span>
 )</pre>
     
@@ -171,7 +173,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>a strata_doctopic object (see <code><a href='by_strata_DocTopic.html'>by_strata_DocTopic()</a></code>)</p></td>
+      <td><p>a strata_doctopic object (see <code><a href='by_strata_DocTopic.html'>by_strata_DocTopic()</a></code>).</p></td>
     </tr>
     <tr>
       <th>show_topic</th>
@@ -186,26 +188,34 @@
       <td><p><code>topic</code> or <code>covariate</code>. Default is by <code>topic</code>.</p></td>
     </tr>
     <tr>
-      <th>quantile_vec</th>
-      <td><p>a numeric. Quantiles to visualize</p></td>
+      <th>ci</th>
+      <td><p>value of the credible interval (between 0 and 1) to be estimated. Default is <code>0.9</code> (90%).</p></td>
+    </tr>
+    <tr>
+      <th>method</th>
+      <td><p>method for computing the credible interval. The Highest Density Interval (<code>hdi</code>, default) or Equal-tailed Interval (<code>eti</code>).</p></td>
+    </tr>
+    <tr>
+      <th>point</th>
+      <td><p>method for computing the point estimate. <code>mean</code> (default) or <code>median</code>.</p></td>
     </tr>
     <tr>
       <th>width</th>
       <td><p>numeric. Width of the error bars.</p></td>
     </tr>
     <tr>
-      <th>show_mean</th>
-      <td><p>logical. The default is <code>TRUE</code>.</p></td>
+      <th>show_point</th>
+      <td><p>logical. Show point estimates. The default is <code>TRUE</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional arguments not used</p></td>
+      <td><p>additional arguments not used.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>keyATM_fig object</p>
+    <p>keyATM_fig object.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 

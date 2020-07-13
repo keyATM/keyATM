@@ -84,6 +84,7 @@ Finally, `keyATM_read` function reads your data for **keyATM**.
 
 ```{r, warning=FALSE, message=FALSE}
 keyATM_docs <- keyATM_read(texts = data_dfm)
+summary(keyATM_docs)
 ```
 
 Researchers are required to remove any documents 
@@ -118,8 +119,8 @@ in `data_dfm_len0` that do not contain any terms (the index 10 and 50).
 In the **quanteda**, we can easily remove documents 
 without any word counts with the following function.
 
-```{r, warning=FALSE, message=FALSE, fig.align='center'}
-summary(keyATM_docs)
+```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+data_dfm_rm0 <- dfm_subset(data_dfm_len0, ntoken(data_dfm_len0) > 0)
 ```
 
 ### Alternative ways to load texts into **keyATM**

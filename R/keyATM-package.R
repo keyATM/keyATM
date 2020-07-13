@@ -1,8 +1,6 @@
 #' Keyword Assisted Topic Models
 #'
 #' @description The implementation of keyATM models.
-#'
-#' 
 #' @importFrom Rcpp sourceCpp
 #' @useDynLib keyATM, .registration = TRUE
 #' @aliases NULL keyATM-package

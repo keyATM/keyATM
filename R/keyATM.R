@@ -2,12 +2,12 @@
 #'
 #' Fit keyATM models.
 #'
-#' @param docs texts read via [keyATM_read()]
-#' @param model keyATM model: \code{base}, \code{covariates}, \code{dynamic}, and \code{label}
-#' @param no_keyword_topics the number of regular topics
-#' @param keywords a list of keywords
-#' @param model_settings a list of model specific settings (details are in the online documentation)
-#' @param priors a list of priors of parameters
+#' @param docs texts read via [keyATM_read()].
+#' @param model keyATM model: \code{base}, \code{covariates}, \code{dynamic}, and \code{label}.
+#' @param no_keyword_topics the number of regular topics.
+#' @param keywords a list of keywords.
+#' @param model_settings a list of model specific settings (details are in the online documentation).
+#' @param priors a list of priors of parameters.
 #' @param options a list of options \itemize{
 #'      \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
 #'      \item \strong{iterations}: An integer. Number of iterations. Default is \code{1500}.
@@ -27,7 +27,7 @@
 #'      }
 #'      \item \strong{parallel_init}: Parallelize processes to speed up initialization. Default is \code{FALSE}. Note that even if you use the same \code{seed}, the initialization will become different between with and without parallelization.
 #' }
-#' @param keep a vector of the names of elements you want to keep in output
+#' @param keep a vector of the names of elements you want to keep in output.
 #' 
 #' @return A \code{keyATM_output} object containing:
 #'   \describe{
@@ -104,60 +104,27 @@ keyATM <- function(docs, model, no_keyword_topics,
                       )
 
   # 0 iterations
-  if (fitted$options$iterations == 0) {
+  if (fitted$options$iterations == 0)
     return(fitted) 
-  }
 
   # Get output
-  out <- keyATM_output(fitted)
-
-  # Keep some objects if specified
-  keep <- check_arg_keep(keep, model)
-  if (length(keep) != 0) {
-    kept_values <- list()
-    use_elements <- keep[keep %in% names(fitted)]
-    for (i in 1:length(use_elements)) {
-      kept_values[use_elements[i]]  <- fitted[use_elements[i]]
-    }
-    out$kept_values <- kept_values
-  }
-
-  # A bit of clean up
-  if (fitted$options$store_theta && "stored_values" %in% keep) {
-    # The same information
-    out$kept_values$stored_values$Z_tables <- NULL
-  }
+  out <- keyATM_output(fitted, keep)
 
   return(out)
 }
-
-
-check_arg_keep <- function(obj, model)
-{
-  if (model %in% c("cov", "ldacov")) {
-    if (!"stored_values" %in% obj)
-      obj <- c("stored_values", obj) 
-
-    if (!"model_settings" %in% obj)
-      obj <- c("model_settings", obj) 
-  }
-
-  return(obj)
-}
-
 
 
 #' Weighted LDA main function
 #'
 #' Fit weighted LDA models.
 #'
-#' @param docs texts read via [keyATM_read()]
-#' @param model Weighted LDA model: \code{base}, \code{covariates}, and \code{dynamic}
-#' @param number_of_topics the number of regular topics
-#' @param model_settings a list of model specific settings (details are in the online documentation)
-#' @param priors a list of priors of parameters
-#' @param options a list of options (details are in the documentation of [keyATM()])
-#' @param keep a vector of the names of elements you want to keep in output
+#' @param docs texts read via [keyATM_read()].
+#' @param model Weighted LDA model: \code{base}, \code{covariates}, and \code{dynamic}.
+#' @param number_of_topics the number of regular topics.
+#' @param model_settings a list of model specific settings (details are in the online documentation).
+#' @param priors a list of priors of parameters.
+#' @param options a list of options (details are in the documentation of [keyATM()]).
+#' @param keep a vector of the names of elements you want to keep in output.
 #'
 #' @return A \code{keyATM_output} object containing:
 #'   \describe{
@@ -235,25 +202,14 @@ weightedLDA <- function(docs, model, number_of_topics,
                       )
 
   # 0 iterations
-  if (fitted$options$iterations == 0) {
+  if (fitted$options$iterations == 0)
     return(fitted) 
-  }
 
   # Get output
-  out <- keyATM_output(fitted)
+  out <- keyATM_output(fitted, keep)
   out$number_of_topics <- number_of_topics
   out$no_keyword_topics <- NULL
   out$keyword_k <- NULL
-
-  # Keep some objects if specified
-  if (length(keep) != 0) {
-    kept_values <- list()
-    use_elements <- keep[keep %in% names(fitted)]
-    for(i in 1:length(use_elements)) {
-      kept_values[use_elements[i]] <- fitted[use_elements[i]]
-    }
-    out$kept_values <- kept_values
-  }
 
   return(out)
 }
