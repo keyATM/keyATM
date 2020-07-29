@@ -1,3 +1,8 @@
+# keyATM 0.3.1
+### Major changes
+* Changes related to release of dplyr 1.0.1
+
+
 # keyATM 0.3.0
 [Roadmap](https://github.com/keyATM/keyATM/projects/2) for this version.
 
