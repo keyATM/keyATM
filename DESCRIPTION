@@ -1,5 +1,5 @@
 Package: keyATM
-Version: 0.3.1
+Version: 0.4.0
 Title: Keyword Assisted Topic Model
 Description: Fits keyword assisted topic models (keyATM) using collapsed Gibbs samplers. The keyATM combines the latent dirichlet allocation (LDA) models with a small number of keywords selected by researchers in order to improve the interpretability and topic classification of the LDA. The keyATM can also incorporate covariates and directly model time trends. The keyATM is proposed in Eshima, Imai, and Sasaki (2020) <arXiv:2004.05964>.
 Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", role = c("aut","cre"), comment = c(ORCID = "0000-0003-3613-4046")),
