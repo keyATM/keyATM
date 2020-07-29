@@ -23,7 +23,7 @@ test_that("Visualizing keywords", {
 
 
 test_that("Parallel initialization", {
-  skip_on_cran() ; skip_on_travis()
+  skip_on_cran() ; skip_on_travis() ; skip_on_os("linux");
   out <- keyATM(docs = keyATM_docs,  # text input
                 no_keyword_topics = 3,  # number of regular topics
                 keywords = bills_keywords,  # keywords
@@ -32,7 +32,6 @@ test_that("Parallel initialization", {
   expect_identical(out$Z[[1]][3], 1L)
   expect_identical(out$Z[[140]][15], 6L)
 })
-
 
 
 # Time index
@@ -105,7 +104,7 @@ test_that("Documents with length 0: covariate", {
                   no_keyword_topics = 3,  # number of regular topics
                   keywords = bills_keywords,  # keywords
                   model = "covariates",
-                  model_settings = list(covariates_data = bills_cov, standardize = "all", 
+                  model_settings = list(covariates_data = bills_cov, standardize = "all",
                                       covariates_formula = ~.),
                   options = list(seed = 250, iterations = 0))
   )
@@ -118,7 +117,7 @@ test_that("Documents with length 0: covariate", {
                   no_keyword_topics = 3,  # number of regular topics
                   keywords = bills_keywords,  # keywords
                   model = "covariates",
-                  model_settings = list(covariates_data = bills_cov, standardize = "all", 
+                  model_settings = list(covariates_data = bills_cov, standardize = "all",
                                       covariates_formula = ~.),
                   options = list(seed = 250, iterations = 1))
   )
