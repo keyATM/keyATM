@@ -23,18 +23,15 @@ test_that("Visualizing keywords", {
 
 
 test_that("Parallel initialization", {
-  skip_on_cran() ; skip_on_travis()
+  skip_on_cran() ; skip_on_travis() ; skip_on_os("linux");
   out <- keyATM(docs = keyATM_docs,  # text input
                 no_keyword_topics = 3,  # number of regular topics
                 keywords = bills_keywords,  # keywords
                 model = "base",  # select the model
                 options = list(seed = 250, iterations = 0, parallel_init = TRUE))
   expect_identical(out$Z[[1]][3], 1L)
-
-  skip("to be verified")
   expect_identical(out$Z[[140]][15], 6L)
 })
-
 
 
 # Time index

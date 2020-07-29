@@ -169,13 +169,22 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
   return(pi_estimated)
 }
 
+
+#' @noRd
+#' @keywords internal
 table_to_vector <- function(x) {
-  set_names(as.numeric(x), names(x))
+  purrr::set_names(as.numeric(x), names(x))
 }
+
+
+#' @noRd
+#' @import magrittr
+#' @keywords internal
 bind_tables <- function(x) {
   dplyr::bind_rows(!!!lapply(x, table_to_vector)) %>%
     tibble::as_tibble()
 }
+
 
 #' @noRd
 #' @import magrittr
