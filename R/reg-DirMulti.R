@@ -40,7 +40,6 @@ fit_DMReg <- function(Y, init, X, weight, epsilon, maxiters, display, parallel,
   m <- rowSums(Y)
   N <- nrow(Y)
   beta <- init
-  Beta <- exp(X %*% init)
   lliter <- rep(0, maxiters)
   lliter[1] <- ddirmnCpp(Y, init, X)
   ll2 <- lliter[1]
@@ -54,10 +53,11 @@ fit_DMReg <- function(Y, init, X, weight, epsilon, maxiters, display, parallel,
     ll1 <- lliter[niter - 1]
     res_helper <- list()
     res_helper <- objfun_helper(beta, X, Y, d, p, res_helper)
-    Hessian <- - res_helper$Hessian
-    dl <- - res_helper$dl
+    Hessian <- -res_helper$Hessian
+    dl <- -res_helper$dl
     tmpvector <- res_helper$tmpvec
     tmpmatrix <- res_helper$tmpmat
+    Beta <- res_helper$Beta
 
     if (all(!is.na(dl)) & mean(dl^2) < 1e-04) 
       break
@@ -121,13 +121,11 @@ fit_DMReg <- function(Y, init, X, weight, epsilon, maxiters, display, parallel,
       ## ----------------------------------------## 
       if (is.na(ll.Newton) | (ll.MM < 0 & ll.MM > ll1)) {
         beta <- beta_MM
-        Beta <- exp(X %*% beta_MM)
         lliter[niter] <- ll.MM
         ll2 <- ll.MM
       }
     } else {
       beta <- beta_Newton
-      Beta <- exp(X %*% beta_Newton)
       lliter[niter] <- ll.Newton
       ll2 <- ll.Newton
     }

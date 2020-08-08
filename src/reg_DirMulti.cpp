@@ -201,6 +201,7 @@ List objfun_helper(Eigen::MatrixXd Lambda,
   Res["dl"] = Res_dl;
   Res["tmpvec"] = Res_tmpvec;
   Res["tmpmat"] = Res_tmpmat;
+  Res["Beta"] = Alpha;
 
   return(Res);
 }
