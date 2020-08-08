@@ -94,8 +94,9 @@ keyATM_output <- function(model, keep)
     if (!"stored_values" %in% keep)
       keep <- c("stored_values", keep)
 
-    if (!"model_settings" %in% keep)
+    if (!"model_settings" %in% keep) {
       keep <- c("model_settings", keep)
+    }
   }
 
   if (model$model %in% c("hmm", "ldahmm")) {

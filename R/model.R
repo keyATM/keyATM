@@ -653,18 +653,19 @@ check_arg_model_settings <- function(obj, model, info)
       }
     }
 
-    # MH option
-    if (is.null(obj$mh_use)) {
-      obj$mh_use <- 0 
+    # How to estimate Lambda
+      # 0: Slice Sampling, 1: Metropolis-Hastings, 2: Optimization 
+    if (is.null(obj$coef_sampler)) {
+      obj$coef_sampler <- 0 
     } else {
-      obj$mh_use <- as.integer(obj$mh_use)
-      if (!obj$mh_use %in% c(0, 1)) {
-        stop("`model_settings$mh_use` should be TRUE/FALSE (0/1)") 
+      obj$coef_sampler <- as.integer(obj$coef_sampler)
+      if (!obj$coef_sampler %in% c(0, 1, 2)) {
+        stop("`model_settings$coef_sampler` should be 0, 1, or 2") 
       }
     }
 
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
-                           "slice_min", "slice_max", "mh_use",
+                           "slice_min", "slice_max", "coef_sampler",
                            "covariates_formula", "standardize", "info")
   }  # cov model end
 

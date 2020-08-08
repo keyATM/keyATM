@@ -44,6 +44,35 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ddirmnCpp
+NumericVector ddirmnCpp(Eigen::MatrixXd Y, Eigen::MatrixXd Lambda, Eigen::MatrixXd X);
+RcppExport SEXP _keyATM_ddirmnCpp(SEXP YSEXP, SEXP LambdaSEXP, SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type Lambda(LambdaSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(ddirmnCpp(Y, Lambda, X));
+    return rcpp_result_gen;
+END_RCPP
+}
+// objfun_helper
+List objfun_helper(Eigen::MatrixXd Lambda, Eigen::MatrixXd X, Eigen::MatrixXd Y, int d, int p, List Res);
+RcppExport SEXP _keyATM_objfun_helper(SEXP LambdaSEXP, SEXP XSEXP, SEXP YSEXP, SEXP dSEXP, SEXP pSEXP, SEXP ResSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type Lambda(LambdaSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    Rcpp::traits::input_parameter< int >::type p(pSEXP);
+    Rcpp::traits::input_parameter< List >::type Res(ResSEXP);
+    rcpp_result_gen = Rcpp::wrap(objfun_helper(Lambda, X, Y, d, p, Res));
+    return rcpp_result_gen;
+END_RCPP
+}
 // keyATM_fit_base
 List keyATM_fit_base(List model, int iter);
 RcppExport SEXP _keyATM_keyATM_fit_base(SEXP modelSEXP, SEXP iterSEXP) {
@@ -133,6 +162,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_keyATM_make_wsz_cpp", (DL_FUNC) &_keyATM_make_wsz_cpp, 3},
     {"_keyATM_keyATMvb_call", (DL_FUNC) &_keyATM_keyATMvb_call, 1},
     {"_keyATM_read_dfm_cpp", (DL_FUNC) &_keyATM_read_dfm_cpp, 4},
+    {"_keyATM_ddirmnCpp", (DL_FUNC) &_keyATM_ddirmnCpp, 3},
+    {"_keyATM_objfun_helper", (DL_FUNC) &_keyATM_objfun_helper, 6},
     {"_keyATM_keyATM_fit_base", (DL_FUNC) &_keyATM_keyATM_fit_base, 2},
     {"_keyATM_keyATM_fit_cov", (DL_FUNC) &_keyATM_keyATM_fit_cov, 2},
     {"_keyATM_keyATM_fit_HMM", (DL_FUNC) &_keyATM_keyATM_fit_HMM, 2},

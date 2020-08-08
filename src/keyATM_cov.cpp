@@ -23,7 +23,7 @@ void keyATMcov::read_data_specific()
   val_max = shrink(val_max, slice_A);
 
   // Metropolis Hastings
-  mh_use = model_settings["mh_use"];
+  coef_sampler = model_settings["coef_sampler"];
 }
 
 void keyATMcov::initialize_specific()
@@ -94,7 +94,7 @@ void keyATMcov::iteration_single(int it)
 
 void keyATMcov::sample_parameters(int it)
 {
-  sample_lambda();
+  sample_lambda(it);
 
   // Store lambda 
   int r_index = it + 1;
@@ -135,9 +135,40 @@ double keyATMcov::likelihood_lambda(int k, int t)
 }
 
 
-void keyATMcov::sample_lambda()
+void keyATMcov::sample_lambda(const int it)
 {
-  mh_use ? sample_lambda_mh() : sample_lambda_slice();
+  switch (coef_sampler) {
+    case 0:
+      sample_lambda_slice();
+      break;
+    case 1:
+      sample_lambda_mh();
+      break;
+    case 2:
+      sample_lambda_optimize(it);
+      break;
+  }
+}
+
+
+void keyATMcov::sample_lambda_optimize(const int it)
+{
+  NumericMatrix R_Y = Rcpp::wrap(n_dk);
+  NumericMatrix R_X = model_settings["covariates_data_use"];
+
+  Environment pkg = Environment::namespace_env("keyATM");
+  Function optimize_func = pkg["DMreg"];
+
+  int mi;
+  if (it / (double)iter > 0.9) {
+    mi = 10; 
+  } else {
+    mi = 3; 
+  }
+
+  NumericMatrix R_res = optimize_func(R_Y, R_X, mi);
+  MatrixXd res = Rcpp::as<Eigen::MatrixXd>(R_res);
+  Lambda = res.transpose();
 }
 
 

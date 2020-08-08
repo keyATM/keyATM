@@ -32,6 +32,20 @@ read_dfm_cpp <- function(dfm, W_raw, vocab, show_progress_bar) {
     .Call(`_keyATM_read_dfm_cpp`, dfm, W_raw, vocab, show_progress_bar)
 }
 
+#' Dirichlet Multinomial Distribution
+#'
+#' @keywords internal
+ddirmnCpp <- function(Y, Lambda, X) {
+    .Call(`_keyATM_ddirmnCpp`, Y, Lambda, X)
+}
+
+#' Calculate Hessian
+#'
+#' @keywords internal
+objfun_helper <- function(Lambda, X, Y, d, p, Res) {
+    .Call(`_keyATM_objfun_helper`, Lambda, X, Y, d, p, Res)
+}
+
 #' Run the Collapsed Gibbs sampler for the keyATM Base
 #'
 #' @param model A initialized model

@@ -22,7 +22,7 @@ class keyATMcov : virtual public keyATMmeta
     MatrixXd Lambda;
     MatrixXd C;
 
-    int mh_use;
+    int coef_sampler;
     double mu;
     double sigma;
 
@@ -51,9 +51,10 @@ class keyATMcov : virtual public keyATMmeta
     // Iteration
     virtual void iteration_single(int it);
     void sample_parameters(int it);
-    void sample_lambda();
-    void sample_lambda_mh();
-    void sample_lambda_slice();
+    void sample_lambda(const int it);
+      void sample_lambda_mh();
+      void sample_lambda_slice();
+      void sample_lambda_optimize(const int it);
     double alpha_loglik();
     virtual double loglik_total();
     double loglik_total_label();
