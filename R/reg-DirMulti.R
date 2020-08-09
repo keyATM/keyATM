@@ -4,7 +4,7 @@
 
 #' @noRd
 #' @export
-DMreg <- function(Y, X, maxiters = 150, epsilon = 1e-06, init = NULL, weight = NULL,
+DMreg <- function(Y, X, maxiters = 150, init = NULL, epsilon = 1e-06, weight = NULL,
                   display = FALSE, LRT = FALSE, 
                   parallel = FALSE, cores = NULL, cl = NULL, sys = NULL,
                   regBeta = FALSE) {
@@ -20,14 +20,21 @@ DMreg <- function(Y, X, maxiters = 150, epsilon = 1e-06, init = NULL, weight = N
     init <- matrix(0.1, p, d)
     Y_rowsums <- rowSums(Y)
     for (j in 1:d) {
-      fit <- my_glm.fit(x = X, y = abs(Y[, j]/Y_rowsums), family = quasibinomial(link = "logit"))
-        # abs() is for clipping a tiny value
+      fit <- my_glm.fit(x = X, y = Y[, j]/Y_rowsums, family = quasibinomial(link = "logit"))
       init[, j] <- fit$coefficients
     }
+  } else {
+    init <- t(init) 
   } 
-  est <- eval(call("fit_DMReg", Y = Y, X = X, weight = weight, init = init, 
-                   epsilon = epsilon, maxiters = maxiters, display = display, parallel = parallel, 
-                   cores = cores, cl = cl, sys = sys))
+
+  try(est <- fit_DMReg(Y = Y, X = X, weight = weight, init = init, 
+                       epsilon = epsilon, maxiters = maxiters, display = display, parallel = parallel, 
+                       cores = cores, cl = cl, sys = sys))
+
+  if (is.null(est)) {
+    warning("Irregularity in optimization, consider using the slice sampling.")
+    return(init)
+  }
 
   return (est)  # cov \times topic
 }
@@ -106,7 +113,7 @@ fit_DMReg <- function(Y, init, X, weight, epsilon, maxiters, display, parallel,
           ## Surrogate 1 Poisson Regression
           wy <- Y_new[, j]
           wy[is.na(wy)] <- Y_new[is.na(wy), j]
-          ff <- my_glm.fit(X1, abs(Y_new[, j]), weights = weight.fit, family = poisson(link = "log"), 
+          ff <- my_glm.fit(X1, Y_new[, j], weights = weight.fit, family = poisson(link = "log"), 
                         control = list(epsilon = epsilon))
           if (ff$converged) 
             beta_MM[, j] <- ff$coefficients  #par
@@ -141,9 +148,10 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
     control = list(), intercept = TRUE, singular.ok = TRUE) 
 {  # Adapted version of stats::glm.fit()
     control <- do.call("glm.control", control)
+    y <- abs(y)  # clip tiny values
     x <- as.matrix(x)
     xnames <- dimnames(x)[[2L]]
-    ynames <- if (is.matrix(y)) 
+    ynames <- if (is.matrix(y))
         rownames(y)
     else names(y)
     conv <- FALSE

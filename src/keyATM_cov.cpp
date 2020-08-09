@@ -155,6 +155,7 @@ void keyATMcov::sample_lambda_optimize(const int it)
 {
   NumericMatrix R_Y = Rcpp::wrap(n_dk);
   NumericMatrix R_X = model_settings["covariates_data_use"];
+  NumericMatrix R_Lambda = Rcpp::wrap(Lambda);
 
   Environment pkg = Environment::namespace_env("keyATM");
   Function optimize_func = pkg["DMreg"];
@@ -166,7 +167,7 @@ void keyATMcov::sample_lambda_optimize(const int it)
     mi = 3; 
   }
 
-  NumericMatrix R_res = optimize_func(R_Y, R_X, mi);
+  NumericMatrix R_res = optimize_func(R_Y, R_X, mi, R_Lambda);
   MatrixXd res = Rcpp::as<Eigen::MatrixXd>(R_res);
   Lambda = res.transpose();
 }

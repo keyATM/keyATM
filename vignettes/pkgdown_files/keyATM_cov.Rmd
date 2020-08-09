@@ -121,7 +121,7 @@ out <- keyATM(docs              = keyATM_docs,
               no_keyword_topics = 5,
               keywords          = keywords,
               model             = "covariates",
-              model_settings    = list(covariates_data    = vars_selected, 
+              model_settings    = list(covariates_data    = vars_selected,
                                        covariates_formula = ~ Party + Period),
               options           = list(seed = 250))
 ```
