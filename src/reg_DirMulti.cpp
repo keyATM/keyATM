@@ -60,7 +60,7 @@ double mytrigamma(const double x)
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-NumericVector ddirmnCpp(Eigen::MatrixXd Y, Eigen::MatrixXd Lambda, Eigen::MatrixXd X)
+NumericVector ddirmnCpp(Eigen::MatrixXd &Y, Eigen::MatrixXd &Lambda, Eigen::MatrixXd &X)
 {
   // Original:
   // https://github.com/cran/MGLM/blob/0942d9778d0f230208cf8f04a75956c9fb2c2a3b/R/pdfln.R
@@ -106,9 +106,9 @@ NumericVector ddirmnCpp(Eigen::MatrixXd Y, Eigen::MatrixXd Lambda, Eigen::Matrix
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List objfun_helper(Eigen::MatrixXd Lambda,
-                   Eigen::MatrixXd X,
-                   Eigen::MatrixXd Y,
+List objfun_helper(Eigen::MatrixXd &Lambda,
+                   Eigen::MatrixXd &X,
+                   Eigen::MatrixXd &Y,
                    int d, int p, List Res)
 {
   //

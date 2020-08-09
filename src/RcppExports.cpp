@@ -45,27 +45,27 @@ BEGIN_RCPP
 END_RCPP
 }
 // ddirmnCpp
-NumericVector ddirmnCpp(Eigen::MatrixXd Y, Eigen::MatrixXd Lambda, Eigen::MatrixXd X);
+NumericVector ddirmnCpp(Eigen::MatrixXd& Y, Eigen::MatrixXd& Lambda, Eigen::MatrixXd& X);
 RcppExport SEXP _keyATM_ddirmnCpp(SEXP YSEXP, SEXP LambdaSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type Lambda(LambdaSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type Lambda(LambdaSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
     rcpp_result_gen = Rcpp::wrap(ddirmnCpp(Y, Lambda, X));
     return rcpp_result_gen;
 END_RCPP
 }
 // objfun_helper
-List objfun_helper(Eigen::MatrixXd Lambda, Eigen::MatrixXd X, Eigen::MatrixXd Y, int d, int p, List Res);
+List objfun_helper(Eigen::MatrixXd& Lambda, Eigen::MatrixXd& X, Eigen::MatrixXd& Y, int d, int p, List Res);
 RcppExport SEXP _keyATM_objfun_helper(SEXP LambdaSEXP, SEXP XSEXP, SEXP YSEXP, SEXP dSEXP, SEXP pSEXP, SEXP ResSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type Lambda(LambdaSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type Lambda(LambdaSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< int >::type d(dSEXP);
     Rcpp::traits::input_parameter< int >::type p(pSEXP);
     Rcpp::traits::input_parameter< List >::type Res(ResSEXP);
