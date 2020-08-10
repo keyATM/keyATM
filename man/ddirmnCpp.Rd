@@ -6,6 +6,13 @@
 \usage{
 ddirmnCpp(Y, Lambda, X)
 }
+\arguments{
+\item{Y}{outcome (a table of Z, n_dk)}
+
+\item{Lambda}{current coefficients}
+
+\item{X}{covariates}
+}
 \description{
 Dirichlet Multinomial Distribution
 }

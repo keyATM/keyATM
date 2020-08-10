@@ -4,7 +4,7 @@
 
 #' @noRd
 #' @export
-DMreg <- function(Y, X, maxiters = 150, init = NULL, epsilon = 1e-06, weight = NULL,
+DMreg <- function(Y, X, init = NULL, maxiters = 10, epsilon = 1e-06, weight = NULL,
                   display = FALSE, LRT = FALSE, 
                   parallel = FALSE, cores = NULL, cl = NULL, sys = NULL,
                   regBeta = FALSE) {

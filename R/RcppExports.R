@@ -34,12 +34,23 @@ read_dfm_cpp <- function(dfm, W_raw, vocab, show_progress_bar) {
 
 #' Dirichlet Multinomial Distribution
 #'
+#' @param Y outcome (a table of Z, n_dk)
+#' @param Lambda current coefficients
+#' @param X covariates
+#'
 #' @keywords internal
 ddirmnCpp <- function(Y, Lambda, X) {
     .Call(`_keyATM_ddirmnCpp`, Y, Lambda, X)
 }
 
 #' Calculate Hessian
+#'
+#' @param Lambda current coefficients
+#' @param X covariates
+#' @param Y outcome (a table of Z, n_dk)
+#' @param d the number of topics
+#' @param p the number of covariates
+#' @param Res a list to store the result
 #'
 #' @keywords internal
 objfun_helper <- function(Lambda, X, Y, d, p, Res) {

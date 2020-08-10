@@ -58,6 +58,10 @@ double mytrigamma(const double x)
 
 //' Dirichlet Multinomial Distribution
 //'
+//' @param Y outcome (a table of Z, n_dk)
+//' @param Lambda current coefficients
+//' @param X covariates
+//'
 //' @keywords internal
 // [[Rcpp::export]]
 NumericVector ddirmnCpp(Eigen::MatrixXd &Y, Eigen::MatrixXd &Lambda, Eigen::MatrixXd &X)
@@ -103,6 +107,13 @@ NumericVector ddirmnCpp(Eigen::MatrixXd &Y, Eigen::MatrixXd &Lambda, Eigen::Matr
 
 
 //' Calculate Hessian
+//'
+//' @param Lambda current coefficients
+//' @param X covariates
+//' @param Y outcome (a table of Z, n_dk)
+//' @param d the number of topics
+//' @param p the number of covariates
+//' @param Res a list to store the result
 //'
 //' @keywords internal
 // [[Rcpp::export]]

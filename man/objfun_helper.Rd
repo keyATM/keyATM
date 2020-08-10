@@ -6,6 +6,19 @@
 \usage{
 objfun_helper(Lambda, X, Y, d, p, Res)
 }
+\arguments{
+\item{Lambda}{current coefficients}
+
+\item{X}{covariates}
+
+\item{Y}{outcome (a table of Z, n_dk)}
+
+\item{d}{the number of topics}
+
+\item{p}{the number of covariates}
+
+\item{Res}{a list to store the result}
+}
 \description{
 Calculate Hessian
 }

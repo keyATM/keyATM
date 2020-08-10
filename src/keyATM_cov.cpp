@@ -160,14 +160,7 @@ void keyATMcov::sample_lambda_optimize(const int it)
   Environment pkg = Environment::namespace_env("keyATM");
   Function optimize_func = pkg["DMreg"];
 
-  int mi;
-  if (it / (double)iter > 0.9) {
-    mi = 10; 
-  } else {
-    mi = 3; 
-  }
-
-  NumericMatrix R_res = optimize_func(R_Y, R_X, mi, R_Lambda);
+  NumericMatrix R_res = optimize_func(R_Y, R_X, R_Lambda);
   MatrixXd res = Rcpp::as<Eigen::MatrixXd>(R_res);
   Lambda = res.transpose();
 }
