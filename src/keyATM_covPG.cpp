@@ -26,7 +26,7 @@ void keyATMcovPG::read_data_specific()
   mh_use = model_settings["mh_use"];
 
   // Access to PG related parameters
-  List PG_params = model_settings["PG_params"];
+  PG_params = model_settings["PG_params"];
 }
 
 void keyATMcovPG::initialize_specific()
@@ -45,6 +45,7 @@ void keyATMcovPG::initialize_specific()
       Lambda(k, i) = R::rnorm(0.0, 0.3);
     }
   }
+
 }
 
 
@@ -97,7 +98,8 @@ void keyATMcovPG::iteration_single(int it)
 
 void keyATMcovPG::sample_parameters(int it)
 {
-  sample_lambda();
+  sample_lambda();  // remove later
+  // sample_PG();
 
   // Store lambda 
   int r_index = it + 1;
@@ -107,6 +109,17 @@ void keyATMcovPG::sample_parameters(int it)
     Lambda_iter.push_back(Lambda_R);
     stored_values["Lambda_iter"] = Lambda_iter;
   }
+}
+
+
+void keyATMcovPG::sample_PG()
+{
+  // multiPGreg function
+  Environment pkg = Environment::namespace_env("keyATM");
+  Function PGreg_Rfun = pkg["multiPGreg"];
+  NumericMatrix C_r = model_settings["covariates_data_use"];
+
+  PG_params = PGreg_Rfun(n_dk, C_r, num_topics, PG_params);
 }
 
 

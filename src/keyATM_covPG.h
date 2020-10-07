@@ -35,10 +35,6 @@ class keyATMcovPG : virtual public keyATMmeta
       double val_min;
       double val_max;
     
-    //
-    // Functions
-    //
-
     // Constructor
     keyATMcovPG(List model_, const int iter_) :
       keyATMmeta(model_, iter_) {};
@@ -52,6 +48,7 @@ class keyATMcovPG : virtual public keyATMmeta
     // Iteration
     virtual void iteration_single(int it);
     void sample_parameters(int it);
+    void sample_PG();
     int sample_z_PG(VectorXd &alpha, int z, int s, int w, int doc_id); 
     void sample_lambda();
     void sample_lambda_mh();
