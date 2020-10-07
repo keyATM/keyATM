@@ -679,8 +679,34 @@ check_arg_model_settings <- function(obj, model, info)
     if (!obj$covariates_model %in% c("PG", "DirMulti"))
       stop("Undefined model. `covariates_model` option in `model_settings` take `PG` or `DirMulti`.")
 
+    if (obj$covariates_model == "PG") {
+      obj$PG_params$PG_Phi <- list() 
+      obj$PG_params$PG_SigmaPhi <- list() 
+      obj$PG_params$PG_Lambda <- list()
+      obj$PG_params$PG_theta <- list()
+
+      K <- info$total_k
+      X <- obj$covariates_data_use
+      M <- ncol(X)  # Number of covariates
+      D <- nrow(X)  # Number of douments
+
+      Sigma_Lambda <- diag(rep(1, K - 1))
+      obj$PG_params$PG_Lambda[[1]] <- MASS::mvrnorm(n = M, mu = rep(0, K-1), Sigma = Sigma_Lambda)
+      obj$PG_params$PG_SigmaPhi[[1]] <- diag(rep(1, K-1))
+      Mu <- X %*% obj$PG_params$PG_Lambda[[1]]
+      Sigma <- diag(rep(1, K-1))
+      sapply(1:D,
+             function(d) {
+                  Phi_d <- rmvn1(mu = Mu[d, ], Sigma = Sigma)
+             }) -> Phi
+      Phi <- t(Phi)
+      colnames(Phi) <- NULL
+      row.names(Phi) <- NULL
+      obj$PG_params$Phi <- Phi  # D \times (K - 1)
+    }
+
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
-                           "slice_min", "slice_max", "mh_use", "covariates_model",
+                           "slice_min", "slice_max", "mh_use", "covariates_model", "PG_params",
                            "covariates_formula", "standardize", "info")
   }  # cov model end
 

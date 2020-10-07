@@ -15,24 +15,27 @@ void keyATMcovPG::read_data_specific()
   C = Rcpp::as<Eigen::MatrixXd>(C_r);
   num_cov = C.cols();
 
-  // Slice Sampling
+  // Slice Sampling remove later
   val_min = model_settings["slice_min"];
   val_min = shrink(val_min, slice_A);
 
   val_max = model_settings["slice_max"];
   val_max = shrink(val_max, slice_A);
 
-  // Metropolis Hastings
+  // Metropolis Hastings  remove later
   mh_use = model_settings["mh_use"];
+
+  // Access to PG related parameters
+  List PG_params = model_settings["PG_params"];
 }
 
 void keyATMcovPG::initialize_specific()
 {
-  // Alpha
+  // Alpha  remove later
   Alpha = MatrixXd::Zero(num_doc, num_topics);
   alpha = VectorXd::Zero(num_topics); // use in iteration
 
-  // Lambda
+  // Lambda  remove later
   mu = 0.0;
   sigma = 1.0;
   Lambda = MatrixXd::Zero(num_topics, num_cov);
@@ -73,7 +76,7 @@ void keyATMcovPG::iteration_single(int it)
       w_position = token_indexes[jj];
       s_ = doc_s[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
     
-      new_z = sample_z(alpha, z_, s_, w_, doc_id_);
+      new_z = sample_z_PG(alpha, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
     
       if (keywords[new_z].find(w_) == keywords[new_z].end())	
@@ -105,6 +108,84 @@ void keyATMcovPG::sample_parameters(int it)
     stored_values["Lambda_iter"] = Lambda_iter;
   }
 }
+
+
+
+int keyATMcovPG::sample_z_PG(VectorXd &alpha, int z, int s,
+                            int w, int doc_id)
+{
+  int new_z;
+  double numerator, denominator;
+  double sum;
+
+  // remove data
+  if (s == 0) {
+    n_s0_kv(z, w) -= vocab_weights(w);
+    n_s0_k(z) -= vocab_weights(w);
+  } else if (s == 1) {
+    n_s1_kv.coeffRef(z, w) -= vocab_weights(w);
+    n_s1_k(z) -= vocab_weights(w);
+  } else {
+    Rcerr << "Error at sample_z, remove" << std::endl;
+  }
+
+  n_dk(doc_id, z) -= vocab_weights(w);
+  n_dk_noWeight(doc_id, z) -= 1.0;
+
+  new_z = -1; // debug
+  if (s == 0) {
+    for (int k = 0; k < num_topics; ++k) {
+
+      numerator = (beta + n_s0_kv(k, w)) *
+        (n_s0_k(k) + prior_gamma(k, 1)) *
+        (n_dk(doc_id, k) + alpha(k));
+
+      denominator = (Vbeta + n_s0_k(k)) *
+        (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
+
+      z_prob_vec(k) = numerator / denominator;
+    }
+
+    sum = z_prob_vec.sum(); // normalize
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
+
+  } else {
+    for (int k = 0; k < num_topics; ++k) {
+      if (keywords[k].find(w) == keywords[k].end()) {
+        z_prob_vec(k) = 0.0;
+        continue;
+      } else { 
+        numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
+          (n_s1_k(k) + prior_gamma(k, 0)) *
+          (n_dk(doc_id, k) + alpha(k));
+        denominator = (Lbeta_sk(k) + n_s1_k(k) ) *
+          (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
+
+        z_prob_vec(k) = numerator / denominator;
+      }
+    }
+
+    sum = z_prob_vec.sum();
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
+
+  }
+
+  // add back data counts
+  if (s == 0) {
+    n_s0_kv(new_z, w) += vocab_weights(w);
+    n_s0_k(new_z) += vocab_weights(w);
+  } else if (s == 1) {
+    n_s1_kv.coeffRef(new_z, w) += vocab_weights(w);
+    n_s1_k(new_z) += vocab_weights(w);
+  } else {
+    Rcerr << "Error at sample_z, add" << std::endl;
+  }
+  n_dk(doc_id, new_z) += vocab_weights(w);
+  n_dk_noWeight(doc_id, new_z) += 1.0;
+
+  return new_z;
+}
+
 
 
 double keyATMcovPG::likelihood_lambda(int k, int t)

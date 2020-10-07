@@ -21,6 +21,7 @@ class keyATMcovPG : virtual public keyATMmeta
     int num_cov;
     MatrixXd Lambda;
     MatrixXd C;
+    List PG_params;
 
     int mh_use;
     double mu;
@@ -51,6 +52,7 @@ class keyATMcovPG : virtual public keyATMmeta
     // Iteration
     virtual void iteration_single(int it);
     void sample_parameters(int it);
+    int sample_z_PG(VectorXd &alpha, int z, int s, int w, int doc_id); 
     void sample_lambda();
     void sample_lambda_mh();
     void sample_lambda_slice();
