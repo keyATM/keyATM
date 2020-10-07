@@ -42,7 +42,7 @@ keyATM_fit_base <- function(model, iter = 0L) {
     .Call(`_keyATM_keyATM_fit_base`, model, iter)
 }
 
-#' Run the Collapsed Gibbs sampler for the keyATM covariates
+#' Run the Collapsed Gibbs sampler for the keyATM covariates (Dir-Multi)
 #'
 #' @param model A initialized model
 #' @param iter Required number of iterations
@@ -50,6 +50,16 @@ keyATM_fit_base <- function(model, iter = 0L) {
 #' @keywords internal
 keyATM_fit_cov <- function(model, iter = 0L) {
     .Call(`_keyATM_keyATM_fit_cov`, model, iter)
+}
+
+#' Run the Collapsed Gibbs sampler for the keyATM covariates (Polya-Gamma)
+#'
+#' @param model A initialized model
+#' @param iter Required number of iterations
+#'
+#' @keywords internal
+keyATM_fit_covPG <- function(model, iter = 0L) {
+    .Call(`_keyATM_keyATM_fit_covPG`, model, iter)
 }
 
 #' Run the Collapsed Gibbs sampler for the keyATM Dynamic

@@ -460,7 +460,9 @@ fitting_models <- function(key_model, model, options)
 
   if (model == "base") {
     key_model <- keyATM_fit_base(key_model, iter = options$iterations)
-  } else if (model == "cov") {
+  } else if (model == "cov" & key_model$model_settings$covariates_model == "PG") {
+    key_model <- keyATM_fit_covPG(key_model, iter = options$iteration)
+  } else if (model == "cov" & key_model$model_settings$covariates_model == "DirMulti") {
     key_model <- keyATM_fit_cov(key_model, iter = options$iteration)
   } else if (model == "hmm") {
     key_model <- keyATM_fit_HMM(key_model, iter = options$iteration)  
@@ -663,8 +665,22 @@ check_arg_model_settings <- function(obj, model, info)
       }
     }
 
+    # Model
+    if (is.null(obj$covariates_model)) {
+      if (model == "cov")
+        obj$covariates_model <- "PG" 
+      if (model == "ldacov")
+        obj$covariates_model <- "DirMulti"
+    }
+
+    if (obj$covariates_model != "DirMulti" & model == "ldacov")
+      stop("Use Diricule-Multinomial model for LDA covariates.")
+
+    if (!obj$covariates_model %in% c("PG", "DirMulti"))
+      stop("Undefined model. `covariates_model` option in `model_settings` take `PG` or `DirMulti`.")
+
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
-                           "slice_min", "slice_max", "mh_use",
+                           "slice_min", "slice_max", "mh_use", "covariates_model",
                            "covariates_formula", "standardize", "info")
   }  # cov model end
 

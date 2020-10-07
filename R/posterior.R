@@ -241,6 +241,50 @@ keyATM_output_theta <- function(model, info)
 
 #' @noRd
 #' @import magrittr
+keyATM_output_theta_iter <- function(model, info)
+{
+  if (model$model %in% c("cov", "ldacov")) {
+    posterior_theta <- function(x) {
+      Z_table <- model$stored_values$Z_tables[[x]]
+      lambda <- model$stored_values$Lambda_iter[[x]]
+      Alpha <- exp(model$model_settings$covariates_data_use %*% t(lambda))
+
+      tt <- Z_table + Alpha
+      row.names(tt) <- NULL
+
+      return(tt / Matrix::rowSums(tt))
+    }
+  } else if (model$model %in% c("hmm", "ldahmm")) {
+    posterior_theta <- function(x) {
+      Z_table <- model$stored_values$Z_tables[[x]]
+      R <- model$stored_values$R_iter[[x]] + 1L  # adjust index for R
+      R <- R[model$model_settings$time_index]  # retrieve doc level state info
+
+      alphas <- matrix(model$stored_values$alpha_iter[[x]][R],
+                       nrow = length(model$Z), ncol = info$allK)
+
+      tt <- Z_table + alphas
+      theta <- tt / Matrix::rowSums(tt)
+      return(theta)
+    }
+  } else {
+    posterior_theta <- function(x) {
+      Z_table <- model$stored_values$Z_tables[[x]]
+      alpha <- model$stored_values$alpha_iter[[x]]
+
+      return((sweep(Z_table, 2, alpha, "+")) /
+              (Matrix::rowSums(Z_table) + sum(alpha)))
+    }
+  }
+
+  theta_iter <- lapply(1:length(model$stored_values$Z_tables),
+                        posterior_theta)
+  return(theta_iter)
+}
+
+
+#' @noRd
+#' @import magrittr
 keyATM_output_phi <- function(model, info)
 {
   all_words <- model$vocab[as.integer(unlist(model$W, use.names = FALSE)) + 1L]
@@ -461,50 +505,6 @@ keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tna
   phi <- phi / Matrix::rowSums(phi)
   rownames(phi) <- tnames
   return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
-}
-
-
-#' @noRd
-#' @import magrittr
-keyATM_output_theta_iter <- function(model, info)
-{
-  if (model$model %in% c("cov", "ldacov")) {
-    posterior_theta <- function(x) {
-      Z_table <- model$stored_values$Z_tables[[x]]
-      lambda <- model$stored_values$Lambda_iter[[x]]
-      Alpha <- exp(model$model_settings$covariates_data_use %*% t(lambda))
-
-      tt <- Z_table + Alpha
-      row.names(tt) <- NULL
-
-      return(tt / Matrix::rowSums(tt))
-    }
-  } else if (model$model %in% c("hmm", "ldahmm")) {
-    posterior_theta <- function(x) {
-      Z_table <- model$stored_values$Z_tables[[x]]
-      R <- model$stored_values$R_iter[[x]] + 1L  # adjust index for R
-      R <- R[model$model_settings$time_index]  # retrieve doc level state info
-
-      alphas <- matrix(model$stored_values$alpha_iter[[x]][R],
-                       nrow = length(model$Z), ncol = info$allK)
-
-      tt <- Z_table + alphas
-      theta <- tt / Matrix::rowSums(tt)
-      return(theta)
-    }
-  } else {
-    posterior_theta <- function(x) {
-      Z_table <- model$stored_values$Z_tables[[x]]
-      alpha <- model$stored_values$alpha_iter[[x]]
-
-      return((sweep(Z_table, 2, alpha, "+")) /
-              (Matrix::rowSums(Z_table) + sum(alpha)))
-    }
-  }
-
-  theta_iter <- lapply(1:length(model$stored_values$Z_tables),
-                        posterior_theta)
-  return(theta_iter)
 }
 
 
