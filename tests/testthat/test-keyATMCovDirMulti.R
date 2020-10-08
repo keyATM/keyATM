@@ -44,7 +44,7 @@ test_that("keyATM Heterogeneity Doc-Topic", {
   strata_topic <- by_strata_DocTopic(cov, by_var = "RepParty", labels = c("Dem", "Rep"), parallel = FALSE, posterior_mean = FALSE)
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(summary(strata_topic, method = "eti")[[2]]$Lower[2], 0.13578, tolerance = 0.00001)
+  expect_equal(summary(strata_topic, method = "eti")[[2]]$Lower[2], 0.1334322, tolerance = 0.00001)
 
   p <- plot(strata_topic, show_topic = c(1,2,3,4), by = "covariate", method = "eti")
   expect_s3_class(p, "keyATM_fig")

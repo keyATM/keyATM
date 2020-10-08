@@ -703,6 +703,7 @@ check_arg_model_settings <- function(obj, model, info)
       obj$PG_params$theta_tilda <- exp(Phi) / (1 + exp(Phi))
       obj$PG_params$theta_last <- matrix(rep(0, D*K), nrow = D, ncol = K)
       obj$PG_params$Lambda_list <- list()
+      obj$PG_params$Sigma_list <- list()
     }
 
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
@@ -1071,7 +1072,6 @@ make_sz_key <- function(W, keywords, info)
   }
 
   if (info$parallel_init) {
-    warning("`parallel_init` is an experimental featurre.")
     S <- future.apply::future_lapply(W, make_s, future.seed = TRUE)
     Z <- future.apply::future_lapply(W, make_z, topicvec, future.seed = TRUE)
   } else {
@@ -1094,7 +1094,6 @@ make_sz_lda <- function(W, info)
   }  
 
   if (info$parallel_init) {
-    warning("`parallel_init` is an experimental featurre.")
     Z <- future.apply::future_lapply(W, make_z, topicvec, future.seed = TRUE)
   } else {
     Z <- lapply(W, make_z, topicvec)

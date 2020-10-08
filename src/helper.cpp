@@ -25,7 +25,7 @@ NumericMatrix calc_PGtheta_R(const NumericMatrix &theta_tilda, Eigen::MatrixXd &
 
   for (int d = 0; d < num_doc; ++d) {
     remaining = 1.0;
-
+  
     for (int k = 0; k < num_topics; ++k) {
       if (k == 0) {
         theta(d, 0) = theta_tilda(d, 0); 

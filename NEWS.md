@@ -1,7 +1,9 @@
 # keyATM 0.4.0
+[Roadmap](https://github.com/keyATM/keyATM/projects/3) for this version.
+
 ### Major changes
 * Implementation of Polya-Gamma covariate keyATM
-* Use `future.apply` instead of `parallel`
+* Use `future.apply` instead of `parallel` (no backward compatibility if you use the `init_parallel` option)
 
 # keyATM 0.3.1
 ### Major changes

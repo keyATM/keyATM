@@ -33,6 +33,7 @@ multiPGreg <- function(Y, X, num_topics, PG_params, iter = 1, store_lambda = 0)
   if (store_lambda) {
     index <- length(PG_params$Lambda_list)
     PG_params$Lambda_list[[index + 1]] <- Lambda 
+    PG_params$Sigma_list[[index + 1]] <- Sigma_phi
   }
   return(PG_params)
 }

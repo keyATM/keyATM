@@ -55,11 +55,32 @@ predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = 
 
   if (covariates_model == "PG") {
     Lambda_iter <- object$kept_values$model_settings$PG_params$Lambda_list
+    Sigma_iter <- object$kept_values$model_settings$PG_params$Sigma_list
   
-    obj <- list()
-  
+    obj <- do.call(dplyr::bind_rows,
+                   future.apply::future_lapply(1:length(use_index),
+                      function(s) {
+                        Mu <- newdata %*% Lambda_iter[[s]]
+                        Sigma <- Sigma_iter[[s]]
+                        D <- nrow(newdata)
+                        K <- ncol(Lambda_iter[[s]]) + 1
+                        Phi <- sapply(1:D, function(d) {
+                                        Phi_d <- rmvn1(mu = Mu[d, ], Sigma = Sigma)
+                                      })
+                        Phi <- t(Phi)
+                        theta_tilda <- exp(Phi) / (1 + exp(Phi))
+                        thetas <- matrix(rep(0, D*K), nrow = D, ncol = K)
+                        thetas <- calc_PGtheta_R(theta_tilda, thetas, D, K)
+                        thetas <- as.data.frame(thetas)
+                        colnames(thetas) <- tnames
+                        thetas$Iteration <- used_iter[s]
+                        return(thetas)
+                      },
+                      future.seed = TRUE)
+                   )
   } else if (covariates_model == "DirMulti") {
     Lambda_iter <- object$values_iter$Lambda_iter
+
 
     if (posterior_mean) {
       # Dir-Multi Posterior Mean
@@ -97,7 +118,7 @@ predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = 
                             thetas$Iteration <- used_iter[s]
                             return(thetas)
                           },
-                          future.seed = FALSE
+                          future.seed = TRUE
                          )
                     )
     }
