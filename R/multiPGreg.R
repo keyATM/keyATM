@@ -1,33 +1,34 @@
 #' @noRd
 #' @export
 multiPGreg <- function(Y, X, num_topics, PG_params, iter = 1)
+# multiPGreg <- function(PG_params, iter = 1)
 {  # Used in CovPG
   Phi <- PG_params$PG_Phi
   Sigma_phi <- PG_params$PG_SigmaPhi
   Lambda <- PG_params$PG_Lambda
-  D <- nrow(n_dk)
+  D <- nrow(Y)
+  M <- ncol(X)
+  K <- ncol(Lambda) + 1
 
   for (it in 1:iter) {
     # Sample Phi using Polya-Gamma
     mu_phi <- X %*% Lambda
     Phi <- multiPG_sample_Phi(Phi, Y, D, K, M, mu_phi, Sigma_phi)
-    Phi_list[[it]] <- Phi
-
+  
     # Sample Lambda using Bayesian Multivariate Linear Regression
     res <- multiPG_sample_Lambda(Lambda, X, Phi, K, M) 
     Lambda <- res$Lambda
     Sigma_phi <- res$Sigma_phi
-    Lambda_list[[it]] <- Lambda
-
-    theta_list[[it]] <- calc_theta(Phi, D)
-
+    Lambda <- Lambda
+  
     if (it %% 10 == 0)
       print(it) 
   }
-
+  
   PG_params$PG_Phi <- Phi
   PG_params$PG_SigmaPhi <- Sigma_phi
   PG_params$PG_Lambda <- Lambda
+  PG_params$theta_tilda <- exp(Phi) / (1 + exp(Phi))
   return(PG_params)
 }
 

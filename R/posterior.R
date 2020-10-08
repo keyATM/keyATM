@@ -18,6 +18,7 @@ keyATM_output <- function(model, keep)
   info$N <- length(model$Z)
   info$doc_lens <- sapply(model$Z, length)
   info$model <- model$model
+  info$covmodel <- model$model_settings$covariates_model
 
   if (model$no_keyword_topics > 0 & length(model$keywords) != 0) {
     info$tnames <- c(names(model$keywords_raw), paste0("Other_", 1:model$no_keyword_topics))
@@ -193,7 +194,7 @@ keyATM_output_theta <- function(model, info)
 {
 
   # Theta
-  if (model$model %in% c("cov", "ldacov")) {
+  if (model$model %in% c("cov", "ldacov") & info$covmodel == "DirMulti") {
     Alpha <- exp(model$model_settings$covariates_data_use %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
 
     posterior_z_cov <- function(docid) {
@@ -205,6 +206,8 @@ keyATM_output_theta <- function(model, info)
 
     theta <- bind_tables(lapply(1:length(model$Z), posterior_z_cov))
 
+  } else if (model$model %in% c("cov", "ldacov") & info$covmodel == "PG") {
+    theta <-  model$model_settings$PG_params$theta_last
   } else if (model$model %in% c("base", "lda", "label")) {
     if (model$options$estimate_alpha) {
       alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]
@@ -243,7 +246,11 @@ keyATM_output_theta <- function(model, info)
 #' @import magrittr
 keyATM_output_theta_iter <- function(model, info)
 {
-  if (model$model %in% c("cov", "ldacov")) {
+  if (model$model %in% c("cov", "ldacov") & info$covmodel == "PG") {
+    return(model$stored_values$theta_PG) 
+  }
+
+  if (model$model %in% c("cov", "ldacov") & info$covmodel == "DirMulti") {
     posterior_theta <- function(x) {
       Z_table <- model$stored_values$Z_tables[[x]]
       lambda <- model$stored_values$Lambda_iter[[x]]

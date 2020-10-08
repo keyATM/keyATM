@@ -5,6 +5,7 @@
 #include <RcppEigen.h>
 #include <unordered_set>
 #include "sampler.h"
+#include "utils.h"
 #include "keyATM_meta.h"
 
 using namespace Eigen;
@@ -17,15 +18,16 @@ class keyATMcovPG : virtual public keyATMmeta
     //
     // Parameters
     //
-    MatrixXd Alpha;
+    MatrixXd Alpha;   // remove later
     int num_cov;
-    MatrixXd Lambda;
-    MatrixXd C;
+    MatrixXd Lambda;  // remvoe later
+    MatrixXd C;   // remove later
     List PG_params;
+    MatrixXd theta;
 
-    int mh_use;
-    double mu;
-    double sigma;
+    int mh_use;  // remove later
+    double mu;  // remove later
+    double sigma;  // remove later
 
     // During the sampling
       std::vector<int> topic_ids;
@@ -55,7 +57,6 @@ class keyATMcovPG : virtual public keyATMmeta
     void sample_lambda_slice();
     double alpha_loglik();
     virtual double loglik_total();
-    double loglik_total_label();
 
     double likelihood_lambda(int k, int t);
     void proposal_lambda(int k);

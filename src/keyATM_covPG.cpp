@@ -46,6 +46,8 @@ void keyATMcovPG::initialize_specific()
     }
   }
 
+  theta = MatrixXd::Zero(num_doc, num_topics);
+
 }
 
 
@@ -60,7 +62,7 @@ void keyATMcovPG::iteration_single(int it)
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
   // Create Alpha for this iteration
-  Alpha = (C * Lambda.transpose()).array().exp();
+  Alpha = (C * Lambda.transpose()).array().exp();  // remove later
 
   for (int ii = 0; ii < num_doc; ++ii) {
     doc_id_ = doc_indexes[ii];
@@ -92,22 +94,28 @@ void keyATMcovPG::iteration_single(int it)
     S[doc_id_] = doc_s;
   }
   sample_parameters(it);
-
 }
 
 
 void keyATMcovPG::sample_parameters(int it)
 {
   sample_lambda();  // remove later
-  // sample_PG();
+  sample_PG();
 
-  // Store lambda 
+  // Store theta 
   int r_index = it + 1;
-  if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
-    Rcpp::NumericMatrix Lambda_R = Rcpp::wrap(Lambda);
-    List Lambda_iter = stored_values["Lambda_iter"];
-    Lambda_iter.push_back(Lambda_R);
-    stored_values["Lambda_iter"] = Lambda_iter;
+  if (store_theta) {
+    if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
+      Rcpp::NumericMatrix theta_R = Rcpp::wrap(theta);
+      List theta_iter = stored_values["theta_PG"];
+      theta_iter.push_back(theta_R);
+      stored_values["theta_PG"] = theta_iter;
+    }
+  }
+
+  if (r_index == iter) {
+    PG_params["theta_last"] = Rcpp::wrap(theta);
+    model_settings["PG_params"] = PG_params;
   }
 }
 
@@ -118,8 +126,11 @@ void keyATMcovPG::sample_PG()
   Environment pkg = Environment::namespace_env("keyATM");
   Function PGreg_Rfun = pkg["multiPGreg"];
   NumericMatrix C_r = model_settings["covariates_data_use"];
+  NumericMatrix Y_r = Rcpp::wrap(n_dk);
 
-  PG_params = PGreg_Rfun(n_dk, C_r, num_topics, PG_params);
+  PG_params = PGreg_Rfun(Y_r, C_r, num_topics, PG_params, 1);
+  NumericMatrix theta_tilda_r = PG_params["theta_tilda"];
+  utils::calc_PGtheta(theta_tilda_r, theta, num_doc, num_topics);  // update theta
 }
 
 
@@ -403,59 +414,4 @@ double keyATMcovPG::loglik_total()
 }
 
 
-double keyATMcovPG::loglik_total_label()
-{
-  double loglik = 0.0;
-  for (int k = 0; k < num_topics; k++) {
-    for (int v = 0; v < num_vocab; v++) { // word
-      loglik += mylgamma(beta_s0kv(k, v) + n_s0_kv(k, v) ) - mylgamma(beta_s0kv(k, v));
-    }
 
-    // word normalization
-    loglik += mylgamma( Vbeta_k(k) ) - mylgamma(Vbeta_k(k) + n_s0_k(k) );
-
-    if (k < keyword_k) {
-      // For keyword topics
-
-      // n_s1_kv
-      for (SparseMatrix<double,RowMajor>::InnerIterator it(n_s1_kv, k); it; ++it) {
-        loglik += mylgamma(beta_s1kv.coeffRef(k, it.index()) + it.value()) - mylgamma(beta_s1kv.coeffRef(k, it.index()));
-      }
-      loglik += mylgamma( Lbeta_sk(k) ) - mylgamma(Lbeta_sk(k) + n_s1_k(k) );
-
-
-      // Normalization
-      loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
-
-      // s
-      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) ) 
-                - mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1))
-                + mylgamma( n_s1_k(k) + prior_gamma(k, 0) );  
-    }
-  }
-
-
-  // z
-  Alpha = (C * Lambda.transpose()).array().exp();
-  alpha = VectorXd::Zero(num_topics);
-
-  for (int d = 0; d < num_doc; d++) {
-    alpha = Alpha.row(d).transpose(); // Doc alpha, column vector  
-    
-    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
-    for (int k = 0; k < num_topics; k++) {
-      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
-    }
-  }
-
-  // Lambda loglik
-  double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
-  for (int k = 0; k < num_topics; k++) {
-    for (int t = 0; t < num_cov; t++) {
-      loglik += prior_fixedterm;
-      loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
-    }
-  }
-
-  return loglik;
-}

@@ -419,8 +419,10 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
       stored_values$pi_vectors <- list() 
   }
 
-  if (options$store_theta)
+  if (options$store_theta) {
     stored_values$Z_tables <- list()
+    stored_values$theta_PG <- list()
+  }
 
   key_model <- list(
                     W = W, Z = Z, S = S,
@@ -680,20 +682,15 @@ check_arg_model_settings <- function(obj, model, info)
       stop("Undefined model. `covariates_model` option in `model_settings` take `PG` or `DirMulti`.")
 
     if (obj$covariates_model == "PG") {
-      obj$PG_params$PG_Phi <- list() 
-      obj$PG_params$PG_SigmaPhi <- list() 
-      obj$PG_params$PG_Lambda <- list()
-      obj$PG_params$PG_theta <- list()
-
       K <- info$total_k
       X <- obj$covariates_data_use
       M <- ncol(X)  # Number of covariates
       D <- nrow(X)  # Number of douments
 
       Sigma_Lambda <- diag(rep(1, K - 1))
-      obj$PG_params$PG_Lambda[[1]] <- MASS::mvrnorm(n = M, mu = rep(0, K-1), Sigma = Sigma_Lambda)
-      obj$PG_params$PG_SigmaPhi[[1]] <- diag(rep(1, K-1))
-      Mu <- X %*% obj$PG_params$PG_Lambda[[1]]
+      obj$PG_params$PG_Lambda <- MASS::mvrnorm(n = M, mu = rep(0, K-1), Sigma = Sigma_Lambda)
+      obj$PG_params$PG_SigmaPhi <- diag(rep(1, K-1))
+      Mu <- X %*% obj$PG_params$PG_Lambda
       Sigma <- diag(rep(1, K-1))
       sapply(1:D,
              function(d) {
@@ -702,7 +699,9 @@ check_arg_model_settings <- function(obj, model, info)
       Phi <- t(Phi)
       colnames(Phi) <- NULL
       row.names(Phi) <- NULL
-      obj$PG_params$Phi <- Phi  # D \times (K - 1)
+      obj$PG_params$PG_Phi <- Phi  # D \times (K - 1)
+      obj$PG_params$theta_tilda <- exp(Phi) / (1 + exp(Phi))
+      obj$PG_params$theta_last <- matrix(rep(0, D*K), nrow = D, ncol = K)
     }
 
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
