@@ -1,3 +1,8 @@
+# keyATM 0.4.0
+### Major changes
+* Implementation of Polya-Gamma covariate keyATM
+* Use `future.apply` instead of `parallel`
+
 # keyATM 0.3.1
 ### Major changes
 * Changes related to release of dplyr 1.0.1

@@ -54,7 +54,7 @@ out <- keyATM(docs              = keyATM_docs,
               model             = "covariates",
               model_settings    = list(covariates_data    = vars_selected, 
                                        covariates_formula = ~ Party + Period,
-                                       standardize = "all"),
+                                       standardize = "all", covariates_model = "DirMulti"),
               options           = list(seed = 250, iterations = 20),
               keep              = c("Z", "S")
              )

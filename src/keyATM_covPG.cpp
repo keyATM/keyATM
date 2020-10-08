@@ -59,6 +59,9 @@ void keyATMcovPG::iteration_single(int it)
   int new_z, new_s;
   int w_position;
 
+
+  sample_parameters(it);
+
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
   // Create Alpha for this iteration
@@ -93,13 +96,12 @@ void keyATMcovPG::iteration_single(int it)
     Z[doc_id_] = doc_z;
     S[doc_id_] = doc_s;
   }
-  sample_parameters(it);
 }
 
 
 void keyATMcovPG::sample_parameters(int it)
 {
-  sample_lambda();  // remove later
+  // sample_lambda();  // remove later
   sample_PG(it);
 
   // Store theta 
@@ -168,7 +170,7 @@ int keyATMcovPG::sample_z_PG(VectorXd &alpha, int z, int s,
 
       numerator = (beta + n_s0_kv(k, w)) *
         (n_s0_k(k) + prior_gamma(k, 1)) *
-        (n_dk(doc_id, k) + alpha(k));
+        theta(doc_id, k);
 
       denominator = (Vbeta + n_s0_k(k)) *
         (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
@@ -187,7 +189,7 @@ int keyATMcovPG::sample_z_PG(VectorXd &alpha, int z, int s,
       } else { 
         numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
           (n_s1_k(k) + prior_gamma(k, 0)) *
-          (n_dk(doc_id, k) + alpha(k));
+          theta(doc_id, k);
         denominator = (Lbeta_sk(k) + n_s1_k(k) ) *
           (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
@@ -395,26 +397,27 @@ double keyATMcovPG::loglik_total()
 
 
   // z
-  Alpha = (C * Lambda.transpose()).array().exp();
-  alpha = VectorXd::Zero(num_topics);
+  // Alpha = (C * Lambda.transpose()).array().exp();
+  // alpha = VectorXd::Zero(num_topics);
 
   for (int d = 0; d < num_doc; ++d) {
-    alpha = Alpha.row(d).transpose(); // Doc alpha, column vector  
+    // alpha = Alpha.row(d).transpose(); // Doc alpha, column vector  
     
-    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
+    // loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
     for (int k = 0; k < num_topics; ++k) {
-      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+      // loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+      loglik += log(theta(d, k)) * n_dk(d, k);
     }
   }
 
-  // Lambda loglik
-  double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
-  for (int k = 0; k < num_topics; k++) {
-    for (int t = 0; t < num_cov; t++) {
-      loglik += prior_fixedterm;
-      loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
-    }
-  }
+  // // Lambda loglik
+  // double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
+  // for (int k = 0; k < num_topics; k++) {
+  //   for (int t = 0; t < num_cov; t++) {
+  //     loglik += prior_fixedterm;
+  //     loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
+  //   }
+  // }
 
   return loglik;
 }

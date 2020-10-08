@@ -105,7 +105,7 @@ test_that("Documents with length 0: covariate", {
                   keywords = bills_keywords,  # keywords
                   model = "covariates",
                   model_settings = list(covariates_data = bills_cov, standardize = "all",
-                                      covariates_formula = ~.),
+                                      covariates_formula = ~., covariates_model = "DirMulti"),
                   options = list(seed = 250, iterations = 0))
   )
 
@@ -118,7 +118,7 @@ test_that("Documents with length 0: covariate", {
                   keywords = bills_keywords,  # keywords
                   model = "covariates",
                   model_settings = list(covariates_data = bills_cov, standardize = "all",
-                                      covariates_formula = ~.),
+                                      covariates_formula = ~., covariates_model = "DirMulti"),
                   options = list(seed = 250, iterations = 1))
   )
   expect_identical(length(out$kept_values$doc_index_used), 138L)

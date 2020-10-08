@@ -462,10 +462,6 @@ fitting_models <- function(key_model, model, options)
 
   if (model == "base") {
     key_model <- keyATM_fit_base(key_model, iter = options$iterations)
-  } else if (model == "cov" & key_model$model_settings$covariates_model == "PG") {
-    key_model <- keyATM_fit_covPG(key_model, iter = options$iteration)
-  } else if (model == "cov" & key_model$model_settings$covariates_model == "DirMulti") {
-    key_model <- keyATM_fit_cov(key_model, iter = options$iteration)
   } else if (model == "hmm") {
     key_model <- keyATM_fit_HMM(key_model, iter = options$iteration)  
   } else if (model == "lda") {
@@ -476,6 +472,10 @@ fitting_models <- function(key_model, model, options)
     key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration)  
   } else if (model == "label") {
     key_model <- keyATM_fit_label(key_model, iter = options$iteration)
+  } else if (model == "cov" & key_model$model_settings$covariates_model == "PG") {
+    key_model <- keyATM_fit_covPG(key_model, iter = options$iteration)
+  } else if (model == "cov" & key_model$model_settings$covariates_model == "DirMulti") {
+    key_model <- keyATM_fit_cov(key_model, iter = options$iteration)
   } else {
     stop("Please check `mode`.")
   }
@@ -1071,8 +1071,9 @@ make_sz_key <- function(W, keywords, info)
   }
 
   if (info$parallel_init) {
-    S <- parallel::mclapply(W, make_s, mc.cores = info$num_core, mc.set.seed = FALSE)
-    Z <- parallel::mclapply(W, make_z, topicvec, mc.cores = info$num_core, mc.set.seed = FALSE)
+    warning("`parallel_init` is an experimental featurre.")
+    S <- future.apply::future_lapply(W, make_s, future.seed = TRUE)
+    Z <- future.apply::future_lapply(W, make_z, topicvec, future.seed = TRUE)
   } else {
     S <- lapply(W, make_s)
     Z <- lapply(W, make_z, topicvec)
@@ -1093,7 +1094,8 @@ make_sz_lda <- function(W, info)
   }  
 
   if (info$parallel_init) {
-    Z <- parallel::mclapply(W, make_z, topicvec, mc.cores = info$num_core, mc.set.seed = FALSE)
+    warning("`parallel_init` is an experimental featurre.")
+    Z <- future.apply::future_lapply(W, make_z, topicvec, future.seed = TRUE)
   } else {
     Z <- lapply(W, make_z, topicvec)
   }
