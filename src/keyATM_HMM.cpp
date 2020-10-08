@@ -153,7 +153,7 @@ void keyATMhmm::iteration_single(int it)
         continue;
   
       z_ = doc_z[w_position]; // use updated z
-      new_s = sample_s(alpha, z_, s_, w_, doc_id_);
+      new_s = sample_s(z_, s_, w_, doc_id_);
       doc_s[w_position] = new_s;
     }
     

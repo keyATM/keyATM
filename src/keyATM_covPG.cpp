@@ -12,18 +12,7 @@ void keyATMcovPG::read_data_specific()
   // Covariate
   model_settings = model["model_settings"];
   NumericMatrix C_r = model_settings["covariates_data_use"];
-  C = Rcpp::as<Eigen::MatrixXd>(C_r);
-  num_cov = C.cols();
-
-  // Slice Sampling remove later
-  val_min = model_settings["slice_min"];
-  val_min = shrink(val_min, slice_A);
-
-  val_max = model_settings["slice_max"];
-  val_max = shrink(val_max, slice_A);
-
-  // Metropolis Hastings  remove later
-  mh_use = model_settings["mh_use"];
+  num_cov = C_r.cols();
 
   // Access to PG related parameters
   PG_params = model_settings["PG_params"];
@@ -31,23 +20,7 @@ void keyATMcovPG::read_data_specific()
 
 void keyATMcovPG::initialize_specific()
 {
-  // Alpha  remove later
-  Alpha = MatrixXd::Zero(num_doc, num_topics);
-  alpha = VectorXd::Zero(num_topics); // use in iteration
-
-  // Lambda  remove later
-  mu = 0.0;
-  sigma = 1.0;
-  Lambda = MatrixXd::Zero(num_topics, num_cov);
-  for (int k = 0; k < num_topics; ++k) {
-    // Initialize with R random
-    for (int i = 0; i < num_cov; ++i) {
-      Lambda(k, i) = R::rnorm(0.0, 0.3);
-    }
-  }
-
   theta = MatrixXd::Zero(num_doc, num_topics);
-
 }
 
 
@@ -64,8 +37,6 @@ void keyATMcovPG::iteration_single(int it)
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
-  // Create Alpha for this iteration
-  Alpha = (C * Lambda.transpose()).array().exp();  // remove later
 
   for (int ii = 0; ii < num_doc; ++ii) {
     doc_id_ = doc_indexes[ii];
@@ -74,22 +45,20 @@ void keyATMcovPG::iteration_single(int it)
     
     token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
     
-    // Prepare Alpha for the doc
-    alpha = Alpha.row(doc_id_).transpose(); // take out alpha
     
     // Iterate each word in the document
     for (int jj = 0; jj < doc_length; ++jj) {
       w_position = token_indexes[jj];
       s_ = doc_s[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
     
-      new_z = sample_z_PG(alpha, z_, s_, w_, doc_id_);
+      new_z = sample_z_PG(z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
     
       if (keywords[new_z].find(w_) == keywords[new_z].end())	
         continue;
   
       z_ = doc_z[w_position]; // use updated z
-      new_s = sample_s(alpha, z_, s_, w_, doc_id_);
+      new_s = sample_s(z_, s_, w_, doc_id_);
       doc_s[w_position] = new_s;
     }
     
@@ -101,7 +70,6 @@ void keyATMcovPG::iteration_single(int it)
 
 void keyATMcovPG::sample_parameters(int it)
 {
-  // sample_lambda();  // remove later
   sample_PG(it);
 
   // Store theta 
@@ -142,9 +110,7 @@ void keyATMcovPG::sample_PG(int it)
 }
 
 
-
-int keyATMcovPG::sample_z_PG(VectorXd &alpha, int z, int s,
-                            int w, int doc_id)
+int keyATMcovPG::sample_z_PG(int z, int s, int w, int doc_id)
 {
   int new_z;
   double numerator, denominator;
@@ -219,151 +185,6 @@ int keyATMcovPG::sample_z_PG(VectorXd &alpha, int z, int s,
 }
 
 
-
-double keyATMcovPG::likelihood_lambda(int k, int t)
-{
-  double loglik = 0.0;
-  Alpha = (C * Lambda.transpose()).array().exp();
-  alpha = VectorXd::Zero(num_topics);
-
-  for (int d = 0; d < num_doc; ++d) {
-    alpha = Alpha.row(d).transpose(); // Doc alpha, column vector
-  
-    loglik += mylgamma(alpha.sum()); 
-        // the first term numerator in the first square bracket
-    loglik -= mylgamma( doc_each_len_weighted[d] + alpha.sum() ); 
-        // the second term denoinator in the first square bracket
-  
-    loglik -= mylgamma(alpha(k));
-    // the first term denominator in the first square bracket
-    loglik += mylgamma( n_dk(d, k) + alpha(k) );
-    // the second term numerator in the firist square bracket
-  }
-
-  // Prior
-  loglik += -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
-  loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
-
-  return loglik;
-}
-
-
-void keyATMcovPG::sample_lambda()
-{
-  mh_use ? sample_lambda_mh() : sample_lambda_slice();
-}
-
-
-void keyATMcovPG::sample_lambda_mh()
-{
-  topic_ids = sampler::shuffled_indexes(num_topics);
-  cov_ids = sampler::shuffled_indexes(num_cov);
-  double Lambda_current = 0.0;
-  double llk_current = 0.0;
-  double llk_proposal = 0.0;
-  double diffllk = 0.0;
-  double r = 0.0; 
-  double u = 0.0;
-  double mh_sigma = 0.4;
-  int k, t;
-
-  for(int kk = 0; kk < num_topics; ++kk) {
-    k = topic_ids[kk];
-    
-    for(int tt = 0; tt < num_cov; ++tt) {
-      t = cov_ids[tt];
-    
-      Lambda_current = Lambda(k, t);
-      
-      // Current llk
-      llk_current = likelihood_lambda(k, t);
-      
-      // Proposal
-      Lambda(k, t) += R::rnorm(0.0, mh_sigma);
-      llk_proposal = likelihood_lambda(k, t);
-      
-      diffllk = llk_proposal - llk_current;
-      r = std::min(0.0, diffllk);
-      u = log(unif_rand());
-      
-      if (u < r) {
-        // accepted
-      } else {
-        // Put back original values
-        Lambda(k, t) = Lambda_current;
-      }
-    }
-  }
-}
-
-
-void keyATMcovPG::sample_lambda_slice()
-{
-  double start = 0.0; 
-  double end = 0.0;
-
-  double previous_p = 0.0;
-  double new_p = 0.0;
-
-  double newlikelihood = 0.0;
-  double slice_ = 0.0;
-  double current_lambda = 0.0;
-
-  double store_loglik;
-  double newlambdallk;
-
-  topic_ids = sampler::shuffled_indexes(num_topics);
-  cov_ids = sampler::shuffled_indexes(num_cov);
-  int k, t;
-  const double A = slice_A;
-  
-  newlambdallk = 0.0;
-  
-  for (int kk = 0; kk < num_topics; ++kk) {
-    k = topic_ids[kk];
-  
-    for (int tt = 0; tt < num_cov; ++tt) {
-      t = cov_ids[tt];
-      store_loglik = likelihood_lambda(k, t);
-  
-      start = val_min; // shrinked value
-      end = val_max; // shrinked value
-  
-      current_lambda = Lambda(k,t);
-      previous_p = shrink(current_lambda, A);
-      slice_ = store_loglik - std::log(A * previous_p * (1.0 - previous_p)) 
-              + log(unif_rand()); // <-- using R random uniform
-  
-  
-      for (int shrink_time = 0; shrink_time < max_shrink_time; ++shrink_time) {
-        new_p = sampler::slice_uniform(start, end); // <-- using R function above
-        Lambda(k,t) = expand(new_p, A); // expand
-  
-        newlambdallk = likelihood_lambda(k, t);
-  
-        newlikelihood = newlambdallk - std::log(A * new_p * (1.0 - new_p));
-  
-        if (slice_ < newlikelihood) {
-          break;
-        } else if (abs(end - start) < 1e-9) {
-          Rcerr << "Shrinked too much. Using a current value." << std::endl;  
-          Lambda(k,t) = current_lambda;
-          break;
-        } else if (previous_p < new_p) {
-          end = new_p;
-        } else if (new_p < previous_p) {
-          start = new_p;
-        } else {
-          Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
-        }
-  
-      } // for loop for shrink time
-  
-    } // for loop for num_cov
-  } // for loop for num_topics
-}
-
-
 double keyATMcovPG::loglik_total()
 {
   double loglik = 0.0;
@@ -397,27 +218,11 @@ double keyATMcovPG::loglik_total()
 
 
   // z
-  // Alpha = (C * Lambda.transpose()).array().exp();
-  // alpha = VectorXd::Zero(num_topics);
-
   for (int d = 0; d < num_doc; ++d) {
-    // alpha = Alpha.row(d).transpose(); // Doc alpha, column vector  
-    
-    // loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
     for (int k = 0; k < num_topics; ++k) {
-      // loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
       loglik += log(theta(d, k)) * n_dk(d, k);
     }
   }
-
-  // // Lambda loglik
-  // double prior_fixedterm = -0.5 * log(2.0 * PI_V * std::pow(sigma, 2.0) );
-  // for (int k = 0; k < num_topics; k++) {
-  //   for (int t = 0; t < num_cov; t++) {
-  //     loglik += prior_fixedterm;
-  //     loglik -= ( std::pow( (Lambda(k,t) - mu) , 2.0) / (2.0 * std::pow(sigma, 2.0)) );
-  //   }
-  // }
 
   return loglik;
 }
