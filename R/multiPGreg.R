@@ -116,8 +116,6 @@ multiPG_sample_Phi <- function(Phi, Y, D, K, M, mu_phi, Sigma_phi)
 
 rpg <- function(b, c)
 { # Draw from Polya-Gamma
-  # return(pgdraw::pgdraw(b, c))  # debug
-
   if (b %% 1 == 0 & (b < 20 | c == 0)) {
     return(pgdraw::pgdraw(b, c))
   } else {
