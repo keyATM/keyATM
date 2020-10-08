@@ -702,6 +702,7 @@ check_arg_model_settings <- function(obj, model, info)
       obj$PG_params$PG_Phi <- Phi  # D \times (K - 1)
       obj$PG_params$theta_tilda <- exp(Phi) / (1 + exp(Phi))
       obj$PG_params$theta_last <- matrix(rep(0, D*K), nrow = D, ncol = K)
+      obj$PG_params$Lambda_list <- list()
     }
 
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",

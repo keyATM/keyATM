@@ -97,6 +97,11 @@ keyATM_output <- function(model, keep)
 
     if (!"model_settings" %in% keep)
       keep <- c("model_settings", keep)
+
+    model$model_settings$PG_params$theta_last <- NULL  # remove redundant information
+    model$model_settings$PG_params$PG_Phi <- NULL  
+    model$model_settings$PG_params$theta_tilda <- NULL  
+    model$model_settings$PG_params$PG_Lambda <- NULL  
   }
 
   if (model$model %in% c("hmm", "ldahmm")) {

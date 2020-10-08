@@ -100,7 +100,7 @@ void keyATMcovPG::iteration_single(int it)
 void keyATMcovPG::sample_parameters(int it)
 {
   sample_lambda();  // remove later
-  sample_PG();
+  sample_PG(it);
 
   // Store theta 
   int r_index = it + 1;
@@ -120,7 +120,7 @@ void keyATMcovPG::sample_parameters(int it)
 }
 
 
-void keyATMcovPG::sample_PG()
+void keyATMcovPG::sample_PG(int it)
 {
   // multiPGreg function
   Environment pkg = Environment::namespace_env("keyATM");
@@ -128,7 +128,13 @@ void keyATMcovPG::sample_PG()
   NumericMatrix C_r = model_settings["covariates_data_use"];
   NumericMatrix Y_r = Rcpp::wrap(n_dk);
 
-  PG_params = PGreg_Rfun(Y_r, C_r, num_topics, PG_params, 1);
+  int r_index = it + 1;
+  int store_lambda = 0;
+  if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
+    store_lambda = 1;
+  }
+
+  PG_params = PGreg_Rfun(Y_r, C_r, num_topics, PG_params, 1, store_lambda);
   NumericMatrix theta_tilda_r = PG_params["theta_tilda"];
   utils::calc_PGtheta(theta_tilda_r, theta, num_doc, num_topics);  // update theta
 }

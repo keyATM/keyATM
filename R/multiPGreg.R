@@ -1,6 +1,6 @@
 #' @noRd
 #' @export
-multiPGreg <- function(Y, X, num_topics, PG_params, iter = 1)
+multiPGreg <- function(Y, X, num_topics, PG_params, iter = 1, store_lambda = 0)
 # multiPGreg <- function(PG_params, iter = 1)
 {  # Used in CovPG
   Phi <- PG_params$PG_Phi
@@ -29,6 +29,11 @@ multiPGreg <- function(Y, X, num_topics, PG_params, iter = 1)
   PG_params$PG_SigmaPhi <- Sigma_phi
   PG_params$PG_Lambda <- Lambda
   PG_params$theta_tilda <- exp(Phi) / (1 + exp(Phi))
+
+  if (store_lambda) {
+    index <- length(PG_params$Lambda_list)
+    PG_params$Lambda_list[[index + 1]] <- Lambda 
+  }
   return(PG_params)
 }
 

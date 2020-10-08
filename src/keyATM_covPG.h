@@ -50,16 +50,16 @@ class keyATMcovPG : virtual public keyATMmeta
     // Iteration
     virtual void iteration_single(int it);
     void sample_parameters(int it);
-    void sample_PG();
+    void sample_PG(int it);
     int sample_z_PG(VectorXd &alpha, int z, int s, int w, int doc_id); 
-    void sample_lambda();
-    void sample_lambda_mh();
-    void sample_lambda_slice();
-    double alpha_loglik();
+    void sample_lambda();  // remove later
+    void sample_lambda_mh();  // remove later
+    void sample_lambda_slice();  // remove later
+    double alpha_loglik();  //  remove later
     virtual double loglik_total();
 
-    double likelihood_lambda(int k, int t);
-    void proposal_lambda(int k);
+    double likelihood_lambda(int k, int t);  // remove later
+    void proposal_lambda(int k);  // remove later
 };
 
 
