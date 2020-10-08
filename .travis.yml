@@ -12,7 +12,6 @@ warnings_are_errors: false
 os:
   - linux
   - osx
-dist: trusty
 latex: false
 env:
   global:
