@@ -688,7 +688,11 @@ check_arg_model_settings <- function(obj, model, info)
       D <- nrow(X)  # Number of douments
 
       Sigma_Lambda <- diag(rep(1, K - 1))
-      obj$PG_params$PG_Lambda <- MASS::mvrnorm(n = M, mu = rep(0, K-1), Sigma = Sigma_Lambda)
+      if (M == 1) {
+        obj$PG_params$PG_Lambda <- t(MASS::mvrnorm(n = M, mu = rep(0, K-1), Sigma = Sigma_Lambda))
+      } else {
+        obj$PG_params$PG_Lambda <- MASS::mvrnorm(n = M, mu = rep(0, K-1), Sigma = Sigma_Lambda)
+      }
       obj$PG_params$PG_SigmaPhi <- diag(rep(1, K-1))
       Mu <- X %*% obj$PG_params$PG_Lambda
       Sigma <- diag(rep(1, K-1))

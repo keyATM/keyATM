@@ -87,7 +87,7 @@ multiPG_sample_Phi <- function(Phi, Y, D, K, M, mu_phi, Sigma_phi)
 
   # Create Kappa_dk
   Kappa_dk <- Y - N_dk/2
-  Kappa_dk <- Kappa_dk[, -ncol(Kappa_dk)]  # we consider K-1 categories
+  Kappa_dk <- Kappa_dk[, -ncol(Kappa_dk), drop = FALSE]  # we consider K-1 categories
 
   # Sample Omega_dk and Phi
   Sigma_phi_inv <- solve(Sigma_phi)

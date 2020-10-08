@@ -37,16 +37,6 @@ predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = 
   if (is.null(burn_in))
     burn_in <- floor(max(object$model_fit$Iteration) / 2) 
 
-  # if (parallel) {
-  #   if (is.null(mc.cores)) {
-  #     num_core <- max(1, parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L)
-  #   } else {
-  #     num_core <- mc.cores 
-  #   }
-  # } else {
-  #   num_core <- 1L
-  # }
-
   used_iter <- object$values_iter$used_iter
   used_iter <- used_iter[used_iter > burn_in]
   use_index <- which(object$values_iter$used_iter %in% used_iter)
