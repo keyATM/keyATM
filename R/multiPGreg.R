@@ -77,6 +77,10 @@ multiPG_sample_Phi <- function(Phi, Y, D, K, M, mu_phi, Sigma_phi)
              res[k] <- sum(vec) 
            } else {
              res[k] <- res[k - 1] - vec[k - 1]
+             if (res[k] <= 0) {
+               # can happen in simulated data 
+               res[k] <- 1e-7
+             }
            }
           }
 
