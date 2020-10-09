@@ -19,7 +19,7 @@ cov <- keyATM(docs = keyATM_docs,
               keywords = bills_keywords,
               model = "covariates",
               model_settings = list(covariates_data = bills_cov, standardize = "all", 
-                                  covariates_formula = ~.
+                                  covariates_formula = ~., covariates_model = "DirMulti"
                                   ),
               options = list(seed = 250, store_theta = TRUE, iterations = 20,
                              store_pi = 1, thinning = 5, verbose = FALSE),
@@ -44,7 +44,7 @@ test_that("keyATM Heterogeneity Doc-Topic", {
   strata_topic <- by_strata_DocTopic(cov, by_var = "RepParty", labels = c("Dem", "Rep"), parallel = FALSE, posterior_mean = FALSE)
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(summary(strata_topic, method = "eti")[[2]]$Lower[2], 0.13578, tolerance = 0.00001)
+  expect_equal(summary(strata_topic, method = "eti")[[2]]$Lower[2], 0.1334322, tolerance = 0.00001)
 
   p <- plot(strata_topic, show_topic = c(1,2,3,4), by = "covariate", method = "eti")
   expect_s3_class(p, "keyATM_fig")
@@ -72,7 +72,7 @@ cov <- suppressWarnings(keyATM(docs = keyATM_docs,
               keywords = bills_keywords,
               model = "covariates",
               model_settings = list(covariates_data = bills_cov, standardize = "none", 
-                                  covariates_formula = NULL
+                                  covariates_formula = NULL, covariates_model = "DirMulti"
                                   ),
               options = list(seed = 250, store_theta = TRUE, iterations = 5,
                              store_pi = 1, thinning = 5, verbose = FALSE)
@@ -98,7 +98,7 @@ cov <- keyATM(docs = keyATM_docs,
               keywords = bills_keywords,
               model = "covariates",
               model_settings = list(covariates_data = bills_cov_modified, standardize = "none", 
-                                  covariates_formula = ~.
+                                  covariates_formula = ~., covariates_model = "DirMulti"
                                   ),
               options = list(seed = 250, store_theta = TRUE, iterations = 5,
                              store_pi = 1, thinning = 5, verbose = FALSE)
@@ -120,7 +120,7 @@ cov <- keyATM(docs = keyATM_docs,
               keywords = bills_keywords,
               model = "covariates",
               model_settings = list(covariates_data = bills_cov_modified, standardize = "non-factor", 
-                                  covariates_formula = ~.
+                                  covariates_formula = ~., covariates_model = "DirMulti"
                                   ),
               options = list(seed = 250, store_theta = TRUE, iterations = 5,
                              store_pi = 1, thinning = 5, verbose = FALSE)
@@ -144,7 +144,7 @@ cov <- keyATM(docs = keyATM_docs,
               keywords = bills_keywords,
               model = "covariates",
               model_settings = list(covariates_data = bills_cov_modified, standardize = "all", 
-                                  covariates_formula = ~.
+                                  covariates_formula = ~., covariates_model = "DirMulti"
                                   ),
               options = list(seed = 250, store_theta = TRUE, iterations = 5,
                              store_pi = 1, thinning = 5, verbose = FALSE)

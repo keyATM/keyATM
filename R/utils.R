@@ -107,6 +107,58 @@ rdirichlet <- function(alpha, n = 1) {
 }
 
 
+rmvn <- function(n = 1, mu, Sigma)
+{  # Edited version of the code in LaplacesDemon package
+  mu <- rbind(mu)
+  # if(missing(Sigma)) Sigma <- diag(ncol(mu))
+  # if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
+  # if(!is.positive.definite(Sigma))
+       # stop("Matrix Sigma is not positive-definite.")
+  k <- ncol(Sigma)
+  if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow = TRUE)
+  z <- matrix(rnorm(n*k), n, k) %*% chol(Sigma)
+  x <- mu + z
+  return(x)
+}
+
+
+rmvn1 <- function(mu, Sigma)
+{  # Edited version of the code in LaplacesDemon package
+  mu <- as.numeric(mu)
+  k <- ncol(Sigma)
+  z <- rnorm(k) %*% chol(Sigma)
+  x <- mu + z
+  return(as.numeric(x))
+}
+
+
+rnorminvwishart <- function(n = 1, mu0, lambda, S, nu)
+{  # Edited version of the code in LaplacesDemon package
+  Sigma <- rinvwishart(nu, S)
+  mu <- rmvn(n, mu0, 1/lambda*Sigma)
+  return(list(mu = mu, Sigma = Sigma))
+}
+
+rinvwishart <- function(nu, S)
+{  # Edited version of the code in LaplacesDemon package
+  S <- chol2inv(chol(S))
+  k <- nrow(S)
+  Z <- matrix(0, k, k)
+  x <- rchisq(k, nu:{nu - k + 1})
+  x[which(x == 0)] <- 1e-100
+  diag(Z) <- sqrt(x)
+  if(k > 1) {
+      kseq <- 1:(k-1)
+      Z[rep(k*kseq, kseq) +
+           unlist(lapply(kseq, seq))] <- rnorm(k*{k - 1}/2)
+  }
+
+  res <- Z %*% chol(S)
+
+  return(chol2inv(res))
+}
+
+
 myhashmap <- function(keys, values) {
   mapped <- fastmap::fastmap(missing_default = NA)
   invisible(lapply(1:length(keys), function(x) {mapped$set(keys[x], values[x])}))

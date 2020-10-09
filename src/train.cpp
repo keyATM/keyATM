@@ -11,6 +11,7 @@
 // keyATM models
 #include "keyATM_base.h"
 #include "keyATM_cov.h"
+#include "keyATM_covPG.h"
 #include "keyATM_HMM.h"
 #include "keyATM_label.h"
 
@@ -46,7 +47,7 @@ List keyATM_fit_base(List model, int iter = 0)
 }
 
 
-//' Run the Collapsed Gibbs sampler for the keyATM covariates
+//' Run the Collapsed Gibbs sampler for the keyATM covariates (Dir-Multi)
 //'
 //' @param model A initialized model
 //' @param iter Required number of iterations
@@ -58,6 +59,22 @@ List keyATM_fit_cov(List model, int iter = 0)
   keyATMcov keyATMcov_model(model, iter);
   keyATMcov_model.fit();
   model = keyATMcov_model.return_model();
+  return model;
+}
+
+
+//' Run the Collapsed Gibbs sampler for the keyATM covariates (Polya-Gamma)
+//'
+//' @param model A initialized model
+//' @param iter Required number of iterations
+//'
+//' @keywords internal
+// [[Rcpp::export]]
+List keyATM_fit_covPG(List model, int iter = 0)
+{
+  keyATMcovPG keyATMcov_modelPG(model, iter);
+  keyATMcov_modelPG.fit();
+  model = keyATMcov_modelPG.return_model();
   return model;
 }
 

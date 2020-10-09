@@ -265,8 +265,12 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
     show_topic <- 1:nrow(tables[[1]]) 
   }
 
-  tables <- dplyr::bind_rows(tables) %>%
-              dplyr::filter(.data$TopicId %in% show_topic)
+  tables <- dplyr::bind_rows(tables)
+  tnames <- unique(tables$Topic)
+  tables$TopicID <- as.numeric(purrr::map_chr(strsplit(tables$Topic, "_"), 1))
+  tables$Topic <- factor(tables$Topic, levels = tnames[order(as.numeric(purrr::map_chr(strsplit(tnames, "_"), 1)))])
+  tables <- tables %>% dplyr::filter(.data$TopicID %in% show_topic)
+
   variables <- unique(tables$label)
 
   p <- ggplot(tables) +

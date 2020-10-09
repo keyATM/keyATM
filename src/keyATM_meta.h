@@ -157,8 +157,7 @@ class keyATMmeta
     int sample_z_label(VectorXd &alpha, int z, int s,
                        int w, int doc_id);
 
-    int sample_s(VectorXd &alpha, int z, int s,
-                   int w, int doc_id);
+    int sample_s(int z, int s, int w, int doc_id);
     int sample_s_label(VectorXd &alpha, int z, int s,
                        int w, int doc_id);
 

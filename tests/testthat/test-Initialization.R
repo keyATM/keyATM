@@ -29,8 +29,8 @@ test_that("Parallel initialization", {
                 keywords = bills_keywords,  # keywords
                 model = "base",  # select the model
                 options = list(seed = 250, iterations = 0, parallel_init = TRUE))
-  expect_identical(out$Z[[1]][3], 1L)
-  expect_identical(out$Z[[140]][15], 6L)
+  expect_identical(out$Z[[1]][3], 0L)
+  expect_identical(out$Z[[140]][15], 2L)
 })
 
 
@@ -105,7 +105,7 @@ test_that("Documents with length 0: covariate", {
                   keywords = bills_keywords,  # keywords
                   model = "covariates",
                   model_settings = list(covariates_data = bills_cov, standardize = "all",
-                                      covariates_formula = ~.),
+                                      covariates_formula = ~., covariates_model = "DirMulti"),
                   options = list(seed = 250, iterations = 0))
   )
 
@@ -118,7 +118,7 @@ test_that("Documents with length 0: covariate", {
                   keywords = bills_keywords,  # keywords
                   model = "covariates",
                   model_settings = list(covariates_data = bills_cov, standardize = "all",
-                                      covariates_formula = ~.),
+                                      covariates_formula = ~., covariates_model = "DirMulti"),
                   options = list(seed = 250, iterations = 1))
   )
   expect_identical(length(out$kept_values$doc_index_used), 138L)

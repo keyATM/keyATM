@@ -45,7 +45,7 @@ keyATM(
 \item \emph{R}: For the dynamic model. The state each document belongs to.
 \item \emph{P}: For the dynamic model. The state transition probability.
 }
-\item \strong{parallel_init}: Parallelize processes to speed up initialization. Default is \code{FALSE}. Note that even if you use the same \code{seed}, the initialization will become different between with and without parallelization.
+\item \strong{parallel_init}: Parallelize processes to speed up initialization. Default is \code{FALSE}. Please \code{plan()} before use this feature.
 }}
 
 \item{keep}{a vector of the names of elements you want to keep in output.}
