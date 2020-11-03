@@ -30,7 +30,7 @@
 
 \item{parallel}{logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}. Please \code{plan()} before use this function.}
 
-\item{posterior_mean}{logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean if you use Dirchlet-Multinomial regression. Default is \code{TRUE}. This option will not change the result if you use Polya-Gamma augmentation (default of the covariate model).}
+\item{posterior_mean}{logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{TRUE}.}
 
 \item{ci}{value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90\%).}
 

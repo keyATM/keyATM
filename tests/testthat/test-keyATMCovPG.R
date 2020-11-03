@@ -52,6 +52,19 @@ test_that("keyATM Heterogeneity Doc-Topic", {
   expect_message(suppressWarnings(save_fig(p, paste0(tempdir(), "/test.pdf"))), "Saving 7 x 7 in image")
 })
 
+
+test_that("keyATM Heterogeneity Doc-Topic, use posterior_mean", {
+  strata_topic <- by_strata_DocTopic(cov, by_var = "RepParty", labels = c("Dem", "Rep"), parallel = FALSE, posterior_mean = TRUE)
+
+  skip_on_os("linux") ; skip_on_cran()
+  expect_equal(summary(strata_topic, method = "eti")[[2]]$Lower[2], 0.1382071, tolerance = 0.00001)
+
+  p <- plot(strata_topic, show_topic = c(1,2,3,4), by = "covariate", method = "eti")
+  expect_s3_class(p, "keyATM_fig")
+
+  expect_message(suppressWarnings(save_fig(p, paste0(tempdir(), "/test.pdf"))), "Saving 7 x 7 in image")
+})
+
 test_that("keyATM Heterogeneity Topic-Word", {
   RepParty <- as.vector(bills_cov[, "RepParty"])  # the length should be the same as the number of documents
   strata_tw <- by_strata_TopicWord(cov, keyATM_docs, by = RepParty)
@@ -84,12 +97,12 @@ test_that("Covariates settings: Standardize - none, no formula", {
   
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))
-  expect_equal(as.numeric(suppressWarnings(predict(cov, bills_cov, transform = TRUE))[3, 3]), 0.1180672, tolerance = 0.000001)
+  expect_equal(as.numeric(suppressWarnings(predict(cov, bills_cov, transform = TRUE))[3, 3]), 0.1329791, tolerance = 0.000001)
 
   bills_cov_copy <- bills_cov
   bills_cov_copy[, 1] <- 1
-  expect_equal(as.numeric(suppressWarnings(predict(cov, bills_cov_copy, transform = TRUE))[3, 3]), 0.1223253, tolerance = 0.000001)
-  expect_equal(as.numeric(suppressWarnings(predict(cov, bills_cov_copy))[3, 3]), 0.1208421, tolerance = 0.000001)
+  expect_equal(as.numeric(suppressWarnings(predict(cov, bills_cov_copy, transform = TRUE))[3, 3]), 0.1379893, tolerance = 0.000001)
+  expect_equal(as.numeric(suppressWarnings(predict(cov, bills_cov_copy))[3, 3]), 0.1379893, tolerance = 0.000001)
 })
 
 
@@ -111,7 +124,7 @@ test_that("Covariates settings: Standardize - none", {
 
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))
-  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[3, 3]), 1.920578e-07, tolerance = 0.000001)
+  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[3, 3]), 3.90292e-07, tolerance = 0.000001)
 })
 
 
@@ -134,7 +147,7 @@ test_that("Covariates settings: Standardize - non-factor", {
 
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))
-  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[2, 3]), 0.1293782, tolerance = 0.000001)
+  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[2, 3]), 0.124148, tolerance = 0.000001)
 })
 
 
@@ -159,6 +172,6 @@ test_that("Covariates settings: Standardize - all", {
 
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))
-  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[5, 2]), 0.01296492, tolerance = 0.0001)
+  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[5, 2]), 0.03792691, tolerance = 0.0001)
 })
 
