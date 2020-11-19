@@ -4,8 +4,7 @@
 #' @param newdata New observations which should be predicted.
 #' @param transform Transorm and standardize the `newdata` with the same formula and option as `model_settings` used in [keyATM()].
 #' @param burn_in integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.
-#' @param parallel logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}.
-#' @param mc.cores integer. The number of cores to use. Default is \code{NULL}.
+#' @param parallel logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}. Please `plan()` before use this function.
 #' @param posterior_mean logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{TRUE}.
 #' @param ci value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90%). 
 #' @param method method for computing the credible interval. The Highest Density Interval (\code{hdi}, default) or Equal-tailed Interval (\code{eti}).
@@ -14,7 +13,7 @@
 #' @param raw_values a logical. Returns raw values. The default is \code{FALSE}.
 #' @param ... additional arguments not used.
 #' @export
-predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = NULL, parallel = TRUE, mc.cores = NULL, 
+predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = NULL, parallel = TRUE,
                                   posterior_mean = TRUE, ci = 0.9, method = c("hdi", "eti"), 
                                   point = c("mean", "median"), label = NULL, raw_values = FALSE, ...)
 {
@@ -38,60 +37,106 @@ predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = 
   if (is.null(burn_in))
     burn_in <- floor(max(object$model_fit$Iteration) / 2) 
 
-  if (parallel) {
-    if (is.null(mc.cores)) {
-      num_core <- max(1, parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L)
-    } else {
-      num_core <- mc.cores 
-    }
-  } else {
-    num_core <- 1L
-  }
-
   used_iter <- object$values_iter$used_iter
   used_iter <- used_iter[used_iter > burn_in]
   use_index <- which(object$values_iter$used_iter %in% used_iter)
   tnames <- rownames(object$phi)
-  Lambda_iter <- object$values_iter$Lambda_iter
+  covariates_model <- object$kept_values$model_settings$covariates_model
 
-  if (posterior_mean) {
-    obj <- do.call(dplyr::bind_rows,
-                   parallel::mclapply(1:length(use_index),
-                                      function(s) {
-                                        Alpha <- exp(Matrix::tcrossprod(
-                                                       newdata,
-                                                       Lambda_iter[[use_index[s]]]
-                                                     ))
-                                        rowsum <- Matrix::rowSums(Alpha)
-                                        thetas <- Alpha / rowsum
-                                        thetas <- as.data.frame(thetas)
-                                        colnames(thetas) <- tnames
-                                        thetas$Iteration <- used_iter[s]
-                                        return(thetas)
-                                      },
-                                      mc.cores = num_core
-                                     )
-                  ) 
-  } else{
-    obj <- do.call(dplyr::bind_rows,
-                   parallel::mclapply(1:length(use_index),
-                                      function(s) {
-                                        Alpha <- exp(Matrix::tcrossprod(
-                                                       newdata,
-                                                       Lambda_iter[[use_index[s]]]
-                                                     ))
-                                        thetas <- t(apply(Alpha, 1, rdirichlet))
-                                        thetas <- Matrix::colMeans(thetas)
-                                        thetas <- t(as.data.frame(thetas))
-                                        thetas <- as.data.frame(thetas)
-                                        colnames(thetas) <- tnames
-                                        thetas$Iteration <- used_iter[s]
-                                        return(thetas)
-                                      },
-                                      mc.cores = num_core, mc.set.seed = FALSE
-                                     )
-                  )
+  if (covariates_model == "PG") {
+    Lambda_iter <- object$kept_values$model_settings$PG_params$Lambda_list
+    Sigma_iter <- object$kept_values$model_settings$PG_params$Sigma_list
+
+    if (posterior_mean) {
+      # Draw from the mean 
+      obj <- do.call(dplyr::bind_rows,
+                     future.apply::future_lapply(1:length(use_index),
+                        function(s) {
+                          Mu <- newdata %*% Lambda_iter[[s]]
+                          D <- nrow(newdata)
+                          K <- ncol(Lambda_iter[[s]]) + 1
+                          Phi <- Mu
+                          theta_tilda <- exp(Phi) / (1 + exp(Phi))
+                          thetas <- matrix(rep(0, D*K), nrow = D, ncol = K)
+                          thetas <- calc_PGtheta_R(theta_tilda, thetas, D, K)
+                          thetas <- as.data.frame(thetas)
+                          colnames(thetas) <- tnames
+                          thetas$Iteration <- used_iter[s]
+                          return(thetas)
+                        },
+                        future.seed = TRUE)
+                     )    
+    } else {
+      # Draw from the mean 
+      obj <- do.call(dplyr::bind_rows,
+                     future.apply::future_lapply(1:length(use_index),
+                        function(s) {
+                          Mu <- newdata %*% Lambda_iter[[s]]
+                          Sigma <- Sigma_iter[[s]]
+                          D <- nrow(newdata)
+                          K <- ncol(Lambda_iter[[s]]) + 1
+                          Phi <- sapply(1:D, function(d) {
+                                          Phi_d <- rmvn1(mu = Mu[d, ], Sigma = Sigma)
+                                        })
+                          Phi <- t(Phi)
+                          theta_tilda <- exp(Phi) / (1 + exp(Phi))
+                          thetas <- matrix(rep(0, D*K), nrow = D, ncol = K)
+                          thetas <- calc_PGtheta_R(theta_tilda, thetas, D, K)
+                          thetas <- as.data.frame(thetas)
+                          colnames(thetas) <- tnames
+                          thetas$Iteration <- used_iter[s]
+                          return(thetas)
+                        },
+                        future.seed = TRUE)
+                     )
+    }
+  } else if (covariates_model == "DirMulti") {
+    Lambda_iter <- object$values_iter$Lambda_iter
+
+
+    if (posterior_mean) {
+      # Dir-Multi Posterior Mean
+      obj <- do.call(dplyr::bind_rows,
+                     future.apply::future_lapply(1:length(use_index),
+                        function(s) {
+                          Alpha <- exp(Matrix::tcrossprod(
+                                         newdata,
+                                         Lambda_iter[[use_index[s]]]
+                                       ))
+                          rowsum <- Matrix::rowSums(Alpha)
+                          thetas <- Alpha / rowsum
+                          thetas <- as.data.frame(thetas)
+                          colnames(thetas) <- tnames
+                          thetas$Iteration <- used_iter[s]
+                          return(thetas)
+                        },
+                        future.seed = TRUE
+                       )
+                    )
+    } else{
+      # Dir-Multi Posterior Draw
+      obj <- do.call(dplyr::bind_rows,
+                     future.apply::future_lapply(1:length(use_index),
+                          function(s) {
+                            Alpha <- exp(Matrix::tcrossprod(
+                                           newdata,
+                                           Lambda_iter[[use_index[s]]]
+                                         ))
+                            thetas <- t(apply(Alpha, 1, rdirichlet))
+                            thetas <- Matrix::colMeans(thetas)
+                            thetas <- t(as.data.frame(thetas))
+                            thetas <- as.data.frame(thetas)
+                            colnames(thetas) <- tnames
+                            thetas$Iteration <- used_iter[s]
+                            return(thetas)
+                          },
+                          future.seed = TRUE
+                         )
+                    )
+    }
   }
+
+
   if (raw_values) {
     return(obj) 
   } else {

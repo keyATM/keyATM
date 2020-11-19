@@ -419,8 +419,10 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
       stored_values$pi_vectors <- list() 
   }
 
-  if (options$store_theta)
+  if (options$store_theta) {
     stored_values$Z_tables <- list()
+    stored_values$theta_PG <- list()
+  }
 
   key_model <- list(
                     W = W, Z = Z, S = S,
@@ -460,8 +462,6 @@ fitting_models <- function(key_model, model, options)
 
   if (model == "base") {
     key_model <- keyATM_fit_base(key_model, iter = options$iterations)
-  } else if (model == "cov") {
-    key_model <- keyATM_fit_cov(key_model, iter = options$iteration)
   } else if (model == "hmm") {
     key_model <- keyATM_fit_HMM(key_model, iter = options$iteration)  
   } else if (model == "lda") {
@@ -472,6 +472,10 @@ fitting_models <- function(key_model, model, options)
     key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration)  
   } else if (model == "label") {
     key_model <- keyATM_fit_label(key_model, iter = options$iteration)
+  } else if (model == "cov" & key_model$model_settings$covariates_model == "PG") {
+    key_model <- keyATM_fit_covPG(key_model, iter = options$iteration)
+  } else if (model == "cov" & key_model$model_settings$covariates_model == "DirMulti") {
+    key_model <- keyATM_fit_cov(key_model, iter = options$iteration)
   } else {
     stop("Please check `mode`.")
   }
@@ -663,8 +667,51 @@ check_arg_model_settings <- function(obj, model, info)
       }
     }
 
+    # Model
+    if (is.null(obj$covariates_model)) {
+      if (model == "cov")
+        obj$covariates_model <- "PG" 
+      if (model == "ldacov")
+        obj$covariates_model <- "DirMulti"
+    }
+
+    if (obj$covariates_model != "DirMulti" & model == "ldacov")
+      stop("Use Diricule-Multinomial model for LDA covariates.")
+
+    if (!obj$covariates_model %in% c("PG", "DirMulti"))
+      stop("Undefined model. `covariates_model` option in `model_settings` take `PG` or `DirMulti`.")
+
+    if (obj$covariates_model == "PG") {
+      K <- info$total_k
+      X <- obj$covariates_data_use
+      M <- ncol(X)  # Number of covariates
+      D <- nrow(X)  # Number of douments
+
+      Sigma_Lambda <- diag(rep(1, K - 1))
+      if (M == 1) {
+        obj$PG_params$PG_Lambda <- t(MASS::mvrnorm(n = M, mu = rep(0, K-1), Sigma = Sigma_Lambda))
+      } else {
+        obj$PG_params$PG_Lambda <- MASS::mvrnorm(n = M, mu = rep(0, K-1), Sigma = Sigma_Lambda)
+      }
+      obj$PG_params$PG_SigmaPhi <- diag(rep(1, K-1))
+      Mu <- X %*% obj$PG_params$PG_Lambda
+      Sigma <- diag(rep(1, K-1))
+      sapply(1:D,
+             function(d) {
+                  Phi_d <- rmvn1(mu = Mu[d, ], Sigma = Sigma)
+             }) -> Phi
+      Phi <- t(Phi)
+      colnames(Phi) <- NULL
+      row.names(Phi) <- NULL
+      obj$PG_params$PG_Phi <- Phi  # D \times (K - 1)
+      obj$PG_params$theta_tilda <- exp(Phi) / (1 + exp(Phi))
+      obj$PG_params$theta_last <- matrix(rep(0, D*K), nrow = D, ncol = K)
+      obj$PG_params$Lambda_list <- list()
+      obj$PG_params$Sigma_list <- list()
+    }
+
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
-                           "slice_min", "slice_max", "mh_use",
+                           "slice_min", "slice_max", "mh_use", "covariates_model", "PG_params",
                            "covariates_formula", "standardize", "info")
   }  # cov model end
 
@@ -1029,8 +1076,8 @@ make_sz_key <- function(W, keywords, info)
   }
 
   if (info$parallel_init) {
-    S <- parallel::mclapply(W, make_s, mc.cores = info$num_core, mc.set.seed = FALSE)
-    Z <- parallel::mclapply(W, make_z, topicvec, mc.cores = info$num_core, mc.set.seed = FALSE)
+    S <- future.apply::future_lapply(W, make_s, future.seed = TRUE)
+    Z <- future.apply::future_lapply(W, make_z, topicvec, future.seed = TRUE)
   } else {
     S <- lapply(W, make_s)
     Z <- lapply(W, make_z, topicvec)
@@ -1051,7 +1098,7 @@ make_sz_lda <- function(W, info)
   }  
 
   if (info$parallel_init) {
-    Z <- parallel::mclapply(W, make_z, topicvec, mc.cores = info$num_core, mc.set.seed = FALSE)
+    Z <- future.apply::future_lapply(W, make_z, topicvec, future.seed = TRUE)
   } else {
     Z <- lapply(W, make_z, topicvec)
   }

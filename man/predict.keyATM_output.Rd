@@ -10,7 +10,6 @@
   transform = FALSE,
   burn_in = NULL,
   parallel = TRUE,
-  mc.cores = NULL,
   posterior_mean = TRUE,
   ci = 0.9,
   method = c("hdi", "eti"),
@@ -29,9 +28,7 @@
 
 \item{burn_in}{integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.}
 
-\item{parallel}{logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}.}
-
-\item{mc.cores}{integer. The number of cores to use. Default is \code{NULL}.}
+\item{parallel}{logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}. Please \code{plan()} before use this function.}
 
 \item{posterior_mean}{logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{TRUE}.}
 

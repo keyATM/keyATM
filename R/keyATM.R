@@ -25,7 +25,7 @@
 #'            \item \emph{R}: For the dynamic model. The state each document belongs to.
 #'            \item \emph{P}: For the dynamic model. The state transition probability.
 #'      }
-#'      \item \strong{parallel_init}: Parallelize processes to speed up initialization. Default is \code{FALSE}. Note that even if you use the same \code{seed}, the initialization will become different between with and without parallelization.
+#'      \item \strong{parallel_init}: Parallelize processes to speed up initialization. Default is \code{FALSE}. Please `plan()` before use this feature.
 #' }
 #' @param keep a vector of the names of elements you want to keep in output.
 #' 
@@ -96,6 +96,9 @@ keyATM <- function(docs, model, no_keyword_topics,
     check_arg_type(keep, "character")
 
   model <- full_model_name(model, type="keyATM")
+  if (is.null(options$seed))
+    options$seed <- floor(stats::runif(1)*1e5)
+  set.seed(options$seed)
 
   # Fit keyATM
   fitted <- keyATM_fit(

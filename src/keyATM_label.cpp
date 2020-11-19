@@ -71,7 +71,7 @@ void keyATMlabel::iteration_single(int it)
         continue;
   
       z_ = doc_z[w_position]; // use updated z
-      new_s = (use_labels) ? sample_s_label(alpha, z_, s_, w_, doc_id_) : sample_s(alpha, z_, s_, w_, doc_id_);
+      new_s = (use_labels) ? sample_s_label(alpha, z_, s_, w_, doc_id_) : sample_s(z_, s_, w_, doc_id_);
       doc_s[w_position] = new_s;
     }
     

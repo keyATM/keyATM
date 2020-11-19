@@ -6,7 +6,7 @@ output:
 ---
 
 ```{r setup II, include=FALSE, eval=TRUE}
-knitr::opts_chunk$set(eval = T, echo = TRUE)
+knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
 ```
 
 ```{r, include=FALSE, warning=FALSE, message=FALSE}
