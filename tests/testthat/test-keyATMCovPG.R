@@ -172,6 +172,6 @@ test_that("Covariates settings: Standardize - all", {
 
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))
-  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[5, 2]), 0.03792691, tolerance = 0.0001)
+  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[5, 2]), 0.03749426, tolerance = 0.0001)
 })
 
