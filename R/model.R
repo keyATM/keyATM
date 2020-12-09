@@ -670,7 +670,7 @@ check_arg_model_settings <- function(obj, model, info)
     # Model
     if (is.null(obj$covariates_model)) {
       if (model == "cov")
-        obj$covariates_model <- "PG" 
+        obj$covariates_model <- "DirMulti" 
       if (model == "ldacov")
         obj$covariates_model <- "DirMulti"
     }
