@@ -1,16 +1,16 @@
 pandoc: 2.7.3
-pkgdown: 1.5.1
+pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  FAQ: pkgdown_files/FAQ.html
-  Installation: pkgdown_files/Installation.html
-  Options: pkgdown_files/Options.html
-  Preparation: pkgdown_files/Preparation.html
-  Weighted_LDA: pkgdown_files/Weighted_LDA.html
-  keyATM_base: pkgdown_files/keyATM_base.html
-  keyATM_cov: pkgdown_files/keyATM_cov.html
-  keyATM_dynamic: pkgdown_files/keyATM_dynamic.html
-  keyATM_label: pkgdown_files/keyATM_label.html
-  keyATMvb: pkgdown_files/keyATMvb.html
-last_built: 2020-07-29T14:43Z
+  pkgdown_files/FAQ: FAQ.html
+  pkgdown_files/Installation: Installation.html
+  pkgdown_files/Options: Options.html
+  pkgdown_files/Preparation: Preparation.html
+  pkgdown_files/Weighted_LDA: Weighted_LDA.html
+  pkgdown_files/keyATM_base: keyATM_base.html
+  pkgdown_files/keyATM_cov: keyATM_cov.html
+  pkgdown_files/keyATM_dynamic: keyATM_dynamic.html
+  pkgdown_files/keyATM_label: keyATM_label.html
+  pkgdown_files/keyATMvb: keyATMvb.html
+last_built: 2021-02-13T20:31Z
 
