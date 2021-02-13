@@ -3,12 +3,13 @@
 #' Read texts and create a \code{keyATM_docs} object, which is a list of texts.
 #'
 #' 
-#' @param texts input. keyATM takes quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
+#' @param texts input. keyATM takes a quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
 #' @param encoding character. Only used when \code{texts} is a vector of file paths. Default is \code{UTF-8}.
 #' @param check logical. If \code{TRUE}, check whether there is anything wrong with the structure of texts. Default is \code{TRUE}.
+#' @param keep_docnames logical. If \code{TRUE}, it keeps the document names in a quanteda dfm. Default is \code{FALSE}.
 #' @param progress_bar logical. If \code{TRUE}, it shows a progress bar (currently it only supports a quanteda object). Default is \code{FALSE}.
 #'
-#' @return a list whose elements are splitted texts. The length of the list equals to the number of documents.
+#' @return a keyATM_docs object. The first element is a list whose elements are splitted texts. The length of the list equals to the number of documents.
 #'
 #' @examples
 #' \dontrun{
@@ -27,7 +28,7 @@
 #' @import magrittr
 #' @importFrom rlang .data
 #' @export
-keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = FALSE)
+keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames = FALSE, progress_bar = FALSE)
 {
 
   # Detect input
@@ -60,10 +61,14 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = 
   # Read texts
 
   # If you have quanteda object
+  docnames <- NULL
   if (!is.null(text_dfm)) {
     vocabulary <- colnames(text_dfm)
     W_raw <- list()
     W_raw <- read_dfm_cpp(text_dfm, W_raw, vocabulary, as.logical(progress_bar))
+    if (keep_docnames) {
+      docnames <- quanteda::docnames(text_dfm)
+    }
   } else {
     ## preprocess each text
     # Use files <- list.files(doc_folder, pattern = "txt", full.names = TRUE) when you pass
@@ -84,14 +89,17 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = 
   
   # check whether there is nothing wrong with the structure of texts
   if (check) {
-    check_vocabulary(unique(unlist(W_raw, use.names = FALSE, recursive = FALSE))) 
+    wd_names <- unique(unlist(W_raw, use.names = FALSE, recursive = FALSE))
+    check_vocabulary(wd_names) 
     doc_index <- get_doc_index(W_raw, check = TRUE)
+  } else {
+    doc_index <- NULL
+    wd_names <- NULL
   }
 
-  # Assign class
-  class(W_raw) <- c("keyATM_docs", class(W_raw))
-
-  return(W_raw)
+  W_data <- list(W_raw = W_raw, doc_index = doc_index, wd_names = wd_names, docnames = docnames)
+  class(W_data) <- c("keyATM_docs", class(W_data))
+  return(W_data)
 }
 
 
@@ -166,7 +174,7 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
   check_arg_type(keywords, "list")
   c <- lapply(keywords, function(x){check_arg_type(x, "character")})
 
-  unlisted <- unlist(docs, recursive = FALSE, use.names = FALSE)
+  unlisted <- unlist(docs$W_raw, recursive = FALSE, use.names = FALSE)
 
   # Check keywords
   keywords <- check_keywords(unique(unlisted), keywords, prune)
@@ -282,10 +290,10 @@ check_keywords <- function(unique_words, keywords, prune)
 }
 
 
-get_doc_index <- function(docs, check = FALSE)
+get_doc_index <- function(W_raw, check = FALSE)
 {
-  lapply(docs, length) %>% unlist(use.names = FALSE) -> len
-  index <- 1:length(docs)
+  lapply(W_raw, length) %>% unlist(use.names = FALSE) -> len
+  index <- 1:length(W_raw)
   nonzero_index <- index[index[len != 0]]
   zero_index <- index[index[len == 0]]
   if (length(zero_index) != 0) {
@@ -335,9 +343,15 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   keywords <- check_arg(keywords, "keywords", model, info)
 
   # Get Info
-  info$use_doc_index <- get_doc_index(docs)
-  docs <- docs[info$use_doc_index]
-  info$num_doc <- length(docs)
+  if (is.null(docs$doc_index)) {
+    info$use_doc_index <- get_doc_index(docs$W_raw)
+  } else {
+    info$use_doc_index <- docs$doc_index
+    if (length(docs$doc_index) != length(docs$W_raw))
+      warning("Some documents have 0 length. Please review the preprocessing steps.")
+  }
+  docs$W_raw <- docs$W_raw[info$use_doc_index]
+  info$num_doc <- length(docs$W_raw)
   info$keyword_k <- length(keywords)
   info$total_k <- length(keywords) + no_keyword_topics
   info$num_core <- max(1, parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L)
@@ -356,15 +370,19 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   set.seed(options$seed)
 
   # W
-  info$wd_names <- unique(unlist(docs, use.names = FALSE, recursive = FALSE))
-  check_vocabulary(info$wd_names)
+  if (is.null(docs$wd_names)) {
+    info$wd_names <- unique(unlist(docs$W_raw, use.names = FALSE, recursive = FALSE))
+    check_vocabulary(info$wd_names)
+  } else {
+    info$wd_names <- docs$wd_names
+  }
 
   info$wd_map <- myhashmap(info$wd_names, 1:length(info$wd_names) - 1L)
 
   if (info$parallel_init) {
-    W <- parallel::mclapply(docs, function(x) { myhashmap_getvec(info$wd_map, x) }, mc.cores = info$num_core)
+    W <- parallel::mclapply(docs$W_raw, function(x) { myhashmap_getvec(info$wd_map, x) }, mc.cores = info$num_core)
   } else {
-    W <- lapply(docs, function(x) { myhashmap_getvec(info$wd_map, x) })
+    W <- lapply(docs$W_raw, function(x) { myhashmap_getvec(info$wd_map, x) })
   }
 
   # Check keywords
@@ -389,7 +407,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 
   # Organize
   stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)),
-                        doc_index = info$use_doc_index)
+                        doc_index = info$use_doc_index, keyATMdoc_meta = docs[-c(1, 3)])
 
   if (model %in% c("base", "lda", "label")) {
     if (options$estimate_alpha)

@@ -75,9 +75,15 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
   keywords <- check_arg(keywords, "keywords", model, info)
 
   # Get Info
-  info$use_doc_index <- get_doc_index(docs)
-  docs <- docs[info$use_doc_index]
-  info$num_doc <- length(docs)
+  if (is.null(docs$doc_index)) {
+    info$use_doc_index <- get_doc_index(docs$W_raw)
+  } else {
+    info$use_doc_index <- docs$doc_index
+    if (length(docs$doc_index) != length(docs$W_raw))
+      warning("Some documents have 0 length. Please review the preprocessing steps.")
+  }
+  docs$W_raw <- docs$W_raw[info$use_doc_index]
+  info$num_doc <- length(docs$W_raw)
   info$keyword_k <- length(keywords)
   info$total_k <- length(keywords) + no_keyword_topics
   info$num_core <- max(1, parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L)
@@ -96,8 +102,12 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
   set.seed(options$seed)
 
   ## Initialize W, Z, S
-  info$wd_names <- unique(unlist(docs, use.names = FALSE, recursive = FALSE))
-  check_vocabulary(info$wd_names)
+  if (is.null(docs$wd_names)) {
+    info$wd_names <- unique(unlist(docs$W_raw, use.names = FALSE, recursive = FALSE))
+    check_vocabulary(info$wd_names)
+  } else {
+    info$wd_names <- docs$wd_names
+  }
 
   # Check keywords
   keywords <- check_keywords(info$wd_names, keywords, options$prune)
@@ -106,7 +116,7 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
 
   # Create empty W (placeholder)
   initialized <- list()
-  initialized$W <- lapply(docs, function(x) {rep(-1L, length(x))})
+  initialized$W <- lapply(docs$W_raw, function(x) {rep(-1L, length(x))})
   initialized$Z <- rlang::duplicate(initialized$W)
   initialized$keywords_id <- lapply(keywords, function(x) {rep(-1L, length(x))})
   initialized$S <- rlang::duplicate(initialized$W)
@@ -117,15 +127,15 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
     initialized$model_key <- 0L 
   }
 
-  initialized <- make_wsz_cpp(docs, info, initialized)
+  initialized <- make_wsz_cpp(docs$W_raw, info, initialized)
   W <- initialized$W
   Z <- initialized$Z
   keywords_id <- initialized$keywords_id 
   S <- initialized$S
 
-
   # Organize
-  stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)))
+  stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)),
+                        doc_index = info$use_doc_index, keyATMdoc_meta = docs[-c(1, 3)])
 
   if (model %in% c("base")) {
     if (options$estimate_alpha)

@@ -280,7 +280,7 @@ read_keywords <- function(file = NULL, docs = NULL, dictionary = NULL, split = T
         warning("'Glob'-style wildcards are not resolved.")
         return(as.list(dictionary))
     }
-    wd_names <- unique(unlist(docs, use.names = FALSE, recursive = FALSE))
+    wd_names <- unique(unlist(docs$W_raw, use.names = FALSE, recursive = FALSE))
     res <- lapply(dictionary@.Data, resolve_glob, wd_names = wd_names, split = split, separator = dictionary@meta$object$separator)
     names(res) <- names(as.list(dictionary))
     return(res)

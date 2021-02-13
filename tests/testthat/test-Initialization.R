@@ -7,9 +7,9 @@ bills_time_index <- keyATM_data_bills$time_index
 labels_use <- keyATM_data_bills$labels
 
 test_that("Reading documents from quanteda dfm", {
-  expect_identical(keyATM_docs[[1]][3], "one")
-  expect_identical(keyATM_docs[[10]][10], "congress")
-  expect_identical(keyATM_docs[[140]][100], "number")
+  expect_identical(keyATM_docs$W_raw[[1]][3], "one")
+  expect_identical(keyATM_docs$W_raw[[10]][10], "congress")
+  expect_identical(keyATM_docs$W_raw[[140]][100], "number")
 })
 
 
@@ -62,6 +62,21 @@ test_that("keyATM Dynamic: Initialization (wrong time index)", {
   )
 })
 
+
+# Keep document names
+test_that("Keep document names", {
+  docs <- keyATM_read(bills_dfm, keep_docnames = TRUE)
+  expect_identical(docs$docnames[10], "101th-congress_senate-bill_1726")
+
+  out <- keyATM(docs = docs,  # text input
+                no_keyword_topics = 3,  # number of regular topics
+                keywords = bills_keywords,  # keywords
+                model = "base",
+                options = list(seed = 250, iterations = 3))
+
+
+  expect_identical(row.names(out$theta)[10], "101th-congress_senate-bill_1726")
+})
 
 
 # Documents with 0 length
@@ -172,3 +187,4 @@ test_that("Documents with length 0: label", {
   expect_identical(length(out$Z), 138L)
   expect_identical(length(out$model_settings$labels), 138L)
 })
+

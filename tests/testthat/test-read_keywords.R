@@ -6,7 +6,7 @@ bills_keywords <- keyATM_data_bills$keywords
 
 test_that("normal usage", {
     bill_dictionary <- quanteda::dictionary(bills_keywords)
-    x <- read_keywords(dictionary = bill_dictionary, docs = bills_keywords)
+    x <- read_keywords(dictionary = bill_dictionary, docs = keyATM_docs)
     expect_equal(x$Drug, "drug")
     ## defensive programming
     expect_error(read_keywords())

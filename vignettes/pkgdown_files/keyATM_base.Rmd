@@ -25,6 +25,7 @@ library(keyATM)
 library(quanteda)
 library(magrittr)
 data(data_corpus_inaugural, package = "quanteda")
+data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 
 data_tokens <- tokens(data_corpus_inaugural,
                       remove_numbers = TRUE, 
@@ -79,7 +80,7 @@ The default number of iterations is `1500`. Please check [this page](Options.htm
 
 ## Saving the model
 
-Once you fit the model, you can save the model with the `save()` function for replication.
+Once you fit the model, you can save the model with the `save()` function for replication. We strongly recommend to save the fitted model.
 ```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
 save(out, file = "SAVENAME.rds")
 ```

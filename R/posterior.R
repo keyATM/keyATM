@@ -19,6 +19,7 @@ keyATM_output <- function(model, keep)
   info$doc_lens <- sapply(model$Z, length)
   info$model <- model$model
   info$covmodel <- model$model_settings$covariates_model
+  info$keyATMdoc_meta <- model$stored_values$keyATMdoc_meta
   if (is.null(info$covmodel)) info$covmodel <- ""
 
   if (model$no_keyword_topics > 0 & length(model$keywords) != 0) {
@@ -244,6 +245,14 @@ keyATM_output_theta <- function(model, info)
 
   theta <- as.matrix(theta)
   colnames(theta) <- info$tnames # label seeded topics
+  if (!is.null(info$keyATMdoc_meta$docnames)) {
+    if (nrow(theta) != length(info$keyATMdoc_meta$docnames)) {
+      warning("The length of stored document names do not match with the number of documents fitted.
+              Check if any document has a length 0.")
+    } else {
+      row.names(theta) <- info$keyATMdoc_meta$docnames
+    }
+  }
   return(theta)
 }
 
@@ -745,6 +754,6 @@ top_docs <- function(x, n = 10)
     order(xcol, decreasing = TRUE)[1:n]
   }
 
-  res <- apply(x$theta, 2, measuref) %>% as.data.frame()
+  res <- as.data.frame(apply(x$theta, 2, measuref), stringsAsFactors = FALSE)
   return(res)
 }

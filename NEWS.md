@@ -4,6 +4,11 @@
 ### Major changes
 * Implementation of Polya-Gamma covariate keyATM
 * Use `future.apply` instead of `parallel` (no backward compatibility if you use the `init_parallel` option)
+* The `keyATM_read()` function returns a list of objects (e.g., text and document index)
+* An option to store document names in a quanteda dfm object. The `keep_docnames` option in the `keyATM_read()` function (thank you [Morgan 'Les' DeBusk-Lane](https://github.com/debusklaneml) for the suggestion!)
+
+### Bug fix
+* Using just first 58 speeches of inaugural corpus in test (thank you [Ken Benoit](https://github.com/kbenoit) for catching this!)
 
 # keyATM 0.3.1
 ### Major changes
