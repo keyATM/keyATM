@@ -7,9 +7,9 @@ bills_time_index <- keyATM_data_bills$time_index
 labels_use <- keyATM_data_bills$labels
 
 test_that("Reading documents from quanteda dfm", {
-  expect_identical(keyATM_docs[[1]][3], "one")
-  expect_identical(keyATM_docs[[10]][10], "congress")
-  expect_identical(keyATM_docs[[140]][100], "number")
+  expect_identical(keyATM_docs$W_raw[[1]][3], "one")
+  expect_identical(keyATM_docs$W_raw[[10]][10], "congress")
+  expect_identical(keyATM_docs$W_raw[[140]][100], "number")
 })
 
 

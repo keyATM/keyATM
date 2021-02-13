@@ -16,7 +16,7 @@ keyATM_read(texts, encoding = "UTF-8", check = TRUE, progress_bar = FALSE)
 \item{progress_bar}{logical. If \code{TRUE}, it shows a progress bar (currently it only supports a quanteda object). Default is \code{FALSE}.}
 }
 \value{
-a list whose elements are splitted texts. The length of the list equals to the number of documents.
+a keyATM_docs object. The first element is a list whose elements are splitted texts. The length of the list equals to the number of documents.
 }
 \description{
 Read texts and create a \code{keyATM_docs} object, which is a list of texts.

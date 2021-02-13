@@ -19,7 +19,7 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
   if (!"S" %in% names(x$kept_values)) {
     stop("`Z` and `S` should be in the output. Please check `keep` option in `keyATM()`.")
   }
-  if (length(keyATM_docs) != length(by)) {
+  if (length(keyATM_docs$W_raw) != length(by)) {
     stop("The length of `by` should be the same as the length of documents.")
   }
 
@@ -32,7 +32,7 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
   obj <- lapply(unique_val,
                 function(val) {
                   doc_index <- which(by == val)
-                  all_words <- unlist(keyATM_docs[doc_index], use.names = FALSE)
+                  all_words <- unlist(keyATM_docs$W_raw[doc_index], use.names = FALSE)
                   all_topics <- as.integer(unlist(x$kept_values$Z[doc_index]), use.names = FALSE)
                   all_s <- as.integer(unlist(x$kept_values$S[doc_index]), use.names = FALSE)
                   pi_estimated <- keyATM_output_pi(x$kept_values$Z[doc_index],
