@@ -16,6 +16,7 @@ library(keyATM)
 library(quanteda)
 library(magrittr)
 data(data_corpus_inaugural, package = "quanteda")
+data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 
 data_tokens <- tokens(data_corpus_inaugural,
                       remove_numbers = TRUE, 
