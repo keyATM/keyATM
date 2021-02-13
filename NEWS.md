@@ -5,6 +5,7 @@
 * Implementation of Polya-Gamma covariate keyATM
 * Use `future.apply` instead of `parallel` (no backward compatibility if you use the `init_parallel` option)
 * The `keyATM_read()` function returns a list of objects (e.g., text and document index)
+* An option to store document names in a quanteda dfm object. `keep_docnames` in the `keyATM_read()` function (thank you [Morgan 'Les' DeBusk-Lane](https://github.com/debusklaneml) for the suggestion!)
 
 # keyATM 0.3.1
 ### Major changes

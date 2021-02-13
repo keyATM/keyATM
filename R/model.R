@@ -3,9 +3,10 @@
 #' Read texts and create a \code{keyATM_docs} object, which is a list of texts.
 #'
 #' 
-#' @param texts input. keyATM takes quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
+#' @param texts input. keyATM takes a quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
 #' @param encoding character. Only used when \code{texts} is a vector of file paths. Default is \code{UTF-8}.
 #' @param check logical. If \code{TRUE}, check whether there is anything wrong with the structure of texts. Default is \code{TRUE}.
+#' @param keep_docnames logical. If \code{TRUE}, it keeps the document names in a quanteda dfm. Default is \code{FALSE}.
 #' @param progress_bar logical. If \code{TRUE}, it shows a progress bar (currently it only supports a quanteda object). Default is \code{FALSE}.
 #'
 #' @return a keyATM_docs object. The first element is a list whose elements are splitted texts. The length of the list equals to the number of documents.
@@ -27,7 +28,7 @@
 #' @import magrittr
 #' @importFrom rlang .data
 #' @export
-keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = FALSE)
+keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames = FALSE, progress_bar = FALSE)
 {
 
   # Detect input
@@ -60,10 +61,14 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = 
   # Read texts
 
   # If you have quanteda object
+  docnames <- NULL
   if (!is.null(text_dfm)) {
     vocabulary <- colnames(text_dfm)
     W_raw <- list()
     W_raw <- read_dfm_cpp(text_dfm, W_raw, vocabulary, as.logical(progress_bar))
+    if (keep_docnames) {
+      docnames <- quanteda::docnames(text_dfm)
+    }
   } else {
     ## preprocess each text
     # Use files <- list.files(doc_folder, pattern = "txt", full.names = TRUE) when you pass
@@ -92,7 +97,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = 
     wd_names <- NULL
   }
 
-  W_data <- list(W_raw = W_raw, doc_index = doc_index, wd_names = wd_names)
+  W_data <- list(W_raw = W_raw, doc_index = doc_index, wd_names = wd_names, docnames = docnames)
   class(W_data) <- c("keyATM_docs", class(W_data))
   return(W_data)
 }
@@ -402,7 +407,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 
   # Organize
   stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)),
-                        doc_index = info$use_doc_index)
+                        doc_index = info$use_doc_index, keyATMdoc_meta = docs[-c(1, 3)])
 
   if (model %in% c("base", "lda", "label")) {
     if (options$estimate_alpha)

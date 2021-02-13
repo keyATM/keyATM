@@ -133,9 +133,9 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
   keywords_id <- initialized$keywords_id 
   S <- initialized$S
 
-
   # Organize
-  stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)))
+  stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)),
+                        doc_index = info$use_doc_index, keyATMdoc_meta = docs[-c(1, 3)])
 
   if (model %in% c("base")) {
     if (options$estimate_alpha)

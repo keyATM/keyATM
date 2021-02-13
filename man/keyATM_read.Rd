@@ -4,14 +4,22 @@
 \alias{keyATM_read}
 \title{Read texts}
 \usage{
-keyATM_read(texts, encoding = "UTF-8", check = TRUE, progress_bar = FALSE)
+keyATM_read(
+  texts,
+  encoding = "UTF-8",
+  check = TRUE,
+  keep_docnames = FALSE,
+  progress_bar = FALSE
+)
 }
 \arguments{
-\item{texts}{input. keyATM takes quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.}
+\item{texts}{input. keyATM takes a quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.}
 
 \item{encoding}{character. Only used when \code{texts} is a vector of file paths. Default is \code{UTF-8}.}
 
 \item{check}{logical. If \code{TRUE}, check whether there is anything wrong with the structure of texts. Default is \code{TRUE}.}
+
+\item{keep_docnames}{logical. If \code{TRUE}, it keeps the document names in a quanteda dfm. Default is \code{FALSE}.}
 
 \item{progress_bar}{logical. If \code{TRUE}, it shows a progress bar (currently it only supports a quanteda object). Default is \code{FALSE}.}
 }
