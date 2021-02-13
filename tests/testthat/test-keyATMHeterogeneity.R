@@ -11,6 +11,7 @@ if (!"dplyr" %in% rownames(installed.packages())) {
 }
 
 data(data_corpus_inaugural, package = "quanteda")
+data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 data_tokens <- tokens(data_corpus_inaugural, remove_numbers = TRUE, 
                       remove_punct = TRUE, remove_symbols = TRUE,
                       remove_separators = TRUE, remove_url = TRUE) %>%
@@ -96,6 +97,3 @@ test_that("Topic Word", {
   expect_equivalent(top$Republican[1, 5], "war [\U2713]")
   expect_equivalent(top$Republican[3, 7], "done")
 })
-
-
-
