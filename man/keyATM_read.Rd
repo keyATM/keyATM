@@ -27,7 +27,7 @@ keyATM_read(
 \item{split}{numeric. This option works only with a quanteda dfm. It creates a two subset of the dfm by randomly splitting each document (i.e., the total number of documents is the same between two subsets). This option specifies the split proportion. Default is \code{0}.}
 }
 \value{
-a keyATM_docs object. The first element is a list whose elements are splitted texts. The length of the list equals to the number of documents.
+a keyATM_docs object. The first element is a list whose elements are split texts. The length of the list equals to the number of documents.
 }
 \description{
 Read texts and create a \code{keyATM_docs} object, which is a list of texts.

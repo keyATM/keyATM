@@ -10,7 +10,7 @@
 #' @param progress_bar logical. If \code{TRUE}, it shows a progress bar (currently it only supports a quanteda object). Default is \code{FALSE}.
 #' @param split numeric. This option works only with a quanteda dfm. It creates a two subset of the dfm by randomly splitting each document (i.e., the total number of documents is the same between two subsets). This option specifies the split proportion. Default is \code{0}.
 #'
-#' @return a keyATM_docs object. The first element is a list whose elements are splitted texts. The length of the list equals to the number of documents.
+#' @return a keyATM_docs object. The first element is a list whose elements are split texts. The length of the list equals to the number of documents.
 #'
 #' @examples
 #' \dontrun{
@@ -62,7 +62,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
 
   if (split != 0) {
     if (split < 0 | split >= 1)
-      stop("Invalid option. `split` should be a value between 0 and 1")
+      stop("Invalid option. `split` should be a proportion.")
   }
 
   # Read texts
@@ -77,7 +77,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
       docnames <- quanteda::docnames(text_dfm)
     }
   } else {
-    ## preprocess each text
+    # Preprocess each text
     # Use files <- list.files(doc_folder, pattern = "txt", full.names = TRUE) when you pass
     if (is.null(text_df)) {
       text_df <- tibble::tibble(text = unlist(lapply(files,
@@ -89,12 +89,12 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
     }
     text_df <- text_df %>% dplyr::mutate(text_split = stringr::str_split(.data$text, pattern = " "))
 
-    # extract splitted text and create a list
+    # Extract split text and create a list
     W_read$W_raw <- text_df %>% dplyr::pull(.data$text_split)
   }
   W_raw <- W_read$W_raw
 
-  # check whether there is nothing wrong with the structure of texts
+  # Check whether there is nothing wrong with the structure of texts
   if (check) {
     wd_names <- unique(unlist(W_raw, use.names = FALSE, recursive = FALSE))
     check_vocabulary(wd_names) 

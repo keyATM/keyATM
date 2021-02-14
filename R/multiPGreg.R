@@ -1,7 +1,16 @@
-#' @noRd
+#' Run multinomial regression with Polya-Gamma augmentation
+#'
+#' Run multinomial regression with Polya-Gamma augmentation. There is no need to call this function directly. The keyATM Covariate internally uses this.
+#'
+#' @param Y Outcomes.
+#' @param X Covariates.
+#' @param num_topics Number of topics.
+#' @param PG_params Parameters used in this function.
+#' @param iter The default is \code{1}.
+#' @param store_lambda The default is \code{0}.
+#'
 #' @export
 multiPGreg <- function(Y, X, num_topics, PG_params, iter = 1, store_lambda = 0)
-# multiPGreg <- function(PG_params, iter = 1)
 {  # Used in CovPG
   Phi <- PG_params$PG_Phi
   Sigma_phi <- PG_params$PG_SigmaPhi
@@ -126,7 +135,7 @@ rpg <- function(b, c)
     # based on Glynn et al. (2019), https://github.com/G-Lynn/DLTM/blob/master/Cpp/rpgApprox.cpp
     E_omega <- 1/(2*c) * tanh(c/2)
     V_omega <- 1.0 / (4 * c^3) * (sinh(c) - c) * (1 / cosh(c/2))^2 
-    x <- rnorm(n = 1, mean = b*E_omega, sd = sqrt(b*V_omega))
+    x <- stats::rnorm(n = 1, mean = b*E_omega, sd = sqrt(b*V_omega))
     return(x)
   }
 }

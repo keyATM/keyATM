@@ -116,7 +116,7 @@ rmvn <- function(n = 1, mu, Sigma)
        # stop("Matrix Sigma is not positive-definite.")
   k <- ncol(Sigma)
   if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow = TRUE)
-  z <- matrix(rnorm(n*k), n, k) %*% chol(Sigma)
+  z <- matrix(stats::rnorm(n*k), n, k) %*% chol(Sigma)
   x <- mu + z
   return(x)
 }
@@ -126,7 +126,7 @@ rmvn1 <- function(mu, Sigma)
 {  # Edited version of the code in LaplacesDemon package
   mu <- as.numeric(mu)
   k <- ncol(Sigma)
-  z <- rnorm(k) %*% chol(Sigma)
+  z <- stats::rnorm(k) %*% chol(Sigma)
   x <- mu + z
   return(as.numeric(x))
 }
@@ -144,17 +144,15 @@ rinvwishart <- function(nu, S)
   S <- chol2inv(chol(S))
   k <- nrow(S)
   Z <- matrix(0, k, k)
-  x <- rchisq(k, nu:{nu - k + 1})
+  x <- stats::rchisq(k, nu:{nu - k + 1})
   x[which(x == 0)] <- 1e-100
   diag(Z) <- sqrt(x)
   if(k > 1) {
       kseq <- 1:(k-1)
       Z[rep(k*kseq, kseq) +
-           unlist(lapply(kseq, seq))] <- rnorm(k*{k - 1}/2)
+           unlist(lapply(kseq, seq))] <- stats::rnorm(k*{k - 1}/2)
   }
-
   res <- Z %*% chol(S)
-
   return(chol2inv(res))
 }
 
@@ -226,6 +224,7 @@ covariates_standardize <- function(data, type, cov_formula = NULL) {
     return(covariates_data_use)
   }
 }
+
 
 #' Convert a quanteda dictionary to keywords
 #'
