@@ -8,6 +8,7 @@
 #' @param check logical. If \code{TRUE}, check whether there is anything wrong with the structure of texts. Default is \code{TRUE}.
 #' @param keep_docnames logical. If \code{TRUE}, it keeps the document names in a quanteda dfm. Default is \code{FALSE}.
 #' @param progress_bar logical. If \code{TRUE}, it shows a progress bar (currently it only supports a quanteda object). Default is \code{FALSE}.
+#' @param split numeric. This option works only with a quanteda dfm. It creates a two subset of the dfm by randomly splitting each document (i.e., the total number of documents is the same between two subsets). This option specifies the split proportion. Default is \code{0}.
 #'
 #' @return a keyATM_docs object. The first element is a list whose elements are splitted texts. The length of the list equals to the number of documents.
 #'
@@ -28,7 +29,8 @@
 #' @import magrittr
 #' @importFrom rlang .data
 #' @export
-keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames = FALSE, progress_bar = FALSE)
+keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames = FALSE,
+                        progress_bar = FALSE, split = 0)
 {
 
   # Detect input
@@ -58,14 +60,19 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
          It can take quanteda dfm, data.frame, tibble, and a vector of characters.")  
   }
 
+  if (split != 0) {
+    if (split < 0 | split >= 1)
+      stop("Invalid option. `split` should be a value between 0 and 1")
+  }
+
   # Read texts
 
   # If you have quanteda object
   docnames <- NULL
+  W_read <- list(W_raw = list(), W_split = list())
   if (!is.null(text_dfm)) {
     vocabulary <- colnames(text_dfm)
-    W_raw <- list()
-    W_raw <- read_dfm_cpp(text_dfm, W_raw, vocabulary, as.logical(progress_bar))
+    W_read <- read_dfm_cpp(text_dfm, W_read, vocabulary, as.logical(progress_bar), split)
     if (keep_docnames) {
       docnames <- quanteda::docnames(text_dfm)
     }
@@ -83,10 +90,10 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
     text_df <- text_df %>% dplyr::mutate(text_split = stringr::str_split(.data$text, pattern = " "))
 
     # extract splitted text and create a list
-    W_raw <- text_df %>% dplyr::pull(.data$text_split)
+    W_read$W_raw <- text_df %>% dplyr::pull(.data$text_split)
   }
+  W_raw <- W_read$W_raw
 
-  
   # check whether there is nothing wrong with the structure of texts
   if (check) {
     wd_names <- unique(unlist(W_raw, use.names = FALSE, recursive = FALSE))
@@ -97,7 +104,11 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
     wd_names <- NULL
   }
 
-  W_data <- list(W_raw = W_raw, doc_index = doc_index, wd_names = wd_names, docnames = docnames)
+  W_split <- list(W_raw = W_read$W_split)
+  class(W_split) <- c("keyATM_docs", class(W_split))
+
+  W_data <- list(W_raw = W_raw, W_split = W_split, doc_index = doc_index,
+                 wd_names = wd_names, docnames = docnames)
   class(W_data) <- c("keyATM_docs", class(W_data))
   return(W_data)
 }
@@ -108,7 +119,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
 print.keyATM_docs <- function(x, ...)
 {
   cat(paste0("keyATM_docs object of ",
-                 length(x), " documents",
+                 length(x$W_raw), " documents",
                  ".\n"
                 )
       )
@@ -119,9 +130,9 @@ print.keyATM_docs <- function(x, ...)
 #' @export
 summary.keyATM_docs <- function(object, ...)
 {
-  doc_len <- sapply(object, length)
+  doc_len <- sapply(object$W_raw, length)
   cat(paste0("keyATM_docs object of: ",
-              length(object), " documents",
+              length(object$W_raw), " documents",
               ".\n",
               "Length of documents:",
               "\n  Avg: ", round(mean(doc_len), 3),

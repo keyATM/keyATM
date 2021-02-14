@@ -152,7 +152,7 @@
     <p>Read files from the quanteda dfm (this is the same as dgCMatrix)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>read_dfm_cpp</span><span class='op'>(</span><span class='va'>dfm</span>, <span class='va'>W_raw</span>, <span class='va'>vocab</span>, <span class='va'>show_progress_bar</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>read_dfm_cpp</span><span class='op'>(</span><span class='va'>dfm</span>, <span class='va'>W_read</span>, <span class='va'>vocab</span>, <span class='va'>show_progress_bar</span>, <span class='va'>split</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -162,16 +162,20 @@
       <td><p>a dfm input (sparse Matrix)</p></td>
     </tr>
     <tr>
-      <th>W_raw</th>
-      <td><p>an object to return</p></td>
-    </tr>
-    <tr>
       <th>vocab</th>
       <td><p>a vector of vocabulary</p></td>
     </tr>
     <tr>
       <th>show_progress_bar</th>
       <td><p>show a progress bar</p></td>
+    </tr>
+    <tr>
+      <th>split</th>
+      <td><p>split proportion</p></td>
+    </tr>
+    <tr>
+      <th>W_raw</th>
+      <td><p>an object to return</p></td>
     </tr>
     </table>
 

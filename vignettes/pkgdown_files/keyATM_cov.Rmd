@@ -292,6 +292,26 @@ We check the result.
 top_words(strata_tw, n = 3)
 ```
 
+## keyATM Covariate with Pólya-Gamma Augmentation
+An alternative modeling approach is to use the Pólya-Gamma augmentation for topic
+assignments. This approach has a speed advantage (computational time does not significantly
+change by the number of covariates), but estimated topics can be
+sensitive to the order.
+Please read Appendix S3 of Eshima, Imai, and Sasaki (2020) for details.
+
+To estimate keyATM Covariate with the Pólya-Gamma augmentation, set `covariates_model = "PG"`.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+out <- keyATM(docs              = keyATM_docs,
+              no_keyword_topics = 5,
+              keywords          = keywords,
+              model             = "covariates",
+              model_settings    = list(covariates_data    = vars_selected, 
+                                       covariates_formula = ~ Party + Period,
+                                       covariates_model = "PG"),
+              options           = list(seed = 250))
+top_words(out)
+```
+
 ## Reference
 * Eshima, S., Imai, K., & Sasaki, T. (2020). Keyword Assisted Topic Models. arXiv preprint arXiv:2004.05964.
 * Mimno D. McCallum A. (2008). “Topic models conditioned on arbitrary features with Dirichlet-Multinomial regression.” In *Proceedings of the 24th Conference on Uncertainty in Artificial Intelligence*, pp. 411–418.

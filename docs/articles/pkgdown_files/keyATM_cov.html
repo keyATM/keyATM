@@ -336,6 +336,44 @@
 ## 3    right political country   never</code></pre>
 </div>
 </div>
+<div id="keyatm-covariate-with-pólya-gamma-augmentation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#keyatm-covariate-with-p%C3%B3lya-gamma-augmentation" class="anchor"></a>keyATM Covariate with Pólya-Gamma Augmentation</h2>
+<p>An alternative modeling approach is to use the Pólya-Gamma augmentation for topic assignments. This approach has a speed advantage (computational time does not significantly change by the number of covariates), but estimated topics can be sensitive to the order. Please read Appendix S3 of Eshima, Imai, and Sasaki (2020) for details.</p>
+<p>To estimate keyATM Covariate with the Pólya-Gamma augmentation, set <code>covariates_model = "PG"</code>.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,
+              no_keyword_topics <span class="op">=</span> <span class="fl">5</span>,
+              keywords          <span class="op">=</span> <span class="va">keywords</span>,
+              model             <span class="op">=</span> <span class="st">"covariates"</span>,
+              model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>covariates_data    <span class="op">=</span> <span class="va">vars_selected</span>, 
+                                       covariates_formula <span class="op">=</span> <span class="op">~</span> <span class="va">Party</span> <span class="op">+</span> <span class="va">Period</span>,
+                                       covariates_model <span class="op">=</span> <span class="st">"PG"</span><span class="op">)</span>,
+              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
+<pre><code>##     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
+## 1         states        every   world [✓]       government          country
+## 2          great        power   peace [✓] constitution [✓]           public
+## 3          union     citizens     nations       rights [✓]              one
+## 4         united    interests freedom [✓]             best          war [✓]
+## 5       laws [✓]       within        free        political            state
+## 6        law [✓]      present        life             part      foreign [✓]
+## 7           made    party [✓]        good           system           powers
+## 8           duty       spirit       human              far           policy
+## 9  executive [✓] institutions      future            means           duties
+## 10    principles   confidence      common          federal            whole
+##     Other_1   Other_2  Other_3 Other_4  Other_5
+## 1       men    nation   people     new      now
+## 2   justice      time national america american
+## 3    nation     great    right     let    years
+## 4  progress    people    among     one    never
+## 5     force president  support    work     much
+## 6      find       man     less   every     make
+## 7  security  citizens  service    know     hope
+## 8      full   liberty    still history      yet
+## 9  business   country     ever   today  believe
+## 10      see americans    equal     god     take</code></pre>
+</div>
 <div id="reference" class="section level2">
 <h2 class="hasAnchor">
 <a href="#reference" class="anchor"></a>Reference</h2>

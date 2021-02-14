@@ -157,7 +157,8 @@
   encoding <span class='op'>=</span> <span class='st'>"UTF-8"</span>,
   check <span class='op'>=</span> <span class='cn'>TRUE</span>,
   keep_docnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  progress_bar <span class='op'>=</span> <span class='cn'>FALSE</span>
+  progress_bar <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  split <span class='op'>=</span> <span class='fl'>0</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -182,6 +183,10 @@
     <tr>
       <th>progress_bar</th>
       <td><p>logical. If <code>TRUE</code>, it shows a progress bar (currently it only supports a quanteda object). Default is <code>FALSE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>split</th>
+      <td><p>numeric. This option works only with a quanteda dfm. It creates a two subset of the dfm by randomly splitting each document (i.e., the total number of documents is the same between two subsets). This option specifies the split proportion. Default is <code>0</code>.</p></td>
     </tr>
     </table>
 

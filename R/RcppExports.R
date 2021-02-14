@@ -38,10 +38,11 @@ keyATMvb_call <- function(model) {
 #' @param W_raw an object to return
 #' @param vocab a vector of vocabulary
 #' @param show_progress_bar show a progress bar 
+#' @param split split proportion 
 #'
 #' @keywords internal
-read_dfm_cpp <- function(dfm, W_raw, vocab, show_progress_bar) {
-    .Call(`_keyATM_read_dfm_cpp`, dfm, W_raw, vocab, show_progress_bar)
+read_dfm_cpp <- function(dfm, W_read, vocab, show_progress_bar, split) {
+    .Call(`_keyATM_read_dfm_cpp`, dfm, W_read, vocab, show_progress_bar, split)
 }
 
 #' Run the Collapsed Gibbs sampler for the keyATM Base

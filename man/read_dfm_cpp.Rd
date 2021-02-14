@@ -4,16 +4,18 @@
 \alias{read_dfm_cpp}
 \title{Read files from the quanteda dfm (this is the same as dgCMatrix)}
 \usage{
-read_dfm_cpp(dfm, W_raw, vocab, show_progress_bar)
+read_dfm_cpp(dfm, W_read, vocab, show_progress_bar, split)
 }
 \arguments{
 \item{dfm}{a dfm input (sparse Matrix)}
 
-\item{W_raw}{an object to return}
-
 \item{vocab}{a vector of vocabulary}
 
 \item{show_progress_bar}{show a progress bar}
+
+\item{split}{split proportion}
+
+\item{W_raw}{an object to return}
 }
 \description{
 Read files from the quanteda dfm (this is the same as dgCMatrix)

@@ -188,3 +188,4 @@ test_that("Documents with length 0: label", {
   expect_identical(length(out$model_settings$labels), 138L)
 })
 
+

@@ -205,9 +205,7 @@ You can save the plot with the `save_fig()` function,
 key_viz <- visualize_keywords(docs = keyATM_docs, keywords = keywords)
 save_fig(key_viz, "figures/keyword.pdf", width = 6.5, height = 4)
 ```
-
 and get the actual values with the `values_fig()` function.
-
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 values_fig(key_viz) 
 ```
@@ -226,6 +224,37 @@ keywords_3 <- list(Government = c("non-exist", "non-exist2"))
 key_viz3 <- visualize_keywords(docs = keyATM_docs, keywords = keywords_3)
 ```
 
+### Choosing keywords with an unsupervised topic model
+Besides choosing keywords using substantive knowledge, researchers can select keywords
+based on the result of an unsupervised topic model if they have a large enough corpus.
+The `keyATM_read()` function can make
+a subset of the corpus by randomly splitting each document (i.e., this is not 
+a random sample of documents). In the following example, we use 30% of each document to fit
+an unsupervised model (results will not be meaningful because we only have 140 documents).
+An unsupervised model such as [the LDA](Weighted_LDA.html) can explore the corpus.
+We use its result to select keywords for the keyATM models (here, we fit [the base model](keyATM_base.html)). This computer-assisted keyword selection does not mean that researchers
+need to select all keywords from the top words of the LDA.
+Researchers can use other methods such as a keyword selection algorithm proposed in
+King, Lam and Roberts (2017).
+```{r, eval = FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+set.seed(225)  # set the seed before split the dfm
+keyATM_docs_withSplit <- keyATM_read(texts = data_dfm,
+                                     split = 0.3)  # split each document
+
+out <- weightedLDA(docs              = keyATM_docs_withSplit$W_split,
+                   number_of_topics  = 10,  # the number of potential themes in the corpus 
+                   model             = "base",
+                   options           = list(seed = 250))
+top_words(out)  # top words can aid setting keywords
+
+out <- keyATM(docs              = keyATM_docs_withSplit,    # text input
+              no_keyword_topics = 5,              # number of topics without keywords
+              keywords          = keywords,       # keywords
+              model             = "base",         # select the model
+              options           = list(seed = 250))
+```
+
+
 ## Next Step
 Now you have texts and keywords! The next step is to fit a model with the `keyATM()` function. **keyATM** has three models:
 
@@ -240,3 +269,9 @@ Now you have texts and keywords! The next step is to fit a model with the `keyAT
 
 
 You can find details in [FAQ](FAQ.html#which-model-to-use).
+
+
+## Reference
+* King, Gary, Patrick Lam and Margaret E. Roberts. (2017). Computer-Assisted Keyword and Document Set Discovery from Unstructured Text. American Journal of Political Science 61:971–988.
+
+
