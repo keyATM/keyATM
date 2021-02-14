@@ -303,19 +303,19 @@
 <p>Besides choosing keywords using substantive knowledge, researchers can select keywords based on the result of an unsupervised topic model if they have a large enough corpus. The <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code> function can make a subset of the corpus by randomly splitting each document (i.e., this is not a random sample of documents). In the following example, we use 30% of each document to fit an unsupervised model (results will not be meaningful because we only have 140 documents). An unsupervised model such as <a href="Weighted_LDA.html">the LDA</a> can explore the corpus. We use its result to select keywords for the keyATM models (here, we fit <a href="keyATM_base.html">the base model</a>). This computer-assisted keyword selection does not mean that researchers need to select all keywords from the top words of the LDA. Researchers can use other methods such as a keyword selection algorithm proposed in King, Lam and Roberts (2017).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">225</span><span class="op">)</span>  <span class="co"># set the seed before split the dfm</span>
-<span class="va">keyATM_docs_withSplit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_dfm</span>,
-                                     split <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>  <span class="co"># split each document</span>
+<span class="va">docs_withSplit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_dfm</span>,
+                              split <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>  <span class="co"># split each document</span>
 
-<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs_withSplit</span><span class="op">$</span><span class="va">W_split</span>,
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">docs_withSplit</span><span class="op">$</span><span class="va">W_split</span>,  <span class="co"># 30% of the corpus</span>
                    number_of_topics  <span class="op">=</span> <span class="fl">10</span>,  <span class="co"># the number of potential themes in the corpus </span>
                    model             <span class="op">=</span> <span class="st">"base"</span>,
                    options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span>  <span class="co"># top words can aid setting keywords</span>
 
-<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs_withSplit</span>,    <span class="co"># text input</span>
-              no_keyword_topics <span class="op">=</span> <span class="fl">5</span>,              <span class="co"># number of topics without keywords</span>
-              keywords          <span class="op">=</span> <span class="va">keywords</span>,       <span class="co"># keywords</span>
-              model             <span class="op">=</span> <span class="st">"base"</span>,         <span class="co"># select the model</span>
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">docs_withSplit</span>,  <span class="co"># 70% of the corpus</span>
+              no_keyword_topics <span class="op">=</span> <span class="fl">5</span>,               <span class="co"># number of topics without keywords</span>
+              keywords          <span class="op">=</span> <span class="va">keywords</span>,        <span class="co"># keywords</span>
+              model             <span class="op">=</span> <span class="st">"base"</span>,          <span class="co"># select the model</span>
               options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
@@ -351,7 +351,7 @@
 <h2 class="hasAnchor">
 <a href="#reference" class="anchor"></a>Reference</h2>
 <ul>
-<li>King, Gary, Patrick Lam and Margaret E. Roberts. (2017). Computer-Assisted Keyword and Document Set Discovery from Unstructured Text. American Journal of Political Science 61:971–988.</li>
+<li>King, Gary, Patrick Lam and Margaret E. Roberts. (2017). Computer-Assisted Keyword and Document Set Discovery from Unstructured Text. <em>American Journal of Political Science</em> 61:971–988.</li>
 </ul>
 </div>
   </div>

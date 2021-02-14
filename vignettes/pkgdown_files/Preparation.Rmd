@@ -236,21 +236,21 @@ We use its result to select keywords for the keyATM models (here, we fit [the ba
 need to select all keywords from the top words of the LDA.
 Researchers can use other methods such as a keyword selection algorithm proposed in
 King, Lam and Roberts (2017).
-```{r, eval = FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+```{r, warning=FALSE, message=FALSE, fig.align='center', results = 'hide'}
 set.seed(225)  # set the seed before split the dfm
-keyATM_docs_withSplit <- keyATM_read(texts = data_dfm,
-                                     split = 0.3)  # split each document
+docs_withSplit <- keyATM_read(texts = data_dfm,
+                              split = 0.3)  # split each document
 
-out <- weightedLDA(docs              = keyATM_docs_withSplit$W_split,
+out <- weightedLDA(docs              = docs_withSplit$W_split,  # 30% of the corpus
                    number_of_topics  = 10,  # the number of potential themes in the corpus 
                    model             = "base",
                    options           = list(seed = 250))
 top_words(out)  # top words can aid setting keywords
 
-out <- keyATM(docs              = keyATM_docs_withSplit,    # text input
-              no_keyword_topics = 5,              # number of topics without keywords
-              keywords          = keywords,       # keywords
-              model             = "base",         # select the model
+out <- keyATM(docs              = docs_withSplit,  # 70% of the corpus
+              no_keyword_topics = 5,               # number of topics without keywords
+              keywords          = keywords,        # keywords
+              model             = "base",          # select the model
               options           = list(seed = 250))
 ```
 
@@ -272,6 +272,6 @@ You can find details in [FAQ](FAQ.html#which-model-to-use).
 
 
 ## Reference
-* King, Gary, Patrick Lam and Margaret E. Roberts. (2017). Computer-Assisted Keyword and Document Set Discovery from Unstructured Text. American Journal of Political Science 61:971–988.
+* King, Gary, Patrick Lam and Margaret E. Roberts. (2017). Computer-Assisted Keyword and Document Set Discovery from Unstructured Text. _American Journal of Political Science_ 61:971–988.
 
 

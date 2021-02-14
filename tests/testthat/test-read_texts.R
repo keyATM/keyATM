@@ -1,10 +1,9 @@
 data(keyATM_data_bills)
 bills_dfm <- keyATM_data_bills$doc_dfm
 keyATM_docs <- keyATM_read(bills_dfm)
+keyATM_docsSplit <- keyATM_read(bills_dfm, split = 0.3)
 
 test_that("Split dfm", {
-  keyATM_docsSplit <- keyATM_read(bills_dfm, split = 0.3)
-
   expect_true("W_split" %in% names(keyATM_docsSplit))
   expect_identical(length(keyATM_docsSplit$W_split$W_raw), 140L)
   expect_identical(length(keyATM_docsSplit$W_raw), 140L)
