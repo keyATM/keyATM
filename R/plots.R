@@ -265,8 +265,20 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
     show_topic <- 1:nrow(tables[[1]]) 
   }
 
-  tables <- dplyr::bind_rows(tables) %>%
-              dplyr::filter(.data$TopicId %in% show_topic)
+  tables <- dplyr::bind_rows(tables)
+  tnames <- unique(tables$Topic)
+  num_keytopic <- sum(!grepl("Other_[0-9]+", tnames))
+  topic_parse <- function(s) {
+    if (grepl("Other_[0-9]+", s)) {
+      return(as.numeric(strsplit(s, "_")[[1]][2]) + num_keytopic)
+    } else {
+      return(as.numeric(strsplit(s, "_")[[1]][1]))
+    }
+  }
+  tables$TopicID <- purrr::map_dbl(tables$Topic, topic_parse)
+  tables$Topic <- factor(tables$Topic, levels = tnames[order(purrr::map_dbl(tnames, topic_parse))])
+  tables <- tables %>% dplyr::filter(.data$TopicID %in% show_topic)
+
   variables <- unique(tables$label)
 
   p <- ggplot(tables) +

@@ -11,6 +11,7 @@ if (!"dplyr" %in% rownames(installed.packages())) {
 }
 
 data(data_corpus_inaugural, package = "quanteda")
+data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 data_tokens <- tokens(data_corpus_inaugural, remove_numbers = TRUE, 
                       remove_punct = TRUE, remove_symbols = TRUE,
                       remove_separators = TRUE, remove_url = TRUE) %>%
@@ -54,7 +55,7 @@ out <- keyATM(docs              = keyATM_docs,
               model             = "covariates",
               model_settings    = list(covariates_data    = vars_selected, 
                                        covariates_formula = ~ Party + Period,
-                                       standardize = "all"),
+                                       standardize = "all", covariates_model = "DirMulti"),
               options           = list(seed = 250, iterations = 20),
               keep              = c("Z", "S")
              )
@@ -96,6 +97,3 @@ test_that("Topic Word", {
   expect_equivalent(top$Republican[1, 5], "war [\U2713]")
   expect_equivalent(top$Republican[3, 7], "done")
 })
-
-
-

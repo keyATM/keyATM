@@ -3,12 +3,14 @@
 #' Read texts and create a \code{keyATM_docs} object, which is a list of texts.
 #'
 #' 
-#' @param texts input. keyATM takes quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
+#' @param texts input. keyATM takes a quanteda dfm (dgCMatrix), data.frame, \pkg{tibble} tbl_df, or a vector of file paths.
 #' @param encoding character. Only used when \code{texts} is a vector of file paths. Default is \code{UTF-8}.
 #' @param check logical. If \code{TRUE}, check whether there is anything wrong with the structure of texts. Default is \code{TRUE}.
+#' @param keep_docnames logical. If \code{TRUE}, it keeps the document names in a quanteda dfm. Default is \code{FALSE}.
 #' @param progress_bar logical. If \code{TRUE}, it shows a progress bar (currently it only supports a quanteda object). Default is \code{FALSE}.
+#' @param split numeric. This option works only with a quanteda dfm. It creates a two subset of the dfm by randomly splitting each document (i.e., the total number of documents is the same between two subsets). This option specifies the split proportion. Default is \code{0}.
 #'
-#' @return a list whose elements are splitted texts. The length of the list equals to the number of documents.
+#' @return a keyATM_docs object. The first element is a list whose elements are split texts. The length of the list equals to the number of documents.
 #'
 #' @examples
 #' \dontrun{
@@ -27,7 +29,8 @@
 #' @import magrittr
 #' @importFrom rlang .data
 #' @export
-keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = FALSE)
+keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames = FALSE,
+                        progress_bar = FALSE, split = 0)
 {
 
   # Detect input
@@ -57,15 +60,24 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = 
          It can take quanteda dfm, data.frame, tibble, and a vector of characters.")  
   }
 
+  if (split != 0) {
+    if (split < 0 | split >= 1)
+      stop("Invalid option. `split` should be a proportion.")
+  }
+
   # Read texts
 
   # If you have quanteda object
+  docnames <- NULL
+  W_read <- list(W_raw = list(), W_split = list())
   if (!is.null(text_dfm)) {
     vocabulary <- colnames(text_dfm)
-    W_raw <- list()
-    W_raw <- read_dfm_cpp(text_dfm, W_raw, vocabulary, as.logical(progress_bar))
+    W_read <- read_dfm_cpp(text_dfm, W_read, vocabulary, as.logical(progress_bar), split)
+    if (keep_docnames) {
+      docnames <- quanteda::docnames(text_dfm)
+    }
   } else {
-    ## preprocess each text
+    # Preprocess each text
     # Use files <- list.files(doc_folder, pattern = "txt", full.names = TRUE) when you pass
     if (is.null(text_df)) {
       text_df <- tibble::tibble(text = unlist(lapply(files,
@@ -77,21 +89,28 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = 
     }
     text_df <- text_df %>% dplyr::mutate(text_split = stringr::str_split(.data$text, pattern = " "))
 
-    # extract splitted text and create a list
-    W_raw <- text_df %>% dplyr::pull(.data$text_split)
+    # Extract split text and create a list
+    W_read$W_raw <- text_df %>% dplyr::pull(.data$text_split)
   }
+  W_raw <- W_read$W_raw
 
-  
-  # check whether there is nothing wrong with the structure of texts
+  # Check whether there is nothing wrong with the structure of texts
   if (check) {
-    check_vocabulary(unique(unlist(W_raw, use.names = FALSE, recursive = FALSE))) 
+    wd_names <- unique(unlist(W_raw, use.names = FALSE, recursive = FALSE))
+    check_vocabulary(wd_names) 
     doc_index <- get_doc_index(W_raw, check = TRUE)
+  } else {
+    doc_index <- NULL
+    wd_names <- NULL
   }
 
-  # Assign class
-  class(W_raw) <- c("keyATM_docs", class(W_raw))
+  W_split <- list(W_raw = W_read$W_split)
+  class(W_split) <- c("keyATM_docs", class(W_split))
 
-  return(W_raw)
+  W_data <- list(W_raw = W_raw, W_split = W_split, doc_index = doc_index,
+                 wd_names = wd_names, docnames = docnames)
+  class(W_data) <- c("keyATM_docs", class(W_data))
+  return(W_data)
 }
 
 
@@ -100,7 +119,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, progress_bar = 
 print.keyATM_docs <- function(x, ...)
 {
   cat(paste0("keyATM_docs object of ",
-                 length(x), " documents",
+                 length(x$W_raw), " documents",
                  ".\n"
                 )
       )
@@ -111,9 +130,9 @@ print.keyATM_docs <- function(x, ...)
 #' @export
 summary.keyATM_docs <- function(object, ...)
 {
-  doc_len <- sapply(object, length)
+  doc_len <- sapply(object$W_raw, length)
   cat(paste0("keyATM_docs object of: ",
-              length(object), " documents",
+              length(object$W_raw), " documents",
               ".\n",
               "Length of documents:",
               "\n  Avg: ", round(mean(doc_len), 3),
@@ -166,7 +185,7 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
   check_arg_type(keywords, "list")
   c <- lapply(keywords, function(x){check_arg_type(x, "character")})
 
-  unlisted <- unlist(docs, recursive = FALSE, use.names = FALSE)
+  unlisted <- unlist(docs$W_raw, recursive = FALSE, use.names = FALSE)
 
   # Check keywords
   keywords <- check_keywords(unique(unlisted), keywords, prune)
@@ -282,10 +301,10 @@ check_keywords <- function(unique_words, keywords, prune)
 }
 
 
-get_doc_index <- function(docs, check = FALSE)
+get_doc_index <- function(W_raw, check = FALSE)
 {
-  lapply(docs, length) %>% unlist(use.names = FALSE) -> len
-  index <- 1:length(docs)
+  lapply(W_raw, length) %>% unlist(use.names = FALSE) -> len
+  index <- 1:length(W_raw)
   nonzero_index <- index[index[len != 0]]
   zero_index <- index[index[len == 0]]
   if (length(zero_index) != 0) {
@@ -335,9 +354,15 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   keywords <- check_arg(keywords, "keywords", model, info)
 
   # Get Info
-  info$use_doc_index <- get_doc_index(docs)
-  docs <- docs[info$use_doc_index]
-  info$num_doc <- length(docs)
+  if (is.null(docs$doc_index)) {
+    info$use_doc_index <- get_doc_index(docs$W_raw)
+  } else {
+    info$use_doc_index <- docs$doc_index
+    if (length(docs$doc_index) != length(docs$W_raw))
+      warning("Some documents have 0 length. Please review the preprocessing steps.")
+  }
+  docs$W_raw <- docs$W_raw[info$use_doc_index]
+  info$num_doc <- length(docs$W_raw)
   info$keyword_k <- length(keywords)
   info$total_k <- length(keywords) + no_keyword_topics
   info$num_core <- max(1, parallel::detectCores(all.tests = FALSE, logical = TRUE) - 2L)
@@ -356,15 +381,19 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   set.seed(options$seed)
 
   # W
-  info$wd_names <- unique(unlist(docs, use.names = FALSE, recursive = FALSE))
-  check_vocabulary(info$wd_names)
+  if (is.null(docs$wd_names)) {
+    info$wd_names <- unique(unlist(docs$W_raw, use.names = FALSE, recursive = FALSE))
+    check_vocabulary(info$wd_names)
+  } else {
+    info$wd_names <- docs$wd_names
+  }
 
   info$wd_map <- myhashmap(info$wd_names, 1:length(info$wd_names) - 1L)
 
   if (info$parallel_init) {
-    W <- parallel::mclapply(docs, function(x) { myhashmap_getvec(info$wd_map, x) }, mc.cores = info$num_core)
+    W <- parallel::mclapply(docs$W_raw, function(x) { myhashmap_getvec(info$wd_map, x) }, mc.cores = info$num_core)
   } else {
-    W <- lapply(docs, function(x) { myhashmap_getvec(info$wd_map, x) })
+    W <- lapply(docs$W_raw, function(x) { myhashmap_getvec(info$wd_map, x) })
   }
 
   # Check keywords
@@ -389,7 +418,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 
   # Organize
   stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)),
-                        doc_index = info$use_doc_index)
+                        doc_index = info$use_doc_index, keyATMdoc_meta = docs[-c(1, 3)])
 
   if (model %in% c("base", "lda", "label")) {
     if (options$estimate_alpha)
@@ -419,8 +448,10 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
       stored_values$pi_vectors <- list() 
   }
 
-  if (options$store_theta)
+  if (options$store_theta) {
     stored_values$Z_tables <- list()
+    stored_values$theta_PG <- list()
+  }
 
   key_model <- list(
                     W = W, Z = Z, S = S,
@@ -460,8 +491,6 @@ fitting_models <- function(key_model, model, options)
 
   if (model == "base") {
     key_model <- keyATM_fit_base(key_model, iter = options$iterations)
-  } else if (model == "cov") {
-    key_model <- keyATM_fit_cov(key_model, iter = options$iteration)
   } else if (model == "hmm") {
     key_model <- keyATM_fit_HMM(key_model, iter = options$iteration)  
   } else if (model == "lda") {
@@ -472,6 +501,10 @@ fitting_models <- function(key_model, model, options)
     key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration)  
   } else if (model == "label") {
     key_model <- keyATM_fit_label(key_model, iter = options$iteration)
+  } else if (model == "cov" & key_model$model_settings$covariates_model == "PG") {
+    key_model <- keyATM_fit_covPG(key_model, iter = options$iteration)
+  } else if (model == "cov" & key_model$model_settings$covariates_model == "DirMulti") {
+    key_model <- keyATM_fit_cov(key_model, iter = options$iteration)
   } else {
     stop("Please check `mode`.")
   }
@@ -663,8 +696,51 @@ check_arg_model_settings <- function(obj, model, info)
       }
     }
 
+    # Model
+    if (is.null(obj$covariates_model)) {
+      if (model == "cov")
+        obj$covariates_model <- "DirMulti" 
+      if (model == "ldacov")
+        obj$covariates_model <- "DirMulti"
+    }
+
+    if (obj$covariates_model != "DirMulti" & model == "ldacov")
+      stop("Use Diricule-Multinomial model for LDA covariates.")
+
+    if (!obj$covariates_model %in% c("PG", "DirMulti"))
+      stop("Undefined model. `covariates_model` option in `model_settings` take `PG` or `DirMulti`.")
+
+    if (obj$covariates_model == "PG") {
+      K <- info$total_k
+      X <- obj$covariates_data_use
+      M <- ncol(X)  # Number of covariates
+      D <- nrow(X)  # Number of douments
+
+      Sigma_Lambda <- diag(rep(1, K - 1))
+      if (M == 1) {
+        obj$PG_params$PG_Lambda <- t(MASS::mvrnorm(n = M, mu = rep(0, K-1), Sigma = Sigma_Lambda))
+      } else {
+        obj$PG_params$PG_Lambda <- MASS::mvrnorm(n = M, mu = rep(0, K-1), Sigma = Sigma_Lambda)
+      }
+      obj$PG_params$PG_SigmaPhi <- diag(rep(1, K-1))
+      Mu <- X %*% obj$PG_params$PG_Lambda
+      Sigma <- diag(rep(1, K-1))
+      sapply(1:D,
+             function(d) {
+                  Phi_d <- rmvn1(mu = Mu[d, ], Sigma = Sigma)
+             }) -> Phi
+      Phi <- t(Phi)
+      colnames(Phi) <- NULL
+      row.names(Phi) <- NULL
+      obj$PG_params$PG_Phi <- Phi  # D \times (K - 1)
+      obj$PG_params$theta_tilda <- exp(Phi) / (1 + exp(Phi))
+      obj$PG_params$theta_last <- matrix(rep(0, D*K), nrow = D, ncol = K)
+      obj$PG_params$Lambda_list <- list()
+      obj$PG_params$Sigma_list <- list()
+    }
+
     allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
-                           "slice_min", "slice_max", "mh_use",
+                           "slice_min", "slice_max", "mh_use", "covariates_model", "PG_params",
                            "covariates_formula", "standardize", "info")
   }  # cov model end
 
@@ -1029,8 +1105,8 @@ make_sz_key <- function(W, keywords, info)
   }
 
   if (info$parallel_init) {
-    S <- parallel::mclapply(W, make_s, mc.cores = info$num_core, mc.set.seed = FALSE)
-    Z <- parallel::mclapply(W, make_z, topicvec, mc.cores = info$num_core, mc.set.seed = FALSE)
+    S <- future.apply::future_lapply(W, make_s, future.seed = TRUE)
+    Z <- future.apply::future_lapply(W, make_z, topicvec, future.seed = TRUE)
   } else {
     S <- lapply(W, make_s)
     Z <- lapply(W, make_z, topicvec)
@@ -1051,7 +1127,7 @@ make_sz_lda <- function(W, info)
   }  
 
   if (info$parallel_init) {
-    Z <- parallel::mclapply(W, make_z, topicvec, mc.cores = info$num_core, mc.set.seed = FALSE)
+    Z <- future.apply::future_lapply(W, make_z, topicvec, future.seed = TRUE)
   } else {
     Z <- lapply(W, make_z, topicvec)
   }

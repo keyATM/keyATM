@@ -7,7 +7,7 @@
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![Travis-CI Build Status](https://travis-ci.com/keyATM/keyATM.svg?branch=master)](https://travis-ci.com/keyATM/keyATM)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/keyATM/keyATM&style=flat)](https://mergify.io)
-[![DevVersion](https://img.shields.io/badge/Dev-v0.4.0-orange)](https://github.com/keyATM/keyATM/projects/2)
+[![DevVersion](https://img.shields.io/badge/Dev-v0.4.x-orange)](https://github.com/keyATM/keyATM/projects/2)
 <!-- badges: end -->
 
 <br>
@@ -27,7 +27,7 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 
 ## How to cite
 *  Shusei Eshima, Kosuke Imai, and Tomoya Sasaki. 2020. ``Keyword Assisted Topic Models.'' Working Paper, <a href='http://arxiv.org/abs/2004.05964'>arXiv:2004.05964</a>.
-* Shusei Eshima, Tomoya Sasaki, and Kosuke Imai. 2019. keyATM: Keyword Assisted Topic Models. R package version 0.2.0. https://keyatm.github.io/keyATM/
+* Shusei Eshima, Tomoya Sasaki, and Kosuke Imai. 2019. keyATM: Keyword Assisted Topic Models. R package version 0.4.0. https://keyatm.github.io/keyATM/
 
 ## How to report a bug
 We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/keyATM/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format (it will appear as a template in GitHub Issue). 

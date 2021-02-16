@@ -6,6 +6,20 @@
 
 using namespace Rcpp;
 
+// calc_PGtheta_R
+NumericMatrix calc_PGtheta_R(const NumericMatrix& theta_tilda, Eigen::MatrixXd& theta, const int num_doc, const int num_topics);
+RcppExport SEXP _keyATM_calc_PGtheta_R(SEXP theta_tildaSEXP, SEXP thetaSEXP, SEXP num_docSEXP, SEXP num_topicsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type theta_tilda(theta_tildaSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< const int >::type num_doc(num_docSEXP);
+    Rcpp::traits::input_parameter< const int >::type num_topics(num_topicsSEXP);
+    rcpp_result_gen = Rcpp::wrap(calc_PGtheta_R(theta_tilda, theta, num_doc, num_topics));
+    return rcpp_result_gen;
+END_RCPP
+}
 // make_wsz_cpp
 List make_wsz_cpp(List docs_, List info_, List initialized_);
 RcppExport SEXP _keyATM_make_wsz_cpp(SEXP docs_SEXP, SEXP info_SEXP, SEXP initialized_SEXP) {
@@ -31,16 +45,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // read_dfm_cpp
-List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, List W_raw, CharacterVector vocab, bool show_progress_bar);
-RcppExport SEXP _keyATM_read_dfm_cpp(SEXP dfmSEXP, SEXP W_rawSEXP, SEXP vocabSEXP, SEXP show_progress_barSEXP) {
+List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, List W_read, CharacterVector vocab, bool show_progress_bar, double split);
+RcppExport SEXP _keyATM_read_dfm_cpp(SEXP dfmSEXP, SEXP W_readSEXP, SEXP vocabSEXP, SEXP show_progress_barSEXP, SEXP splitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Eigen::SparseMatrix<int> >::type dfm(dfmSEXP);
-    Rcpp::traits::input_parameter< List >::type W_raw(W_rawSEXP);
+    Rcpp::traits::input_parameter< List >::type W_read(W_readSEXP);
     Rcpp::traits::input_parameter< CharacterVector >::type vocab(vocabSEXP);
     Rcpp::traits::input_parameter< bool >::type show_progress_bar(show_progress_barSEXP);
-    rcpp_result_gen = Rcpp::wrap(read_dfm_cpp(dfm, W_raw, vocab, show_progress_bar));
+    Rcpp::traits::input_parameter< double >::type split(splitSEXP);
+    rcpp_result_gen = Rcpp::wrap(read_dfm_cpp(dfm, W_read, vocab, show_progress_bar, split));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -65,6 +80,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     rcpp_result_gen = Rcpp::wrap(keyATM_fit_cov(model, iter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// keyATM_fit_covPG
+List keyATM_fit_covPG(List model, int iter);
+RcppExport SEXP _keyATM_keyATM_fit_covPG(SEXP modelSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_covPG(model, iter));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -130,11 +157,13 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_keyATM_calc_PGtheta_R", (DL_FUNC) &_keyATM_calc_PGtheta_R, 4},
     {"_keyATM_make_wsz_cpp", (DL_FUNC) &_keyATM_make_wsz_cpp, 3},
     {"_keyATM_keyATMvb_call", (DL_FUNC) &_keyATM_keyATMvb_call, 1},
-    {"_keyATM_read_dfm_cpp", (DL_FUNC) &_keyATM_read_dfm_cpp, 4},
+    {"_keyATM_read_dfm_cpp", (DL_FUNC) &_keyATM_read_dfm_cpp, 5},
     {"_keyATM_keyATM_fit_base", (DL_FUNC) &_keyATM_keyATM_fit_base, 2},
     {"_keyATM_keyATM_fit_cov", (DL_FUNC) &_keyATM_keyATM_fit_cov, 2},
+    {"_keyATM_keyATM_fit_covPG", (DL_FUNC) &_keyATM_keyATM_fit_covPG, 2},
     {"_keyATM_keyATM_fit_HMM", (DL_FUNC) &_keyATM_keyATM_fit_HMM, 2},
     {"_keyATM_keyATM_fit_label", (DL_FUNC) &_keyATM_keyATM_fit_label, 2},
     {"_keyATM_keyATM_fit_LDA", (DL_FUNC) &_keyATM_keyATM_fit_LDA, 2},

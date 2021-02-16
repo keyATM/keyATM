@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -98,7 +98,8 @@
 
       
 
-      </header><div class="row">
+      </header><script src="keyATM_cov_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="keyATM_cov_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="keyATM_cov_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>keyATM Covariates</h1>
@@ -116,12 +117,13 @@
 <h2 class="hasAnchor">
 <a href="#preparing-covariates" class="anchor"></a>Preparing covariates</h2>
 <p>We follow the same procedure for the text preparation explained in <a href="Preparation.html">Preparation</a> and explain how to prepare covariates in this section.</p>
-<p>The <code>docvars()</code> function in the <strong>quanteda</strong> package is especially useful to construct a <code>vector</code> or a <code>dataframe</code> of covariates because it ensures that documents and covariates are corresponding to each other. Since the <strong>keyATM</strong> does not take missing values, we recommend researchers to remove any missing values from covariates before extracting them using the <code>docvars()</code>.</p>
+<p>The <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code> function in the <strong>quanteda</strong> package is especially useful to construct a <code>vector</code> or a <code>dataframe</code> of covariates because it ensures that documents and covariates are corresponding to each other. Since the <strong>keyATM</strong> does not take missing values, we recommend researchers to remove any missing values from covariates before extracting them using the <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code>.</p>
 <p>Moreover, we strongly recommend researchers to extract covariates <em>after</em> preprocessing texts because preprocessing steps will remove documents without any terms, which may result in any discrepancies between documents and covariates.</p>
-<p>Therefore, the recommended procedure is (1) removing missing values from covariates, (2) preprocessing texts (including the process to discard documents that do not contain any words), and (3) extracting covariates using <code>docvars()</code> function.</p>
-<p>In this example, we create a period dummy and a party dummy from the corpus and use them as covariates for the covariate keyATM. First, we extract covariates attached to each document in the corpus with the <code>docvars()</code> function.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">vars</span> <span class="kw">&lt;-</span> <span class="fu">docvars</span>(<span class="no">data_corpus_inaugural</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">vars</span>)</pre></body></html></div>
+<p>Therefore, the recommended procedure is (1) removing missing values from covariates, (2) preprocessing texts (including the process to discard documents that do not contain any words), and (3) extracting covariates using <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code> function.</p>
+<p>In this example, we create a period dummy and a party dummy from the corpus and use them as covariates for the covariate keyATM. First, we extract covariates attached to each document in the corpus with the <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code> function.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span></code></pre></div>
 <pre><code>##   Year  President FirstName                 Party
 ## 1 1789 Washington    George                  none
 ## 2 1793 Washington    George                  none
@@ -130,29 +132,32 @@
 ## 5 1805  Jefferson    Thomas Democratic-Republican
 ## 6 1809    Madison     James Democratic-Republican</code></pre>
 <p>There are six unique parties and 58 unique years. We categorize them and create a new set of covariates. First, we divide years into two period, before and after 1900. Then, we categorize parties into Democratic, Republican, and Others.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>)
-<span class="no">vars</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/reexports.html">as_tibble</a></span>() <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">Period</span> <span class="kw">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span>(<span class="no">Year</span> <span class="kw">&lt;=</span> <span class="fl">1899</span> ~ <span class="st">"18_19c"</span>,
-                            <span class="fl">TRUE</span> ~ <span class="st">"20_21c"</span>)) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">Party</span> <span class="kw">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span>(<span class="no">Party</span> <span class="kw">==</span> <span class="st">"Democratic"</span> ~ <span class="st">"Democratic"</span>,
-                           <span class="no">Party</span> <span class="kw">==</span> <span class="st">"Republican"</span> ~ <span class="st">"Republican"</span>,
-                           <span class="fl">TRUE</span> ~ <span class="st">"Other"</span>)) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="no">Party</span>, <span class="no">Period</span>) <span class="kw">-&gt;</span> <span class="no">vars_selected</span>
-<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">vars_selected</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+<span class="va">vars</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>Period <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span><span class="va">Year</span> <span class="op">&lt;=</span> <span class="fl">1899</span> <span class="op">~</span> <span class="st">"18_19c"</span>,
+                            <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"20_21c"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>Party <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span><span class="va">Party</span> <span class="op">==</span> <span class="st">"Democratic"</span> <span class="op">~</span> <span class="st">"Democratic"</span>,
+                           <span class="va">Party</span> <span class="op">==</span> <span class="st">"Republican"</span> <span class="op">~</span> <span class="st">"Republican"</span>,
+                           <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"Other"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">Party</span>, <span class="va">Period</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_selected</span>
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">vars_selected</span><span class="op">)</span></code></pre></div>
 <pre><code>##             Period
 ## Party        18_19c 20_21c
 ##   Democratic      7     14
 ##   Other          13      0
 ##   Republican      8     16</code></pre>
 <p>Since we have categorical variables, we set baselines with the <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code> function.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">vars_selected</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">Party</span>  <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">Party</span>,
-                         <span class="kw">levels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Other"</span>, <span class="st">"Republican"</span>, <span class="st">"Democratic"</span>)),
-         <span class="kw">Period</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">Period</span>,
-                         <span class="kw">levels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"18_19c"</span>, <span class="st">"20_21c"</span>))) <span class="kw">-&gt;</span> <span class="no">vars_selected</span></pre></body></html></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">vars_selected</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>Party  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">Party</span>, 
+                         levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Other"</span>, <span class="st">"Republican"</span>, <span class="st">"Democratic"</span><span class="op">)</span><span class="op">)</span>,
+         Period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">Period</span>, 
+                         levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"18_19c"</span>, <span class="st">"20_21c"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_selected</span></code></pre></div>
 <p>The <strong>keyATM</strong> internally uses the <code><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix()</a></code> function so that researchers can pass a formula to model covariates (for more detailed information, refer to <a href="https://rdrr.io/r/stats/formula.html">formula</a>). For example, in this example, we have a following matrix.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span>(~ <span class="no">Party</span> + <span class="no">Period</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">vars_selected</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span><span class="op">(</span><span class="op">~</span> <span class="va">Party</span> <span class="op">+</span> <span class="va">Period</span>, data <span class="op">=</span> <span class="va">vars_selected</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>##   (Intercept) PartyRepublican PartyDemocratic Period20_21c
 ## 1           1               0               0            0
 ## 2           1               0               0            0
@@ -165,13 +170,14 @@
 <h2 class="hasAnchor">
 <a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
 <p>We fit the model with the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function, passing covariates data and the formula with the <code>model_settings</code> argument. The text data is the same as what we use in the <a href="keyATM_base.html">Base model</a>. Please check <a href="Options.html">this page</a> for available options.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,
-              <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">5</span>,
-              <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords</span>,
-              <span class="kw">model</span>             <span class="kw">=</span> <span class="st">"covariates"</span>,
-              <span class="kw">model_settings</span>    <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">covariates_data</span>    <span class="kw">=</span> <span class="no">vars_selected</span>,
-                                       <span class="kw">covariates_formula</span> <span class="kw">=</span> ~ <span class="no">Party</span> + <span class="no">Period</span>),
-              <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,
+              no_keyword_topics <span class="op">=</span> <span class="fl">5</span>,
+              keywords          <span class="op">=</span> <span class="va">keywords</span>,
+              model             <span class="op">=</span> <span class="st">"covariates"</span>,
+              model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>covariates_data    <span class="op">=</span> <span class="va">vars_selected</span>, 
+                                       covariates_formula <span class="op">=</span> <span class="op">~</span> <span class="va">Party</span> <span class="op">+</span> <span class="va">Period</span><span class="op">)</span>,
+              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Once you fit the model, you can save the model with <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">Base model</a>.</p>
 <p><strong>keyATM</strong> automatically standardizes non-factor covariates. The <code>standardize</code> option in <code>model_settings</code> argument of the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function now takes one of <code>"all"</code>, <code>"none"</code>, or <code>"non-factor"</code> (default). <code>"all"</code> standardizes all covariates (except the intercept), <code>"none"</code> does not standardize any covariates, and <code>"non-factor"</code> standardizes non-factor covariates.</p>
 </div>
@@ -185,7 +191,8 @@
 <p>First, we use the output from the <a href="keyATM_cov.html#fitting-the-model">previous section</a> and check the covariates used in the model. Note that covariates are standardized by default (i.e., each covariates to have zero mean and a standard deviation one).</p>
 <p>This transformation does not change the substantive results as it is a linear transformation. Researchers can use raw values with <code>standardize = FALSE</code> in the <code>model_settings</code> argument.</p>
 <p>Researchers can glance covariate information with the <code><a href="../../reference/covariates_info.html">covariates_info()</a></code> and the <code><a href="../../reference/covariates_get.html">covariates_get()</a></code> function will return covariates used in the fitted output.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="../../reference/covariates_info.html">covariates_info</a></span>(<span class="no">out</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../../reference/covariates_info.html">covariates_info</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
 <pre><code>## Colnames: (Intercept), PartyRepublican, PartyDemocratic, Period20_21c
 ## Standardization: non-factor
 ## Formula: ~ Party + Period
@@ -198,8 +205,9 @@
 ## 4           1               0               0            0
 ## 5           1               0               0            0
 ## 6           1               0               0            0</code></pre>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">used_covariates</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/covariates_get.html">covariates_get</a></span>(<span class="no">out</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">used_covariates</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">used_covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/covariates_get.html">covariates_get</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">used_covariates</span><span class="op">)</span></code></pre></div>
 <pre><code>##   (Intercept) PartyRepublican PartyDemocratic Period20_21c
 ## 1           1               0               0            0
 ## 2           1               0               0            0
@@ -216,77 +224,87 @@
 <p>The <code><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic()</a></code> function can display the marginal posterior means of document-topic distributions for each value of (discrete) covariates.</p>
 <p>In the <code><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic()</a></code> function, we specify the variable we focus on in <code>by_var</code> argument and label each value in the variable (ascending order).</p>
 <p>In this case, the <code>Period20_21c</code> equals zero indicates speeches in the 18th and 19th century and equals one for the speeches in the 20th and 21st century.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">strata_topic</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span>(<span class="no">out</span>, <span class="kw">by_var</span> <span class="kw">=</span> <span class="st">"Period20_21c"</span>,
-                                   <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"18_19c"</span>, <span class="st">"20_21c"</span>))</pre></body></html></div>
-<p>We can visualize results with the <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code> function. The figure shows the marginal posterior means of document-topic distributions and the 90% credible intervals of them for each value of covariates.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">strata_topic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span><span class="op">(</span><span class="va">out</span>, by_var <span class="op">=</span> <span class="st">"Period20_21c"</span>,
+                                   labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"18_19c"</span>, <span class="st">"20_21c"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>We can visualize results with the <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> function. The figure shows the marginal posterior means of document-topic distributions and the 90% credible intervals of them for each value of covariates.</p>
 <p>The figure indicates that both topics are more likely to appear in the 18th and 19th century.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">fig_doctopic</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">strata_topic</span>, <span class="kw">var_name</span> <span class="kw">=</span> <span class="st">"Period"</span>, <span class="kw">show_topic</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">5</span>))
-<span class="no">fig_doctopic</span></pre></body></html></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fig_doctopic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">strata_topic</span>, var_name <span class="op">=</span> <span class="st">"Period"</span>, show_topic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>
+<span class="va">fig_doctopic</span></code></pre></div>
 <p><img src="keyATM_cov_files/figure-html/unnamed-chunk-10-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>The figure can be saved with the <code><a href="../../reference/save_fig.html">save_fig()</a></code> function.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="../../reference/save_fig.html">save_fig</a></span>(<span class="no">fig_doctopic</span>, <span class="st">"figures/doctopic.pdf"</span>, <span class="kw">width</span> <span class="kw">=</span> <span class="fl">7</span>, <span class="kw">height</span> <span class="kw">=</span> <span class="fl">3.5</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../../reference/save_fig.html">save_fig</a></span><span class="op">(</span><span class="va">fig_doctopic</span>, <span class="st">"figures/doctopic.pdf"</span>, width <span class="op">=</span> <span class="fl">7</span>, height <span class="op">=</span> <span class="fl">3.5</span><span class="op">)</span></code></pre></div>
 <p>We can visualize results by covariate with <code>by = "covariate"</code> argument. The plot below combines two panels in the previous plot and display in the same panel.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">fig_doctopic</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">strata_topic</span>, <span class="kw">var_name</span> <span class="kw">=</span> <span class="st">"Period"</span>,
-                     <span class="kw">show_topic</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">5</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="st">"covariate"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fig_doctopic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">strata_topic</span>, var_name <span class="op">=</span> <span class="st">"Period"</span>,
+                     show_topic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"covariate"</span><span class="op">)</span></code></pre></div>
 <p>Using the output of the <code>keyATM</code>, we can calculate 90% credible intervals of the differences in the mean of document-topic distribution.</p>
 <p>Since we set the 18th and 19th century dummy as the baseline when constructing <code>factor</code> for this variable, the comparison is the relative increase or decrease from the 18th and 19th century to the 20th and 21st century.</p>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">theta1</span> <span class="kw">&lt;-</span> <span class="no">strata_topic</span>$<span class="no">theta</span><span class="kw">[[</span><span class="fl">1</span>]]  <span class="co"># 18_19c</span>
-<span class="no">theta2</span> <span class="kw">&lt;-</span> <span class="no">strata_topic</span>$<span class="no">theta</span><span class="kw">[[</span><span class="fl">2</span>]]  <span class="co"># 20_21c</span>
-<span class="no">theta_diff</span> <span class="kw">&lt;-</span> <span class="no">theta1</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">5</span>)] - <span class="no">theta2</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">5</span>)]  <span class="co"># focus on two topics</span>
-<span class="no">theta_diff_quantile</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="no">theta_diff</span>, <span class="fl">2</span>, <span class="no">quantile</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.05</span>, <span class="fl">0.5</span>, <span class="fl">0.95</span>))
-<span class="no">theta_diff_quantile</span></pre></body></html></div>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">theta1</span> <span class="op">&lt;-</span> <span class="va">strata_topic</span><span class="op">$</span><span class="va">theta</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>  <span class="co"># 18_19c</span>
+<span class="va">theta2</span> <span class="op">&lt;-</span> <span class="va">strata_topic</span><span class="op">$</span><span class="va">theta</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>  <span class="co"># 20_21c</span>
+<span class="va">theta_diff</span> <span class="op">&lt;-</span> <span class="va">theta1</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span><span class="op">]</span> <span class="op">-</span> <span class="va">theta2</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span><span class="op">]</span>  <span class="co"># focus on two topics</span>
+<span class="va">theta_diff_quantile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">theta_diff</span>, <span class="fl">2</span>, <span class="va">quantile</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.5</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span>
+<span class="va">theta_diff_quantile</span></code></pre></div>
 <pre><code>##     4_Constitution 5_ForeignAffairs
 ## 5%       0.0906182       0.06250426
 ## 50%      0.1153357       0.08576355
 ## 95%      0.1424101       0.11659573</code></pre>
 <p>Furthermore, we can use the <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> function to get the predicted mean of the document-topic distribution for three party categories.</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">strata_rep</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span>(<span class="no">out</span>, <span class="kw">by_var</span> <span class="kw">=</span> <span class="st">"PartyRepublican"</span>,
-                                 <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Non-Republican"</span>, <span class="st">"Republican"</span>))
-<span class="no">strata_dem</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span>(<span class="no">out</span>, <span class="kw">by_var</span> <span class="kw">=</span> <span class="st">"PartyDemocratic"</span>,
-                                 <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Non-Democratic"</span>, <span class="st">"Democratic"</span>))
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">strata_rep</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span><span class="op">(</span><span class="va">out</span>, by_var <span class="op">=</span> <span class="st">"PartyRepublican"</span>,
+                                 labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Non-Republican"</span>, <span class="st">"Republican"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">strata_dem</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_DocTopic.html">by_strata_DocTopic</a></span><span class="op">(</span><span class="va">out</span>, by_var <span class="op">=</span> <span class="st">"PartyDemocratic"</span>,
+                                 labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Non-Democratic"</span>, <span class="st">"Democratic"</span><span class="op">)</span><span class="op">)</span>
 
-<span class="no">est_rep</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">strata_rep</span>)<span class="kw">[[</span><span class="st">"Republican"</span>]]  <span class="co"># Republican data</span>
-<span class="no">est_dem</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">strata_dem</span>)<span class="kw">[[</span><span class="st">"Democratic"</span>]]  <span class="co"># Democratic data</span></pre></body></html></div>
+<span class="va">est_rep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">strata_rep</span><span class="op">)</span><span class="op">[[</span><span class="st">"Republican"</span><span class="op">]</span><span class="op">]</span>  <span class="co"># Republican data</span>
+<span class="va">est_dem</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">strata_dem</span><span class="op">)</span><span class="op">[[</span><span class="st">"Democratic"</span><span class="op">]</span><span class="op">]</span>  <span class="co"># Democratic data</span></code></pre></div>
 <p>Now we are missing the baseline (Others).</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">new_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/covariates_get.html">covariates_get</a></span>(<span class="no">out</span>)
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">new_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/covariates_get.html">covariates_get</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span>
 
 <span class="co"># Setting both Republican and Democratic dummy to 0 means `Others`</span>
-<span class="no">new_data</span>[, <span class="st">"PartyRepublican"</span>] <span class="kw">&lt;-</span> <span class="fl">0</span>
-<span class="no">new_data</span>[, <span class="st">"PartyDemocratic"</span>] <span class="kw">&lt;-</span> <span class="fl">0</span>
-<span class="no">pred</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">out</span>, <span class="no">new_data</span>, <span class="kw">label</span> <span class="kw">=</span> <span class="st">"Others"</span>)</pre></body></html></div>
+<span class="va">new_data</span><span class="op">[</span>, <span class="st">"PartyRepublican"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span>
+<span class="va">new_data</span><span class="op">[</span>, <span class="st">"PartyDemocratic"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span>
+<span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">out</span>, <span class="va">new_data</span>, label <span class="op">=</span> <span class="st">"Others"</span><span class="op">)</span></code></pre></div>
 <p>Now, we combine three objects and make a plot.</p>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">res</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(<span class="no">est_rep</span>, <span class="no">est_dem</span>, <span class="no">pred</span>) <span class="kw">%&gt;%</span>
-          <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="no">TopicId</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">5</span>))  <span class="co"># Select two topics</span>
-<span class="no">labels</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">res</span>$<span class="no">label</span>)
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="va">est_rep</span>, <span class="va">est_dem</span>, <span class="va">pred</span><span class="op">)</span> <span class="op">%&gt;%</span>
+          <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">TopicId</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>  <span class="co"># Select two topics</span>
+<span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">label</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplot2</span>)
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">res</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">label</span>, <span class="kw">ymin</span> <span class="kw">=</span> <span class="no">Lower</span>, <span class="kw">ymax</span> <span class="kw">=</span> <span class="no">Upper</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="no">Topic</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_errorbar</a></span>(<span class="kw">width</span> <span class="kw">=</span> <span class="fl">0.1</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html">coord_flip</a></span>() +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(~<span class="no">Topic</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">label</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">Point</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html">scale_x_discrete</a></span>(<span class="kw">limits</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span>(<span class="no">labels</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Party"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"Mean of "</span>, <span class="no">theta</span>))) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</pre></body></html></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">res</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">label</span>, ymin <span class="op">=</span> <span class="va">Lower</span>, ymax <span class="op">=</span> <span class="va">Upper</span>, group <span class="op">=</span> <span class="va">Topic</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_errorbar</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Topic</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">label</span>, y <span class="op">=</span> <span class="va">Point</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html">scale_x_discrete</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="va">labels</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Party"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Mean of "</span>, <span class="va">theta</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="keyATM_cov_files/figure-html/unnamed-chunk-16-1.png" width="700" style="display: block; margin: auto;"></p>
 </div>
 <div id="covariates-and-topic-word-distribution" class="section level3">
 <h3 class="hasAnchor">
 <a href="#covariates-and-topic-word-distribution" class="anchor"></a>Covariates and topic-word distribution</h3>
 <p>Although the covariate keyATM does not directly model topic-word distributions, the model can examine how topic-word distributions change across different values of document-level covariates. For this analysis, we need to use the <code>keep</code> argument in the <code><a href="../../reference/keyATM.html">keyATM()</a></code> function to store <code>Z</code> and <code>S</code>. Then we pass the output with these stored values to the <code><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord()</a></code> function. The example below demonstrates top words associated to each topic for speeches from different parties using the <code>Party</code> covariate.</p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs</span>,
-              <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">5</span>,
-              <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords</span>,
-              <span class="kw">model</span>             <span class="kw">=</span> <span class="st">"covariates"</span>,
-              <span class="kw">model_settings</span>    <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">covariates_data</span>    <span class="kw">=</span> <span class="no">vars_selected</span>,
-                                       <span class="kw">covariates_formula</span> <span class="kw">=</span> ~ <span class="no">Party</span> + <span class="no">Period</span>),
-              <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>),
-              <span class="kw">keep</span>              <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Z"</span>, <span class="st">"S"</span>))
-<span class="no">strata_tw</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span>(<span class="no">out</span>, <span class="no">keyATM_docs</span>,
-                                 <span class="kw">by</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(<span class="no">vars_selected</span>$<span class="no">Party</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,
+              no_keyword_topics <span class="op">=</span> <span class="fl">5</span>,
+              keywords          <span class="op">=</span> <span class="va">keywords</span>,
+              model             <span class="op">=</span> <span class="st">"covariates"</span>,
+              model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>covariates_data    <span class="op">=</span> <span class="va">vars_selected</span>, 
+                                       covariates_formula <span class="op">=</span> <span class="op">~</span> <span class="va">Party</span> <span class="op">+</span> <span class="va">Period</span><span class="op">)</span>,
+              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span>,
+              keep              <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Z"</span>, <span class="st">"S"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">strata_tw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/by_strata_TopicWord.html">by_strata_TopicWord</a></span><span class="op">(</span><span class="va">out</span>, <span class="va">keyATM_docs</span>,
+                                 by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">vars_selected</span><span class="op">$</span><span class="va">Party</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>We check the result.</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span>(<span class="no">strata_tw</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">strata_tw</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
 <pre><code>## $Other
 ##   1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
 ## 1       people congress [✓]   world [✓]           states       government
@@ -318,6 +336,44 @@
 ## 3    right political country   never</code></pre>
 </div>
 </div>
+<div id="keyatm-covariate-with-pólya-gamma-augmentation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#keyatm-covariate-with-p%C3%B3lya-gamma-augmentation" class="anchor"></a>keyATM Covariate with Pólya-Gamma Augmentation</h2>
+<p>An alternative modeling approach is to use the Pólya-Gamma augmentation for topic assignments. This approach has a speed advantage (computational time does not significantly change by the number of covariates), but estimated topics can be sensitive to the order. Please read Appendix S3 of Eshima, Imai, and Sasaki (2020) for details.</p>
+<p>To estimate keyATM Covariate with the Pólya-Gamma augmentation, set <code>covariates_model = "PG"</code>.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,
+              no_keyword_topics <span class="op">=</span> <span class="fl">5</span>,
+              keywords          <span class="op">=</span> <span class="va">keywords</span>,
+              model             <span class="op">=</span> <span class="st">"covariates"</span>,
+              model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>covariates_data    <span class="op">=</span> <span class="va">vars_selected</span>, 
+                                       covariates_formula <span class="op">=</span> <span class="op">~</span> <span class="va">Party</span> <span class="op">+</span> <span class="va">Period</span>,
+                                       covariates_model <span class="op">=</span> <span class="st">"PG"</span><span class="op">)</span>,
+              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
+<pre><code>##     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs
+## 1         states        every   world [✓]       government          country
+## 2          great        power   peace [✓] constitution [✓]           public
+## 3          union     citizens     nations       rights [✓]              one
+## 4         united    interests freedom [✓]             best          war [✓]
+## 5       laws [✓]       within        free        political            state
+## 6        law [✓]      present        life             part      foreign [✓]
+## 7           made    party [✓]        good           system           powers
+## 8           duty       spirit       human              far           policy
+## 9  executive [✓] institutions      future            means           duties
+## 10    principles   confidence      common          federal            whole
+##     Other_1   Other_2  Other_3 Other_4  Other_5
+## 1       men    nation   people     new      now
+## 2   justice      time national america american
+## 3    nation     great    right     let    years
+## 4  progress    people    among     one    never
+## 5     force president  support    work     much
+## 6      find       man     less   every     make
+## 7  security  citizens  service    know     hope
+## 8      full   liberty    still history      yet
+## 9  business   country     ever   today  believe
+## 10      see americans    equal     god     take</code></pre>
+</div>
 <div id="reference" class="section level2">
 <h2 class="hasAnchor">
 <a href="#reference" class="anchor"></a>Reference</h2>
@@ -329,6 +385,7 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
         <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
     </nav>
 </div>
@@ -342,7 +399,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

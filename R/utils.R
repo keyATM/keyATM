@@ -107,6 +107,56 @@ rdirichlet <- function(alpha, n = 1) {
 }
 
 
+rmvn <- function(n = 1, mu, Sigma)
+{  # Edited version of the code in LaplacesDemon package
+  mu <- rbind(mu)
+  # if(missing(Sigma)) Sigma <- diag(ncol(mu))
+  # if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
+  # if(!is.positive.definite(Sigma))
+       # stop("Matrix Sigma is not positive-definite.")
+  k <- ncol(Sigma)
+  if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow = TRUE)
+  z <- matrix(stats::rnorm(n*k), n, k) %*% chol(Sigma)
+  x <- mu + z
+  return(x)
+}
+
+
+rmvn1 <- function(mu, Sigma)
+{  # Edited version of the code in LaplacesDemon package
+  mu <- as.numeric(mu)
+  k <- ncol(Sigma)
+  z <- stats::rnorm(k) %*% chol(Sigma)
+  x <- mu + z
+  return(as.numeric(x))
+}
+
+
+rnorminvwishart <- function(n = 1, mu0, lambda, S, nu)
+{  # Edited version of the code in LaplacesDemon package
+  Sigma <- rinvwishart(nu, S)
+  mu <- rmvn(n, mu0, 1/lambda*Sigma)
+  return(list(mu = mu, Sigma = Sigma))
+}
+
+rinvwishart <- function(nu, S)
+{  # Edited version of the code in LaplacesDemon package
+  S <- chol2inv(chol(S))
+  k <- nrow(S)
+  Z <- matrix(0, k, k)
+  x <- stats::rchisq(k, nu:{nu - k + 1})
+  x[which(x == 0)] <- 1e-100
+  diag(Z) <- sqrt(x)
+  if(k > 1) {
+      kseq <- 1:(k-1)
+      Z[rep(k*kseq, kseq) +
+           unlist(lapply(kseq, seq))] <- stats::rnorm(k*{k - 1}/2)
+  }
+  res <- Z %*% chol(S)
+  return(chol2inv(res))
+}
+
+
 myhashmap <- function(keys, values) {
   mapped <- fastmap::fastmap(missing_default = NA)
   invisible(lapply(1:length(keys), function(x) {mapped$set(keys[x], values[x])}))
@@ -175,6 +225,7 @@ covariates_standardize <- function(data, type, cov_formula = NULL) {
   }
 }
 
+
 #' Convert a quanteda dictionary to keywords
 #'
 #' This function converts or reads a dictionary object from quanteda to a named list. "Glob"-style wildcard expressions (e.g. politic*) are resolved based on the available terms in your texts.
@@ -228,7 +279,7 @@ read_keywords <- function(file = NULL, docs = NULL, dictionary = NULL, split = T
         warning("'Glob'-style wildcards are not resolved.")
         return(as.list(dictionary))
     }
-    wd_names <- unique(unlist(docs, use.names = FALSE, recursive = FALSE))
+    wd_names <- unique(unlist(docs$W_raw, use.names = FALSE, recursive = FALSE))
     res <- lapply(dictionary@.Data, resolve_glob, wd_names = wd_names, split = split, separator = dictionary@meta$object$separator)
     names(res) <- names(as.list(dictionary))
     return(res)

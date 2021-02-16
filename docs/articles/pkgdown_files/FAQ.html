@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -98,7 +98,8 @@
 
       
 
-      </header><div class="row">
+      </header><script src="FAQ_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="FAQ_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="FAQ_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>FAQ</h1>
@@ -252,36 +253,40 @@
 <h2 class="hasAnchor">
 <a href="#can-we-use-n-grams" class="anchor"></a>Can we use n-grams?</h2>
 <p>Yes, but you need an extra step in the preprocessing. Let’s try a bigram model. You need a tokens object (see <a href="Preparation.html">Preparation</a>). Then, <strong>quanteda</strong> will create a n-gram tokens object (see <a href="https://tutorials.quanteda.io/basic-operations/tokens/tokens_ngrams/">quanteda’s manual</a> for details),</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">data_tokens_n2</span> <span class="kw">&lt;-</span> <span class="fu">tokens_ngrams</span>(<span class="no">data_tokens</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">2</span>)  <span class="co"># bigram</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">data_tokens_n2</span><span class="kw">[[</span><span class="fl">1</span>]], <span class="fl">3</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">data_tokens_n2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens_ngrams.html">tokens_ngrams</a></span><span class="op">(</span><span class="va">data_tokens</span>, n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>  <span class="co"># bigram</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">data_tokens_n2</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] "fellow-citizens_senate" "senate_house"           "house_representatives"</code></pre>
 <p>You can pass this preprocessed object to <strong>keyATM</strong> just as the unigram model.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">data_dfm_n2</span> <span class="kw">&lt;-</span> <span class="fu">dfm</span>(<span class="no">data_tokens_n2</span>) <span class="kw">%&gt;%</span>
-                 <span class="fu">dfm_trim</span>(<span class="kw">min_termfreq</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">min_docfreq</span> <span class="kw">=</span> <span class="fl">2</span>)
-<span class="no">keyATM_docs_n2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span>(<span class="no">data_dfm_n2</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">data_dfm_n2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span><span class="op">(</span><span class="va">data_tokens_n2</span><span class="op">)</span> <span class="op">%&gt;%</span>
+                 <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span><span class="op">(</span>min_termfreq <span class="op">=</span> <span class="fl">3</span>, min_docfreq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">keyATM_docs_n2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span><span class="va">data_dfm_n2</span><span class="op">)</span></code></pre></div>
 <p>Keywords should respect the n-gram.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">keywords_n2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">Government</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"federal_government"</span>, <span class="st">"vice_president"</span>),
-                    <span class="kw">People</span>     <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"men_women"</span>, <span class="st">"fellow_citizens"</span>),
-                    <span class="kw">Peace</span>      <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"peace_world"</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">keywords_n2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Government <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"federal_government"</span>, <span class="st">"vice_president"</span><span class="op">)</span>,
+                    People     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"men_women"</span>, <span class="st">"fellow_citizens"</span><span class="op">)</span>,
+                    Peace      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"peace_world"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Then, you can fit the keyATM models (here we use <a href="(keyATM_base.html)%20model">the base</a>.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span>(<span class="kw">docs</span>              <span class="kw">=</span> <span class="no">keyATM_docs_n2</span>,    <span class="co"># text input</span>
-              <span class="kw">no_keyword_topics</span> <span class="kw">=</span> <span class="fl">3</span>,                 <span class="co"># number of topics without keywords</span>
-              <span class="kw">keywords</span>          <span class="kw">=</span> <span class="no">keywords_n2</span>,       <span class="co"># keywords</span>
-              <span class="kw">model</span>             <span class="kw">=</span> <span class="st">"base"</span>,            <span class="co"># select the model</span>
-              <span class="kw">options</span>           <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">seed</span> <span class="kw">=</span> <span class="fl">250</span>))
-<span class="fu"><a href="../../reference/top_words.html">top_words</a></span>(<span class="no">out</span>, <span class="fl">5</span>)</pre></body></html></div>
-<pre><code>##         1_Government            2_People                   3_Peace
-## 1 vice_president [✓] fellow_citizens [✓]    federal_government [1]
-## 2        one_another       men_women [✓]           peace_world [✓]
-## 3          god_bless     american_people administration_government
-## 4   fellow_americans   government_people         constitution_laws
-## 5      chief_justice        great_nation       national_government
-##               Other_1         Other_2           Other_3
-## 1  general_government   united_states     united_states
-## 2 constitution_united       years_ago   foreign_nations
-## 3       every_citizen      four_years state_governments
-## 4     form_government american_people  chief_magistrate
-## 5        among_people   among_nations  discharge_duties</code></pre>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs_n2</span>,    <span class="co"># text input</span>
+              no_keyword_topics <span class="op">=</span> <span class="fl">3</span>,                 <span class="co"># number of topics without keywords</span>
+              keywords          <span class="op">=</span> <span class="va">keywords_n2</span>,       <span class="co"># keywords</span>
+              model             <span class="op">=</span> <span class="st">"base"</span>,            <span class="co"># select the model</span>
+              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span>, <span class="fl">5</span><span class="op">)</span></code></pre></div>
+<pre><code>##             1_Government            2_People         3_Peace
+## 1 federal_government [✓] fellow_citizens [✓] american_people
+## 2     vice_president [✓]       united_states   among_nations
+## 3              god_bless       men_women [✓] foreign_nations
+## 4              years_ago  general_government    almighty_god
+## 5          national_life     american_people peace_world [✓]
+##               Other_1          Other_2         Other_3
+## 1       united_states    united_states      four_years
+## 2 constitution_united      one_another     public_debt
+## 3     form_government fellow_americans       years_ago
+## 4        among_people    chief_justice     north_south
+## 5       every_citizen     great_nation beloved_country</code></pre>
 </div>
 </div>
 <div id="fitting" class="section level1">
@@ -307,6 +312,7 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
         <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
     </nav>
 </div>
@@ -320,7 +326,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

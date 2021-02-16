@@ -18,6 +18,9 @@ keyATM_output <- function(model, keep)
   info$N <- length(model$Z)
   info$doc_lens <- sapply(model$Z, length)
   info$model <- model$model
+  info$covmodel <- model$model_settings$covariates_model
+  info$keyATMdoc_meta <- model$stored_values$keyATMdoc_meta
+  if (is.null(info$covmodel)) info$covmodel <- ""
 
   if (model$no_keyword_topics > 0 & length(model$keywords) != 0) {
     info$tnames <- c(names(model$keywords_raw), paste0("Other_", 1:model$no_keyword_topics))
@@ -96,6 +99,11 @@ keyATM_output <- function(model, keep)
 
     if (!"model_settings" %in% keep)
       keep <- c("model_settings", keep)
+
+    model$model_settings$PG_params$theta_last <- NULL  # remove redundant information
+    model$model_settings$PG_params$PG_Phi <- NULL  
+    model$model_settings$PG_params$theta_tilda <- NULL  
+    model$model_settings$PG_params$PG_Lambda <- NULL  
   }
 
   if (model$model %in% c("hmm", "ldahmm")) {
@@ -193,7 +201,7 @@ keyATM_output_theta <- function(model, info)
 {
 
   # Theta
-  if (model$model %in% c("cov", "ldacov")) {
+  if (model$model %in% c("cov", "ldacov") & info$covmodel == "DirMulti") {
     Alpha <- exp(model$model_settings$covariates_data_use %*% t(model$stored_values$Lambda_iter[[length(model$stored_values$Lambda_iter)]]))
 
     posterior_z_cov <- function(docid) {
@@ -205,6 +213,8 @@ keyATM_output_theta <- function(model, info)
 
     theta <- bind_tables(lapply(1:length(model$Z), posterior_z_cov))
 
+  } else if (model$model %in% c("cov", "ldacov") & info$covmodel == "PG") {
+    theta <-  model$model_settings$PG_params$theta_last
   } else if (model$model %in% c("base", "lda", "label")) {
     if (model$options$estimate_alpha) {
       alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]
@@ -235,7 +245,63 @@ keyATM_output_theta <- function(model, info)
 
   theta <- as.matrix(theta)
   colnames(theta) <- info$tnames # label seeded topics
+  if (!is.null(info$keyATMdoc_meta$docnames)) {
+    if (nrow(theta) != length(info$keyATMdoc_meta$docnames)) {
+      warning("The length of stored document names do not match with the number of documents fitted.
+              Check if any document has a length 0.")
+    } else {
+      row.names(theta) <- info$keyATMdoc_meta$docnames
+    }
+  }
   return(theta)
+}
+
+
+#' @noRd
+#' @import magrittr
+keyATM_output_theta_iter <- function(model, info)
+{
+  if (model$model %in% c("cov", "ldacov") & info$covmodel == "PG") {
+    return(model$stored_values$theta_PG) 
+  }
+
+  if (model$model %in% c("cov", "ldacov") & info$covmodel == "DirMulti") {
+    posterior_theta <- function(x) {
+      Z_table <- model$stored_values$Z_tables[[x]]
+      lambda <- model$stored_values$Lambda_iter[[x]]
+      Alpha <- exp(model$model_settings$covariates_data_use %*% t(lambda))
+
+      tt <- Z_table + Alpha
+      row.names(tt) <- NULL
+
+      return(tt / Matrix::rowSums(tt))
+    }
+  } else if (model$model %in% c("hmm", "ldahmm")) {
+    posterior_theta <- function(x) {
+      Z_table <- model$stored_values$Z_tables[[x]]
+      R <- model$stored_values$R_iter[[x]] + 1L  # adjust index for R
+      R <- R[model$model_settings$time_index]  # retrieve doc level state info
+
+      alphas <- matrix(model$stored_values$alpha_iter[[x]][R],
+                       nrow = length(model$Z), ncol = info$allK)
+
+      tt <- Z_table + alphas
+      theta <- tt / Matrix::rowSums(tt)
+      return(theta)
+    }
+  } else {
+    posterior_theta <- function(x) {
+      Z_table <- model$stored_values$Z_tables[[x]]
+      alpha <- model$stored_values$alpha_iter[[x]]
+
+      return((sweep(Z_table, 2, alpha, "+")) /
+              (Matrix::rowSums(Z_table) + sum(alpha)))
+    }
+  }
+
+  theta_iter <- lapply(1:length(model$stored_values$Z_tables),
+                        posterior_theta)
+  return(theta_iter)
 }
 
 
@@ -466,50 +532,6 @@ keyATM_output_phi_calc_lda <- function(all_words, all_topics, vocab, priors, tna
 
 #' @noRd
 #' @import magrittr
-keyATM_output_theta_iter <- function(model, info)
-{
-  if (model$model %in% c("cov", "ldacov")) {
-    posterior_theta <- function(x) {
-      Z_table <- model$stored_values$Z_tables[[x]]
-      lambda <- model$stored_values$Lambda_iter[[x]]
-      Alpha <- exp(model$model_settings$covariates_data_use %*% t(lambda))
-
-      tt <- Z_table + Alpha
-      row.names(tt) <- NULL
-
-      return(tt / Matrix::rowSums(tt))
-    }
-  } else if (model$model %in% c("hmm", "ldahmm")) {
-    posterior_theta <- function(x) {
-      Z_table <- model$stored_values$Z_tables[[x]]
-      R <- model$stored_values$R_iter[[x]] + 1L  # adjust index for R
-      R <- R[model$model_settings$time_index]  # retrieve doc level state info
-
-      alphas <- matrix(model$stored_values$alpha_iter[[x]][R],
-                       nrow = length(model$Z), ncol = info$allK)
-
-      tt <- Z_table + alphas
-      theta <- tt / Matrix::rowSums(tt)
-      return(theta)
-    }
-  } else {
-    posterior_theta <- function(x) {
-      Z_table <- model$stored_values$Z_tables[[x]]
-      alpha <- model$stored_values$alpha_iter[[x]]
-
-      return((sweep(Z_table, 2, alpha, "+")) /
-              (Matrix::rowSums(Z_table) + sum(alpha)))
-    }
-  }
-
-  theta_iter <- lapply(1:length(model$stored_values$Z_tables),
-                        posterior_theta)
-  return(theta_iter)
-}
-
-
-#' @noRd
-#' @import magrittr
 #' @importFrom rlang .data
 keyATM_output_alpha_iter_base <- function(model, info)
 {
@@ -732,217 +754,6 @@ top_docs <- function(x, n = 10)
     order(xcol, decreasing = TRUE)[1:n]
   }
 
-  res <- apply(x$theta, 2, measuref) %>% as.data.frame()
+  res <- as.data.frame(apply(x$theta, 2, measuref), stringsAsFactors = FALSE)
   return(res)
 }
-
-
-#' Estimate subsetted topic-word distribution
-#'
-#' @param x the output from a keyATM model (see [keyATM()]).
-#' @param keyATM_docs an object generated by [keyATM_read()].
-#' @param by a vector whose length is the number of documents.
-#'
-#' @return strata_topicword object (a list).
-#' @import magrittr
-#' @export
-by_strata_TopicWord <- function(x, keyATM_docs, by)
-{
-  # Check inputs
-  if (!is.vector(by)) {
-    stop("`by` should be a vector.")
-  }
-  if (!"Z" %in% names(x$kept_values)) {
-    stop("`Z` and `S` should be in the output. Please check `keep` option in `keyATM()`.")
-  }
-  if (!"S" %in% names(x$kept_values)) {
-    stop("`Z` and `S` should be in the output. Please check `keep` option in `keyATM()`.")
-  }
-  if (length(keyATM_docs) != length(by)) {
-    stop("The length of `by` should be the same as the length of documents.")
-  }
-
-
-  # Get unique values of `by`
-  unique_val <- unique(by)
-  tnames <- rownames(x$phi)
-
-  # Get phi for each
-  obj <- lapply(unique_val,
-                function(val) {
-                  doc_index <- which(by == val)
-                  all_words <- unlist(keyATM_docs[doc_index], use.names = FALSE)
-                  all_topics <- as.integer(unlist(x$kept_values$Z[doc_index]), use.names = FALSE)
-                  all_s <- as.integer(unlist(x$kept_values$S[doc_index]), use.names = FALSE)
-                  pi_estimated <- keyATM_output_pi(x$kept_values$Z[doc_index],
-                                                   x$kept_values$S[doc_index],
-                                                   x$priors$gamma)
-                  vocab <- sort(unique(all_words))
-                  phi_obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, pi_estimated,
-                                                        x$keywords_raw,
-                                                        vocab, x$priors, tnames, model = x)
-                }
-               )
-  names(obj) <- unique_val
-
-  res <- list(phi = obj, theta = x$theta, keywords_raw = x$keywords_raw)
-
-  class(res) <- c("strata_topicword", class(res))
-  return(res)
-}
-
-
-#' Show covariates information
-#'
-#' @param x the output from the covariate keyATM model (see [keyATM()]).
-#' @export
-covariates_info <- function(x) {
-  if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
-    stop("This is not an output of the covariate model")
-  }
-  cat(paste0("Colnames: ", paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse = ", "),
-             "\nStandardization: ", as.character(x$kept_values$model_settings$standardize),
-             "\nFormula: ", paste(as.character(x$kept_values$model_settings$covariates_formula), collapse = " "), "\n\nPreview:\n"))
-  print(utils::head(x$kept_values$model_settings$covariates_data_use))
-}
-
-
-#' Return covariates used in the iteration
-#'
-#' @param x the output from the covariate keyATM model (see [keyATM()])
-#' @export
-covariates_get <- function(x) {
-  if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
-    stop("This is not an output of the covariate model")
-  }
-  return(x$kept_values$model_settings$covariates_data_use)
-}
-
-
-#' Estimate document-topic distribution by strata (for covariate models)
-#'
-#' @param x the output from the covariate keyATM model (see [keyATM()]).
-#' @param by_var character. The name of the variable to use.
-#' @param labels character. The labels for the values specified in `by_var` (ascending order).
-#' @param by_values numeric. Specific values for `by_var`, ordered from small to large. If it is not specified, all values in `by_var` will be used.
-#' @param ... other arguments passed on to the [predict()] function.
-#' @return strata_topicword object (a list).
-#' @import magrittr
-#' @importFrom stats predict
-#' @export
-by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, ...)
-{
-  # Check inputs
-  variables <- colnames(x$kept_values$model_settings$covariates_data_use)
-  if (length(by_var) != 1)
-    stop("`by_var` should be a single variable.")
-  if (!by_var %in% variables)
-    stop(paste0(by_var, " is not in the set of covariates in keyATM model. Check with `covariates_info()`.",
-                "Covariates provided are: ",
-                paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse=" , ")))
-
-  # Info
-  if (is.null(by_values)) {
-    by_values <- sort(unique(x$kept_values$model_settings$covariates_data_use[, by_var]))
-  }
-  if (length(by_values) != length(labels)) {
-    stop("Length mismatches. Please check `labels`.")
-  }
-
-  set.seed(x$options$seed)
-  res <- lapply(1:length(by_values),
-                function(i) {
-                  value <- by_values[i]
-                  new_data <- x$kept_values$model_settings$covariates_data_use
-                  new_data[, by_var] <- value
-                  obj <- predict(x, new_data, raw_values = TRUE, ...)
-                })
-
-  names(res) <- by_values
-  obj <- list(theta = tibble::as_tibble(res), by_values = by_values, by_var = by_var, labels = labels)
-  class(obj) <- c("strata_doctopic", class(obj))
-  return(obj)
-}
-
-
-#' @noRd
-#' @export
-print.strata_doctopic <- function(x, ...)
-{
-  cat(paste0("strata_doctopic object for the ", x$by_var, "\n"))
-}
-
-
-#' @noRd
-#' @export
-summary.strata_doctopic <- function(object, ci = 0.9, method = "hdi", point = "mean", ...)
-{
-  tables <- lapply(1:length(object$by_values),
-                  function(index) {
-                     theta <- object$theta[[index]]
-                     return(strata_doctopic_CI(theta[, 1:(ncol(theta)-1)],
-                                               ci, method, point,
-                                               label = object$labels[index]))
-                  })
-  names(tables) <- object$labels
-  return(tables)
-}
-
-
-#' @noRd
-#' @importFrom rlang .data
-#' @import magrittr
-#' @keywords internal
-strata_doctopic_CI <- function(theta, ci, method, point, label)
-{
-  q <- as.data.frame(apply(theta, 2, calc_ci, ci, method, point))
-  q$CI <- c("Lower", "Point", "Upper")
-  q %>%
-    tidyr::gather(key = "Topic", value = "Value", -"CI") %>%
-    tidyr::spread(key = "CI", value = "Value") %>%
-    dplyr::mutate(TopicId = 1:(dplyr::n())) %>% tibble::as_tibble() -> res
-
-  if (!is.null(label)) {
-    res %>% dplyr::mutate(label = label) -> res
-  }
-  return(res)
-}
-
-
-#' @noRd
-#' @keywords internal
-calc_ci <- function(vec, ci, method, point)
-{
-  # Check bayestestR package and Kruschke's book
-  if (point == "mean") {
-    point <- mean(vec)
-  }
-  if (point == "median") {
-    point <- stats::median(vec)
-  }
-
-  if (method == "hdi") {
-    sorted_points <- sort.int(vec, method = "quick")
-    window_size <- ceiling(ci * length(sorted_points))
-    nCIs <-  length(sorted_points) - window_size
-
-    if (window_size < 2 | nCIs < 1) {
-      warning("`ci` is too small or interations are not enough, using `eti` option instead.")
-      return(calc_ci(vec, ci, method = "eti", point))
-    }
-
-    ci_width <- sapply(1:nCIs, function(x) {sorted_points[x + window_size] - sorted_points[x]})
-    slice_min <- which.min(ci_width)
-
-    res <- c(sorted_points[slice_min], point, sorted_points[slice_min + window_size])
-  }
-
-  if (method == "eti") {
-    qua <- stats::quantile(vec, probs = c((1 - ci) / 2, (1 + ci) / 2))
-    res <- c(qua[1], point, qua[2])
-  }
-
-  names(res) <- c("Lower", "Point", "Upper")
-  return(res)
-}
-

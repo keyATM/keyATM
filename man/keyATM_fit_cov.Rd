@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{keyATM_fit_cov}
 \alias{keyATM_fit_cov}
-\title{Run the Collapsed Gibbs sampler for the keyATM covariates}
+\title{Run the Collapsed Gibbs sampler for the keyATM covariates (Dir-Multi)}
 \usage{
 keyATM_fit_cov(model, iter = 0L)
 }
@@ -12,6 +12,6 @@ keyATM_fit_cov(model, iter = 0L)
 \item{iter}{Required number of iterations}
 }
 \description{
-Run the Collapsed Gibbs sampler for the keyATM covariates
+Run the Collapsed Gibbs sampler for the keyATM covariates (Dir-Multi)
 }
 \keyword{internal}

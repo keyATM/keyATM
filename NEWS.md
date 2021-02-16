@@ -1,3 +1,16 @@
+# keyATM 0.4.0
+[Roadmap](https://github.com/keyATM/keyATM/projects/3) for this version.
+
+### Major changes
+* Implementation of Polya-Gamma covariate keyATM
+* Use `future.apply` instead of `parallel` (no backward compatibility if you use the `init_parallel` option)
+* The `keyATM_read()` function returns a list of objects (e.g., text and document index)
+* An option to store document names in a quanteda dfm object. The `keep_docnames` option in the `keyATM_read()` function (thank you [Morgan 'Les' DeBusk-Lane](https://github.com/debusklaneml) for the suggestion!)
+* An option to split a dfm to choose keywords with an unsupervised topic model
+
+### Bug fix
+* Using just first 58 speeches of inaugural corpus in test (thank you [Ken Benoit](https://github.com/kbenoit) for catching this!)
+
 # keyATM 0.3.1
 ### Major changes
 * Changes related to release of dplyr 1.0.1

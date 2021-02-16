@@ -6,7 +6,7 @@ output:
 ---
 
 ```{r setup II, include=FALSE, eval=TRUE}
-knitr::opts_chunk$set(eval = T, echo = TRUE)
+knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
 ```
 
 ```{r, include=FALSE, warning=FALSE, message=FALSE}
@@ -14,6 +14,7 @@ library(keyATM)
 library(quanteda)
 library(magrittr)
 data(data_corpus_inaugural, package = "quanteda")
+data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 
 data_tokens <- tokens(data_corpus_inaugural,
                       remove_numbers = TRUE, 
@@ -289,6 +290,26 @@ strata_tw <- by_strata_TopicWord(out, keyATM_docs,
 We check the result.
 ```{r, warning=FALSE, message=FALSE}
 top_words(strata_tw, n = 3)
+```
+
+## keyATM Covariate with Pólya-Gamma Augmentation
+An alternative modeling approach is to use the Pólya-Gamma augmentation for topic
+assignments. This approach has a speed advantage (computational time does not significantly
+change by the number of covariates), but estimated topics can be
+sensitive to the order.
+Please read Appendix S3 of Eshima, Imai, and Sasaki (2020) for details.
+
+To estimate keyATM Covariate with the Pólya-Gamma augmentation, set `covariates_model = "PG"`.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+out <- keyATM(docs              = keyATM_docs,
+              no_keyword_topics = 5,
+              keywords          = keywords,
+              model             = "covariates",
+              model_settings    = list(covariates_data    = vars_selected, 
+                                       covariates_formula = ~ Party + Period,
+                                       covariates_model = "PG"),
+              options           = list(seed = 250))
+top_words(out)
 ```
 
 ## Reference

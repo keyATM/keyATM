@@ -7,9 +7,9 @@ bills_time_index <- keyATM_data_bills$time_index
 labels_use <- keyATM_data_bills$labels
 
 test_that("Reading documents from quanteda dfm", {
-  expect_identical(keyATM_docs[[1]][3], "one")
-  expect_identical(keyATM_docs[[10]][10], "congress")
-  expect_identical(keyATM_docs[[140]][100], "number")
+  expect_identical(keyATM_docs$W_raw[[1]][3], "one")
+  expect_identical(keyATM_docs$W_raw[[10]][10], "congress")
+  expect_identical(keyATM_docs$W_raw[[140]][100], "number")
 })
 
 
@@ -29,8 +29,8 @@ test_that("Parallel initialization", {
                 keywords = bills_keywords,  # keywords
                 model = "base",  # select the model
                 options = list(seed = 250, iterations = 0, parallel_init = TRUE))
-  expect_identical(out$Z[[1]][3], 1L)
-  expect_identical(out$Z[[140]][15], 6L)
+  expect_identical(out$Z[[1]][3], 0L)
+  expect_identical(out$Z[[140]][15], 2L)
 })
 
 
@@ -62,6 +62,21 @@ test_that("keyATM Dynamic: Initialization (wrong time index)", {
   )
 })
 
+
+# Keep document names
+test_that("Keep document names", {
+  docs <- keyATM_read(bills_dfm, keep_docnames = TRUE)
+  expect_identical(docs$docnames[10], "101th-congress_senate-bill_1726")
+
+  out <- keyATM(docs = docs,  # text input
+                no_keyword_topics = 3,  # number of regular topics
+                keywords = bills_keywords,  # keywords
+                model = "base",
+                options = list(seed = 250, iterations = 3))
+
+
+  expect_identical(row.names(out$theta)[10], "101th-congress_senate-bill_1726")
+})
 
 
 # Documents with 0 length
@@ -105,7 +120,7 @@ test_that("Documents with length 0: covariate", {
                   keywords = bills_keywords,  # keywords
                   model = "covariates",
                   model_settings = list(covariates_data = bills_cov, standardize = "all",
-                                      covariates_formula = ~.),
+                                      covariates_formula = ~., covariates_model = "DirMulti"),
                   options = list(seed = 250, iterations = 0))
   )
 
@@ -118,7 +133,7 @@ test_that("Documents with length 0: covariate", {
                   keywords = bills_keywords,  # keywords
                   model = "covariates",
                   model_settings = list(covariates_data = bills_cov, standardize = "all",
-                                      covariates_formula = ~.),
+                                      covariates_formula = ~., covariates_model = "DirMulti"),
                   options = list(seed = 250, iterations = 1))
   )
   expect_identical(length(out$kept_values$doc_index_used), 138L)
@@ -172,3 +187,5 @@ test_that("Documents with length 0: label", {
   expect_identical(length(out$Z), 138L)
   expect_identical(length(out$model_settings$labels), 138L)
 })
+
+
