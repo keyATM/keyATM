@@ -232,7 +232,8 @@ a subset of the corpus by randomly splitting each document (i.e., this is not
 a random sample of documents). In the following example, we use 30% of each document to fit
 an unsupervised model (results will not be meaningful because we only have 140 documents).
 An unsupervised model such as [the LDA](Weighted_LDA.html) can explore the corpus.
-We use its result to select keywords for the keyATM models (here, we fit [the base model](keyATM_base.html)). This computer-assisted keyword selection does not mean that researchers
+We use its result to select keywords for the keyATM models (here, we fit [the base keyATM](keyATM_base.html) with the remaining 70% of corpus).
+This computer-assisted keyword selection does not mean that researchers
 need to select all keywords from the top words of the LDA.
 Researchers can use other methods such as a keyword selection algorithm proposed in
 King, Lam and Roberts (2017).
@@ -245,11 +246,11 @@ out <- weightedLDA(docs              = docs_withSplit$W_split,  # 30% of the cor
                    number_of_topics  = 10,  # the number of potential themes in the corpus 
                    model             = "base",
                    options           = list(seed = 250))
-top_words(out)  # top words can aid setting keywords
+top_words(out)  # top words can aid selecting keywords
 
 out <- keyATM(docs              = docs_withSplit,  # 70% of the corpus
               no_keyword_topics = 5,               # number of topics without keywords
-              keywords          = keywords,        # keywords
+              keywords          = keywords,        # selected keywords
               model             = "base",          # select the model
               options           = list(seed = 250))
 ```
