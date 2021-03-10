@@ -297,7 +297,7 @@ An alternative modeling approach is to use the Pólya-Gamma augmentation for top
 assignments. This approach has a speed advantage (computational time does not significantly
 change by the number of covariates), but estimated topics can be
 sensitive to the order.
-Please read Appendix S3 of Eshima, Imai, and Sasaki (2020) for details.
+Please read [technical details](keyATMPG.html) before use this option.
 
 To estimate keyATM Covariate with the Pólya-Gamma augmentation, set `covariates_model = "PG"`.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}

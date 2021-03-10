@@ -1,0 +1,221 @@
+---
+title: "keyATM Covariate with Pólya-Gamma Augmentation"
+output: 
+  html_document:
+    toc: true
+---
+
+
+```{r setup II, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+```
+\newcommand{\red}{\color{red}}
+\newcommand{\blue}{\color{blue}}
+\newcommand{\Beta}{\textsf{Beta}}
+\newcommand{\Binomial}{\text{Binomial}}
+\newcommand{\Bern}{\textsf{Bernoulli}}
+\newcommand{\Expo}{\text{Expo}}
+\newcommand{\Pois}{\text{Pois}}
+\newcommand{\Unif}{\textsf{Uniform}}
+\newcommand{\Gammad}{\textsf{Gamma}}
+\newcommand{\logit}{\text{logit}}
+\newcommand{\expit}{\text{expit}}
+\newcommand{\mexpit}{\text{mexpit}}
+\newcommand{\Dir}{\textsf{Dirirchlet}}
+\newcommand{\Multi}{\textsf{Multi}}
+\newcommand{\Cat}{\textsf{Categorical}}
+
+\newcommand{\pr}{\text{pr}}
+\newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}}
+\newcommand{\sumN}{\sum_{i=1}^N}
+\newcommand{\wt}{\tilde}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\bs}{\mathbf{s}}
+\newcommand{\bc}{\mathbf{c}}
+\newcommand{\bI}{\mathbf{I}}
+\newcommand{\bM}{\mathbf{M}}
+\newcommand{\bP}{\mathbf{P}}
+\newcommand{\bQ}{\mathbf{Q}}
+\newcommand{\bV}{\mathbf{V}}
+\newcommand{\bU}{\mathbf{U}}
+\newcommand{\bW}{\mathbf{W}}
+\newcommand{\bw}{\mathbf{w}}
+\newcommand{\ATE}{\textsf{ATE}}
+\newcommand{\bepsilon}{\bm{\epsilon}}
+\newcommand{\boldeta}{\bm{\eta}}
+
+\newcommand{\bA}{\bm{A}}
+\newcommand{\ba}{\bm{a}}
+\newcommand{\bZ}{\bm{Z}}
+\newcommand{\bz}{\mathbf{z}}
+\newcommand{\bD}{\bm{D}}
+\newcommand{\bd}{\bm{d}}
+\newcommand{\bY}{\bm{Y}}
+\newcommand{\cI}{\mathcal{I}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cW}{\mathcal{W}}
+\newcommand{\cV}{\mathcal{V}}
+\newcommand{\oD}{\overline{D}}
+\newcommand{\oY}{\overline{Y}}
+\newcommand{\bone}{\mathbf{1}}
+
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\balpha}{\boldsymbol{\alpha}}
+\newcommand{\bsigma}{\boldsymbol{\sigma}}
+\newcommand{\bkappa}{\boldsymbol{\kappa}}
+\newcommand{\bomega}{\boldsymbol{\omega}}
+\newcommand{\bgamma}{\boldsymbol{\gamma}}
+\newcommand{\blambda}{\boldsymbol{\lambda}}
+\newcommand{\bphi}{\boldsymbol{\phi}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\bnu}{\boldsymbol{\nu}}
+\newcommand{\bpsi}{\boldsymbol{\psi}}
+\newcommand{\bpi}{\boldsymbol{\pi}}
+
+\newcommand{\bLambda}{\boldsymbol{\Lambda}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\bOmega}{\boldsymbol{\Omega}}
+\newcommand{\bPhi}{\boldsymbol{\Phi}}
+\newcommand{\bPsi}{\boldsymbol{\Psi}}
+
+
+\newcommand{\cMVN}{\mathcal{MVN}}
+\newcommand{\cMN}{\mathcal{MN}}
+\newcommand{\cN}{\mathcal{N}}
+
+\newcommand{\keyATM}{\textsf{keyATM}}
+\newcommand{\keyATMCov}{\textsf{covariate keyATM}}
+\newcommand{\keyATMDynamic}{\textsf{dynamic keyATM}}
+\newcommand{\LDA}{\textsf{LDA}}
+\newcommand{\wLDA}{\textsf{wLDA}}
+\newcommand{\STM}{\textsf{STM}}
+\newcommand{\kprime}{k^{'}}
+\newcommand{\zdel}{\mathbf{z}^{- di}}
+
+
+## Model
+An alternative approach to model covariates is to use Pólya-Gamma augmentation.
+Polson et al. (2013) propose a strategy to use Pólya-Gamma latent variables
+for fully Bayesian inference in binomial likelihoods.
+Linderman et al. (2015) use it to develop models for categorical and multinomial
+data with dependencies among the multinomial parameters.
+We extend their method to incorporate covariates.
+
+We use the same notations as in the main text. Our corpus contains $D$ documents.
+We observe a matrix $\bX$ of $M$ covariates whose dimension is $D \times M$.
+Topic model assigns one of $K$ topics to each observed word. $\bz_d$ is a vector of assigned
+topics for a document $d$. 
+We introduce the stick-breaking representation of the multinomial distribution (\textsf{SB-Multi})
+described in Linderman et al. (2015),
+\begin{align}
+  \bz_{d} &\sim \textsf{SB-Multi}(n_d, \bpsi_d).
+\end{align}
+\textsf{SB-Multi} rewrites the $K$-dimensional multinomial distribution
+with $K-1$ binomial distributions.
+%
+\begin{align}
+  \textsf{SB-Multi}(\bz_d \mid n_d, \bpsi_d)
+  &= \prod_{k=1}^{K-1} \textsf{Bin}(n_{dk} \mid n_d - \textstyle\sum_{k' < k} n_{dk'}, \psi_{dk}) \\
+  &= \prod_{k=1}^{K-1} \binom{N_{dk}}{n_{dk}} 
+      \bigg( \frac{\exp(\psi_{dk})}{1 + \exp(\psi_{dk})} \bigg)^{n_{dk}}
+      \bigg( \frac{1}{1 + \exp(\psi_{dk})} \bigg)^{N_{dk} - n_{dk}} \\
+  &= \prod_{k=1}^{K-1} \binom{N_{dk}}{n_{dk}} 
+  \frac{\exp(\psi_{dk})^{n_{dk}}}{(1 + \exp(\psi_{dk}))^{N_{dk}}} \\ \label{eq:sb-multi}
+   N_{dk} &= n_d - \sum_{k' < k} n_{dk'}
+\end{align}
+
+We model the parameters in \textsf{SB-Multi} with the covariates.
+First, we assume that coefficients follow the multivariate normal distribution.
+$\blambda$ is a $M \times (K-1)$ matrix, so we introduce the vectorization
+transformation to draw all elements from a single draw of the multivariate normal distribution.
+%
+\begin{align}
+  \text{vec}({\blambda}) &\sim \cN(\text{vec}(\bmu_0), \bSigma_0 \otimes \bLambda_0^{-1}) \\ \label{eq:prior_lambda}
+  \bSigma_0 &\sim \cW^{-1}(\bV_0, \bnu_0)
+\end{align}
+where we have the priors $\bmu_0 = \mathbf{0}$, and
+$\bSigma_0$ is a $(K-1) \times (K-1)$ identity matrix (for topics).
+$\bLambda_0$ is a $M  \times M$ identity matrix (for covariates).
+% $\bLambda_\lambda = \frac{1}{\sigma_\lambda^2} \mathbf{1}_{M}$.
+$\bSigma_0 \otimes \bLambda_0^{-1}$ becomes a diagonal matrix and 
+equation~\eqref{eq:prior_lambda} is the same
+as $\blambda_{k} \sim \cN((\bmu_{0})_{k}, (\bSigma_0)_{kk} \bLambda_0^{-1}), \text{ for } k = 1, \ldots, K-1$.
+%
+
+Next, we use covariates to model the parameters in \textsf{SB-Multi}.
+\begin{align}
+  \bpsi_d &\sim \cN(\blambda^\top \bx_d, \bSigma_0)
+\end{align}
+Social scientists often use categorical variables (e.g., authorship of the document) as
+covariates. Modeling the mean of the multivariate normal distribution with covariates
+allows us to create variation in the document-topic distribution when two or more documents
+have the same set of covariates.
+The multivariate normal distribution can be generalized 
+to the matrix normal distribution.
+\begin{align}
+  \bPsi \sim \cMN(\bM, \bU, \bSigma_0),
+\end{align}
+where $\bPsi$ is a $D \times (K-1)$ matrix,
+each row of $\bM$ is equal to $\blambda^\top \bx_d$, and
+$\bU$ is the $D\times D$ identity matrix (documents are independent).
+This generalization will allow us to have a vectorized implementation.
+
+
+## Estimation
+We sample $\blambda$, $\bPsi$, and P{\'{o}}lya-gamma auxiliary variables $\bomega$.
+
+
+### Sampling $\bPsi$
+Equation~\eqref{eq:sb-multi} has the same form as Theorem 1 of Polson et al. (2013)
+and we can introduce P{\'{o}}lya-gamma auxiliary variables.
+%
+\begin{align}
+  p(\bz_d, \bomega_d \mid n_d, \bpsi_d) &\propto
+  \prod_{k = 1}^{K - 1} \exp \big( (n_{dk} - {N_{dk}}/{2}) \psi_{dk} - \omega_{dk} \psi_{dk}^2 /2   \big) \\
+  &= \prod_{k = 1}^{K - 1} \exp \bigg(  -\frac{\omega_{dk}}{2}
+  \bigg( \psi_{dk}^2 - \textstyle \frac{2}{\omega_{dk}} (n_{dk} - N_{dk}/2) \psi_{dk} \bigg)   \bigg) \\ 
+  &\propto  \prod_{k = 1}^{K - 1} \exp  \bigg( -\frac{\omega_{dk}}{2}
+  \bigg( \psi_{dk} - \textstyle \frac{1}{\omega_{dk}}(n_{dk} - N_{dk}/2) \bigg)^2 \  \bigg)  \\
+  &= \cN \big( \bpsi_d \mid \bOmega_d^{-1} \bkappa_d, \bOmega_{d}^{-1}  \big) \\
+  \omega_{dk} &\sim \text{PG}(N_{dk}, \psi_{dk}) \text{ for } 1, \ldots, K-1 \\
+  \kappa_{dk} &= n_{dk} - \frac{N_{dk}}{2} \text{ for } 1, \ldots, K-1 \\
+  \bOmega_{d} &= \text{diag}(\omega_{d1}, \ldots, \omega_{d, K-1}) 
+\end{align}
+We can use the multivariate normal distribution to sample $\bpsi_d$.
+\begin{align}
+  p(\bpsi_d \mid \bz_d, \bomega_d) 
+  &\propto 
+    p(\bz_d \mid \bpsi_d, \bkappa_d, \bOmega_d) p(\bpsi_d \mid \bSigma_0, \bX, \blambda)\\
+  &\propto \cN(\bpsi_d \mid \tilde{\bmu}, \tilde{\bSigma}) \\
+  \tilde{\bmu} &= \tilde{\bSigma}[\bkappa_d + \bSigma_0^{-1} \blambda^\top \bx_d] \\
+  \tilde{\bSigma} &= [\bOmega_d + \bSigma_{0}^{-1}]^{-1},
+\end{align}
+where the second proportion comes from Matrix Cook Book \S8.1.8 (product of Gaussians).
+
+
+### Sampling $\blambda$
+Sampling $\blambda$ and $\bX$ is the same as Bayesian multivariate linear regression
+in Rossi et al. (2012, pp.31-34).
+
+
+## Ordering effect
+Stick-Breaking representation of the multinomial distribution
+has a potential ordering issue (Zhang and Zhou, 2017).
+We can regard \textsf{SB-Multi} as a distribution that orders categories
+according to their proportions.
+This can be an issue in \textsf{keyATM} because topics are pre-labeled,
+and the order does not necessarily match with the proportion of the topics.
+
+## Reference
+* Linderman, S. W., Johnson, M. J., & Adams, R. P. (2015). Dependent multinomial models made easy: Stick breaking with the Pólya-gamma augmentation. Advances in Neural Information Processing Systems, 2015, 3456-3464.
+* Polson, N. G., Scott, J. G., & Windle, J. (2013). Bayesian inference for logistic models using Pólya–Gamma latent variables. Journal of the American statistical Association, 108(504), 1339-1349.
+* Rossi, P. E., Allenby, G. M., & McCulloch, R. (2012). Bayesian statistics and marketing. John Wiley & Sons.
+* Zhang, Q., & Zhou, M. (2017). Permuted and augmented stick-breaking bayesian multinomial regression. The Journal of Machine Learning Research, 18(1), 7479-7511.
+
+
+
