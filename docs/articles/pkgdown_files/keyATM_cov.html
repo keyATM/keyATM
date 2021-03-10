@@ -117,12 +117,12 @@
 <h2 class="hasAnchor">
 <a href="#preparing-covariates" class="anchor"></a>Preparing covariates</h2>
 <p>We follow the same procedure for the text preparation explained in <a href="Preparation.html">Preparation</a> and explain how to prepare covariates in this section.</p>
-<p>The <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code> function in the <strong>quanteda</strong> package is especially useful to construct a <code>vector</code> or a <code>dataframe</code> of covariates because it ensures that documents and covariates are corresponding to each other. Since the <strong>keyATM</strong> does not take missing values, we recommend researchers to remove any missing values from covariates before extracting them using the <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code>.</p>
+<p>The <code>docvars()</code> function in the <strong>quanteda</strong> package is especially useful to construct a <code>vector</code> or a <code>dataframe</code> of covariates because it ensures that documents and covariates are corresponding to each other. Since the <strong>keyATM</strong> does not take missing values, we recommend researchers to remove any missing values from covariates before extracting them using the <code>docvars()</code>.</p>
 <p>Moreover, we strongly recommend researchers to extract covariates <em>after</em> preprocessing texts because preprocessing steps will remove documents without any terms, which may result in any discrepancies between documents and covariates.</p>
-<p>Therefore, the recommended procedure is (1) removing missing values from covariates, (2) preprocessing texts (including the process to discard documents that do not contain any words), and (3) extracting covariates using <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code> function.</p>
-<p>In this example, we create a period dummy and a party dummy from the corpus and use them as covariates for the covariate keyATM. First, we extract covariates attached to each document in the corpus with the <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code> function.</p>
+<p>Therefore, the recommended procedure is (1) removing missing values from covariates, (2) preprocessing texts (including the process to discard documents that do not contain any words), and (3) extracting covariates using <code>docvars()</code> function.</p>
+<p>In this example, we create a period dummy and a party dummy from the corpus and use them as covariates for the covariate keyATM. First, we extract covariates attached to each document in the corpus with the <code>docvars()</code> function.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu">docvars</span><span class="op">(</span><span class="va">data_corpus_inaugural</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span></code></pre></div>
 <pre><code>##   Year  President FirstName                 Party
 ## 1 1789 Washington    George                  none
@@ -339,7 +339,7 @@
 <div id="keyatm-covariate-with-pólya-gamma-augmentation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#keyatm-covariate-with-p%C3%B3lya-gamma-augmentation" class="anchor"></a>keyATM Covariate with Pólya-Gamma Augmentation</h2>
-<p>An alternative modeling approach is to use the Pólya-Gamma augmentation for topic assignments. This approach has a speed advantage (computational time does not significantly change by the number of covariates), but estimated topics can be sensitive to the order. Please read Appendix S3 of Eshima, Imai, and Sasaki (2020) for details.</p>
+<p>An alternative modeling approach is to use the Pólya-Gamma augmentation for topic assignments. This approach has a speed advantage (computational time does not significantly change by the number of covariates), but estimated topics can be sensitive to the order. Please read <a href="keyATMPG.html">technical details</a> before use this option.</p>
 <p>To estimate keyATM Covariate with the Pólya-Gamma augmentation, set <code>covariates_model = "PG"</code>.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,
