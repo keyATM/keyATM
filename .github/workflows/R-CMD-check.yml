@@ -13,7 +13,9 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  R-CMD-check:
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: true
