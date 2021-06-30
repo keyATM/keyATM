@@ -4,8 +4,6 @@ output:
   html_document:
     toc: true
     toc_depth: 1
-pkgdown:
-  as_is: true
 ---
 
 

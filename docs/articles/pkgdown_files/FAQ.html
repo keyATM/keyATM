@@ -67,6 +67,9 @@
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
+      <a href="../../articles/pkgdown_files/Plot.html">Customizing Plots</a>
+    </li>
+    <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -84,7 +87,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/keyATM/keyATM">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -98,8 +101,7 @@
 
       
 
-      </header><script src="FAQ_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="FAQ_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="FAQ_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="FAQ_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>FAQ</h1>
@@ -275,18 +277,18 @@
               model             <span class="op">=</span> <span class="st">"base"</span>,            <span class="co"># select the model</span>
               options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span>, <span class="fl">5</span><span class="op">)</span></code></pre></div>
-<pre><code>##             1_Government            2_People         3_Peace
-## 1 federal_government [✓] fellow_citizens [✓] american_people
-## 2     vice_president [✓]       united_states   among_nations
-## 3              god_bless       men_women [✓] foreign_nations
-## 4              years_ago  general_government    almighty_god
-## 5          national_life     american_people peace_world [✓]
-##               Other_1          Other_2         Other_3
-## 1       united_states    united_states      four_years
-## 2 constitution_united      one_another     public_debt
-## 3     form_government fellow_americans       years_ago
-## 4        among_people    chief_justice     north_south
-## 5       every_citizen     great_nation beloved_country</code></pre>
+<pre><code>##             1_Government            2_People             3_Peace
+## 1 federal_government [✓]       men_women [✓]     american_people
+## 2          united_states fellow_citizens [✓]          four_years
+## 3     vice_president [✓]     american_people       among_nations
+## 4            one_another    fellow_americans     peace_world [✓]
+## 5              god_bless        people_world national_government
+##               Other_1           Other_2                   Other_3
+## 1  general_government         years_ago             united_states
+## 2 constitution_united government_people       fellow_citizens [2]
+## 3        among_people      great_nation             people_united
+## 4         public_debt     nations_world administration_government
+## 5   constitution_laws    every_american             within_limits</code></pre>
 </div>
 </div>
 <div id="fitting" class="section level1">
