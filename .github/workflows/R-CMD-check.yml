@@ -9,8 +9,6 @@
 name: R-CMD-check
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 
