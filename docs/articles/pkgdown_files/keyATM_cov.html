@@ -67,6 +67,9 @@
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
+      <a href="../../articles/pkgdown_files/Plot.html">Customizing Plots</a>
+    </li>
+    <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
     </li>
   </ul>
@@ -84,7 +87,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/keyATM/keyATM">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -98,8 +101,7 @@
 
       
 
-      </header><script src="keyATM_cov_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="keyATM_cov_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="keyATM_cov_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="keyATM_cov_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>keyATM Covariates</h1>
@@ -117,12 +119,12 @@
 <h2 class="hasAnchor">
 <a href="#preparing-covariates" class="anchor"></a>Preparing covariates</h2>
 <p>We follow the same procedure for the text preparation explained in <a href="Preparation.html">Preparation</a> and explain how to prepare covariates in this section.</p>
-<p>The <code>docvars()</code> function in the <strong>quanteda</strong> package is especially useful to construct a <code>vector</code> or a <code>dataframe</code> of covariates because it ensures that documents and covariates are corresponding to each other. Since the <strong>keyATM</strong> does not take missing values, we recommend researchers to remove any missing values from covariates before extracting them using the <code>docvars()</code>.</p>
+<p>The <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code> function in the <strong>quanteda</strong> package is especially useful to construct a <code>vector</code> or a <code>dataframe</code> of covariates because it ensures that documents and covariates are corresponding to each other. Since the <strong>keyATM</strong> does not take missing values, we recommend researchers to remove any missing values from covariates before extracting them using the <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code>.</p>
 <p>Moreover, we strongly recommend researchers to extract covariates <em>after</em> preprocessing texts because preprocessing steps will remove documents without any terms, which may result in any discrepancies between documents and covariates.</p>
-<p>Therefore, the recommended procedure is (1) removing missing values from covariates, (2) preprocessing texts (including the process to discard documents that do not contain any words), and (3) extracting covariates using <code>docvars()</code> function.</p>
-<p>In this example, we create a period dummy and a party dummy from the corpus and use them as covariates for the covariate keyATM. First, we extract covariates attached to each document in the corpus with the <code>docvars()</code> function.</p>
+<p>Therefore, the recommended procedure is (1) removing missing values from covariates, (2) preprocessing texts (including the process to discard documents that do not contain any words), and (3) extracting covariates using <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code> function.</p>
+<p>In this example, we create a period dummy and a party dummy from the corpus and use them as covariates for the covariate keyATM. First, we extract covariates attached to each document in the corpus with the <code><a href="https://quanteda.io/reference/docvars.html">docvars()</a></code> function.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu">docvars</span><span class="op">(</span><span class="va">data_corpus_inaugural</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span></code></pre></div>
 <pre><code>##   Year  President FirstName                 Party
 ## 1 1789 Washington    George                  none
@@ -275,7 +277,7 @@
           <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">TopicId</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>  <span class="co"># Select two topics</span>
 <span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">label</span><span class="op">)</span>
 
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">res</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">label</span>, ymin <span class="op">=</span> <span class="va">Lower</span>, ymax <span class="op">=</span> <span class="va">Upper</span>, group <span class="op">=</span> <span class="va">Topic</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_errorbar</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
