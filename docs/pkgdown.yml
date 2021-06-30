@@ -5,12 +5,14 @@ articles:
   pkgdown_files/FAQ: FAQ.html
   pkgdown_files/Installation: Installation.html
   pkgdown_files/Options: Options.html
+  pkgdown_files/Plot: Plot.html
   pkgdown_files/Preparation: Preparation.html
   pkgdown_files/Weighted_LDA: Weighted_LDA.html
+  pkgdown_files/keyATMPG: keyATMPG.html
   pkgdown_files/keyATM_base: keyATM_base.html
   pkgdown_files/keyATM_cov: keyATM_cov.html
   pkgdown_files/keyATM_dynamic: keyATM_dynamic.html
   pkgdown_files/keyATM_label: keyATM_label.html
   pkgdown_files/keyATMvb: keyATMvb.html
-last_built: 2021-02-14T07:25Z
+last_built: 2021-06-30T03:18Z
 

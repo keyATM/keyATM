@@ -36,6 +36,8 @@ navbar:
           href: articles/pkgdown_files/keyATM_label.html
         - text: "Weighted LDA"
           href: articles/pkgdown_files/Weighted_LDA.html
+        - text: "Customizing Plots"
+          href: articles/pkgdown_files/Plot.html
         - text: "Options"
           href: articles/pkgdown_files/Options.html
     - text: "FAQ"
