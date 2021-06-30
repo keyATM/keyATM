@@ -9,7 +9,7 @@ status](https://www.r-pkg.org/badges/version/keyATM)](https://CRAN.R-project.org
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/keyATM)](https://cran.r-project.org/package=keyATM)
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
-[![R build status](https://github.com/keyATM/keyATM/workflows/R-CMD-check/badge.svg)](https://github.com/keyATM/keyATM/actions)
+[![R build status](https://github.com/keyATM/keyATM/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/keyATM/keyATM/actions)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/keyATM/keyATM&style=flat)](https://mergify.io)
 <!-- badges: end -->
 
