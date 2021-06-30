@@ -13,7 +13,6 @@ plot_timetrend(
   point = c("mean", "median"),
   xlab = "Time",
   scales = "fixed",
-  width = 0.5,
   show_point = TRUE,
   ...
 )
@@ -34,8 +33,6 @@ plot_timetrend(
 \item{xlab}{a character.}
 
 \item{scales}{character. Control the scale of y-axis (the parameter in \link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}): \code{free} adjusts y-axis for parameters. Default is \code{fixed}.}
-
-\item{width}{numeric. Width of the error bars.}
 
 \item{show_point}{logical. The default is \code{TRUE}. This is an option when calculating credible intervals.}
 
