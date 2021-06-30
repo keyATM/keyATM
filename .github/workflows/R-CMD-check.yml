@@ -14,7 +14,7 @@ on:
 
 jobs:
   R-CMD-check:
-    name: (${{ matrix.config.r-version }})
+    name: ${{ matrix.config.r-version }}
     
     runs-on: ${{ matrix.config.os }}
     strategy:
