@@ -1,2 +1,2 @@
-tests/* linguist-vendored
-man/* linguist-vendored
+tests/** linguist-vendored
+man/** linguist-vendored
