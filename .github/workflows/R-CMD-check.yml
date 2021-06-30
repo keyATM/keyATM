@@ -35,6 +35,11 @@ jobs:
         with:
           r-version: ${{ matrix.config.r-version }}
           
+      - name: Install remotes
+        run: >
+          Rscript
+          -e "if (system.file(package = 'remotes') == '') install.packages('remotes')"
+          
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
@@ -45,8 +50,8 @@ jobs:
           
       - name: Install dependencies
         run: |
-          install.packages(c("remotes", "rcmdcheck"))
           remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
         
       - name: Check
