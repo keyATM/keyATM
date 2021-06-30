@@ -317,7 +317,6 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 #' @param point method for computing the point estimate. \code{mean} (default) or \code{median}. This is an option when calculating credible intervals (you need to set \code{store_theta = TRUE} in [keyATM()]).
 #' @param xlab a character.
 #' @param scales character. Control the scale of y-axis (the parameter in [ggplot2::facet_wrap()][ggplot2::facet_wrap]): \code{free} adjusts y-axis for parameters. Default is \code{fixed}. 
-#' @param width numeric. Width of the error bars.
 #' @param show_point logical. The default is \code{TRUE}. This is an option when calculating credible intervals.
 #' @param ... additional arguments not used.
 #' @return keyATM_fig object.
@@ -328,7 +327,7 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 #' @export
 plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL, 
                            ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"),
-                           xlab = "Time", scales = "fixed", width = 0.5, show_point = TRUE, ...)
+                           xlab = "Time", scales = "fixed", show_point = TRUE, ...)
 {
   method <- match.arg(method)
   point <- match.arg(point)

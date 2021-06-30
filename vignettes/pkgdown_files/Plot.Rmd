@@ -56,7 +56,7 @@ out <- keyATM(docs              = keyATM_docs,
               model_settings    = list(time_index = vars_period$Period,
                                        num_states = 5),                
               options           = list(seed = 250, store_theta = TRUE, thinning = 5))
-fig_timetrend <- plot_timetrend(out, time_index_label = vars$Year, xlab = "Year", width = 5)
+fig_timetrend <- plot_timetrend(out, time_index_label = vars$Year, xlab = "Year")
 fig_timetrend
 ```
 
