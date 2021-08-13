@@ -384,8 +384,12 @@ void keyATMmeta::sampling_store(int r_index)
   model_fit.push_back(model_fit_vec);
 
   if (verbose) {
-    Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
-             " (perplexity: " << perplexity << ")" << std::endl;
+    string verbose_out = "[" + to_string(r_index) +
+                         "] log likelihood: " + utils::to_string_prec(loglik) +
+                         " (perplexity: " + utils::to_string_prec(perplexity) +
+                          ")";
+    SEXP verbose_out_R = wrap(verbose_out);
+    Rcpp::message(verbose_out_R);
   }
 }
 
