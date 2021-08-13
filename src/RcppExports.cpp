@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // calc_PGtheta_R
 NumericMatrix calc_PGtheta_R(const NumericMatrix& theta_tilda, Eigen::MatrixXd& theta, const int num_doc, const int num_topics);
 RcppExport SEXP _keyATM_calc_PGtheta_R(SEXP theta_tildaSEXP, SEXP thetaSEXP, SEXP num_docSEXP, SEXP num_topicsSEXP) {
