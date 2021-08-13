@@ -53,8 +53,8 @@ void keyATMmeta::read_data_common()
   // document-related constants
   num_vocab = vocab.size();
   num_doc = W.size();
-  // alpha -> specific function  
-  
+  // alpha -> specific function
+
   // Options
   options_list = model["options"];
   use_weights = options_list["use_weights"];
@@ -116,19 +116,19 @@ void keyATMmeta::initialize_common()
   for (int ii = 0; ii < keyword_k; ++ii) {
     wd_ids = keywords_list[ii];
     keywords_num.push_back(wd_ids.size());
-    
+
     std::unordered_set<int> keywords_set;
     for (int jj = 0; jj < wd_ids.size(); ++jj) {
       wd_id = wd_ids(jj);
       keywords_set.insert(wd_id);
     }
-    
+
     keywords.push_back(keywords_set);
   }
 
   for (int i = keyword_k; i < num_topics; ++i) {
     std::unordered_set<int> keywords_set{ -1 };
-  
+
     keywords_num.push_back(0);
     keywords.push_back(keywords_set);
   }
@@ -154,7 +154,7 @@ void keyATMmeta::initialize_common()
     doc_w = W[doc_id];
     doc_len = doc_w.size();
     doc_each_len.push_back(doc_len);
-  
+
     for (int w_position = 0; w_position < doc_len; ++w_position) {
       w = doc_w[w_position];
       vocab_weights(w) += 1.0;
@@ -164,19 +164,19 @@ void keyATMmeta::initialize_common()
 
   if (weights_type == "inv-freq" || weights_type == "inv-freq-normalized") {
     // Inverse frequency
-    weights_invfreq(); 
-  } else if (weights_type == "information-theory" || 
-             weights_type == "information-theory-normalized") 
+    weights_invfreq();
+  } else if (weights_type == "information-theory" ||
+             weights_type == "information-theory-normalized")
   {
-    // Information theory 
+    // Information theory
     weights_inftheory();
   }
-    
+
   // Normalize weights
-  if (weights_type == "inv-freq-normalized" || 
+  if (weights_type == "inv-freq-normalized" ||
       weights_type == "information-theory-normalized") {
-    weights_normalize_total(); 
-  } 
+    weights_normalize_total();
+  }
 
   // Do you want to use weights?
   if (use_weights == 0) {
@@ -184,10 +184,10 @@ void keyATMmeta::initialize_common()
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
 
-  
+
   //
   // Construct data matrices
-  // 
+  //
   vector<Triplet> trip_s1;  // for a sparse matrix
   total_words_weighted = 0.0;
   double temp;
@@ -214,7 +214,7 @@ void keyATMmeta::initialize_common()
     total_words_weighted += temp;
   }
   n_s1_kv.setFromTriplets(trip_s1.begin(), trip_s1.end());
-  
+
 
   // Use during the iteration
   z_prob_vec = VectorXd::Zero(num_topics);
@@ -229,7 +229,7 @@ void keyATMmeta::initialize_common()
   //
   //   Lbeta_sk = VectorXd::Zero(num_topics);
   //   for (int k = 0; k < num_topics; k++) {
-  //     Lbeta_sk(k) = (double)keywords_num[k] * beta_s; 
+  //     Lbeta_sk(k) = (double)keywords_num[k] * beta_s;
   //   }
   // }
   use_labels = 0;
@@ -239,7 +239,7 @@ void keyATMmeta::initialize_common()
   for (int k = 0; k < num_topics; ++k) {
     Lbeta_sk(k) = (double)keywords_num[k] * beta_s;
   }
-  
+
 }
 
 
@@ -255,7 +255,7 @@ void keyATMmeta::weights_inftheory()
   // Information Theory
   vocab_weights = vocab_weights.array() / (double)total_words;
   vocab_weights = vocab_weights.array().log();
-  vocab_weights = - vocab_weights.array() / log(2);  
+  vocab_weights = - vocab_weights.array() / log(2);
 }
 
 
@@ -298,7 +298,7 @@ void keyATMmeta::initialize_betas()
   for (int k = 0; k < keyword_k; ++k) {
     for (auto &v : keywords[k]) {
       trip_beta_s1.push_back(Triplet(k, v, beta_s));
-    } 
+    }
   }
 
 
@@ -307,22 +307,22 @@ void keyATMmeta::initialize_betas()
     label = label_vec[doc_id];
     if (label < 0)
       continue;
-  
-    doc_w = W[doc_id]; 
+
+    doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
-  
+
     for (int w_pos = 0; w_pos < doc_len; ++w_pos) {
       v = doc_w[w_pos];
-  
+
       if (use_weights) {
         beta_s0kv(label, v) += vocab_weights(v);
-  
+
         if (keywords[label].find(v) != keywords[label].end()){
           trip_beta_s1.push_back(Triplet(label, v, vocab_weights(v)));
         }
       } else {
         beta_s0kv(label, v) += 1.0;
-  
+
         if (keywords[label].find(v) != keywords[label].end()){
           trip_beta_s1.push_back(Triplet(label, v, vocab_weights(v)));
         }
@@ -346,7 +346,7 @@ void keyATMmeta::iteration()
 
   for (int it = 0; it < iter; ++it) {
     // Run iteration
-    iteration_single(it); 
+    iteration_single(it);
 
     // Check storing values
     int r_index = it + 1;
@@ -372,7 +372,7 @@ void keyATMmeta::iteration()
 void keyATMmeta::sampling_store(int r_index)
 {
   // Store likelihood and perplexity during the sampling
- 
+
   double loglik;
   loglik = (use_labels) ? loglik_total_label() : loglik_total();
   double perplexity = exp(-loglik / (double)total_words_weighted);
@@ -382,10 +382,14 @@ void keyATMmeta::sampling_store(int r_index)
   model_fit_vec.push_back(loglik);
   model_fit_vec.push_back(perplexity);
   model_fit.push_back(model_fit_vec);
-  
+
   if (verbose) {
-    Rcerr << "[" << r_index << "] log likelihood: " << loglik <<
-             " (perplexity: " << perplexity << ")" << std::endl;
+    string verbose_out = "[" + to_string(r_index) +
+                         "] log likelihood: " + utils::to_string_prec(loglik) +
+                         " (perplexity: " + utils::to_string_prec(perplexity) +
+                          ")";
+    SEXP verbose_out_R = wrap(verbose_out);
+    Rcpp::message(verbose_out_R);
   }
 }
 
@@ -476,7 +480,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int z, int s,
       if (keywords[k].find(w) == keywords[k].end()) {
         z_prob_vec(k) = 0.0;
         continue;
-      } else { 
+      } else {
         numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
           (n_s1_k(k) + prior_gamma(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
@@ -553,7 +557,7 @@ int keyATMmeta::sample_z_label(VectorXd &alpha, int z, int s,
       if (keywords[k].find(w) == keywords[k].end()) {
         z_prob_vec(k) = 0.0;
         continue;
-      } else { 
+      } else {
         numerator = (beta_s1kv.coeffRef(k, w) + n_s1_kv.coeffRef(k, w)) *
           (n_s1_k(k) + prior_gamma(k, 0)) *
           (n_dk(doc_id, k) + alpha(k));
@@ -735,14 +739,14 @@ double keyATMmeta::gammaln_frac(const double value, const int count)
   // Calculate \log \frac{\gamma(value + count)}{\gamma(\value)}
   // Not very fast
   double gammaln_val;
-  
+
   if (count > 19) {
-    return mylgamma(value + count) - mylgamma(value);  
+    return mylgamma(value + count) - mylgamma(value);
   } else {
     gammaln_val = 0.0;
 
     for (int i = 0; i < count; ++i) {
-      gammaln_val += log(value + i);  
+      gammaln_val += log(value + i);
     }
 
     return gammaln_val;
@@ -755,10 +759,10 @@ List keyATMmeta::return_model()
   // Return output to R
 
   if (use_labels) {
-    // Return prior to use in R 
+    // Return prior to use in R
     NumericMatrix R_betas0 = Rcpp::wrap(beta_s0kv);
     SEXP R_betas1 = Rcpp::wrap(beta_s1kv);
-    
+
     priors_list.push_back(R_betas0, "beta_s0");
     priors_list.push_back(R_betas1, "beta_s1");
     model["priors"] = priors_list;
@@ -768,7 +772,7 @@ List keyATMmeta::return_model()
   NumericVector vocab_weights_R = stored_values["vocab_weights"];
 
   for (int v = 0; v < num_vocab; v++) {
-    vocab_weights_R[v] = vocab_weights(v); 
+    vocab_weights_R[v] = vocab_weights(v);
   }
   stored_values["vocab_weights"] = vocab_weights_R;
   model["stored_values"] = stored_values;

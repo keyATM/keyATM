@@ -5,6 +5,7 @@
 #include <RcppEigen.h>
 #include <unordered_set>
 #include "sampler.h"
+#include "utils.h"
 
 // RcppProgress
 //   shows a progress bar during the iteration
@@ -48,7 +49,7 @@ class keyATMmeta
     int store_pi;
     int thinning;
 
-    double slice_A; // parameter for slice sampling 
+    double slice_A; // parameter for slice sampling
 
     //
     // Data
@@ -65,7 +66,7 @@ class keyATMmeta
     List model_fit;
     std::vector<int> doc_each_len;
     std::vector<double> doc_each_len_weighted;
-    
+
     int num_vocab, num_doc, total_words;
     double total_words_weighted;
 
@@ -112,7 +113,7 @@ class keyATMmeta
       std::vector<int> doc_indexes;
       std::vector<int> token_indexes;
       IntegerVector doc_s, doc_z, doc_w;
-  
+
       // sample_z
       VectorXd z_prob_vec;
 
@@ -200,7 +201,7 @@ class keyATMmeta
 
     double shrinkp(const double x)
     {
-      return (x / (1.0 + x)); 
+      return (x / (1.0 + x));
     };
 
 
@@ -225,7 +226,7 @@ class keyATMmeta
       for(int i = 0; i < size; i++){
         sum += exp(vec(i) - vmax);
       }
-      
+
       return vmax + log(sum);
     }
 
@@ -233,13 +234,13 @@ class keyATMmeta
     double mylgamma(const double x){
       // gammaln_val = 0.0;
       // gammaln_val = lgamma(x);
-      
+
       // Good approximation when x > 1
       //    x > 1: max abs err: 2.272e-03
       //    x > 0.5: 0.012
       //    x > 0.6: 0.008
       // Abramowitz and Stegun p.257
-      
+
       if(x < 0.6)
         return (lgamma(x));
       else
@@ -250,7 +251,7 @@ class keyATMmeta
     double mypow(const double a, const double b){
       // Reference: https://github.com/ekmett/approximate/blob/master/cbits/fast.c
       // Probably not good to use if b>1.0
-      
+
       if(b > 1.0)
         return(pow(a,b));
 
@@ -270,11 +271,11 @@ class keyATMmeta
     double mylog(const double a){
       // Looks fine even with large a
       union { double d; long long x; } u = { a };
-      return (u.x - 4606921278410026770) * 1.539095918623324e-16;  
+      return (u.x - 4606921278410026770) * 1.539095918623324e-16;
     };
 
     List return_model();
-  
+
 };
 
 #endif

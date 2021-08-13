@@ -4,13 +4,13 @@ Title: Keyword Assisted Topic Models
 Description: Fits keyword assisted topic models (keyATM) using collapsed Gibbs samplers. The keyATM combines the latent dirichlet allocation (LDA) models with a small number of keywords selected by researchers in order to improve the interpretability and topic classification of the LDA. The keyATM can also incorporate covariates and directly model time trends. The keyATM is proposed in Eshima, Imai, and Sasaki (2020) <arXiv:2004.05964>.
 Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", role = c("aut","cre"), comment = c(ORCID = "0000-0003-3613-4046")),
     person("Tomoya", "Sasaki", email = "tomoyas@mit.edu", role = c("aut")),
-    person("William", "Lowe", email = "wlowe@princeton.edu", role = c("ctb")),
     person("Kosuke", "Imai", email = "imai@harvard.edu", role = c("aut")),
     person("Chung-hong", "Chan", email = "chainsawtiney@gmail.com", role = c("ctb"), comment = c(ORCID = "0000-0002-6232-7530")),
-    person(given = "Romain", family = "François", role = "ctb", comment = c(ORCID = "0000-0002-2444-4226")))
+    person(given = "Romain", family = "François", role = "ctb", comment = c(ORCID = "0000-0002-2444-4226")),
+    person("William", "Lowe", email = "wlowe@princeton.edu", role = c("ctb")))
 License: GPL-3
 Depends: R (>= 3.6)
-Imports: Rcpp,
+Imports: Rcpp (>= 1.0.7),
   dplyr (>= 1.0.0),
   fastmap,
   future.apply,
@@ -31,7 +31,7 @@ Imports: Rcpp,
 LinkingTo: Rcpp,
   RcppEigen,
   RcppProgress
-Suggests: 
+Suggests:
     readtext,
     testthat (>= 2.1.0)
 URL: https://keyatm.github.io/keyATM/
