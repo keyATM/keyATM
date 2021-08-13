@@ -10,7 +10,7 @@ Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", ro
     person("William", "Lowe", email = "wlowe@princeton.edu", role = c("ctb")))
 License: GPL-3
 Depends: R (>= 3.6)
-Imports: Rcpp,
+Imports: Rcpp (>= 1.0.7),
   dplyr (>= 1.0.0),
   fastmap,
   future.apply,

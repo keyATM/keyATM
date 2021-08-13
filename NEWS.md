@@ -1,6 +1,7 @@
 # keyATM 0.4.1
 ### Minor changes
 * Remove an unused argument (`width`) in the `plot_timetrend()` function
+* Use `Rcpp::message()` if `verbose = TRUE`
 
 # keyATM 0.4.0
 [Roadmap](https://github.com/keyATM/keyATM/projects/3) for this version.
