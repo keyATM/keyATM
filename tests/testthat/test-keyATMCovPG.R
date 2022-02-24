@@ -18,7 +18,7 @@ cov <- keyATM(docs = keyATM_docs,
               no_keyword_topics = 3,
               keywords = bills_keywords,
               model = "covariates",
-              model_settings = list(covariates_data = bills_cov, standardize = "all", 
+              model_settings = list(covariates_data = bills_cov, standardize = "all",
                                   covariates_formula = ~., covariates_model = "PG"
                                   ),
               options = list(seed = 250, store_theta = TRUE, iterations = 20,
@@ -68,7 +68,7 @@ test_that("keyATM Heterogeneity Doc-Topic, use posterior_mean", {
 test_that("keyATM Heterogeneity Topic-Word", {
   RepParty <- as.vector(bills_cov[, "RepParty"])  # the length should be the same as the number of documents
   strata_tw <- by_strata_TopicWord(cov, keyATM_docs, by = RepParty)
-  
+
   RepParty_chr <- ifelse(bills_cov[, "RepParty"] == 0, "Democrat", "Republican")
   strata_tw_chr <- by_strata_TopicWord(cov, keyATM_docs, RepParty_chr)
   expect_equal(top_words(strata_tw_chr, n = 3)$Republican[1, 3], "public [\U2713]")
@@ -84,7 +84,7 @@ cov <- suppressWarnings(keyATM(docs = keyATM_docs,
               no_keyword_topics = 3,
               keywords = bills_keywords,
               model = "covariates",
-              model_settings = list(covariates_data = bills_cov, standardize = "none", 
+              model_settings = list(covariates_data = bills_cov, standardize = "none",
                                   covariates_formula = NULL, covariates_model = "PG"
                                   ),
               options = list(seed = 250, store_theta = TRUE, iterations = 5,
@@ -94,7 +94,7 @@ cov <- suppressWarnings(keyATM(docs = keyATM_docs,
 test_that("Covariates settings: Standardize - none, no formula", {
   expect_identical(cov$kept_values$model_settings$covariates_data_use[2, 1], 0L)
   expect_identical(ncol(cov$kept_values$model_settings$covariates_data_use), 1L)
-  
+
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))
   expect_equal(as.numeric(suppressWarnings(predict(cov, bills_cov, transform = TRUE))[3, 3]), 0.1329791, tolerance = 0.000001)
@@ -110,7 +110,7 @@ cov <- keyATM(docs = keyATM_docs,
               no_keyword_topics = 3,
               keywords = bills_keywords,
               model = "covariates",
-              model_settings = list(covariates_data = bills_cov_modified, standardize = "none", 
+              model_settings = list(covariates_data = bills_cov_modified, standardize = "none",
                                   covariates_formula = ~., covariates_model = "PG"
                                   ),
               options = list(seed = 250, store_theta = TRUE, iterations = 5,
@@ -132,7 +132,7 @@ cov <- keyATM(docs = keyATM_docs,
               no_keyword_topics = 3,
               keywords = bills_keywords,
               model = "covariates",
-              model_settings = list(covariates_data = bills_cov_modified, standardize = "non-factor", 
+              model_settings = list(covariates_data = bills_cov_modified, standardize = "non-factor",
                                   covariates_formula = ~., covariates_model = "PG"
                                   ),
               options = list(seed = 250, store_theta = TRUE, iterations = 5,
@@ -156,7 +156,7 @@ cov <- keyATM(docs = keyATM_docs,
               no_keyword_topics = 3,
               keywords = bills_keywords,
               model = "covariates",
-              model_settings = list(covariates_data = bills_cov_modified, standardize = "all", 
+              model_settings = list(covariates_data = bills_cov_modified, standardize = "all",
                                   covariates_formula = ~., covariates_model = "PG"
                                   ),
               options = list(seed = 250, store_theta = TRUE, iterations = 5,
@@ -172,6 +172,6 @@ test_that("Covariates settings: Standardize - all", {
 
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))
-  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[5, 2]), 0.03749426, tolerance = 0.0001)
+  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[5, 2]), 0.0373643, tolerance = 0.0001)
 })
 

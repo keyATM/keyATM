@@ -29,8 +29,8 @@ test_that("Parallel initialization", {
                 keywords = bills_keywords,  # keywords
                 model = "base",  # select the model
                 options = list(seed = 250, iterations = 0, parallel_init = TRUE))
-  expect_identical(out$Z[[1]][3], 0L)
-  expect_identical(out$Z[[140]][15], 2L)
+  expect_identical(out$Z[[1]][3], 1L)
+  expect_identical(out$Z[[140]][15], 3L)
 })
 
 

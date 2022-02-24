@@ -25,8 +25,8 @@ Visualize the proportion of keywords in the documents.
 \dontrun{
  # Prepare a keyATM_docs object
  keyATM_docs <- keyATM_read(input)
-  
- # Keywords are in a list  
+
+ # Keywords are in a list
  keywords <- list(Education = c("education", "child", "student"),
                   Health    = c("public", "health", "program"))
 
@@ -36,7 +36,7 @@ Visualize the proportion of keywords in the documents.
  # View a figure
  keyATM_viz
 
- # Save a figure 
+ # Save a figure
  save_fig(keyATM_viz, filename)
 }
 }
