@@ -35,15 +35,15 @@ Read texts and create a \code{keyATM_docs} object, which is a list of texts.
 \examples{
 \dontrun{
  # Use quanteda dfm
- keyATM_docs <- keyATM_read(texts = quanteda_dfm) 
-  
- # Use data.frame or tibble (texts should be stored in a column named `text`)
- keyATM_docs <- keyATM_read(texts = data_frame_object) 
- keyATM_docs <- keyATM_read(texts = tibble_object) 
+ keyATM_docs <- keyATM_read(texts = quanteda_dfm)
 
- # Use a vector that stores full paths to the text files 
- files <- list.files(doc_folder, pattern = "*.txt", full.names = TRUE) 
- keyATM_docs <- keyATM_read(texts = files) 
+ # Use data.frame or tibble (texts should be stored in a column named `text`)
+ keyATM_docs <- keyATM_read(texts = data_frame_object)
+ keyATM_docs <- keyATM_read(texts = tibble_object)
+
+ # Use a vector that stores full paths to the text files
+ files <- list.files(doc_folder, pattern = "*.txt", full.names = TRUE)
+ keyATM_docs <- keyATM_read(texts = files)
 
 }
 }
