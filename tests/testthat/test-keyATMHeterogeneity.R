@@ -12,11 +12,11 @@ if (!"dplyr" %in% rownames(installed.packages())) {
 
 data(data_corpus_inaugural, package = "quanteda")
 data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
-data_tokens <- tokens(data_corpus_inaugural, remove_numbers = TRUE, 
+data_tokens <- tokens(data_corpus_inaugural, remove_numbers = TRUE,
                       remove_punct = TRUE, remove_symbols = TRUE,
                       remove_separators = TRUE, remove_url = TRUE) %>%
                  tokens_tolower() %>%
-                 tokens_remove(c(stopwords("english"), 
+                 tokens_remove(c(stopwords("english"),
                                "may", "shall", "can",
                                "must", "upon", "with", "without")) %>%
                  tokens_select(min_nchar = 3)
@@ -44,16 +44,16 @@ vars %>%
 
 # Set the base line
 vars_selected %>%
-  dplyr::mutate(Party  = factor(Party, 
+  dplyr::mutate(Party  = factor(Party,
                                 levels = c("Other", "Republican", "Democratic")),
-                Period = factor(Period, 
+                Period = factor(Period,
                                 levels = c("18_19c", "20_21c"))) -> vars_selected
 
 out <- keyATM(docs              = keyATM_docs,
               no_keyword_topics = 5,
               keywords          = keywords,
               model             = "covariates",
-              model_settings    = list(covariates_data    = vars_selected, 
+              model_settings    = list(covariates_data    = vars_selected,
                                        covariates_formula = ~ Party + Period,
                                        standardize = "all", covariates_model = "DirMulti"),
               options           = list(seed = 250, iterations = 20),
@@ -79,12 +79,12 @@ test_that("Doc Topic", {
   skip_on_cran()
   strata_topic <- by_strata_DocTopic(out, by_var = "Period20_21c",
                                           labels = c("18_19c", "20_21c"),
-                                          posterior_mean = TRUE)
-  p <- plot(strata_topic, var_name = "Period", show_topic = c(1,2,3,4))
+                                          posterior_mean = TRUE, method = "eti", point = "median")
+  p <- plot(strata_topic, var_name = "Period", show_topic = c(1, 2, 3, 4))
   expect_s3_class(p, "keyATM_fig")
   skip_on_os("linux")
-  expect_equal(summary(strata_topic, method = "eti", point = "median")[[2]]$Point[1], 0.09026675, tolerance = 0.000001)
-  expect_equal(summary(strata_topic, method = "hdi", point = "median")[[2]]$Upper[2], 0.08066711, tolerance = 0.000001)
+  expect_equal(summary(strata_topic)[[2]]$Point[1], 0.09026675, tolerance = 0.000001)
+  expect_equal(summary(strata_topic)[[2]]$Upper[2], 0.08066711, tolerance = 0.000001)
   expect_equal(summary(strata_topic)[[2]]$Lower[3], 0.1319587, tolerance = 0.000001)
 })
 
@@ -92,7 +92,7 @@ test_that("Doc Topic", {
 test_that("Topic Word", {
   skip_on_os("linux") ; skip_on_cran()
   strata_tw <- by_strata_TopicWord(out, keyATM_docs, by = as.vector(vars_selected$Party))
-  top <- top_words(strata_tw, n = 3) 
+  top <- top_words(strata_tw, n = 3)
   expect_equivalent(top$Democratic[1, 3], "world [\U2713]")
   expect_equivalent(top$Republican[1, 5], "war [\U2713]")
   expect_equivalent(top$Republican[3, 7], "done")

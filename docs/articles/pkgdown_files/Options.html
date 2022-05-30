@@ -20,6 +20,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
       </span>
     </div>
 
@@ -86,8 +88,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/keyATM/keyATM">
-    <span class="fas fa-github fa-lg"></span>
+  <a href="https://github.com/keyATM/keyATM" class="external-link">
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -101,25 +103,26 @@
 
       
 
-      </header><script src="Options_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Options / Priors / Keep</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/master/vignettes/pkgdown_files/Options.Rmd"><code>vignettes/pkgdown_files/Options.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/HEAD/vignettes/pkgdown_files/Options.Rmd" class="external-link"><code>vignettes/pkgdown_files/Options.Rmd</code></a></small>
       <div class="hidden name"><code>Options.Rmd</code></div>
 
     </div>
 
     
     
-<div id="options" class="section level1">
-<h1 class="hasAnchor">
-<a href="#options" class="anchor"></a>Options</h1>
-<p><code>keyATM</code> takes various options. You can set options through a list.</p>
+<div class="section level2">
+<h2 id="options">Options<a class="anchor" aria-label="anchor" href="#options"></a>
+</h2>
+<p><code>keyATM</code> takes various options. You can set options
+through a list.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">my_options</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>seed          <span class="op">=</span> <span class="cn">NULL</span>, <span class="co"># automatically generate random seed </span>
+<code class="sourceCode R"><span class="va">my_options</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed          <span class="op">=</span> <span class="cn">NULL</span>, <span class="co"># automatically generate random seed </span>
                    iterations    <span class="op">=</span> <span class="fl">1500</span>,
                    verbose       <span class="op">=</span> <span class="cn">FALSE</span>,
                    llk_per       <span class="op">=</span> <span class="fl">10</span>,
@@ -136,107 +139,130 @@
               keywords  <span class="op">=</span> <span class="va">bills_keywords</span>, <span class="co"># keywords</span>
               model     <span class="op">=</span> <span class="st">"basic"</span>,        <span class="co"># select the model</span>
               options   <span class="op">=</span> <span class="va">my_options</span>,     <span class="co"># use your own option list</span>
-              keep      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Z"</span><span class="op">)</span>          <span class="co"># keep a specific object in the output</span>
+              keep      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Z"</span><span class="op">)</span>          <span class="co"># keep a specific object in the output</span>
              <span class="op">)</span></code></pre></div>
-<div id="seed" class="section level3">
-<h3 class="hasAnchor">
-<a href="#seed" class="anchor"></a><code>seed</code>
-</h3>
-<p>This is a seed used to generate random numbers. The same seed is used for initialization and fitting the model (<code><a href="https://rdrr.io/r/base/Random.html">set.seed()</a></code> is executed before both initialization and fitting). If you do not provide <code>seed</code>, <strong>keyATM</strong> randomly selects a seed for you.</p>
+<div class="section level4">
+<h4 id="seed">
+<code>seed</code><a class="anchor" aria-label="anchor" href="#seed"></a>
+</h4>
+<p>This is a seed used to generate random numbers. The same seed is used
+for initialization and fitting the model (<code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> is
+executed before both initialization and fitting). If you do not provide
+<code>seed</code>, <strong>keyATM</strong> randomly selects a seed for
+you.</p>
 </div>
-<div id="iterations" class="section level3">
-<h3 class="hasAnchor">
-<a href="#iterations" class="anchor"></a><code>iterations</code>
-</h3>
+<div class="section level4">
+<h4 id="iterations">
+<code>iterations</code><a class="anchor" aria-label="anchor" href="#iterations"></a>
+</h4>
 <p>The default value is <code>1500</code>.</p>
 </div>
-<div id="verbose" class="section level3">
-<h3 class="hasAnchor">
-<a href="#verbose" class="anchor"></a><code>verbose</code>
-</h3>
-<p>Default is <code>FALSE</code>. If it is <code>TRUE</code>, it shows values of log-likelihood and perplexity.</p>
+<div class="section level4">
+<h4 id="verbose">
+<code>verbose</code><a class="anchor" aria-label="anchor" href="#verbose"></a>
+</h4>
+<p>Default is <code>FALSE</code>. If it is <code>TRUE</code>, it shows
+values of log-likelihood and perplexity.</p>
 </div>
-<div id="llk_per" class="section level3">
-<h3 class="hasAnchor">
-<a href="#llk_per" class="anchor"></a><code>llk_per</code>
-</h3>
-<p><strong>keyATM</strong> calculates and stores the log-likelihood and perplexity. The default value is <code>10</code>.</p>
+<div class="section level4">
+<h4 id="llk_per">
+<code>llk_per</code><a class="anchor" aria-label="anchor" href="#llk_per"></a>
+</h4>
+<p><strong>keyATM</strong> calculates and stores the log-likelihood and
+perplexity. The default value is <code>10</code>.</p>
 </div>
-<div id="use_weights" class="section level3">
-<h3 class="hasAnchor">
-<a href="#use_weights" class="anchor"></a><code>use_weights</code>
-</h3>
-<p>The default value is <code>TRUE</code> (use weights). We follow the weighting Scheme in Wilson &amp; Chew (2010). If you do not want to use weights, please set it to <code>FALSE</code>. Please check our paper for details.</p>
+<div class="section level4">
+<h4 id="use_weights">
+<code>use_weights</code><a class="anchor" aria-label="anchor" href="#use_weights"></a>
+</h4>
+<p>The default value is <code>TRUE</code> (use weights). We follow the
+weighting Scheme in Wilson &amp; Chew (2010). If you do not want to use
+weights, please set it to <code>FALSE</code>. Please check our paper for
+details.</p>
 </div>
-<div id="weights_type" class="section level3">
-<h3 class="hasAnchor">
-<a href="#weights_type" class="anchor"></a><code>weights_type</code>
-</h3>
-<p>You can select one of four weights implemented in <strong>keyATM</strong>. The default is <code>information-theory</code>. <strong>keyATM</strong> can construct weights from the inverse frequency of the words, <code>inv-frequency</code>. There are normalized version of two: <code>information-theory-normalized</code> and <code>inv-freq-normalized</code>.</p>
+<div class="section level4">
+<h4 id="weights_type">
+<code>weights_type</code><a class="anchor" aria-label="anchor" href="#weights_type"></a>
+</h4>
+<p>You can select one of four weights implemented in
+<strong>keyATM</strong>. The default is <code>information-theory</code>.
+<strong>keyATM</strong> can construct weights from the inverse frequency
+of the words, <code>inv-frequency</code>. There are normalized version
+of two: <code>information-theory-normalized</code> and
+<code>inv-freq-normalized</code>.</p>
 </div>
-<div id="prune" class="section level3">
-<h3 class="hasAnchor">
-<a href="#prune" class="anchor"></a><code>prune</code>
-</h3>
+<div class="section level4">
+<h4 id="prune">
+<code>prune</code><a class="anchor" aria-label="anchor" href="#prune"></a>
+</h4>
 <p>Prune keywords that do not appear in the documents.</p>
 </div>
-<div id="thinning" class="section level3">
-<h3 class="hasAnchor">
-<a href="#thinning" class="anchor"></a><code>thinning</code>
-</h3>
-<p>The default value is <code>5</code> and <strong>keyATM</strong> keeps every <span class="math inline">\(5\)</span>th draw from the sampling.</p>
+<div class="section level4">
+<h4 id="thinning">
+<code>thinning</code><a class="anchor" aria-label="anchor" href="#thinning"></a>
+</h4>
+<p>The default value is <code>5</code> and <strong>keyATM</strong> keeps
+every <span class="math inline">\(5\)</span>th draw from the
+sampling.</p>
 </div>
-<div id="store_theta" class="section level3">
-<h3 class="hasAnchor">
-<a href="#store_theta" class="anchor"></a><code>store_theta</code>
-</h3>
-<p>The default value is <code>FALSE</code>. Storing the value of thetas allows the calculation of credible intervals.</p>
+<div class="section level4">
+<h4 id="store_theta">
+<code>store_theta</code><a class="anchor" aria-label="anchor" href="#store_theta"></a>
+</h4>
+<p>The default value is <code>FALSE</code>. Storing the value of thetas
+allows the calculation of credible intervals.</p>
 </div>
-<div id="store_pi" class="section level3">
-<h3 class="hasAnchor">
-<a href="#store_pi" class="anchor"></a><code>store_pi</code>
-</h3>
-<p>The default value is <code>FALSE</code>. Storing the value of <span class="math inline">\(\pi_k\)</span> for all <span class="math inline">\(k\)</span> (the probability that the topic <span class="math inline">\(k\)</span> use keyword topic-word distribution).</p>
+<div class="section level4">
+<h4 id="store_pi">
+<code>store_pi</code><a class="anchor" aria-label="anchor" href="#store_pi"></a>
+</h4>
+<p>The default value is <code>FALSE</code>. Storing the value of <span class="math inline">\(\pi_k\)</span> for all <span class="math inline">\(k\)</span> (the probability that the topic <span class="math inline">\(k\)</span> use keyword topic-word
+distribution).</p>
 </div>
-<div id="parallel_init" class="section level3">
-<h3 class="hasAnchor">
-<a href="#parallel_init" class="anchor"></a><code>parallel_init</code>
-</h3>
-<p>Parallelize processes to speed up initialization. Default is <code>FALSE</code>. Note that even if you use the same <code>seed</code>, the initialization will become different between with and without parallelization.</p>
+<div class="section level4">
+<h4 id="parallel_init">
+<code>parallel_init</code><a class="anchor" aria-label="anchor" href="#parallel_init"></a>
+</h4>
+<p>Parallelize processes to speed up initialization. Default is
+<code>FALSE</code>. Note that even if you use the same
+<code>seed</code>, the initialization will become different between with
+and without parallelization.</p>
 </div>
 </div>
-<div id="priors" class="section level1">
-<h1 class="hasAnchor">
-<a href="#priors" class="anchor"></a>Priors</h1>
-<p>You can manually set priors, but we <strong>do not</strong> recommend doing it unless you understandd the consequences.</p>
-<div id="alpha" class="section level3">
-<h3 class="hasAnchor">
-<a href="#alpha" class="anchor"></a><code>alpha</code>
-</h3>
-<p>Prior for the document-topic distribution. This option only works for <code>base</code> model.</p>
+<div class="section level2">
+<h2 id="priors">Priors<a class="anchor" aria-label="anchor" href="#priors"></a>
+</h2>
+<p>You can manually set priors, but we <strong>do not</strong> recommend
+doing it unless you understandd the consequences.</p>
+<div class="section level4">
+<h4 id="alpha">
+<code>alpha</code><a class="anchor" aria-label="anchor" href="#alpha"></a>
+</h4>
+<p>Prior for the document-topic distribution. This option only works for
+<code>base</code> model.</p>
 </div>
-<div id="beta" class="section level3">
-<h3 class="hasAnchor">
-<a href="#beta" class="anchor"></a><code>beta</code>
-</h3>
+<div class="section level4">
+<h4 id="beta">
+<code>beta</code><a class="anchor" aria-label="anchor" href="#beta"></a>
+</h4>
 <p>Prior for the topic-word distribution.</p>
 </div>
-<div id="beta_s" class="section level3">
-<h3 class="hasAnchor">
-<a href="#beta_s" class="anchor"></a><code>beta_s</code>
-</h3>
+<div class="section level4">
+<h4 id="beta_s">
+<code>beta_s</code><a class="anchor" aria-label="anchor" href="#beta_s"></a>
+</h4>
 <p>Prior for the keyword topic-word distribution.</p>
 </div>
-<div id="gamma" class="section level3">
-<h3 class="hasAnchor">
-<a href="#gamma" class="anchor"></a><code>gamma</code>
-</h3>
+<div class="section level4">
+<h4 id="gamma">
+<code>gamma</code><a class="anchor" aria-label="anchor" href="#gamma"></a>
+</h4>
 <p>Prior for the probability of using keywords in a topic.</p>
 </div>
 </div>
-<div id="keep" class="section level1">
-<h1 class="hasAnchor">
-<a href="#keep" class="anchor"></a>Keep</h1>
+<div class="section level2">
+<h2 id="keep">Keep<a class="anchor" aria-label="anchor" href="#keep"></a>
+</h2>
 <p>You can specify which output to keep (cf. Calculating <a href="Heterogeneity.html">heterogeneity</a>).</p>
 </div>
   </div>
@@ -252,11 +278,16 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://shusei-e.github.io">Shusei Eshima</a>, <a href="https://polisci.mit.edu/people/tomoya-sasaki">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/">Kosuke Imai</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
+<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
+Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
@@ -264,6 +295,8 @@
 
   
 
+
+  
 
   </body>
 </html>

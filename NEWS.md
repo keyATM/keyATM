@@ -1,6 +1,11 @@
 # keyATM 0.4.1
 ### Minor changes
 * Remove an unused argument (`width`) in the `plot_timetrend()` function
+* Use `Rcpp::message()` if `verbose = TRUE`
+* Completely remove `parallel::mclapply`
+
+### Bug fix
+* `by_strata_DocTopic()` takes the correct arguments ([#180](https://github.com/keyATM/keyATM/issues/180), thank you [@pmeiners](https://github.com/pmeiners) for reporting this!)
 
 # keyATM 0.4.0
 [Roadmap](https://github.com/keyATM/keyATM/projects/3) for this version.
@@ -60,7 +65,7 @@
 
 ### Bug fix
 * `weightedLDA()` without specifying the number of iterations ([Chung-hong Chan](https://github.com/chainsawriot) independently reported this bug, thank you!)
-* log-likelihood of dynamic models 
+* log-likelihood of dynamic models
 * saving figures
 * topic labels when there is no keyword topic
 * `summary.strata_doctopic()`: the last topic is removed when the number of no-keyword topic is 0 (thank you [Emma Ebowe](https://gov.harvard.edu/people/emma-ebowe) for pointing out this issue!)

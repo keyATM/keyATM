@@ -1,4 +1,5 @@
 # Vim File
+.vscode/
 *.swp
 .DS_Store
 docs/articles/pkgdown_files/*/*/*.png

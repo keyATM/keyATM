@@ -20,6 +20,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
       </span>
     </div>
 
@@ -86,8 +88,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/keyATM/keyATM">
-    <span class="fas fa-github fa-lg"></span>
+  <a href="https://github.com/keyATM/keyATM" class="external-link">
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -101,27 +103,34 @@
 
       
 
-      </header><script src="FAQ_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>FAQ</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/master/vignettes/pkgdown_files/FAQ.Rmd"><code>vignettes/pkgdown_files/FAQ.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/HEAD/vignettes/pkgdown_files/FAQ.Rmd" class="external-link"><code>vignettes/pkgdown_files/FAQ.Rmd</code></a></small>
       <div class="hidden name"><code>FAQ.Rmd</code></div>
 
     </div>
 
     
     
-<div id="model" class="section level1">
-<h1 class="hasAnchor">
-<a href="#model" class="anchor"></a>Model</h1>
-<div id="which-model-to-use" class="section level2">
-<h2 class="hasAnchor">
-<a href="#which-model-to-use" class="anchor"></a>Which model to use?</h2>
-<p>The table below summarizes keyATM models and other popular models based on the inputs.</p>
+<div class="section level2">
+<h2 id="model">Model<a class="anchor" aria-label="anchor" href="#model"></a>
+</h2>
+<div class="section level3">
+<h3 id="which-model-to-use">Which model to use?<a class="anchor" aria-label="anchor" href="#which-model-to-use"></a>
+</h3>
+<p>The table below summarizes keyATM models and other popular models
+based on the inputs.</p>
 <table class="table">
+<colgroup>
+<col width="47%">
+<col width="14%">
+<col width="16%">
+<col width="21%">
+</colgroup>
 <thead><tr class="header">
 <th align="right"></th>
 <th align="center">Keywords</th>
@@ -185,8 +194,12 @@
 </tr>
 </tbody>
 </table>
-<p>(○: model incorporates the feature, ×: model does not incorporate the feature, △: model can handle the feature but with some limitations)</p>
-<p>The next table compares inference methods and speeds. CGS stands for Collapsed Gibbs Sampling and SS stands for Slice Sampling. Variational inference approximates the target distribution, while CGS and SS sample from the exact distribution.</p>
+<p>(○: model incorporates the feature, ×: model does not incorporate the
+feature, △: model can handle the feature but with some limitations)</p>
+<p>The next table compares inference methods and speeds. CGS stands for
+Collapsed Gibbs Sampling and SS stands for Slice Sampling. Variational
+inference approximates the target distribution, while CGS and SS sample
+from the exact distribution.</p>
 <table class="table">
 <colgroup>
 <col width="35%">
@@ -248,67 +261,89 @@
 </table>
 </div>
 </div>
-<div id="preprocessing" class="section level1">
-<h1 class="hasAnchor">
-<a href="#preprocessing" class="anchor"></a>Preprocessing</h1>
-<div id="can-we-use-n-grams" class="section level2">
-<h2 class="hasAnchor">
-<a href="#can-we-use-n-grams" class="anchor"></a>Can we use n-grams?</h2>
-<p>Yes, but you need an extra step in the preprocessing. Let’s try a bigram model. You need a tokens object (see <a href="Preparation.html">Preparation</a>). Then, <strong>quanteda</strong> will create a n-gram tokens object (see <a href="https://tutorials.quanteda.io/basic-operations/tokens/tokens_ngrams/">quanteda’s manual</a> for details),</p>
+<div class="section level2">
+<h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
+</h2>
+<div class="section level3">
+<h3 id="can-we-use-n-grams">Can we use n-grams?<a class="anchor" aria-label="anchor" href="#can-we-use-n-grams"></a>
+</h3>
+<p>Yes, but you need an extra step in the preprocessing. Let’s try a
+bigram model. You need a tokens object (see <a href="Preparation.html">Preparation</a>). Then,
+<strong>quanteda</strong> will create a n-gram tokens object (see <a href="https://tutorials.quanteda.io/basic-operations/tokens/tokens_ngrams/" class="external-link">quanteda’s
+manual</a> for details),</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">data_tokens_n2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens_ngrams.html">tokens_ngrams</a></span><span class="op">(</span><span class="va">data_tokens</span>, n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>  <span class="co"># bigram</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">data_tokens_n2</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "fellow-citizens_senate" "senate_house"           "house_representatives"</code></pre>
-<p>You can pass this preprocessed object to <strong>keyATM</strong> just as the unigram model.</p>
+<code class="sourceCode R"><span class="va">data_tokens_n2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens_ngrams.html" class="external-link">tokens_ngrams</a></span><span class="op">(</span><span class="va">data_tokens</span>, n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>  <span class="co"># bigram</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_tokens_n2</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] "fellow-citizens_senate" "senate_house"           "house_representatives"</span></code></pre>
+<p>You can pass this preprocessed object to <strong>keyATM</strong> just
+as the unigram model.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">data_dfm_n2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span><span class="op">(</span><span class="va">data_tokens_n2</span><span class="op">)</span> <span class="op">%&gt;%</span>
-                 <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span><span class="op">(</span>min_termfreq <span class="op">=</span> <span class="fl">3</span>, min_docfreq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">data_dfm_n2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html" class="external-link">dfm</a></span><span class="op">(</span><span class="va">data_tokens_n2</span><span class="op">)</span> <span class="op"><a href="https://quanteda.io/reference/pipe.html" class="external-link">%&gt;%</a></span>
+                 <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html" class="external-link">dfm_trim</a></span><span class="op">(</span>min_termfreq <span class="op">=</span> <span class="fl">3</span>, min_docfreq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 <span class="va">keyATM_docs_n2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span><span class="va">data_dfm_n2</span><span class="op">)</span></code></pre></div>
 <p>Keywords should respect the n-gram.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">keywords_n2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Government <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"federal_government"</span>, <span class="st">"vice_president"</span><span class="op">)</span>,
-                    People     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"men_women"</span>, <span class="st">"fellow_citizens"</span><span class="op">)</span>,
-                    Peace      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"peace_world"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">keywords_n2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Government <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"federal_government"</span>, <span class="st">"vice_president"</span><span class="op">)</span>,
+                    People     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"men_women"</span>, <span class="st">"fellow_citizens"</span><span class="op">)</span>,
+                    Peace      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"peace_world"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Then, you can fit the keyATM models (here we use <a href="(keyATM_base.html)%20model">the base</a>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs_n2</span>,    <span class="co"># text input</span>
               no_keyword_topics <span class="op">=</span> <span class="fl">3</span>,                 <span class="co"># number of topics without keywords</span>
               keywords          <span class="op">=</span> <span class="va">keywords_n2</span>,       <span class="co"># keywords</span>
               model             <span class="op">=</span> <span class="st">"base"</span>,            <span class="co"># select the model</span>
-              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
+              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span>, <span class="fl">5</span><span class="op">)</span></code></pre></div>
-<pre><code>##             1_Government            2_People             3_Peace
-## 1 federal_government [✓] fellow_citizens [✓]     peace_world [✓]
-## 2        american_people       united_states       within_limits
-## 3     vice_president [✓]       men_women [✓] national_government
-## 4            one_another        great_nation           old_world
-## 5              god_bless           years_ago         north_south
-##                     Other_1           Other_2         Other_3
-## 1        general_government        four_years   united_states
-## 2           american_people government_people   every_citizen
-## 3              among_people     among_nations foreign_nations
-## 4 administration_government         years_ago     public_debt
-## 5         constitution_laws   beloved_country free_government</code></pre>
+<pre><code><span class="co">##             1_Government            2_People           3_Peace</span>
+<span class="co">## 1 federal_government [✓] fellow_citizens [✓]        four_years</span>
+<span class="co">## 2     vice_president [✓]       united_states         years_ago</span>
+<span class="co">## 3            one_another     american_people political_parties</span>
+<span class="co">## 4             good_faith       men_women [✓]   foreign_nations</span>
+<span class="co">## 5            oath_office       people_united         old_world</span>
+<span class="co">##               Other_1           Other_2                   Other_3</span>
+<span class="co">## 1  general_government government_people             united_states</span>
+<span class="co">## 2 constitution_united     among_nations              among_people</span>
+<span class="co">## 3         public_debt         god_bless administration_government</span>
+<span class="co">## 4   constitution_laws     nations_world             within_limits</span>
+<span class="co">## 5     free_government      great_nation          chief_magistrate</span></code></pre>
 </div>
 </div>
-<div id="fitting" class="section level1">
-<h1 class="hasAnchor">
-<a href="#fitting" class="anchor"></a>Fitting</h1>
-<div id="it-takes-time-to-fit-the-model--what-should-i-do" class="section level2">
-<h2 class="hasAnchor">
-<a href="#it-takes-time-to-fit-the-model--what-should-i-do" class="anchor"></a>It takes time to fit the model. What should I do?</h2>
-<p>Please note that the number of unique words, the total lenght of documents, and the number of topics affect the speed. If you use <code>cov</code> model, the number of covariates matters as well, because we need to estimate coefficieitns for covariates.</p>
-<p>If you want to speed up fitting, the first thing you can do is to review preprocessing processes. Usually, documents include a lot of low frequency words that do not help interpretation. <strong>quanteda</strong> provides various functions to trim those words.</p>
+<div class="section level2">
+<h2 id="fitting">Fitting<a class="anchor" aria-label="anchor" href="#fitting"></a>
+</h2>
+<div class="section level3">
+<h3 id="it-takes-time-to-fit-the-model--what-should-i-do">It takes time to fit the model. What should I do?<a class="anchor" aria-label="anchor" href="#it-takes-time-to-fit-the-model--what-should-i-do"></a>
+</h3>
+<p>Please note that the number of unique words, the total lenght of
+documents, and the number of topics affect the speed. If you use
+<code>cov</code> model, the number of covariates matters as well,
+because we need to estimate coefficieitns for covariates.</p>
+<p>If you want to speed up fitting, the first thing you can do is to
+review preprocessing processes. Usually, documents include a lot of low
+frequency words that do not help interpretation.
+<strong>quanteda</strong> provides various functions to trim those
+words.</p>
 </div>
-<div id="can-i-run-keyatm-on-cloud-computing-services" class="section level2">
-<h2 class="hasAnchor">
-<a href="#can-i-run-keyatm-on-cloud-computing-services" class="anchor"></a>Can I run keyATM on cloud computing services?</h2>
-<p>Yes! For example, <a href="http://www.louisaslett.com/">Professor Louis Aslett</a> provides an easy to use Amazon Machine Image of RStudio <a href="http://www.louisaslett.com/RStudio_AMI/">here</a>. When you select an instance, please note that <strong>keyATM</strong> does not need multiple cores (one or two cores would be enough because we cannot parallelize Collapsed Gibbs Sampling), but make sure the memory can handle your data.</p>
+<div class="section level3">
+<h3 id="can-i-run-keyatm-on-cloud-computing-services">Can I run keyATM on cloud computing services?<a class="anchor" aria-label="anchor" href="#can-i-run-keyatm-on-cloud-computing-services"></a>
+</h3>
+<p>Yes! For example, <a href="http://www.louisaslett.com/" class="external-link">Professor
+Louis Aslett</a> provides an easy to use Amazon Machine Image of RStudio
+<a href="http://www.louisaslett.com/RStudio_AMI/" class="external-link">here</a>. When you
+select an instance, please note that <strong>keyATM</strong> does not
+need multiple cores (one or two cores would be enough because we cannot
+parallelize Collapsed Gibbs Sampling), but make sure the memory can
+handle your data.</p>
 </div>
-<div id="can-a-theta-matrix-stored-with-store_theta-to-true-directly-interpretable-as-samples-from-the-posterior-and-thus-appropriate-for-estimating-uncertainty" class="section level2">
-<h2 class="hasAnchor">
-<a href="#can-a-theta-matrix-stored-with-store_theta-to-true-directly-interpretable-as-samples-from-the-posterior-and-thus-appropriate-for-estimating-uncertainty" class="anchor"></a>Can a theta matrix stored with <code>store_theta</code> to <code>TRUE</code> directly interpretable as samples from the posterior and thus appropriate for estimating uncertainty?</h2>
-<p>Yes. Since we use Collapsed Gibbs sampling, thetas are not sampled directly from the posterior distribution. <code>store_theta</code> option calculates marginal posterior (Equation 11 in <a href="https://arxiv.org/pdf/2004.05964.pdf">our paper</a>) for each iteration, so we can use it to consider uncertainty.</p>
+<div class="section level3">
+<h3 id="can-a-theta-matrix-stored-with-store_theta-to-true-directly-interpretable-as-samples-from-the-posterior-and-thus-appropriate-for-estimating-uncertainty">Can a theta matrix stored with <code>store_theta</code> to
+<code>TRUE</code> directly interpretable as samples from the posterior
+and thus appropriate for estimating uncertainty?<a class="anchor" aria-label="anchor" href="#can-a-theta-matrix-stored-with-store_theta-to-true-directly-interpretable-as-samples-from-the-posterior-and-thus-appropriate-for-estimating-uncertainty"></a>
+</h3>
+<p>Yes. Since we use Collapsed Gibbs sampling, thetas are not sampled
+directly from the posterior distribution. <code>store_theta</code>
+option calculates marginal posterior (Equation 11 in <a href="https://arxiv.org/pdf/2004.05964.pdf" class="external-link">our paper</a>) for each
+iteration, so we can use it to consider uncertainty.</p>
 </div>
 </div>
   </div>
@@ -324,11 +359,16 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://shusei-e.github.io">Shusei Eshima</a>, <a href="https://polisci.mit.edu/people/tomoya-sasaki">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/">Kosuke Imai</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
+<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
+Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
@@ -336,6 +376,8 @@
 
   
 
+
+  
 
   </body>
 </html>
