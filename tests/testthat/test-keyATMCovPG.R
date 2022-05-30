@@ -32,10 +32,10 @@ test_that("keyATM covariate", {
   expect_error(covariates_info(base))
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(cov$model_fit$Perplexity[3], 1984.968, tolerance = 0.001)
+  expect_equal(cov$model_fit$Perplexity[3], 1986.366, tolerance = 0.001)
   expect_equal(top_words(cov)[1, 1], "education [\U2713]")
   expect_equal(top_words(cov)[3, 3], "care")
-  expect_equal(cov$pi$Proportion[2], 5.0288, tolerance = 0.00001)
+  expect_equal(cov$pi$Proportion[2], 5.056661, tolerance = 0.00001)
 })
 
 
@@ -44,7 +44,7 @@ test_that("keyATM Heterogeneity Doc-Topic", {
   strata_topic <- by_strata_DocTopic(cov, by_var = "RepParty", labels = c("Dem", "Rep"), parallel = FALSE, posterior_mean = FALSE)
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(summary(strata_topic, method = "eti")[[2]]$Lower[2], 0.07480147, tolerance = 0.00001)
+  expect_equal(summary(strata_topic, method = "eti")[[2]]$Lower[2], 0.06559216, tolerance = 0.00001)
 
   p <- plot(strata_topic, show_topic = c(1,2,3,4), by = "covariate", method = "eti")
   expect_s3_class(p, "keyATM_fig")
@@ -57,7 +57,7 @@ test_that("keyATM Heterogeneity Doc-Topic, use posterior_mean", {
   strata_topic <- by_strata_DocTopic(cov, by_var = "RepParty", labels = c("Dem", "Rep"), parallel = FALSE, posterior_mean = TRUE)
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(summary(strata_topic, method = "eti")[[2]]$Lower[2], 0.1382071, tolerance = 0.00001)
+  expect_equal(summary(strata_topic, method = "eti")[[2]]$Lower[2], 0.1385868, tolerance = 0.00001)
 
   p <- plot(strata_topic, show_topic = c(1,2,3,4), by = "covariate", method = "eti")
   expect_s3_class(p, "keyATM_fig")
@@ -124,7 +124,7 @@ test_that("Covariates settings: Standardize - none", {
 
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))
-  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[3, 3]), 3.90292e-07, tolerance = 0.000001)
+  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[3, 3]), 0.1907234, tolerance = 0.000001)
 })
 
 
@@ -147,9 +147,8 @@ test_that("Covariates settings: Standardize - non-factor", {
 
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))
-  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[2, 3]), 0.124148, tolerance = 0.000001)
+  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[2, 3]), 0.1384179, tolerance = 0.000001)
 })
-
 
 
 cov <- keyATM(docs = keyATM_docs,
@@ -172,6 +171,6 @@ test_that("Covariates settings: Standardize - all", {
 
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))
-  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[5, 2]), 0.0373643, tolerance = 0.0001)
+  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[5, 2]), 0.03387499, tolerance = 0.0001)
 })
 
