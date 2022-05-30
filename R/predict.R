@@ -1,12 +1,12 @@
 #' Predict topic proportions for the covariate keyATM
-#' 
+#'
 #' @param object the keyATM_output object for the covariate model.
 #' @param newdata New observations which should be predicted.
 #' @param transform Transorm and standardize the `newdata` with the same formula and option as `model_settings` used in [keyATM()].
 #' @param burn_in integer. Burn-in period. If not specified, it is the half of samples. Default is \code{NULL}.
 #' @param parallel logical. If \code{TRUE}, parallelization for speeding up. Default is \code{TRUE}. Please `plan()` before use this function.
 #' @param posterior_mean logical. If \code{TRUE}, the quantity of interest to estimate is the posterior mean. Default is \code{TRUE}.
-#' @param ci value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90%). 
+#' @param ci value of the credible interval (between 0 and 1) to be estimated. Default is \code{0.9} (90%).
 #' @param method method for computing the credible interval. The Highest Density Interval (\code{hdi}, default) or Equal-tailed Interval (\code{eti}).
 #' @param point method for computing the point estimate. \code{mean} (default) or \code{median}.
 #' @param label a character. Add a `label` column to the output. The default is \code{NULL} (do not add it).
@@ -14,7 +14,7 @@
 #' @param ... additional arguments not used.
 #' @export
 predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = NULL, parallel = TRUE,
-                                  posterior_mean = TRUE, ci = 0.9, method = c("hdi", "eti"), 
+                                  posterior_mean = TRUE, ci = 0.9, method = c("hdi", "eti"),
                                   point = c("mean", "median"), label = NULL, raw_values = FALSE, ...)
 {
   method <- match.arg(method)
@@ -29,13 +29,13 @@ predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = 
     newdata <- covariates_standardize(newdata, type = object$kept_values$model_settings$standardize,
                                       cov_formula = object$kept_values$model_settings$covariates_formula)
   }
-  
+
   data_used <- covariates_get(object)
   if (dim(newdata)[1] != dim(data_used)[1] | dim(newdata)[2] != dim(data_used)[2])
     stop("Dimension of the `newdata` should match with the fitted data. Check the output of `covariates_get()`")
 
   if (is.null(burn_in))
-    burn_in <- floor(max(object$model_fit$Iteration) / 2) 
+    burn_in <- floor(max(object$model_fit$Iteration) / 2)
 
   used_iter <- object$values_iter$used_iter
   used_iter <- used_iter[used_iter > burn_in]
@@ -48,7 +48,7 @@ predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = 
     Sigma_iter <- object$kept_values$model_settings$PG_params$Sigma_list
 
     if (posterior_mean) {
-      # Draw from the mean 
+      # Draw from the mean
       obj <- do.call(dplyr::bind_rows,
                      future.apply::future_lapply(1:length(use_index),
                         function(s) {
@@ -65,9 +65,9 @@ predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = 
                           return(thetas)
                         },
                         future.seed = TRUE)
-                     )    
+                     )
     } else {
-      # Draw from the mean 
+      # Draw from the mean
       obj <- do.call(dplyr::bind_rows,
                      future.apply::future_lapply(1:length(use_index),
                         function(s) {
@@ -136,10 +136,9 @@ predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = 
     }
   }
 
-
   if (raw_values) {
-    return(obj) 
+    return(obj)
   } else {
-    return(strata_doctopic_CI(obj[, 1:(ncol(obj)-1)], ci, method, point, label))
+    return(strata_doctopic_CI(obj[, 1:(ncol(obj)-1)], ci = ci, method, point, label))
   }
 }
