@@ -4,6 +4,9 @@
 * Use `Rcpp::message()` if `verbose = TRUE`
 * Completely remove `parallel::mclapply`
 
+### Bug fix
+* `by_strata_DocTopic()` takes the correct arguments ([#180](https://github.com/keyATM/keyATM/issues/180), thank you [@pmeiners](https://github.com/pmeiners) for reporting this!)
+
 # keyATM 0.4.0
 [Roadmap](https://github.com/keyATM/keyATM/projects/3) for this version.
 

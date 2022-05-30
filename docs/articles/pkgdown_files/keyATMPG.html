@@ -20,6 +20,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
       </span>
     </div>
 
@@ -86,8 +88,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/keyATM/keyATM">
-    <span class="fas fa-github fa-lg"></span>
+  <a href="https://github.com/keyATM/keyATM" class="external-link">
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -101,101 +103,173 @@
 
       
 
-      </header><script src="keyATMPG_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>keyATM Covariate with Pólya-Gamma Augmentation</h1>
+      <h1 data-toc-skip>keyATM Covariate with Pólya-Gamma
+Augmentation</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/master/vignettes/pkgdown_files/keyATMPG.Rmd"><code>vignettes/pkgdown_files/keyATMPG.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/HEAD/vignettes/pkgdown_files/keyATMPG.Rmd" class="external-link"><code>vignettes/pkgdown_files/keyATMPG.Rmd</code></a></small>
       <div class="hidden name"><code>keyATMPG.Rmd</code></div>
 
     </div>
 
     
     
-
-
-
-
-
-
-
-
-<div id="model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#model" class="anchor"></a>Model</h2>
-<p>An alternative approach to model covariates is to use Pólya-Gamma augmentation. Polson et al. (2013) propose a strategy to use Pólya-Gamma latent variables for fully Bayesian inference in binomial likelihoods. Linderman et al. (2015) use it to develop models for categorical and multinomial data with dependencies among the multinomial parameters. We extend their method to incorporate covariates.</p>
-<p>We use the same notations as in the main text. Our corpus contains <span class="math inline">\(D\)</span> documents. We observe a matrix <span class="math inline">\(\mathbf{X}\)</span> of <span class="math inline">\(M\)</span> covariates whose dimension is <span class="math inline">\(D \times M\)</span>. Topic model assigns one of <span class="math inline">\(K\)</span> topics to each observed word. <span class="math inline">\(\mathbf{z}_d\)</span> is a vector of assigned topics for a document <span class="math inline">\(d\)</span>. We introduce the stick-breaking representation of the multinomial distribution () described in Linderman et al. (2015), <span class="math display">\[\begin{align}
+<div class="section level2">
+<h2 id="model">Model<a class="anchor" aria-label="anchor" href="#model"></a>
+</h2>
+<p>An alternative approach to model covariates is to use Pólya-Gamma
+augmentation. Polson et al. (2013) propose a strategy to use Pólya-Gamma
+latent variables for fully Bayesian inference in binomial likelihoods.
+Linderman et al. (2015) use it to develop models for categorical and
+multinomial data with dependencies among the multinomial parameters. We
+extend their method to incorporate covariates.</p>
+<p>We use the same notations as in the main text. Our corpus contains
+<span class="math inline">\(D\)</span> documents. We observe a matrix
+<span class="math inline">\(\mathbf{X}\)</span> of <span class="math inline">\(M\)</span> covariates whose dimension is <span class="math inline">\(D \times M\)</span>. Topic model assigns one of
+<span class="math inline">\(K\)</span> topics to each observed word.
+<span class="math inline">\(\mathbf{z}_d\)</span> is a vector of
+assigned topics for a document <span class="math inline">\(d\)</span>.
+We introduce the stick-breaking representation of the multinomial
+distribution () described in Linderman et al. (2015), <span class="math display">\[\begin{align}
   \mathbf{z}_{d} &amp;\sim \textsf{SB-Multi}(n_d, \boldsymbol{\psi}_d).
-\end{align}\]</span>  rewrites the <span class="math inline">\(K\)</span>-dimensional multinomial distribution with <span class="math inline">\(K-1\)</span> binomial distributions. % <span class="math display">\[\begin{align}
+\end{align}\]</span> rewrites the <span class="math inline">\(K\)</span>-dimensional multinomial distribution
+with <span class="math inline">\(K-1\)</span> binomial distributions. %
+<span class="math display">\[\begin{align}
   \textsf{SB-Multi}(\mathbf{z}_d \mid n_d, \boldsymbol{\psi}_d)
-  &amp;= \prod_{k=1}^{K-1} \textsf{Bin}(n_{dk} \mid n_d - \textstyle\sum_{k' &lt; k} n_{dk'}, \psi_{dk}) \\
-  &amp;= \prod_{k=1}^{K-1} \binom{N_{dk}}{n_{dk}} 
+  &amp;= \prod_{k=1}^{K-1} \textsf{Bin}(n_{dk} \mid n_d -
+\textstyle\sum_{k' &lt; k} n_{dk'}, \psi_{dk}) \\
+  &amp;= \prod_{k=1}^{K-1} \binom{N_{dk}}{n_{dk}}
       \bigg( \frac{\exp(\psi_{dk})}{1 + \exp(\psi_{dk})} \bigg)^{n_{dk}}
       \bigg( \frac{1}{1 + \exp(\psi_{dk})} \bigg)^{N_{dk} - n_{dk}} \\
-  &amp;= \prod_{k=1}^{K-1} \binom{N_{dk}}{n_{dk}} 
-  \frac{\exp(\psi_{dk})^{n_{dk}}}{(1 + \exp(\psi_{dk}))^{N_{dk}}} \\ \label{eq:sb-multi}
+  &amp;= \prod_{k=1}^{K-1} \binom{N_{dk}}{n_{dk}}
+  \frac{\exp(\psi_{dk})^{n_{dk}}}{(1 + \exp(\psi_{dk}))^{N_{dk}}} \\
+\label{eq:sb-multi}
    N_{dk} &amp;= n_d - \sum_{k' &lt; k} n_{dk'}
 \end{align}\]</span></p>
-<p>We model the parameters in  with the covariates. First, we assume that coefficients follow the multivariate normal distribution. <span class="math inline">\(\boldsymbol{\lambda}\)</span> is a <span class="math inline">\(M \times (K-1)\)</span> matrix, so we introduce the vectorization transformation to draw all elements from a single draw of the multivariate normal distribution. % <span class="math display">\[\begin{align}
-  \text{vec}({\boldsymbol{\lambda}}) &amp;\sim \mathcal{N}(\text{vec}(\boldsymbol{\mu}_0), \boldsymbol{\Sigma}_0 \otimes \boldsymbol{\Lambda}_0^{-1}) \\ \label{eq:prior_lambda}
-  \boldsymbol{\Sigma}_0 &amp;\sim \mathcal{W}^{-1}(\mathbf{V}_0, \boldsymbol{\nu}_0)
-\end{align}\]</span> where we have the priors <span class="math inline">\(\boldsymbol{\mu}_0 = \mathbf{0}\)</span>, and <span class="math inline">\(\boldsymbol{\Sigma}_0\)</span> is a <span class="math inline">\((K-1) \times (K-1)\)</span> identity matrix (for topics). <span class="math inline">\(\boldsymbol{\Lambda}_0\)</span> is a <span class="math inline">\(M \times M\)</span> identity matrix (for covariates). % <span class="math inline">\(\boldsymbol{\Lambda}_\lambda = \frac{1}{\sigma_\lambda^2} \mathbf{1}_{M}\)</span>. <span class="math inline">\(\boldsymbol{\Sigma}_0 \otimes \boldsymbol{\Lambda}_0^{-1}\)</span> becomes a diagonal matrix and equation~ is the same as <span class="math inline">\(\boldsymbol{\lambda}_{k} \sim \mathcal{N}((\boldsymbol{\mu}_{0})_{k}, (\boldsymbol{\Sigma}_0)_{kk} \boldsymbol{\Lambda}_0^{-1}), \text{ for } k = 1, \ldots, K-1\)</span>. %</p>
+<p>We model the parameters in with the covariates. First, we assume that
+coefficients follow the multivariate normal distribution. <span class="math inline">\(\boldsymbol{\lambda}\)</span> is a <span class="math inline">\(M \times (K-1)\)</span> matrix, so we introduce
+the vectorization transformation to draw all elements from a single draw
+of the multivariate normal distribution. % <span class="math display">\[\begin{align}
+  \text{vec}({\boldsymbol{\lambda}}) &amp;\sim
+\mathcal{N}(\text{vec}(\boldsymbol{\mu}_0), \boldsymbol{\Sigma}_0
+\otimes \boldsymbol{\Lambda}_0^{-1}) \\ \label{eq:prior_lambda}
+  \boldsymbol{\Sigma}_0 &amp;\sim \mathcal{W}^{-1}(\mathbf{V}_0,
+\boldsymbol{\nu}_0)
+\end{align}\]</span> where we have the priors <span class="math inline">\(\boldsymbol{\mu}_0 = \mathbf{0}\)</span>, and
+<span class="math inline">\(\boldsymbol{\Sigma}_0\)</span> is a <span class="math inline">\((K-1) \times (K-1)\)</span> identity matrix (for
+topics). <span class="math inline">\(\boldsymbol{\Lambda}_0\)</span> is
+a <span class="math inline">\(M \times M\)</span> identity matrix (for
+covariates). % <span class="math inline">\(\boldsymbol{\Lambda}_\lambda
+= \frac{1}{\sigma_\lambda^2} \mathbf{1}_{M}\)</span>. <span class="math inline">\(\boldsymbol{\Sigma}_0 \otimes
+\boldsymbol{\Lambda}_0^{-1}\)</span> becomes a diagonal matrix and
+equation~<span class="math inline">\(\eqref{eq:prior_lambda}\)</span> is
+the same as <span class="math inline">\(\boldsymbol{\lambda}_{k} \sim
+\mathcal{N}((\boldsymbol{\mu}_{0})_{k}, (\boldsymbol{\Sigma}_0)_{kk}
+\boldsymbol{\Lambda}_0^{-1}), \text{ for } k = 1, \ldots, K-1\)</span>.
+%</p>
 <p>Next, we use covariates to model the parameters in . <span class="math display">\[\begin{align}
-  \boldsymbol{\psi}_d &amp;\sim \mathcal{N}(\boldsymbol{\lambda}^\top \mathbf{x}_d, \boldsymbol{\Sigma}_0)
-\end{align}\]</span> Social scientists often use categorical variables (e.g., authorship of the document) as covariates. Modeling the mean of the multivariate normal distribution with covariates allows us to create variation in the document-topic distribution when two or more documents have the same set of covariates. The multivariate normal distribution can be generalized to the matrix normal distribution. <span class="math display">\[\begin{align}
-  \boldsymbol{\Psi}\sim \mathcal{MN}(\mathbf{M}, \mathbf{U}, \boldsymbol{\Sigma}_0),
-\end{align}\]</span> where <span class="math inline">\(\boldsymbol{\Psi}\)</span> is a <span class="math inline">\(D \times (K-1)\)</span> matrix, each row of <span class="math inline">\(\mathbf{M}\)</span> is equal to <span class="math inline">\(\boldsymbol{\lambda}^\top \mathbf{x}_d\)</span>, and <span class="math inline">\(\mathbf{U}\)</span> is the <span class="math inline">\(D\times D\)</span> identity matrix (documents are independent). This generalization will allow us to have a vectorized implementation.</p>
+  \boldsymbol{\psi}_d &amp;\sim \mathcal{N}(\boldsymbol{\lambda}^\top
+\mathbf{x}_d, \boldsymbol{\Sigma}_0)
+\end{align}\]</span> Social scientists often use categorical variables
+(e.g., authorship of the document) as covariates. Modeling the mean of
+the multivariate normal distribution with covariates allows us to create
+variation in the document-topic distribution when two or more documents
+have the same set of covariates. The multivariate normal distribution
+can be generalized to the matrix normal distribution. <span class="math display">\[\begin{align}
+  \boldsymbol{\Psi}\sim \mathcal{MN}(\mathbf{M}, \mathbf{U},
+\boldsymbol{\Sigma}_0),
+\end{align}\]</span> where <span class="math inline">\(\boldsymbol{\Psi}\)</span> is a <span class="math inline">\(D \times (K-1)\)</span> matrix, each row of <span class="math inline">\(\mathbf{M}\)</span> is equal to <span class="math inline">\(\boldsymbol{\lambda}^\top \mathbf{x}_d\)</span>,
+and <span class="math inline">\(\mathbf{U}\)</span> is the <span class="math inline">\(D\times D\)</span> identity matrix (documents are
+independent). This generalization will allow us to have a vectorized
+implementation.</p>
 </div>
-<div id="estimation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#estimation" class="anchor"></a>Estimation</h2>
-<p>We sample <span class="math inline">\(\boldsymbol{\lambda}\)</span>, <span class="math inline">\(\boldsymbol{\Psi}\)</span>, and P{'{o}}lya-gamma auxiliary variables <span class="math inline">\(\boldsymbol{\omega}\)</span>.</p>
-<div id="sampling-boldsymbolpsi" class="section level3">
-<h3 class="hasAnchor">
-<a href="#sampling-boldsymbolpsi" class="anchor"></a>Sampling <span class="math inline">\(\boldsymbol{\Psi}\)</span>
+<div class="section level2">
+<h2 id="estimation">Estimation<a class="anchor" aria-label="anchor" href="#estimation"></a>
+</h2>
+<p>We sample <span class="math inline">\(\boldsymbol{\lambda}\)</span>,
+<span class="math inline">\(\boldsymbol{\Psi}\)</span>, and
+P{'{o}}lya-gamma auxiliary variables <span class="math inline">\(\boldsymbol{\omega}\)</span>.</p>
+<div class="section level3">
+<h3 id="sampling-boldsymbolpsi">Sampling <span class="math inline">\(\boldsymbol{\Psi}\)</span><a class="anchor" aria-label="anchor" href="#sampling-boldsymbolpsi"></a>
 </h3>
-<p>Equation~ has the same form as Theorem 1 of Polson et al. (2013) and we can introduce P{'{o}}lya-gamma auxiliary variables. % <span class="math display">\[\begin{align}
-  p(\mathbf{z}_d, \boldsymbol{\omega}_d \mid n_d, \boldsymbol{\psi}_d) &amp;\propto
-  \prod_{k = 1}^{K - 1} \exp \big( (n_{dk} - {N_{dk}}/{2}) \psi_{dk} - \omega_{dk} \psi_{dk}^2 /2   \big) \\
+<p>Equation~<span class="math inline">\(\eqref{eq:sb-multi}\)</span> has
+the same form as Theorem 1 of Polson et al. (2013) and we can introduce
+P{'{o}}lya-gamma auxiliary variables. % <span class="math display">\[\begin{align}
+  p(\mathbf{z}_d, \boldsymbol{\omega}_d \mid n_d, \boldsymbol{\psi}_d)
+&amp;\propto
+  \prod_{k = 1}^{K - 1} \exp \big( (n_{dk} - {N_{dk}}/{2}) \psi_{dk} -
+\omega_{dk} \psi_{dk}^2 /2   \big) \\
   &amp;= \prod_{k = 1}^{K - 1} \exp \bigg(  -\frac{\omega_{dk}}{2}
-  \bigg( \psi_{dk}^2 - \textstyle \frac{2}{\omega_{dk}} (n_{dk} - N_{dk}/2) \psi_{dk} \bigg)   \bigg) \\ 
-  &amp;\propto  \prod_{k = 1}^{K - 1} \exp  \bigg( -\frac{\omega_{dk}}{2}
-  \bigg( \psi_{dk} - \textstyle \frac{1}{\omega_{dk}}(n_{dk} - N_{dk}/2) \bigg)^2 \  \bigg)  \\
-  &amp;= \mathcal{N}\big( \boldsymbol{\psi}_d \mid \boldsymbol{\Omega}_d^{-1} \boldsymbol{\kappa}_d, \boldsymbol{\Omega}_{d}^{-1}  \big) \\
-  \omega_{dk} &amp;\sim \text{PG}(N_{dk}, \psi_{dk}) \text{ for } 1, \ldots, K-1 \\
-  \kappa_{dk} &amp;= n_{dk} - \frac{N_{dk}}{2} \text{ for } 1, \ldots, K-1 \\
-  \boldsymbol{\Omega}_{d} &amp;= \text{diag}(\omega_{d1}, \ldots, \omega_{d, K-1}) 
-\end{align}\]</span> We can use the multivariate normal distribution to sample <span class="math inline">\(\boldsymbol{\psi}_d\)</span>. <span class="math display">\[\begin{align}
-  p(\boldsymbol{\psi}_d \mid \mathbf{z}_d, \boldsymbol{\omega}_d) 
-  &amp;\propto 
-    p(\mathbf{z}_d \mid \boldsymbol{\psi}_d, \boldsymbol{\kappa}_d, \boldsymbol{\Omega}_d) p(\boldsymbol{\psi}_d \mid \boldsymbol{\Sigma}_0, \mathbf{X}, \boldsymbol{\lambda})\\
-  &amp;\propto \mathcal{N}(\boldsymbol{\psi}_d \mid \tilde{\boldsymbol{\mu}}, \tilde{\boldsymbol{\Sigma}}) \\
-  \tilde{\boldsymbol{\mu}} &amp;= \tilde{\boldsymbol{\Sigma}}[\boldsymbol{\kappa}_d + \boldsymbol{\Sigma}_0^{-1} \boldsymbol{\lambda}^\top \mathbf{x}_d] \\
-  \tilde{\boldsymbol{\Sigma}} &amp;= [\boldsymbol{\Omega}_d + \boldsymbol{\Sigma}_{0}^{-1}]^{-1},
-\end{align}\]</span> where the second proportion comes from Matrix Cook Book 8.1.8 (product of Gaussians).</p>
+  \bigg( \psi_{dk}^2 - \textstyle \frac{2}{\omega_{dk}} (n_{dk} -
+N_{dk}/2) \psi_{dk} \bigg)   \bigg) \\
+  &amp;\propto  \prod_{k = 1}^{K - 1} \exp  \bigg(
+-\frac{\omega_{dk}}{2}
+  \bigg( \psi_{dk} - \textstyle \frac{1}{\omega_{dk}}(n_{dk} - N_{dk}/2)
+\bigg)^2 \  \bigg)  \\
+  &amp;= \mathcal{N}\big( \boldsymbol{\psi}_d \mid
+\boldsymbol{\Omega}_d^{-1} \boldsymbol{\kappa}_d,
+\boldsymbol{\Omega}_{d}^{-1}  \big) \\
+  \omega_{dk} &amp;\sim \text{PG}(N_{dk}, \psi_{dk}) \text{ for } 1,
+\ldots, K-1 \\
+  \kappa_{dk} &amp;= n_{dk} - \frac{N_{dk}}{2} \text{ for } 1, \ldots,
+K-1 \\
+  \boldsymbol{\Omega}_{d} &amp;= \text{diag}(\omega_{d1}, \ldots,
+\omega_{d, K-1})
+\end{align}\]</span> We can use the multivariate normal distribution to
+sample <span class="math inline">\(\boldsymbol{\psi}_d\)</span>. <span class="math display">\[\begin{align}
+  p(\boldsymbol{\psi}_d \mid \mathbf{z}_d, \boldsymbol{\omega}_d)
+  &amp;\propto
+    p(\mathbf{z}_d \mid \boldsymbol{\psi}_d, \boldsymbol{\kappa}_d,
+\boldsymbol{\Omega}_d) p(\boldsymbol{\psi}_d \mid \boldsymbol{\Sigma}_0,
+\mathbf{X}, \boldsymbol{\lambda})\\
+  &amp;\propto \mathcal{N}(\boldsymbol{\psi}_d \mid
+\tilde{\boldsymbol{\mu}}, \tilde{\boldsymbol{\Sigma}}) \\
+  \tilde{\boldsymbol{\mu}} &amp;=
+\tilde{\boldsymbol{\Sigma}}[\boldsymbol{\kappa}_d +
+\boldsymbol{\Sigma}_0^{-1} \boldsymbol{\lambda}^\top \mathbf{x}_d] \\
+  \tilde{\boldsymbol{\Sigma}} &amp;= [\boldsymbol{\Omega}_d +
+\boldsymbol{\Sigma}_{0}^{-1}]^{-1},
+\end{align}\]</span> where the second proportion comes from Matrix Cook
+Book 8.1.8 (product of Gaussians).</p>
 </div>
-<div id="sampling-boldsymbollambda" class="section level3">
-<h3 class="hasAnchor">
-<a href="#sampling-boldsymbollambda" class="anchor"></a>Sampling <span class="math inline">\(\boldsymbol{\lambda}\)</span>
+<div class="section level3">
+<h3 id="sampling-boldsymbollambda">Sampling <span class="math inline">\(\boldsymbol{\lambda}\)</span><a class="anchor" aria-label="anchor" href="#sampling-boldsymbollambda"></a>
 </h3>
-<p>Sampling <span class="math inline">\(\boldsymbol{\lambda}\)</span> and <span class="math inline">\(\mathbf{X}\)</span> is the same as Bayesian multivariate linear regression in Rossi et al. (2012, pp.31-34).</p>
+<p>Sampling <span class="math inline">\(\boldsymbol{\lambda}\)</span>
+and <span class="math inline">\(\mathbf{X}\)</span> is the same as
+Bayesian multivariate linear regression in Rossi et al. (2012,
+pp.31-34).</p>
 </div>
 </div>
-<div id="ordering-effect" class="section level2">
-<h2 class="hasAnchor">
-<a href="#ordering-effect" class="anchor"></a>Ordering effect</h2>
-<p>Stick-Breaking representation of the multinomial distribution has a potential ordering issue (Zhang and Zhou, 2017). We can regard  as a distribution that orders categories according to their proportions. This can be an issue in  because topics are pre-labeled, and the order does not necessarily match with the proportion of the topics.</p>
+<div class="section level2">
+<h2 id="ordering-effect">Ordering effect<a class="anchor" aria-label="anchor" href="#ordering-effect"></a>
+</h2>
+<p>Stick-Breaking representation of the multinomial distribution has a
+potential ordering issue (Zhang and Zhou, 2017). We can regard as a
+distribution that orders categories according to their proportions. This
+can be an issue in because topics are pre-labeled, and the order does
+not necessarily match with the proportion of the topics.</p>
 </div>
-<div id="reference" class="section level2">
-<h2 class="hasAnchor">
-<a href="#reference" class="anchor"></a>Reference</h2>
+<div class="section level2">
+<h2 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>
+</h2>
 <ul>
-<li>Linderman, S. W., Johnson, M. J., &amp; Adams, R. P. (2015). Dependent multinomial models made easy: Stick breaking with the Pólya-gamma augmentation. Advances in Neural Information Processing Systems, 2015, 3456-3464.</li>
-<li>Polson, N. G., Scott, J. G., &amp; Windle, J. (2013). Bayesian inference for logistic models using Pólya–Gamma latent variables. Journal of the American statistical Association, 108(504), 1339-1349.</li>
-<li>Rossi, P. E., Allenby, G. M., &amp; McCulloch, R. (2012). Bayesian statistics and marketing. John Wiley &amp; Sons.</li>
-<li>Zhang, Q., &amp; Zhou, M. (2017). Permuted and augmented stick-breaking bayesian multinomial regression. The Journal of Machine Learning Research, 18(1), 7479-7511.</li>
+<li>Linderman, S. W., Johnson, M. J., &amp; Adams, R. P. (2015).
+Dependent multinomial models made easy: Stick breaking with the
+Pólya-gamma augmentation. Advances in Neural Information Processing
+Systems, 2015, 3456-3464.</li>
+<li>Polson, N. G., Scott, J. G., &amp; Windle, J. (2013). Bayesian
+inference for logistic models using Pólya–Gamma latent variables.
+Journal of the American statistical Association, 108(504),
+1339-1349.</li>
+<li>Rossi, P. E., Allenby, G. M., &amp; McCulloch, R. (2012). Bayesian
+statistics and marketing. John Wiley &amp; Sons.</li>
+<li>Zhang, Q., &amp; Zhou, M. (2017). Permuted and augmented
+stick-breaking bayesian multinomial regression. The Journal of Machine
+Learning Research, 18(1), 7479-7511.</li>
 </ul>
 </div>
   </div>
@@ -211,11 +285,16 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://shusei-e.github.io">Shusei Eshima</a>, <a href="https://polisci.mit.edu/people/tomoya-sasaki">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/">Kosuke Imai</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
+<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
+Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
@@ -223,6 +302,8 @@
 
   
 
+
+  
 
   </body>
 </html>

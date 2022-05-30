@@ -86,7 +86,7 @@ covariates_get <- function(x) {
 #' @param by_var character. The name of the variable to use.
 #' @param labels character. The labels for the values specified in `by_var` (ascending order).
 #' @param by_values numeric. Specific values for `by_var`, ordered from small to large. If it is not specified, all values in `by_var` will be used.
-#' @param ... other arguments passed on to the [predict()] function.
+#' @param ... other arguments passed on to the [predict.keyATM_output()] function.
 #' @return strata_topicword object (a list).
 #' @import magrittr
 #' @importFrom stats predict
