@@ -20,6 +20,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
       </span>
     </div>
 
@@ -86,8 +88,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/keyATM/keyATM">
-    <span class="fas fa-github fa-lg"></span>
+  <a href="https://github.com/keyATM/keyATM" class="external-link">
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -101,92 +103,99 @@
 
       
 
-      </header><script src="keyATM_label_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>keyATM Label</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/master/vignettes/pkgdown_files/keyATM_label.Rmd"><code>vignettes/pkgdown_files/keyATM_label.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/HEAD/vignettes/pkgdown_files/keyATM_label.Rmd" class="external-link"><code>vignettes/pkgdown_files/keyATM_label.Rmd</code></a></small>
       <div class="hidden name"><code>keyATM_label.Rmd</code></div>
 
     </div>
 
     
     
-<div id="preparing-documents-and-labels" class="section level2">
-<h2 class="hasAnchor">
-<a href="#preparing-documents-and-labels" class="anchor"></a>Preparing documents and labels</h2>
-<p>Please read <a href="Preparation.html">Preparation</a> for the reading of documents and creating a list of keywords. We use bills data we prapared (<a href="Preparation.html#reading-documents-into-keyatm">documents</a> and <a href="Preparation.html#preparing-keywords">keywords</a>).</p>
+<div class="section level2">
+<h2 id="preparing-documents-and-labels">Preparing documents and labels<a class="anchor" aria-label="anchor" href="#preparing-documents-and-labels"></a>
+</h2>
+<p>Please read <a href="Preparation.html">Preparation</a> for the
+reading of documents and creating a list of keywords. We use bills data
+we prapared (<a href="Preparation.html#reading-documents-into-keyatm">documents</a> and
+<a href="Preparation.html#preparing-keywords">keywords</a>).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://keyatm.github.io/keyATM/">keyATM</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://quanteda.io">quanteda</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://keyatm.github.io/keyATM/" class="external-link">keyATM</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://quanteda.io" class="external-link">quanteda</a></span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">keyATM_data_bills</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">keyATM_data_bills</span><span class="op">)</span>
 <span class="va">bills_keywords</span> <span class="op">&lt;-</span> <span class="va">keyATM_data_bills</span><span class="op">$</span><span class="va">keywords</span>
 <span class="va">bills_dfm</span> <span class="op">&lt;-</span> <span class="va">keyATM_data_bills</span><span class="op">$</span><span class="va">doc_dfm</span>  <span class="co"># quanteda dfm object</span>
 <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span><span class="va">bills_dfm</span><span class="op">)</span></code></pre></div>
-<p>Label model needs a vector of labels. Values of the vector represent topics. If a document does not have a label, the corresponding element in the label vector should have <code>NA</code>.</p>
+<p>Label model needs a vector of labels. Values of the vector represent
+topics. If a document does not have a label, the corresponding element
+in the label vector should have <code>NA</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">labels_use</span> <span class="op">&lt;-</span> <span class="va">keyATM_data_bills</span><span class="op">$</span><span class="va">labels</span>
 <span class="va">labels_use</span></code></pre></div>
-<pre><code>##   [1] NA NA NA NA NA NA  3 NA NA  3 NA  3 NA NA NA NA  2 NA NA NA NA NA NA NA NA
-##  [26] NA NA  2 NA NA NA  3 NA NA NA NA NA NA  3 NA NA  3 NA NA  1 NA NA NA NA NA
-##  [51] NA NA NA NA  3 NA NA NA  3  1 NA NA NA NA  3 NA NA NA NA NA  1 NA  3 NA NA
-##  [76] NA NA NA  3 NA  2 NA  3 NA NA  2  3 NA NA NA NA NA NA NA NA  1 NA NA NA NA
-## [101] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA  2 NA NA NA  2 NA NA NA NA  1
-## [126]  3 NA  1 NA NA  1 NA NA NA NA  3 NA NA NA NA</code></pre>
+<pre><code><span class="co">##   [1] NA NA NA NA NA NA  3 NA NA  3 NA  3 NA NA NA NA  2 NA NA NA NA NA NA NA NA</span>
+<span class="co">##  [26] NA NA  2 NA NA NA  3 NA NA NA NA NA NA  3 NA NA  3 NA NA  1 NA NA NA NA NA</span>
+<span class="co">##  [51] NA NA NA NA  3 NA NA NA  3  1 NA NA NA NA  3 NA NA NA NA NA  1 NA  3 NA NA</span>
+<span class="co">##  [76] NA NA NA  3 NA  2 NA  3 NA NA  2  3 NA NA NA NA NA NA NA NA  1 NA NA NA NA</span>
+<span class="co">## [101] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA  2 NA NA NA  2 NA NA NA NA  1</span>
+<span class="co">## [126]  3 NA  1 NA NA  1 NA NA NA NA  3 NA NA NA NA</span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">labels_use</span><span class="op">)</span>  <span class="co"># should be the same as the number of documents</span></code></pre></div>
-<pre><code>## [1] 140</code></pre>
-<p>Please make sure that <strong>the order of label index is the same as the order of documents</strong>.</p>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">labels_use</span><span class="op">)</span>  <span class="co"># should be the same as the number of documents</span></code></pre></div>
+<pre><code><span class="co">## [1] 140</span></code></pre>
+<p>Please make sure that <strong>the order of label index is the same as
+the order of documents</strong>.</p>
 </div>
-<div id="fitting-the-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#fitting-the-model" class="anchor"></a>Fitting the model</h2>
+<div class="section level2">
+<h2 id="fitting-the-model">Fitting the model<a class="anchor" aria-label="anchor" href="#fitting-the-model"></a>
+</h2>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>
               docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,                <span class="co"># text input</span>
               no_keyword_topics <span class="op">=</span> <span class="fl">3</span>,                          <span class="co"># number of topics without keywords</span>
               keywords          <span class="op">=</span> <span class="va">bills_keywords</span>,             <span class="co"># keywords</span>
               model             <span class="op">=</span> <span class="st">"label"</span>,                    <span class="co"># select the model</span>
-              model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="va">labels_use</span><span class="op">)</span>,  <span class="co"># set labels</span>
-              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span>
+              model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="va">labels_use</span><span class="op">)</span>,  <span class="co"># set labels</span>
+              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span>
              <span class="op">)</span></code></pre></div>
-<pre><code>## Label model is an experimental function.</code></pre>
+<pre><code><span class="co">## Label model is an experimental function.</span></code></pre>
 </div>
-<div id="saving-the-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#saving-the-model" class="anchor"></a>Saving the model</h2>
-<p>Once you fit the model, you can save the model with <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">Base model</a>.</p>
+<div class="section level2">
+<h2 id="saving-the-model">Saving the model<a class="anchor" aria-label="anchor" href="#saving-the-model"></a>
+</h2>
+<p>Once you fit the model, you can save the model with
+<code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">Base model</a>.</p>
 </div>
-<div id="checking-top-words" class="section level2">
-<h2 class="hasAnchor">
-<a href="#checking-top-words" class="anchor"></a>Checking top words</h2>
+<div class="section level2">
+<h2 id="checking-top-words">Checking top words<a class="anchor" aria-label="anchor" href="#checking-top-words"></a>
+</h2>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
-<pre><code>##      1_Education       2_Law     3_Health        4_Drug       Other_1
-## 1  education [✓]     law [✓]   health [✓]      drug [✓]    commission
-## 2         school   court [✓]         care       project      facility
-## 3    educational      action   public [✓]         grant    electronic
-## 4          grant        code         date       control   information
-## 5    student [✓] enforcement subparagraph administrator communication
-## 6          local      person       report        report          rule
-## 7       describe     chapter     describe           air         level
-## 8        library    district       senate    assistance       require
-## 9           part       crime   individual     substance         party
-## 10        follow       civil       follow         abuse         water
-##        Other_2      Other_3
-## 1     research     wildlife
-## 2     national   management
-## 3       center         land
-## 4   technology     national
-## 5     director      coastal
-## 6     standard conservation
-## 7    establish         fish
-## 8     activity       refuge
-## 9  development     resource
-## 10   committee       system</code></pre>
+<pre><code><span class="co">##      1_Education       2_Law     3_Health        4_Drug       Other_1</span>
+<span class="co">## 1  education [✓]     law [✓]   health [✓]      drug [✓]    commission</span>
+<span class="co">## 2         school   court [✓]         care       project      facility</span>
+<span class="co">## 3    educational      action   public [✓]         grant    electronic</span>
+<span class="co">## 4          grant        code         date       control   information</span>
+<span class="co">## 5    student [✓] enforcement subparagraph administrator communication</span>
+<span class="co">## 6          local      person       report        report          rule</span>
+<span class="co">## 7       describe     chapter     describe           air         level</span>
+<span class="co">## 8        library    district       senate    assistance       require</span>
+<span class="co">## 9           part       crime   individual     substance         party</span>
+<span class="co">## 10        follow       civil       follow         abuse         water</span>
+<span class="co">##        Other_2      Other_3</span>
+<span class="co">## 1     research     wildlife</span>
+<span class="co">## 2     national   management</span>
+<span class="co">## 3       center         land</span>
+<span class="co">## 4   technology     national</span>
+<span class="co">## 5     director      coastal</span>
+<span class="co">## 6     standard conservation</span>
+<span class="co">## 7    establish         fish</span>
+<span class="co">## 8     activity       refuge</span>
+<span class="co">## 9  development     resource</span>
+<span class="co">## 10   committee       system</span></code></pre>
 </div>
   </div>
 
@@ -201,11 +210,16 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://shusei-e.github.io">Shusei Eshima</a>, <a href="https://polisci.mit.edu/people/tomoya-sasaki">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/">Kosuke Imai</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
+<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
+Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
@@ -213,6 +227,8 @@
 
   
 
+
+  
 
   </body>
 </html>

@@ -86,7 +86,7 @@ covariates_get <- function(x) {
 #' @param by_var character. The name of the variable to use.
 #' @param labels character. The labels for the values specified in `by_var` (ascending order).
 #' @param by_values numeric. Specific values for `by_var`, ordered from small to large. If it is not specified, all values in `by_var` will be used.
-#' @param ... other arguments passed on to the [predict()] function.
+#' @param ... other arguments passed on to the [predict.keyATM_output()] function.
 #' @return strata_topicword object (a list).
 #' @import magrittr
 #' @importFrom stats predict
@@ -100,7 +100,7 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, ...)
   if (!by_var %in% variables)
     stop(paste0(by_var, " is not in the set of covariates in keyATM model. Check with `covariates_info()`.",
                 "Covariates provided are: ",
-                paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse=" , ")))
+                paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse = " , ")))
 
   # Info
   if (is.null(by_values)) {
@@ -110,17 +110,31 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, ...)
     stop("Length mismatches. Please check `labels`.")
   }
 
-  set.seed(x$options$seed)
-  res <- lapply(1:length(by_values),
-                function(i) {
-                  value <- by_values[i]
-                  new_data <- x$kept_values$model_settings$covariates_data_use
-                  new_data[, by_var] <- value
-                  obj <- predict(x, new_data, raw_values = TRUE, ...)
-                })
+  apply_predict <- function(i, ...) {
+    value <- by_values[i]
+    new_data <- x$kept_values$model_settings$covariates_data_use
+    new_data[, by_var] <- value
+    obj <- predict(object = x, newdata = new_data, raw_values = TRUE, ...)
+    return(obj)
+  }
 
+  set.seed(x$options$seed)
+  res <- lapply(1:length(by_values), apply_predict, ...)
   names(res) <- by_values
-  obj <- list(theta = tibble::as_tibble(res), by_values = by_values, by_var = by_var, labels = labels)
+  res <- tibble::as_tibble(res)
+
+  # Making CI
+  tables <- lapply(1:length(by_values),
+                  function(index) {
+                     theta <- res[[index]]
+                     return(strata_doctopic_CI(theta[, 1:(ncol(theta)-1)],
+                                               label = labels[index], ...))
+                  })
+  names(tables) <- labels
+
+
+  # Making a return object
+  obj <- list(theta = res, tables = tables, by_values = by_values, by_var = by_var, labels = labels)
   class(obj) <- c("strata_doctopic", class(obj))
   return(obj)
 }
@@ -136,17 +150,9 @@ print.strata_doctopic <- function(x, ...)
 
 #' @noRd
 #' @export
-summary.strata_doctopic <- function(object, ci = 0.9, method = "hdi", point = "mean", ...)
+summary.strata_doctopic <- function(object, ...)
 {
-  tables <- lapply(1:length(object$by_values),
-                  function(index) {
-                     theta <- object$theta[[index]]
-                     return(strata_doctopic_CI(theta[, 1:(ncol(theta)-1)],
-                                               ci, method, point,
-                                               label = object$labels[index]))
-                  })
-  names(tables) <- object$labels
-  return(tables)
+  return(object$tables)
 }
 
 
@@ -154,14 +160,17 @@ summary.strata_doctopic <- function(object, ci = 0.9, method = "hdi", point = "m
 #' @importFrom rlang .data
 #' @import magrittr
 #' @keywords internal
-strata_doctopic_CI <- function(theta, ci, method, point, label)
+strata_doctopic_CI <- function(theta, ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"), label = NULL, ...)
 {
+  method <- match.arg(method)
+  point <- match.arg(point)
+
   q <- as.data.frame(apply(theta, 2, calc_ci, ci, method, point))
   q$CI <- c("Lower", "Point", "Upper")
   q %>%
     tidyr::gather(key = "Topic", value = "Value", -"CI") %>%
     tidyr::spread(key = "CI", value = "Value") %>%
-    dplyr::mutate(TopicId = 1:(dplyr::n())) %>% tibble::as_tibble() -> res
+    dplyr::mutate(TopicID = 1:(dplyr::n())) %>% tibble::as_tibble() -> res
 
   if (!is.null(label)) {
     res %>% dplyr::mutate(label = label) -> res

@@ -1,6 +1,6 @@
 ---
 title: "keyATM Covariates"
-output: 
+output:
   html_document:
     toc: true
 ---
@@ -17,17 +17,17 @@ data(data_corpus_inaugural, package = "quanteda")
 data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 
 data_tokens <- tokens(data_corpus_inaugural,
-                      remove_numbers = TRUE, 
-                      remove_punct = TRUE, 
+                      remove_numbers = TRUE,
+                      remove_punct = TRUE,
                       remove_symbols = TRUE,
                       remove_separators = TRUE,
                       remove_url = TRUE) %>%
                  tokens_tolower() %>%
-                 tokens_remove(c(stopwords("english"), 
+                 tokens_remove(c(stopwords("english"),
                                "may", "shall", "can",
                                "must", "upon", "with", "without")) %>%
                  tokens_select(min_nchar = 3)
-                
+
 data_dfm <- dfm(data_tokens) %>%
                dfm_trim(min_termfreq = 5, min_docfreq = 2)
 
@@ -40,7 +40,7 @@ keywords <- list(Government     = c("laws", "law", "executive"),
 keyATM_docs <- keyATM_read(data_dfm)
 ```
 
-Scholars often have meta information about documents (e.g., authorship). 
+Scholars often have meta information about documents (e.g., authorship).
 The **keyATM** provides a way to incorporate covariate for document-topic distribution, using a
 Dirichlet-Multinomial regression ([Mimno and McCallum 2008](https://dl.acm.org/doi/abs/10.5555/3023476.3023525)).
 Section 3 of [Eshima et al. (2020)](https://arxiv.org/abs/2004.05964) explain the covariate keyATM in details.
@@ -51,26 +51,26 @@ We follow the same procedure for the text preparation
 explained in [Preparation](Preparation.html) and explain
 how to prepare covariates in this section.
 
-The `docvars()` function in the **quanteda** package is especially useful 
+The `docvars()` function in the **quanteda** package is especially useful
 to construct a `vector` or a `dataframe` of covariates because it ensures that
-documents and covariates are corresponding to each other. 
+documents and covariates are corresponding to each other.
 Since the **keyATM** does not take missing values,
-we recommend researchers to remove any missing values from 
+we recommend researchers to remove any missing values from
 covariates before extracting them using the `docvars()`.
 
-Moreover, we strongly recommend researchers to 
-extract covariates *after* preprocessing texts 
+Moreover, we strongly recommend researchers to
+extract covariates *after* preprocessing texts
 because preprocessing steps will remove documents without any terms,
 which may result in any discrepancies between documents and covariates.
 
 Therefore, the recommended procedure is
-(1) removing missing values from covariates, (2) preprocessing texts 
+(1) removing missing values from covariates, (2) preprocessing texts
 (including the process to discard documents that do not contain any words),
 and (3) extracting covariates using `docvars()` function.
 
 In this example, we create a period dummy and a party dummy from the corpus
-and use them as covariates for the covariate keyATM. 
-First, we extract covariates attached to each document in the corpus 
+and use them as covariates for the covariate keyATM.
+First, we extract covariates attached to each document in the corpus
 with the `docvars()` function.
 
 ```{r, warning=FALSE, message=FALSE}
@@ -81,7 +81,7 @@ head(vars)
 There are six unique parties and 58 unique years. We categorize them
 and create a new set of covariates. First, we divide years into two
 period, before and after 1900. Then, we categorize parties into Democratic,
-Republican, and Others. 
+Republican, and Others.
 ```{r, warning=FALSE, message=FALSE}
 library(dplyr)
 vars %>%
@@ -95,18 +95,18 @@ vars %>%
 table(vars_selected)
 ```
 
-Since we have categorical variables, we set baselines with the `factor()` function. 
+Since we have categorical variables, we set baselines with the `factor()` function.
 ```{r, warning=FALSE, message=FALSE}
 vars_selected %>%
-  mutate(Party  = factor(Party, 
+  mutate(Party  = factor(Party,
                          levels = c("Other", "Republican", "Democratic")),
-         Period = factor(Period, 
+         Period = factor(Period,
                          levels = c("18_19c", "20_21c"))) -> vars_selected
 ```
 
 The **keyATM** internally uses the `model.matrix()` function so that researchers can pass
-a formula to model covariates 
-(for more detailed information, refer to [formula](https://rdrr.io/r/stats/formula.html)). 
+a formula to model covariates
+(for more detailed information, refer to [formula](https://rdrr.io/r/stats/formula.html)).
 For example, in this example, we have a following matrix.
 ```{r, warning=FALSE, message=FALSE}
 head(model.matrix(~ Party + Period, data = vars_selected))
@@ -122,7 +122,7 @@ out <- keyATM(docs              = keyATM_docs,
               no_keyword_topics = 5,
               keywords          = keywords,
               model             = "covariates",
-              model_settings    = list(covariates_data    = vars_selected, 
+              model_settings    = list(covariates_data    = vars_selected,
                                        covariates_formula = ~ Party + Period),
               options           = list(seed = 250))
 ```
@@ -143,12 +143,12 @@ First, we use the output from the [previous section](keyATM_cov.html#fitting-the
 covariates used in the model. Note that covariates are standardized by default
 (i.e., each covariates to have zero mean and a standard deviation one).
 
-This transformation does not change the substantive results as it is a 
-linear transformation. 
+This transformation does not change the substantive results as it is a
+linear transformation.
 Researchers can use raw values with `standardize = FALSE` in the `model_settings`
 argument.
 
-Researchers can glance covariate information with the 
+Researchers can glance covariate information with the
 `covariates_info()` and the `covariates_get()` function
 will return covariates used in the fitted output.
 
@@ -168,15 +168,15 @@ document-topic distribution conditioned on the covariates.
 
 Suppose that we want to know document-topic distributions for each period.
 We use a binary variable `Period20_21c`, which indicates the period
-for this purpose. 
+for this purpose.
 
-The `by_strata_DocTopic()` function can display the marginal posterior means of 
+The `by_strata_DocTopic()` function can display the marginal posterior means of
 document-topic distributions for each value of (discrete) covariates.
 
 In the `by_strata_DocTopic()` function, we specify the variable we focus on
 in `by_var` argument and label each value in the variable (ascending order).
 
-In this case, the `Period20_21c` equals zero indicates speeches in the 18th 
+In this case, the `Period20_21c` equals zero indicates speeches in the 18th
 and 19th century and equals one for the speeches in the 20th and 21st century.
 ```{r, warning=FALSE, message=FALSE}
 strata_topic <- by_strata_DocTopic(out, by_var = "Period20_21c",
@@ -185,7 +185,7 @@ strata_topic <- by_strata_DocTopic(out, by_var = "Period20_21c",
 
 We can visualize results with the `plot()` function.
 The figure shows the marginal posterior means of document-topic distributions and
-the 90% credible intervals of them for each value of covariates. 
+the 90% credible intervals of them for each value of covariates.
 
 The figure indicates that both topics are more likely to
 appear in the 18th and 19th century.
@@ -200,20 +200,20 @@ save_fig(fig_doctopic, "figures/doctopic.pdf", width = 7, height = 3.5)
 ```
 
 We can visualize results by covariate with `by = "covariate"` argument.
-The plot below combines two panels in the previous plot and 
+The plot below combines two panels in the previous plot and
 display in the same panel.
 ```{r, message=FALSE, warning=FALSE, fig.align='center'}
 fig_doctopic <- plot(strata_topic, var_name = "Period",
                      show_topic = c(4, 5), by = "covariate")
 ```
 
-Using the output of the `keyATM`, we can calculate 90% credible intervals 
+Using the output of the `keyATM`, we can calculate 90% credible intervals
 of the differences in the
 mean of document-topic distribution.
 
-Since we set the 18th and 19th century dummy as the 
-baseline when constructing `factor` for this variable, 
-the comparison is the relative increase or decrease 
+Since we set the 18th and 19th century dummy as the
+baseline when constructing `factor` for this variable,
+the comparison is the relative increase or decrease
 from the 18th and 19th century to the 20th and 21st century.
 ```{r, warning=FALSE, message=FALSE}
 theta1 <- strata_topic$theta[[1]]  # 18_19c
@@ -249,7 +249,7 @@ pred <- predict(out, new_data, label = "Others")
 Now, we combine three objects and make a plot.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 res <- bind_rows(est_rep, est_dem, pred) %>%
-          filter(TopicId %in% c(4, 5))  # Select two topics
+          filter(TopicID %in% c(4, 5))  # Select two topics
 labels <- unique(res$label)
 
 library(ggplot2)
@@ -269,9 +269,9 @@ ggplot(res, aes(x = label, ymin = Lower, ymax = Upper, group = Topic)) +
 Although the covariate keyATM does not directly model topic-word distributions,
 the model can examine how topic-word distributions change across different values
 of document-level covariates. For this analysis, we need to use the `keep` argument in
-the `keyATM()` function to store `Z` and `S`. 
+the `keyATM()` function to store `Z` and `S`.
 Then we pass the output with these stored values to the `by_strata_TopicWord()` function.
-The example below demonstrates top words associated to each topic for speeches from 
+The example below demonstrates top words associated to each topic for speeches from
 different parties using the `Party` covariate.
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
@@ -279,7 +279,7 @@ out <- keyATM(docs              = keyATM_docs,
               no_keyword_topics = 5,
               keywords          = keywords,
               model             = "covariates",
-              model_settings    = list(covariates_data    = vars_selected, 
+              model_settings    = list(covariates_data    = vars_selected,
                                        covariates_formula = ~ Party + Period),
               options           = list(seed = 250),
               keep              = c("Z", "S"))
@@ -305,7 +305,7 @@ out <- keyATM(docs              = keyATM_docs,
               no_keyword_topics = 5,
               keywords          = keywords,
               model             = "covariates",
-              model_settings    = list(covariates_data    = vars_selected, 
+              model_settings    = list(covariates_data    = vars_selected,
                                        covariates_formula = ~ Party + Period,
                                        covariates_model = "PG"),
               options           = list(seed = 250))

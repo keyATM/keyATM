@@ -6,7 +6,7 @@
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![R build status](https://github.com/keyATM/keyATM/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/keyATM/keyATM/actions)
-[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/keyATM/keyATM&style=flat)](https://mergify.io)
+[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/keyATM/keyATM&style=flat)](https://mergify.io)
 [![DevVersion](https://img.shields.io/badge/Dev-v0.4.x-orange)](https://github.com/keyATM/keyATM/projects/3)
 <!-- badges: end -->
 
@@ -29,7 +29,7 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 * Shusei Eshima, Tomoya Sasaki, and Kosuke Imai. 2019. keyATM: Keyword Assisted Topic Models. R package version 0.4.0. https://keyatm.github.io/keyATM/
 
 ## How to report a bug
-We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/keyATM/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format (it will appear as a template in GitHub Issue). 
+We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/keyATM/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format (it will appear as a template in GitHub Issue).
 
 ```
 ## Problem summary (required):

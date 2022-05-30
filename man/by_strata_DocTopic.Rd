@@ -15,7 +15,7 @@ by_strata_DocTopic(x, by_var, labels, by_values = NULL, ...)
 
 \item{by_values}{numeric. Specific values for \code{by_var}, ordered from small to large. If it is not specified, all values in \code{by_var} will be used.}
 
-\item{...}{other arguments passed on to the \code{\link[=predict]{predict()}} function.}
+\item{...}{other arguments passed on to the \code{\link[=predict.keyATM_output]{predict.keyATM_output()}} function.}
 }
 \value{
 strata_topicword object (a list).
