@@ -231,8 +231,9 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 
 
 #' Show the expected proportion of the corpus belonging to each topic
-#' 
+#'
 #' @param x the output from a keyATM model (see [keyATM()]).
+#' @param n The number of top words to show. Default is \code{3}.
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param xmax a numeric. Indicate the max value on the x axis
 #' @param show_topwords logical. Show topwords. The default is \code{TRUE}.
@@ -242,7 +243,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #' @importFrom rlang .data
 #' @seealso [save_fig()]
 #' @export
-plot_topicprop <- function(x, show_topic = NULL, xmax = NULL, show_topwords = TRUE)
+plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE)
 {
   check_arg_type(x, "keyATM_output")
 
@@ -250,44 +251,60 @@ plot_topicprop <- function(x, show_topic = NULL, xmax = NULL, show_topwords = TR
   if (is.null(show_topic)) {
     show_topic <- 1:total_k
   } else {
-    if (max(show_topic) > total_k) stop("Invalid topic ID in `show_topic`.")
+    if (max(show_topic) > total_k | min(show_topic) < 1) {
+      stop("Invalid topic ID in `show_topic`.")
+    }
   }
 
-  topwords <- top_words(x, n = 3)[, show_topic]
-  topwords %>% 
+  topwords <- top_words(x, n = n)[, show_topic]
+  topwords %>%
     dplyr::summarise(dplyr::across(dplyr::everything(), ~stringr::str_c(.x, collapse = ", "))) %>%
-    tidyr::pivot_longer(dplyr::everything(), 
-                        values_to = "Topwords", 
+    tidyr::pivot_longer(dplyr::everything(),
+                        values_to = "Topwords",
                         names_to = "Topic") -> topwords_commas
 
-  x$theta[, show_topic] %>% 
-    tibble::as_tibble() %>% 
-    dplyr::summarise(dplyr::across(dplyr::everything(), ~mean(.x))) %>% 
-    tidyr::pivot_longer(dplyr::everything(), 
-                        values_to = "Topicprop", 
-                        names_to = "Topic") %>% 
+  topic_order <- topwords_commas$Topic
+
+  x$theta[, show_topic] %>%
+    tibble::as_tibble() %>%
+    dplyr::summarise(dplyr::across(dplyr::everything(), ~mean(.x))) %>%
+    tidyr::pivot_longer(dplyr::everything(),
+                        values_to = "Topicprop",
+                        names_to = "Topic") %>%
     dplyr::left_join(topwords_commas, by = "Topic") %>%
-    dplyr::arrange(Topicprop) %>% 
-    dplyr::mutate(Topic = factor(Topic, levels = unique(Topic))) -> plot_obj
-  
+    dplyr::arrange(Topicprop) %>%
+    dplyr::mutate(
+      Topic = factor(Topic, levels = rev(topic_order)),
+      xpos = max(Topicprop) + 0.01
+    ) %>%
+    dplyr::arrange(desc(Topic)) -> plot_obj
+
   if (is.null(xmax)) xmax <- min(max(plot_obj$Topicprop) * 2, 1)
 
-  p <- ggplot(plot_obj, aes(x = .data$Topicprop, y = .data$Topic)) + 
-        geom_col() + 
-        theme_bw() + 
-        scale_x_continuous("Expected topic proportions", limits = c(0, xmax)) + 
+  p <- ggplot(plot_obj, aes(x = .data$Topicprop, y = .data$Topic)) +
+        geom_col() +
+        {if (show_topwords) {
+            geom_text(
+              aes(x = .data$xpos, y = .data$Topic, label = .data$Topwords),
+              hjust = 0) +
+            scale_x_continuous("Expected topic proportions", limits = c(0, xmax)) +
+          } else {
+            scale_x_continuous("Expected topic proportions", limits = c(0, xmax)) +
+          }
+        } +
+        theme_bw() +
         theme(panel.grid.major.x = element_blank(),
               panel.grid.minor.x = element_blank(),
               panel.grid.major.y = element_blank(),
               panel.grid.minor.y = element_blank())
-  
-  if (show_topwords) {
-    plot_obj %>% 
-      dplyr::mutate(xpos = Topicprop + 0.01) -> plot_obj
-    p + geom_text(plot_obj, 
-                  mapping = aes(x = xpos, y = 1:nrow(plot_obj), label = Topwords),
-                  hjust = 0) -> p
-  }
+
+  # if (show_topwords) {
+  #   plot_obj %>%
+  #     dplyr::mutate(xpos = max(Topicprop) + 0.01) -> plot_obj
+  #   p + geom_text(plot_obj,
+  #                 mapping = aes(x = xpos, y = 1:nrow(plot_obj), label = Topwords),
+  #                 hjust = 0) -> p
+  # }
 
   p <- list(figure = p, values = plot_obj)
   class(p) <- c("keyATM_fig", class(p))

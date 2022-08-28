@@ -1,3 +1,8 @@
+# keyATM 0.4.2
+
+### Changes
+* Adding the `plot_topicprop()` function
+
 # keyATM 0.4.1
 ### Minor changes
 * Remove an unused argument (`width`) in the `plot_timetrend()` function

@@ -4,10 +4,12 @@
 \alias{plot_topicprop}
 \title{Show the expected proportion of the corpus belonging to each topic}
 \usage{
-plot_topicprop(x, show_topic = NULL, xmax = NULL, show_topwords = TRUE)
+plot_topicprop(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE)
 }
 \arguments{
 \item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}}).}
+
+\item{n}{The number of top words to show. Default is \code{3}.}
 
 \item{show_topic}{an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.}
 
@@ -20,4 +22,7 @@ keyATM_fig object
 }
 \description{
 Show the expected proportion of the corpus belonging to each topic
+}
+\seealso{
+\code{\link[=save_fig]{save_fig()}}
 }
