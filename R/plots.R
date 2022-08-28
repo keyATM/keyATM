@@ -234,6 +234,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #'
 #' @param x the output from a keyATM model (see [keyATM()]).
 #' @param n The number of top words to show. Default is \code{3}.
+#' @param var_name the name of the variable in the plot.
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param xmax a numeric. Indicate the max value on the x axis
 #' @param show_topwords logical. Show topwords. The default is \code{TRUE}.
@@ -243,7 +244,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #' @importFrom rlang .data
 #' @seealso [save_fig()]
 #' @export
-plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE)
+plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE, var_name = NULL)
 {
   check_arg_type(x, "keyATM_output")
 
@@ -257,6 +258,14 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
   }
 
   topwords <- top_words(x, n = n)[, show_topic]
+
+  if (!is.null(var_name)) {
+    if (length(var_name) != ncol(topwords)) {
+      stop("The length of `var_name` is incorrect.")
+    }
+    colnames(topwords) <- var_name
+  }
+
   topwords %>%
     dplyr::summarise(dplyr::across(dplyr::everything(), ~stringr::str_c(.x, collapse = ", "))) %>%
     tidyr::pivot_longer(dplyr::everything(),
@@ -265,7 +274,12 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
 
   topic_order <- topwords_commas$Topic
 
-  x$theta[, show_topic] %>%
+  theta_use <- x$theta[, show_topic]
+  if (!is.null(var_name)) {
+    colnames(theta_use) <- var_name
+  }
+
+  theta_use %>%
     tibble::as_tibble() %>%
     dplyr::summarise(dplyr::across(dplyr::everything(), ~mean(.x))) %>%
     tidyr::pivot_longer(dplyr::everything(),
@@ -286,25 +300,13 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
         {if (show_topwords) {
             geom_text(
               aes(x = .data$xpos, y = .data$Topic, label = .data$Topwords),
-              hjust = 0) +
-            scale_x_continuous("Expected topic proportions", limits = c(0, xmax)) +
-          } else {
-            scale_x_continuous("Expected topic proportions", limits = c(0, xmax)) +
-          }
-        } +
+                  hjust = 0)}} +
+        scale_x_continuous("Expected topic proportions", limits = c(0, xmax)) +
         theme_bw() +
         theme(panel.grid.major.x = element_blank(),
               panel.grid.minor.x = element_blank(),
               panel.grid.major.y = element_blank(),
               panel.grid.minor.y = element_blank())
-
-  # if (show_topwords) {
-  #   plot_obj %>%
-  #     dplyr::mutate(xpos = max(Topicprop) + 0.01) -> plot_obj
-  #   p + geom_text(plot_obj,
-  #                 mapping = aes(x = xpos, y = 1:nrow(plot_obj), label = Topwords),
-  #                 hjust = 0) -> p
-  # }
 
   p <- list(figure = p, values = plot_obj)
   class(p) <- c("keyATM_fig", class(p))
@@ -366,11 +368,17 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 
   variables <- unique(tables$label)
 
+  if (point == "mean") {
+    ylabel <- paste("Mean of ", theta)
+  } else {
+    ylabel <- paste("Median of ", theta)
+  }
+
   p <- ggplot(tables) +
         coord_flip() +
         scale_x_discrete(limits = rev(variables)) +
         xlab(paste0(by_var)) +
-        ylab(expression(paste("Mean of ", theta))) +
+        ylab(expression(ylabel)) +
         guides(color = guide_legend(title = "Topic")) +
         theme_bw()
 

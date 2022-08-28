@@ -4,7 +4,14 @@
 \alias{plot_topicprop}
 \title{Show the expected proportion of the corpus belonging to each topic}
 \usage{
-plot_topicprop(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE)
+plot_topicprop(
+  x,
+  n = 3,
+  show_topic = NULL,
+  xmax = NULL,
+  show_topwords = TRUE,
+  var_name = NULL
+)
 }
 \arguments{
 \item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}}).}
@@ -16,6 +23,8 @@ plot_topicprop(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE)
 \item{xmax}{a numeric. Indicate the max value on the x axis}
 
 \item{show_topwords}{logical. Show topwords. The default is \code{TRUE}.}
+
+\item{var_name}{the name of the variable in the plot.}
 }
 \value{
 keyATM_fig object
