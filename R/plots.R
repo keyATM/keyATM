@@ -211,6 +211,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
          ggtitle("Probability of words drawn from keyword topic-word distribution") +
          theme(plot.title = element_text(hjust = 0.5))
   } else {
+    message("Plotting pi from the final MCMC draw. \nPlease set `store_pi` to `TRUE` if you want to plot pi over iterations.")
     x$pi %>%
       dplyr::mutate(Probability = .data$Proportion / 100) %>%
       dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
