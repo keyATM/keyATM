@@ -239,6 +239,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #' @return keyATM_fig object
 #' @import magrittr
 #' @import ggplot2
+#' @importFrom rlang .data
 #' @seealso [save_fig()]
 #' @export
 plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE)
