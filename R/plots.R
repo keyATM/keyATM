@@ -234,7 +234,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #'
 #' @param x the output from a keyATM model (see [keyATM()]).
 #' @param n The number of top words to show. Default is \code{3}.
-#' @param var_name the name of the variable in the plot.
+#' @param label_topic the name of the variable in the plot.
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param xmax a numeric. Indicate the max value on the x axis
 #' @param show_topwords logical. Show topwords. The default is \code{TRUE}.
@@ -244,7 +244,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #' @importFrom rlang .data
 #' @seealso [save_fig()]
 #' @export
-plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE, var_name = NULL)
+plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE, label_topic = NULL)
 {
   check_arg_type(x, "keyATM_output")
 
@@ -259,11 +259,11 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
 
   topwords <- top_words(x, n = n)[, show_topic]
 
-  if (!is.null(var_name)) {
-    if (length(var_name) != ncol(topwords)) {
-      stop("The length of `var_name` is incorrect.")
+  if (!is.null(label_topic)) {
+    if (length(label_topic) != ncol(topwords)) {
+      stop("The length of `label_topic` is incorrect.")
     }
-    colnames(topwords) <- var_name
+    colnames(topwords) <- label_topic
   }
 
   topwords %>%
@@ -275,8 +275,8 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
   topic_order <- topwords_commas$Topic
 
   theta_use <- x$theta[, show_topic]
-  if (!is.null(var_name)) {
-    colnames(theta_use) <- var_name
+  if (!is.null(label_topic)) {
+    colnames(theta_use) <- label_topic
   }
 
   theta_use %>%
