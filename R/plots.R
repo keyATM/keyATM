@@ -43,6 +43,7 @@ print.keyATM_fig <- function(x, ...)
 }
 
 
+
 #' Show a diagnosis plot of alpha
 #'
 #' @param x the output from a keyATM model (see [keyATM()]).
@@ -226,6 +227,71 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
   class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
+
+
+#' Show the expected proportion of the corpus belonging to each topic
+#' 
+#' @param x the output from a keyATM model (see [keyATM()]).
+#' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
+#' @param xmax a numeric. Indicate the max value on the x axis
+#' @param show_topwords logical. Show topwords. The default is \code{TRUE}.
+#' @return keyATM_fig object
+#' @import magrittr
+#' @import ggplot2
+#' @seealso [save_fig()]
+#' @export
+plot_topicprop <- function(x, show_topic = NULL, xmax = NULL, show_topwords = TRUE)
+{
+  check_arg_type(x, "keyATM_output")
+
+  total_k <- x$keyword_k + x$no_keyword_topics
+  if (is.null(show_topic)) {
+    show_topic <- 1:total_k
+  } else {
+    if (max(show_topic) > total_k) stop("Invalid topic ID in `show_topic`.")
+  }
+
+  topwords <- top_words(x, n = 3)[, show_topic]
+  topwords %>% 
+    dplyr::summarise(dplyr::across(dplyr::everything(), ~stringr::str_c(.x, collapse = ", "))) %>%
+    tidyr::pivot_longer(dplyr::everything(), 
+                        values_to = "Topwords", 
+                        names_to = "Topic") -> topwords_commas
+
+  x$theta[, show_topic] %>% 
+    tibble::as_tibble() %>% 
+    dplyr::summarise(dplyr::across(dplyr::everything(), ~mean(.x))) %>% 
+    tidyr::pivot_longer(dplyr::everything(), 
+                        values_to = "Topicprop", 
+                        names_to = "Topic") %>% 
+    dplyr::left_join(topwords_commas, by = "Topic") %>%
+    dplyr::arrange(Topicprop) %>% 
+    dplyr::mutate(Topic = factor(Topic, levels = unique(Topic))) -> plot_obj
+  
+  if (is.null(xmax)) xmax <- min(max(plot_obj$Topicprop) * 2, 1)
+
+  p <- ggplot(plot_obj, aes(x = .data$Topicprop, y = .data$Topic)) + 
+        geom_col() + 
+        theme_bw() + 
+        scale_x_continuous("Expected topic proportions", limits = c(0, xmax)) + 
+        theme(panel.grid.major.x = element_blank(),
+              panel.grid.minor.x = element_blank(),
+              panel.grid.major.y = element_blank(),
+              panel.grid.minor.y = element_blank())
+  
+  if (show_topwords) {
+    plot_obj %>% 
+      dplyr::mutate(xpos = Topicprop + 0.01) -> plot_obj
+    p + geom_text(plot_obj, 
+                  mapping = aes(x = xpos, y = 1:nrow(plot_obj), label = Topwords),
+                  hjust = 0) -> p
+  }
+
+  p <- list(figure = p, values = plot_obj)
+  class(p) <- c("keyATM_fig", class(p))
+  return(p)
+}
+
 
 
 #' Plot document-topic distribution by strata (for covariate models)
