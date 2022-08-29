@@ -24,7 +24,7 @@ plot_topicprop(
 
 \item{show_topwords}{logical. Show topwords. The default is \code{TRUE}.}
 
-\item{label_topic}{the name of the variable in the plot.}
+\item{label_topic}{a character vector. The name of the topics in the plot.}
 }
 \value{
 keyATM_fig object

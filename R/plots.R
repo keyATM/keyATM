@@ -237,7 +237,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param xmax a numeric. Indicate the max value on the x axis
 #' @param show_topwords logical. Show topwords. The default is \code{TRUE}.
-#' @param label_topic the name of the variable in the plot.
+#' @param label_topic a character vector. The name of the topics in the plot.
 #' @return keyATM_fig object
 #' @import magrittr
 #' @import ggplot2
