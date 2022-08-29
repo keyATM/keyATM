@@ -211,6 +211,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
          ggtitle("Probability of words drawn from keyword topic-word distribution") +
          theme(plot.title = element_text(hjust = 0.5))
   } else {
+    message("Plotting pi from the final MCMC draw. \nPlease set `store_pi` to `TRUE` if you want to plot pi over iterations.")
     x$pi %>%
       dplyr::mutate(Probability = .data$Proportion / 100) %>%
       dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
@@ -233,6 +234,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #'
 #' @param x the output from a keyATM model (see [keyATM()]).
 #' @param n The number of top words to show. Default is \code{3}.
+#' @param label_topic the name of the variable in the plot.
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param xmax a numeric. Indicate the max value on the x axis
 #' @param show_topwords logical. Show topwords. The default is \code{TRUE}.
@@ -242,7 +244,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #' @importFrom rlang .data
 #' @seealso [save_fig()]
 #' @export
-plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE)
+plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE, label_topic = NULL)
 {
   check_arg_type(x, "keyATM_output")
 
@@ -256,6 +258,14 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
   }
 
   topwords <- top_words(x, n = n)[, show_topic]
+
+  if (!is.null(label_topic)) {
+    if (length(label_topic) != ncol(topwords)) {
+      stop("The length of `label_topic` is incorrect.")
+    }
+    colnames(topwords) <- label_topic
+  }
+
   topwords %>%
     dplyr::summarise(dplyr::across(dplyr::everything(), ~stringr::str_c(.x, collapse = ", "))) %>%
     tidyr::pivot_longer(dplyr::everything(),
@@ -264,7 +274,12 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
 
   topic_order <- topwords_commas$Topic
 
-  x$theta[, show_topic] %>%
+  theta_use <- x$theta[, show_topic]
+  if (!is.null(label_topic)) {
+    colnames(theta_use) <- label_topic
+  }
+
+  theta_use %>%
     tibble::as_tibble() %>%
     dplyr::summarise(dplyr::across(dplyr::everything(), ~mean(.x))) %>%
     tidyr::pivot_longer(dplyr::everything(),
@@ -301,7 +316,6 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
               panel.grid.minor.x = element_blank(),
               panel.grid.major.y = element_blank(),
               panel.grid.minor.y = element_blank())
-
 
   p <- list(figure = p, values = plot_obj)
   class(p) <- c("keyATM_fig", class(p))
@@ -363,11 +377,17 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 
   variables <- unique(tables$label)
 
+  if (point == "mean") {
+    ylabel <- paste("Mean of ", theta)
+  } else {
+    ylabel <- paste("Median of ", theta)
+  }
+
   p <- ggplot(tables) +
         coord_flip() +
         scale_x_discrete(limits = rev(variables)) +
         xlab(paste0(by_var)) +
-        ylab(expression(paste("Mean of ", theta))) +
+        ylab(expression(ylabel)) +
         guides(color = guide_legend(title = "Topic")) +
         theme_bw()
 
