@@ -278,32 +278,30 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
     ) %>%
     dplyr::arrange(desc(Topic)) -> plot_obj
 
-  if (is.null(xmax)) xmax <- min(max(plot_obj$Topicprop) * 2, 1)
+  if (is.null(xmax)) {
+    if (show_topwords) {
+      xmax <- min(max(plot_obj$Topicprop) * 2, 1)
+    } else {
+      xmax <- max(plot_obj$Topicprop) + 0.02
+    }
+  }
 
   p <- ggplot(plot_obj, aes(x = .data$Topicprop, y = .data$Topic)) +
         geom_col() +
-        {if (show_topwords) {
+        {if (show_topwords)
             geom_text(
               aes(x = .data$xpos, y = .data$Topic, label = .data$Topwords),
-              hjust = 0) +
-            scale_x_continuous("Expected topic proportions", limits = c(0, xmax)) +
-          } else {
-            scale_x_continuous("Expected topic proportions", limits = c(0, xmax)) +
-          }
+              hjust = 0, size = max(10 / n + 1, 2.5))
         } +
+        scale_x_continuous(
+          "Expected topic proportions", limits = c(0, xmax), labels = scales::percent
+        ) +
         theme_bw() +
         theme(panel.grid.major.x = element_blank(),
               panel.grid.minor.x = element_blank(),
               panel.grid.major.y = element_blank(),
               panel.grid.minor.y = element_blank())
 
-  # if (show_topwords) {
-  #   plot_obj %>%
-  #     dplyr::mutate(xpos = max(Topicprop) + 0.01) -> plot_obj
-  #   p + geom_text(plot_obj,
-  #                 mapping = aes(x = xpos, y = 1:nrow(plot_obj), label = Topwords),
-  #                 hjust = 0) -> p
-  # }
 
   p <- list(figure = p, values = plot_obj)
   class(p) <- c("keyATM_fig", class(p))
