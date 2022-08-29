@@ -234,10 +234,10 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #'
 #' @param x the output from a keyATM model (see [keyATM()]).
 #' @param n The number of top words to show. Default is \code{3}.
-#' @param label_topic the name of the variable in the plot.
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
 #' @param xmax a numeric. Indicate the max value on the x axis
 #' @param show_topwords logical. Show topwords. The default is \code{TRUE}.
+#' @param label_topic the name of the variable in the plot.
 #' @return keyATM_fig object
 #' @import magrittr
 #' @import ggplot2
@@ -378,16 +378,16 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
   variables <- unique(tables$label)
 
   if (point == "mean") {
-    ylabel <- paste("Mean of ", theta)
+    ylabel <- expression(paste("Mean of ", theta))
   } else {
-    ylabel <- paste("Median of ", theta)
+    ylabel <- expression(paste("Median of ", theta))
   }
 
   p <- ggplot(tables) +
         coord_flip() +
         scale_x_discrete(limits = rev(variables)) +
         xlab(paste0(by_var)) +
-        ylab(expression(ylabel)) +
+        ylab(ylabel) +
         guides(color = guide_legend(title = "Topic")) +
         theme_bw()
 

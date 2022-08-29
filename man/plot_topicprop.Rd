@@ -10,7 +10,7 @@ plot_topicprop(
   show_topic = NULL,
   xmax = NULL,
   show_topwords = TRUE,
-  var_name = NULL
+  label_topic = NULL
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ plot_topicprop(
 
 \item{show_topwords}{logical. Show topwords. The default is \code{TRUE}.}
 
-\item{var_name}{the name of the variable in the plot.}
+\item{label_topic}{the name of the variable in the plot.}
 }
 \value{
 keyATM_fig object
