@@ -56,6 +56,7 @@ test_that("Plot pi", {
 
 test_that("Plot topic plot", {
   p <- plot_topicprop(base) ; expect_s3_class(p, "keyATM_fig")
+  p <- plot_topicprop(base, n = 5) ; expect_s3_class(p, "keyATM_fig")
   p <- plot_topicprop(base, show_topwords = FALSE) ; expect_s3_class(p, "keyATM_fig")
   p <- plot_topicprop(base, show_topic = 1:3) ; expect_s3_class(p, "keyATM_fig")
   p <- plot_topicprop(base, show_topic = c(1, 4, 7)) ; expect_s3_class(p, "keyATM_fig")
