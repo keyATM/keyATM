@@ -81,14 +81,14 @@ test_that("Time series: with intervals", {
   p2 <- plot_timetrend(dyn, time_index_label = bills_time_index, method = "hdi", ci = 0.89)
   expect_s3_class(p, "keyATM_fig")
 
-  p <- plot_topicprop(dyn) ; expect_s3_class(p, "keyATM_fig")
-
   skip_on_cran()
   expect_message(save_fig(p, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
 
   skip_on_os("linux") ; skip_on_cran()
   expect_equal(values_fig(p)$Lower[2], 0.04844414, tolerance = 0.00001)
   expect_equal(values_fig(p2)$Upper[2], 0.1310682, tolerance = 0.00001)
+
+  p <- plot_topicprop(dyn) ; expect_s3_class(p, "keyATM_fig")
 })
 
 
