@@ -235,18 +235,20 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 #' @param x the output from a keyATM model (see [keyATM()]).
 #' @param n The number of top words to show. Default is \code{3}.
 #' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
-#' @param xmax a numeric. Indicate the max value on the x axis
 #' @param show_topwords logical. Show topwords. The default is \code{TRUE}.
+#' @param order The order of topics.
 #' @param label_topic a character vector. The name of the topics in the plot.
+#' @param xmax a numeric. Indicate the max value on the x axis
 #' @return keyATM_fig object
 #' @import magrittr
 #' @import ggplot2
 #' @importFrom rlang .data
 #' @seealso [save_fig()]
 #' @export
-plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwords = TRUE, label_topic = NULL)
+plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, label_topic = NULL, order = c("proportion", "topicid"), xmax = NULL)
 {
   check_arg_type(x, "keyATM_output")
+  order <- match.arg(order)
 
   total_k <- x$keyword_k + x$no_keyword_topics
   if (is.null(show_topic)) {
@@ -283,11 +285,22 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
     tidyr::pivot_longer(dplyr::everything(),
                         values_to = "Topicprop",
                         names_to = "Topic") %>%
-    dplyr::left_join(topwords_commas, by = "Topic") %>%
-    dplyr::arrange(Topicprop) %>%
-    {.->> tmp} %>% 
+    dplyr::left_join(topwords_commas, by = "Topic") -> theta_use_tbl
+
+  if (order == "proportion") {
+    theta_use_tbl %>%
+      dplyr::mutate(Topic = stringr::str_remove(Topic, "^\\d+_")) -> theta_use_tbl
+    theta_use_tbl %>%
+      dplyr::arrange(desc(Topicprop)) %>%
+      dplyr::pull(Topic) -> use_order
+  } else if (order == "topicid") {
+    theta_use_tbl %>%
+      dplyr::pull(Topic) -> use_order
+  }
+
+  theta_use_tbl %>%
     dplyr::mutate(
-      Topic = factor(Topic, levels = unique(tmp$Topic)),
+      Topic = factor(Topic, levels = rev(use_order)),
       xpos = max(Topicprop) + 0.01
     ) %>%
     dplyr::arrange(desc(Topic)) -> plot_obj

@@ -8,9 +8,10 @@ plot_topicprop(
   x,
   n = 3,
   show_topic = NULL,
-  xmax = NULL,
   show_topwords = TRUE,
-  label_topic = NULL
+  label_topic = NULL,
+  order = c("proportion", "topicid"),
+  xmax = NULL
 )
 }
 \arguments{
@@ -20,11 +21,13 @@ plot_topicprop(
 
 \item{show_topic}{an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.}
 
-\item{xmax}{a numeric. Indicate the max value on the x axis}
-
 \item{show_topwords}{logical. Show topwords. The default is \code{TRUE}.}
 
 \item{label_topic}{a character vector. The name of the topics in the plot.}
+
+\item{order}{The order of topics.}
+
+\item{xmax}{a numeric. Indicate the max value on the x axis}
 }
 \value{
 keyATM_fig object
