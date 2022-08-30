@@ -272,8 +272,6 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
                         values_to = "Topwords",
                         names_to = "Topic") -> topwords_commas
 
-  topic_order <- topwords_commas$Topic
-
   theta_use <- x$theta[, show_topic]
   if (!is.null(label_topic)) {
     colnames(theta_use) <- label_topic
@@ -287,15 +285,16 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, xmax = NULL, show_topwor
                         names_to = "Topic") %>%
     dplyr::left_join(topwords_commas, by = "Topic") %>%
     dplyr::arrange(Topicprop) %>%
+    {.->> tmp} %>% 
     dplyr::mutate(
-      Topic = factor(Topic, levels = rev(topic_order)),
+      Topic = factor(Topic, levels = unique(tmp$Topic)),
       xpos = max(Topicprop) + 0.01
     ) %>%
     dplyr::arrange(desc(Topic)) -> plot_obj
 
   if (is.null(xmax)) {
     if (show_topwords) {
-      xmax <- min(max(plot_obj$Topicprop) * 2, 1)
+      xmax <- min(max(plot_obj$Topicprop) * 2.5, 1)
     } else {
       xmax <- max(plot_obj$Topicprop) + 0.02
     }
