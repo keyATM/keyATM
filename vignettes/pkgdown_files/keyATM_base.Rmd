@@ -1,6 +1,6 @@
 ---
 title: "keyATM Base"
-output: 
+output:
   html_document:
     toc: true
 ---
@@ -28,17 +28,17 @@ data(data_corpus_inaugural, package = "quanteda")
 data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 
 data_tokens <- tokens(data_corpus_inaugural,
-                      remove_numbers = TRUE, 
-                      remove_punct = TRUE, 
+                      remove_numbers = TRUE,
+                      remove_punct = TRUE,
                       remove_symbols = TRUE,
                       remove_separators = TRUE,
                       remove_url = TRUE) %>%
                  tokens_tolower() %>%
-                 tokens_remove(c(stopwords("english"), 
+                 tokens_remove(c(stopwords("english"),
                                "may", "shall", "can",
                                "must", "upon", "with", "without")) %>%
                  tokens_select(min_nchar = 3)
-                
+
 data_dfm <- dfm(data_tokens) %>%
                dfm_trim(min_termfreq = 5, min_docfreq = 2)
 
@@ -52,12 +52,12 @@ keyATM_docs <- keyATM_read(data_dfm)
 ```
 
 ## Preparing documents and keywords
-Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. 
+Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords.
 We use the US Presidential inaugural address data we prapared ([documents](Preparation.html#preparing-texts) and [keywords](Preparation.html#preparing-keywords)).
 
 ## Fitting the model
 
-We pass the output of the `keyATM_read` function and 
+We pass the output of the `keyATM_read` function and
 keywords to the `keyATM` function.
 
 Additionally, we need to specify the number of topics
@@ -91,29 +91,40 @@ out <- readRDS(file = "SAVENAME.rds")
 ```
 
 ## Interpreting results
-There are two main quantities of interest in topic models. 
-First, topic-word distribution represents the relative frequency of words for each topics, characterizing the topic content. 
+There are two main quantities of interest in topic models.
+First, topic-word distribution represents the relative frequency of words for each topics, characterizing the topic content.
 Second, document-topic distribution represents the proportions of topics for each document, reflecting the main themes of the document and often called topic prevalence.
 
-Since typical corpus contains several thousands of unique terms, we usually scrutinize ten to fifteen words that have high probabilities in a given topic, which is called top words of a topic. 
+Since typical corpus contains several thousands of unique terms, we usually scrutinize ten to fifteen words that have high probabilities in a given topic, which is called top words of a topic.
 
 The `top_words()` function returns a table of top words for each of estimated topics.
 Keywords assigned to a keyword topic are suffixed with a check mark.
 Keywords from another keyword topic are labeled with the topic id of that category.
 
-In the table below, "law", "laws", and "executive" are keywords of the 
+In the table below, "law", "laws", and "executive" are keywords of the
 *Government* topic, while "peace" appears in top words of the *Other_3* topic,
-it is a keyword of the *peace* topic. 
+it is a keyword of the *peace* topic.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 top_words(out)
 ```
 
+Researchers can also examine how likely each topic appears in the corpus
+with `plot_topicprop()`.
+This function creates a figure that shows the expected proportions of
+the corpus belonging to each estimated topic
+along with the top three words associated with the topic.
+The figure below demonstrates that the ``Peace'' topic is
+most likely to appear in the corpus.
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+plot_topicprop(out, show_topic = 1:5)
+```
+
 To explore documents that are highly associated with each topic, the `top_docs()`
 function returns a table of document indexes in which a topic has high proportion.
 
-The table below indicates, for example, that the ninth document in the corpus has the 
-highest proportion of the *Government* topic among all other documents. 
+The table below indicates, for example, that the ninth document in the corpus has the
+highest proportion of the *Government* topic among all other documents.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 top_docs(out)
@@ -129,14 +140,14 @@ out$phi    # Topic-word distribution
 ```
 
 The **keyATM** provides other functions to diagnose and explore the fitted model.
-First, it is important to check the model fitting. 
-If the model is working as expected, we would observe an increase trend for 
+First, it is important to check the model fitting.
+If the model is working as expected, we would observe an increase trend for
 the log-likelihood and an decrease trend for the perplexity.
 
-Also the fluctuation of these values get smaller as iteration increases. 
+Also the fluctuation of these values get smaller as iteration increases.
 The `plot_modelfit()` function visualizes
 the within sample log-likelihood and perplexity and the created figure
-can be saved with the `save_fig()` function. 
+can be saved with the `save_fig()` function.
 
 ```{r, warning = FALSE, message = FALSE}
 fig_modelfit <- plot_modelfit(out)
