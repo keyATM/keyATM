@@ -757,3 +757,66 @@ top_docs <- function(x, n = 10)
   res <- as.data.frame(apply(x$theta, 2, measuref), stringsAsFactors = FALSE)
   return(res)
 }
+
+#' Semantic Coherence re: Mimno et al. (2011)
+#' 
+#' Mimno, David et al. 2011. “Optimizing Semantic Coherence in Topic Models.” 
+#' In Proceedings of the 2011 Conference on Empirical Methods in Natural 
+#' Language Processing, Edinburgh, Scotland, UK.: Association for Computational
+#' Linguistics, 262–72. https://aclanthology.org/D11-1024.
+#'
+#' Equation 1 of Mimno et al. 2011 adopted to keyATM.
+#'
+#' @param x the output from the dynamic keyATM model (see [keyATM()]).
+#' @param docs texts read via [keyATM_read()]. 
+#' @param n integer. The number terms to visualize. Default is \code{10}.
+#' @return A list of topic coherence metric calculated by topic.
+#' @import dplyr
+#' @import purrr
+#' @importFrom utils combn
+#' @export
+
+semantic_coherence <- function(x, docs, n = 10) {
+  docs <- docs$W_raw
+  ## list whose elements are split texts.
+  ## The length of the list equals to the number of doc.
+  
+  ## Create combinations of top keywords
+  topic_top_words <- top_words(x, n = n, show_keyword = FALSE)
+  K <- ncol(topic_top_words)
+  
+  topic_coherence <- vector("list", length = K)
+  names(topic_coherence) <- names(topic_top_words)
+  for (k in seq(K)) {
+    combn_top_words <- utils::combn(topic_top_words[, k], 2)
+    ## Eq. 1
+    topic_coherence[[k]] <- seq(ncol(combn_top_words)) %>%
+      purrr::map_dbl(
+        function(x) {
+          ## Calculate D(v, v-prime) in Eq. 1
+          numerator <- docs %>%
+            purrr::map_dbl(
+              ~ dplyr::case_when(
+                (combn_top_words[1, x] %in% .x) &
+                  (combn_top_words[2, x] %in% .x) ~ 1,
+                TRUE ~ 0
+              )
+            ) %>%
+            sum()
+          denominator <- docs %>%
+            purrr::map_dbl(
+              ~ dplyr::case_when(
+                (combn_top_words[2, x] %in% .x) ~ 1,
+                TRUE ~ 0
+              )
+            ) %>%
+            sum()
+          out <- log((numerator + 1) / denominator)
+          return(out)
+        }
+      ) %>%
+      sum()
+  }
+  
+  return(topic_coherence)
+}
