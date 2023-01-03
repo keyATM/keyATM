@@ -770,7 +770,7 @@ top_docs <- function(x, n = 10)
 #' @param x the output from the dynamic keyATM model (see [keyATM()]).
 #' @param docs texts read via [keyATM_read()]. 
 #' @param n integer. The number terms to visualize. Default is \code{10}.
-#' @return A list of topic coherence metric calculated by topic.
+#' @return A vector of topic coherence metric calculated by each topic.
 #' @import dplyr
 #' @import purrr
 #' @importFrom utils combn
@@ -818,5 +818,5 @@ semantic_coherence <- function(x, docs, n = 10) {
       sum()
   }
   
-  return(topic_coherence)
+  return(unlist(topic_coherence))
 }
