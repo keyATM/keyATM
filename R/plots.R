@@ -289,21 +289,21 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, la
 
   if (order == "proportion") {
     theta_use_tbl %>%
-      dplyr::mutate(Topic = stringr::str_remove(Topic, "^\\d+_")) -> theta_use_tbl
+      dplyr::mutate(Topic = stringr::str_remove(.data$Topic, "^\\d+_")) -> theta_use_tbl
     theta_use_tbl %>%
-      dplyr::arrange(desc(Topicprop)) %>%
-      dplyr::pull(Topic) -> use_order
+      dplyr::arrange(dplyr::desc(.data$Topicprop)) %>%
+      dplyr::pull(.data$Topic) -> use_order
   } else if (order == "topicid") {
     theta_use_tbl %>%
-      dplyr::pull(Topic) -> use_order
+      dplyr::pull(.data$Topic) -> use_order
   }
 
   theta_use_tbl %>%
     dplyr::mutate(
-      Topic = factor(Topic, levels = rev(use_order)),
-      xpos = max(Topicprop) + 0.01
+      Topic = factor(.data$Topic, levels = rev(use_order)),
+      xpos = max(.data$Topicprop) + 0.01
     ) %>%
-    dplyr::arrange(desc(Topic)) -> plot_obj
+    dplyr::arrange(dplyr::desc(.data$Topic)) -> plot_obj
 
   if (is.null(xmax)) {
     if (show_topwords) {
@@ -321,7 +321,7 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, la
               hjust = 0, size = max(10 / n + 1, 2.5))
         } +
         scale_x_continuous(
-          "Expected topic proportions", limits = c(0, xmax), labels = scales::percent
+          "Expected topic proportions", limits = c(0, xmax), labels = scales::label_percent()
         ) +
         theme_bw() +
         theme(panel.grid.major.x = element_blank(),

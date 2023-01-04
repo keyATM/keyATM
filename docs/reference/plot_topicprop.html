@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -94,9 +94,10 @@
   <span class="va">x</span>,
   n <span class="op">=</span> <span class="fl">3</span>,
   show_topic <span class="op">=</span> <span class="cn">NULL</span>,
-  xmax <span class="op">=</span> <span class="cn">NULL</span>,
   show_topwords <span class="op">=</span> <span class="cn">TRUE</span>,
-  label_topic <span class="op">=</span> <span class="cn">NULL</span>
+  label_topic <span class="op">=</span> <span class="cn">NULL</span>,
+  order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"proportion"</span>, <span class="st">"topicid"</span><span class="op">)</span>,
+  xmax <span class="op">=</span> <span class="cn">NULL</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -104,20 +105,37 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>the output from a keyATM model (see <code><a href="keyATM.html">keyATM()</a></code>).</p></dd>
+
+
 <dt>n</dt>
 <dd><p>The number of top words to show. Default is <code>3</code>.</p></dd>
+
+
 <dt>show_topic</dt>
 <dd><p>an integer or a vector. Indicate topics to visualize. Default is <code>NULL</code>.</p></dd>
-<dt>xmax</dt>
-<dd><p>a numeric. Indicate the max value on the x axis</p></dd>
+
+
 <dt>show_topwords</dt>
 <dd><p>logical. Show topwords. The default is <code>TRUE</code>.</p></dd>
+
+
 <dt>label_topic</dt>
 <dd><p>a character vector. The name of the topics in the plot.</p></dd>
+
+
+<dt>order</dt>
+<dd><p>The order of topics.</p></dd>
+
+
+<dt>xmax</dt>
+<dd><p>a numeric. Indicate the max value on the x axis</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>keyATM_fig object</p>
+    
+
+<p>keyATM_fig object</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -132,14 +150,11 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
-<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
-Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
+  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>, <a href="https://tomoya-sasaki.github.io/" class="external-link">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

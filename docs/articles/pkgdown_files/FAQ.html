@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -219,7 +219,7 @@ from the exact distribution.</p>
 </tr>
 <tr class="even">
 <td align="right"><a href="keyATM_cov.html">keyATM Covariate</a></td>
-<td align="left">CGS + SS</td>
+<td align="left">CGS + SS / PG</td>
 <td align="left">Moderate (Depends on # of covariates)</td>
 </tr>
 <tr class="odd">
@@ -323,6 +323,9 @@ review preprocessing processes. Usually, documents include a lot of low
 frequency words that do not help interpretation.
 <strong>quanteda</strong> provides various functions to trim those
 words.</p>
+<p><strong>keyATM</strong> also provides <a href="keyATM_cov.html#keyatm-covariate-with-p%C3%B3lya-gamma-augmentation">the
+Pólya-Gamma augmentation</a> as an alternative modeling approach for
+topic assignments.</p>
 </div>
 <div class="section level3">
 <h3 id="can-i-run-keyatm-on-cloud-computing-services">Can I run keyATM on cloud computing services?<a class="anchor" aria-label="anchor" href="#can-i-run-keyatm-on-cloud-computing-services"></a>
@@ -360,15 +363,12 @@ iteration, so we can use it to consider uncertainty.</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
-<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
-Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
+<p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>, <a href="https://tomoya-sasaki.github.io/" class="external-link">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
