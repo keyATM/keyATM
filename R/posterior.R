@@ -767,7 +767,7 @@ top_docs <- function(x, n = 10)
 #'
 #' Equation 1 of Mimno et al. 2011 adopted to keyATM.
 #'
-#' @param x the output from the dynamic keyATM model (see [keyATM()]).
+#' @param x the output from a keyATM model (see [keyATM()]).
 #' @param docs texts read via [keyATM_read()]. 
 #' @param n integer. The number terms to visualize. Default is \code{10}.
 #' @return A vector of topic coherence metric calculated by each topic.
@@ -794,29 +794,19 @@ semantic_coherence <- function(x, docs, n = 10) {
       purrr::map_dbl(
         function(x) {
           ## Calculate D(v, v-prime) in Eq. 1
-          numerator <- docs %>%
+          row1 <- docs %>%
             purrr::map_dbl(
-              ~ dplyr::case_when(
-                (combn_top_words[1, x] %in% .x) &
-                  (combn_top_words[2, x] %in% .x) ~ 1,
-                TRUE ~ 0
-              )
-            ) %>%
-            sum()
-          denominator <- docs %>%
+              ~ word_in_doc(.x, combn_top_words[1, x])
+            )
+          row2 <- docs %>%
             purrr::map_dbl(
-              ~ dplyr::case_when(
-                (combn_top_words[2, x] %in% .x) ~ 1,
-                TRUE ~ 0
-              )
-            ) %>%
-            sum()
-          out <- log((numerator + 1) / denominator)
+              ~ word_in_doc(.x, combn_top_words[2, x])
+            )
+          out <- log((sum(row1 & row2) + 1) / sum(row2))
           return(out)
         }
       ) %>%
       sum()
   }
-  
   return(unlist(topic_coherence))
 }

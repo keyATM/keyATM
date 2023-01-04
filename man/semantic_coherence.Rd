@@ -7,7 +7,7 @@
 semantic_coherence(x, docs, n = 10)
 }
 \arguments{
-\item{x}{the output from the dynamic keyATM model (see \code{\link[=keyATM]{keyATM()}}).}
+\item{x}{the output from a keyATM model (see \code{\link[=keyATM]{keyATM()}}).}
 
 \item{docs}{texts read via \code{\link[=keyATM_read]{keyATM_read()}}.}
 
