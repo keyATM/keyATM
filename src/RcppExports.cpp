@@ -11,6 +11,18 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// word_in_doc
+bool word_in_doc(StringVector doc, std::string word);
+RcppExport SEXP _keyATM_word_in_doc(SEXP docSEXP, SEXP wordSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< StringVector >::type doc(docSEXP);
+    Rcpp::traits::input_parameter< std::string >::type word(wordSEXP);
+    rcpp_result_gen = Rcpp::wrap(word_in_doc(doc, word));
+    return rcpp_result_gen;
+END_RCPP
+}
 // calc_PGtheta_R
 NumericMatrix calc_PGtheta_R(const NumericMatrix& theta_tilda, Eigen::MatrixXd& theta, const int num_doc, const int num_topics);
 RcppExport SEXP _keyATM_calc_PGtheta_R(SEXP theta_tildaSEXP, SEXP thetaSEXP, SEXP num_docSEXP, SEXP num_topicsSEXP) {
@@ -162,6 +174,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_keyATM_word_in_doc", (DL_FUNC) &_keyATM_word_in_doc, 2},
     {"_keyATM_calc_PGtheta_R", (DL_FUNC) &_keyATM_calc_PGtheta_R, 4},
     {"_keyATM_make_wsz_cpp", (DL_FUNC) &_keyATM_make_wsz_cpp, 3},
     {"_keyATM_keyATMvb_call", (DL_FUNC) &_keyATM_keyATMvb_call, 1},

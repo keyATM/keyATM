@@ -7,7 +7,8 @@ Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", ro
     person("Kosuke", "Imai", email = "imai@harvard.edu", role = c("aut")),
     person("Chung-hong", "Chan", email = "chainsawtiney@gmail.com", role = c("ctb"), comment = c(ORCID = "0000-0002-6232-7530")),
     person(given = "Romain", family = "François", role = "ctb", comment = c(ORCID = "0000-0002-2444-4226")),
-    person("William", "Lowe", email = "wlowe@princeton.edu", role = c("ctb")))
+    person("William", "Lowe", email = "wlowe@princeton.edu", role = c("ctb")),
+    person("Seo-young Silvia", "Kim", email = "sy.silvia.kim@gmail.com", role = c("ctb"), comment = c(ORCID = "0000-0002-8801-9210")))
 License: GPL-3
 Depends: R (>= 3.6)
 Imports: Rcpp (>= 1.0.7),
