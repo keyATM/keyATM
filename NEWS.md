@@ -1,6 +1,9 @@
 # keyATM 0.4.3
 
-### Changes
+### Major changes
+* Implementation of semantic coherence diagnostics from Mimno et al. (2011) via the `semantic_coherence()` function.
+
+### Minor changes
 * Pure R text loading to address issues related to UTF-8 encoding in Windows ([#189](https://github.com/keyATM/keyATM/issues/189))
 
 # keyATM 0.4.2
@@ -8,7 +11,9 @@
 ### Changes
 * Adding the `plot_topicprop()` function
 
+
 # keyATM 0.4.1
+
 ### Minor changes
 * Remove an unused argument (`width`) in the `plot_timetrend()` function
 * Use `Rcpp::message()` if `verbose = TRUE`
