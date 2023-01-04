@@ -206,7 +206,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 
     p <- ggplot(temp, aes(y = .data$Point, x = .data$Topic)) +
          theme_bw() + geom_point() +
-         geom_errorbar(aes(ymin = .data$Lower, ymax = .data$Upper), data = temp, width = 0.01, size = 1) +
+         geom_errorbar(aes(ymin = .data$Lower, ymax = .data$Upper), data = temp, width = 0.01, linewidth = 1) +
          xlab("Topic") + ylab("Probability") +
          ggtitle("Probability of words drawn from keyword topic-word distribution") +
          theme(plot.title = element_text(hjust = 0.5))
@@ -479,7 +479,7 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
   if (is.null(x$values_iter$theta_iter)) {
     dat <- format_theta(x$theta, time_index, tnames[show_topic])
     p <- ggplot(dat, aes(x = .data$time_index, y = .data$Proportion, group = .data$Topic)) +
-          geom_line(size = 0.8, color = "blue") + geom_point(size = 0.9)
+          geom_line(linewidth = 0.8, color = "blue") + geom_point(size = 0.9)
   } else {
     dplyr::bind_rows(lapply(x$values_iter$theta_iter, format_theta, time_index, tnames[show_topic])) %>%
       dplyr::group_by(.data$time_index, .data$Topic) %>%
@@ -489,7 +489,7 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
       stats::setNames(c("time_index", "Topic", "Lower", "Point", "Upper")) -> dat
     p <- ggplot(dat, aes(x = .data$time_index, y = .data$Point, group = .data$Topic)) +
           geom_ribbon(aes(ymin = .data$Lower, ymax = .data$Upper), fill = "gray75") +
-          geom_line(size = 0.8, color = "blue")
+          geom_line(linewidth = 0.8, color = "blue")
 
     if (show_point)
       p <- p + geom_point(size = 0.9)
