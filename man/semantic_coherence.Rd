@@ -2,7 +2,7 @@
 % Please edit documentation in R/posterior.R
 \name{semantic_coherence}
 \alias{semantic_coherence}
-\title{Semantic Coherence re: Mimno et al. (2011)}
+\title{Semantic Coherence: Mimno et al. (2011)}
 \usage{
 semantic_coherence(x, docs, n = 10)
 }

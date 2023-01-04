@@ -93,6 +93,10 @@ reference:
   - '`covariates_info`'
   - '`plot.strata_doctopic`'
   - '`predict.keyATM_output`'
+- title: Diagnostics
+  desc: ~
+  contents:
+  - '`semantic_coherence`'
 - title: Built-in data
   desc: ~
   contents:

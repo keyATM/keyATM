@@ -1,6 +1,6 @@
 ---
 title: "Options / Priors / Keep"
-output: 
+output:
   html_document:
     toc: true
     toc_depth: 1
@@ -10,7 +10,7 @@ output:
 # Options
 `keyATM` takes various options. You can set options through a list.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
-my_options <- list(seed          = NULL, # automatically generate random seed 
+my_options <- list(seed          = NULL, # automatically generate random seed
                    iterations    = 1500,
                    verbose       = FALSE,
                    llk_per       = 10,
@@ -44,7 +44,7 @@ Default is `FALSE`. If it is `TRUE`, it shows values of log-likelihood and perpl
 
 
 ### `llk_per`
-**keyATM** calculates and stores the log-likelihood and perplexity. The default value is `10`. 
+**keyATM** calculates and stores the log-likelihood and perplexity. The default value is `10`.
 
 
 ### `use_weights`
@@ -95,6 +95,4 @@ Prior for the probability of using keywords in a topic.
 
 
 # Keep
-You can specify which output to keep (cf. Calculating [heterogeneity](Heterogeneity.html)).
-
-
+You can specify which output to keep (cf. Calculating [heterogeneity](keyATM_cov.html#covariates-and-topic-word-distribution)).
