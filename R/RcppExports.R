@@ -36,13 +36,13 @@ keyATMvb_call <- function(model) {
     .Call(`_keyATM_keyATMvb_call`, model)
 }
 
-#' Read files from the quanteda dfm (this is the same as dgCMatrix) 
+#' Read files from the quanteda dfm (this is the same as dgCMatrix)
 #'
 #' @param dfm a dfm input (sparse Matrix)
 #' @param W_raw an object to return
 #' @param vocab a vector of vocabulary
-#' @param show_progress_bar show a progress bar 
-#' @param split split proportion 
+#' @param show_progress_bar show a progress bar
+#' @param split split proportion
 #'
 #' @keywords internal
 read_dfm_cpp <- function(dfm, W_read, vocab, show_progress_bar, split) {

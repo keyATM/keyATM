@@ -62,14 +62,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // read_dfm_cpp
-List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, List W_read, CharacterVector vocab, bool show_progress_bar, double split);
+List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, List W_read, StringVector vocab, bool show_progress_bar, double split);
 RcppExport SEXP _keyATM_read_dfm_cpp(SEXP dfmSEXP, SEXP W_readSEXP, SEXP vocabSEXP, SEXP show_progress_barSEXP, SEXP splitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Eigen::SparseMatrix<int> >::type dfm(dfmSEXP);
     Rcpp::traits::input_parameter< List >::type W_read(W_readSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type vocab(vocabSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type vocab(vocabSEXP);
     Rcpp::traits::input_parameter< bool >::type show_progress_bar(show_progress_barSEXP);
     Rcpp::traits::input_parameter< double >::type split(splitSEXP);
     rcpp_result_gen = Rcpp::wrap(read_dfm_cpp(dfm, W_read, vocab, show_progress_bar, split));

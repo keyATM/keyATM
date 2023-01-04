@@ -44,12 +44,12 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
     text_dfm <- NULL
     files <- NULL
     text_df <- tibble::as_tibble(texts)
-  } else if (class(texts) == "dfm" | "dgCMatrix" %in% class(texts)) {
+  } else if ("dfm" %in% class(texts) | "dgCMatrix" %in% class(texts)) {
     message("Using quanteda dfm.")
     text_dfm <- texts
     files <- NULL
     text_df <- NULL
-  } else if (class(texts) == "character") {
+  } else if ("character" %in% class(texts)) {
     warning("Reading from files. Please make sure files are preprocessed.", immediate. = TRUE)
     text_dfm <- NULL
     files <- texts

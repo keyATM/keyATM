@@ -9,6 +9,7 @@
 ^pkgdown$
 ^vignettes$
 ^\.github$
+^\.vscode$
 ^docs/
 ^man/figures
 ^LICENSE\.md$

@@ -16,18 +16,18 @@ using namespace Rcpp;
 using namespace std;
 
 
-//' Read files from the quanteda dfm (this is the same as dgCMatrix) 
+//' Read files from the quanteda dfm (this is the same as dgCMatrix)
 //'
 //' @param dfm a dfm input (sparse Matrix)
 //' @param W_raw an object to return
 //' @param vocab a vector of vocabulary
-//' @param show_progress_bar show a progress bar 
-//' @param split split proportion 
+//' @param show_progress_bar show a progress bar
+//' @param split split proportion
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, 
-                  List W_read, CharacterVector vocab, bool show_progress_bar,
+List read_dfm_cpp(Eigen::SparseMatrix<int> dfm,
+                  List W_read, StringVector vocab, bool show_progress_bar,
                   double split)
 {
   dfm = dfm.transpose();  // SparseMatrix is colmajor
@@ -56,14 +56,14 @@ List read_dfm_cpp(Eigen::SparseMatrix<int> dfm,
           u = R::unif_rand();
 
           if (u < split) {
-            // Smaller subset 
+            // Smaller subset
             doc_words_split.push_back(word_id);
           } else {
             doc_words.push_back(word_id);
           }
         }
       } else {
-        // Do not split the dfm 
+        // Do not split the dfm
         for (int i = 0; i < count; ++i) {
           doc_words.push_back(word_id);
         }
@@ -71,11 +71,11 @@ List read_dfm_cpp(Eigen::SparseMatrix<int> dfm,
 
     }
 
-    CharacterVector R_doc_words = Rcpp::wrap(doc_words);
+    StringVector R_doc_words = Rcpp::wrap(doc_words);
     W_raw.push_back(R_doc_words);
 
     if (split != 0) {
-      CharacterVector R_doc_words_split = Rcpp::wrap(doc_words_split); 
+      StringVector R_doc_words_split = Rcpp::wrap(doc_words_split);
       W_split.push_back(R_doc_words_split);
     }
 
@@ -89,4 +89,3 @@ List read_dfm_cpp(Eigen::SparseMatrix<int> dfm,
 
   return W_read;
 }
-
