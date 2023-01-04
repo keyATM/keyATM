@@ -1,6 +1,6 @@
 ---
 title: "FAQ"
-output: 
+output:
   html_document:
     toc: true
 ---
@@ -13,17 +13,17 @@ data(data_corpus_inaugural, package = "quanteda")
 data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 
 data_tokens <- tokens(data_corpus_inaugural,
-                      remove_numbers = TRUE, 
-                      remove_punct = TRUE, 
+                      remove_numbers = TRUE,
+                      remove_punct = TRUE,
                       remove_symbols = TRUE,
                       remove_separators = TRUE,
                       remove_url = TRUE) %>%
                  tokens_tolower() %>%
-                 tokens_remove(c(stopwords("english"), 
+                 tokens_remove(c(stopwords("english"),
                                "may", "shall", "can",
                                "must", "upon", "with", "without")) %>%
                  tokens_select(min_nchar = 3)
-                
+
 data_dfm <- dfm(data_tokens) %>%
                dfm_trim(min_termfreq = 5, min_docfreq = 2)
 
@@ -42,7 +42,7 @@ keyATM_docs <- keyATM_read(data_dfm)
 
 The table below summarizes keyATM models and other popular models based on the inputs.
 
-|                                   | Keywords  | Covariate  | Time Structure |   
+|                                   | Keywords  | Covariate  | Time Structure |
 |----------------------------------:|:---------:|:----------:|:--------------:|
 |[keyATM Base](keyATM_base.html)  |     ○    |     ×     |        ×      |
 |[keyATM Covariate](keyATM_cov.html)|     ○    |     ○     |        △      |
@@ -60,8 +60,8 @@ The next table compares inference methods and speeds. CGS stands for Collapsed G
 
 |                                   |        Inference      |                  Speed                 |
 |----------------------------------:|:----------------------|:---------------------------------------|
-|[keyATM Base](keyATM_base.html)  |        CGS + SS       |                  Fast                  |
-|[keyATM Covariate](keyATM_cov.html)|        CGS + SS       | Moderate  (Depends on # of covariates) |
+|[keyATM Base](keyATM_base.html)    |        CGS + SS       |                  Fast                  |
+|[keyATM Covariate](keyATM_cov.html)|        CGS + SS / PG  | Moderate  (Depends on # of covariates) |
 |[keyATM HMM](keyATM_hmm.html)      |        CGS + SS       |                  Fast                  |
 |[keyATM Label](keyATM_label.html)  |        CGS + SS       |                  Fast                  |
 |            LDA Weighted           |        CGS + SS       |                  Fast                  |
@@ -95,7 +95,7 @@ keywords_n2 <- list(Government = c("federal_government", "vice_president"),
                     Peace      = c("peace_world"))
 ```
 
-Then, you can fit the keyATM models (here we use [the base]((keyATM_base.html) model). 
+Then, you can fit the keyATM models (here we use [the base]((keyATM_base.html) model).
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(docs              = keyATM_docs_n2,    # text input
               no_keyword_topics = 3,                 # number of topics without keywords
@@ -112,6 +112,8 @@ top_words(out, 5)
 Please note that the number of unique words, the total lenght of documents, and the number of topics affect the speed. If you use `cov` model, the number of covariates matters as well, because we need to estimate coefficieitns for covariates.
 
 If you want to speed up fitting, the first thing you can do is to review preprocessing processes. Usually, documents include a lot of low frequency words that do not help interpretation. **quanteda** provides various functions to trim those words.
+
+**keyATM** also provides [the Pólya-Gamma augmentation](keyATM_cov.html#keyatm-covariate-with-pólya-gamma-augmentation) as an alternative modeling approach for topic assignments.
 
 
 ## Can I run keyATM on cloud computing services?

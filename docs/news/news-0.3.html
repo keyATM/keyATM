@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -86,44 +86,25 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.0" id="keyatm-030">keyATM 0.3.0<small>2020-07-12</small><a class="anchor" aria-label="anchor" href="#keyatm-030"></a></h2>
-<p><a href="https://github.com/keyATM/keyATM/projects/2" class="external-link">Roadmap</a> for
-this version.</p>
+<p><a href="https://github.com/keyATM/keyATM/projects/2" class="external-link">Roadmap</a> for this version.</p>
 <div class="section level4">
 <h4 id="major-changes-0-3-0">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-0-3-0"></a></h4>
-<ul><li>Use the Highest Density Interval as a default (<code>method =
-"hdi"</code>) in <code><a href="../reference/plot.strata_doctopic.html">plot.strata_doctopic()</a></code>,
-<code><a href="../reference/plot_timetrend.html">plot_timetrend()</a></code>, and <code><a href="../reference/plot_pi.html">plot_pi()</a></code>. The previous
-version uses the Equal-tailed Interval (<code>method =
-"eti"</code>).</li>
-<li>Add <code>read_keywords</code> for reading dictionary files
-(e.g. YAML, LIWC).</li>
-<li>Add the <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> function for the covariate keyATM
-(thank you <a href="https://sanjahajdinjak.wordpress.com/" class="external-link">Sanja
-Hajdinjak</a> for the suggestion!).</li>
+<ul><li>Use the Highest Density Interval as a default (<code>method = "hdi"</code>) in <code><a href="../reference/plot.strata_doctopic.html">plot.strata_doctopic()</a></code>, <code><a href="../reference/plot_timetrend.html">plot_timetrend()</a></code>, and <code><a href="../reference/plot_pi.html">plot_pi()</a></code>. The previous version uses the Equal-tailed Interval (<code>method = "eti"</code>).</li>
+<li>Add <code>read_keywords</code> for reading dictionary files (e.g. YAML, LIWC).</li>
+<li>Add the <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> function for the covariate keyATM (thank you <a href="https://sanjahajdinjak.wordpress.com/" class="external-link">Sanja Hajdinjak</a> for the suggestion!).</li>
 <li>Detailed options for standardization in the covariate keyATM
-<ul><li>The <code>standardize</code> option in <code>model_settings</code>
-argument of the <code><a href="../reference/keyATM.html">keyATM()</a></code> function now takes one of
-<code>"all"</code>, <code>"none"</code>, or <code>"non-factor"</code>
-(default).</li>
+<ul><li>The <code>standardize</code> option in <code>model_settings</code> argument of the <code><a href="../reference/keyATM.html">keyATM()</a></code> function now takes one of <code>"all"</code>, <code>"none"</code>, or <code>"non-factor"</code> (default).</li>
 <li>
-<code>"all"</code> standardizes all covariates (except the
-intercept), <code>"none"</code> does not standardize any covariates, and
-<code>"non-factor"</code> standardizes non-factor covariates.</li>
-<li>In previous versions, this option takes either <code>TRUE</code>
-(default, standardizing all covariates) or <code>FALSE</code>.</li>
+<code>"all"</code> standardizes all covariates (except the intercept), <code>"none"</code> does not standardize any covariates, and <code>"non-factor"</code> standardizes non-factor covariates.</li>
+<li>In previous versions, this option takes either <code>TRUE</code> (default, standardizing all covariates) or <code>FALSE</code>.</li>
 </ul></li>
 <li>A bug fix in the <code><a href="../reference/by_strata_DocTopic.html">by_strata_DocTopic()</a></code> function.</li>
-<li>The output of the <code><a href="../reference/keyATM.html">keyATM()</a></code> includes the index of
-documents used for fitting (this will be useful if the input includes
-documents with zero length).</li>
-<li>Add a <code>progress_bar</code> option in the
-<code><a href="../reference/keyATM_read.html">keyATM_read()</a></code> function (thank you <a href="https://jaeyk.github.io/" class="external-link">Jae Yeon Kim</a> for the
-suggestion!)</li>
+<li>The output of the <code><a href="../reference/keyATM.html">keyATM()</a></code> includes the index of documents used for fitting (this will be useful if the input includes documents with zero length).</li>
+<li>Add a <code>progress_bar</code> option in the <code><a href="../reference/keyATM_read.html">keyATM_read()</a></code> function (thank you <a href="https://jaeyk.github.io/" class="external-link">Jae Yeon Kim</a> for the suggestion!)</li>
 </ul></div>
 <div class="section level4">
 <h4 id="bug-fix-0-3-0">Bug fix<a class="anchor" aria-label="anchor" href="#bug-fix-0-3-0"></a></h4>
-<ul><li>Fix checking time index input (thank you <a href="https://jaeyk.github.io/" class="external-link">Jae Yeon Kim</a> for pointing out this
-issue!)</li>
+<ul><li>Fix checking time index input (thank you <a href="https://jaeyk.github.io/" class="external-link">Jae Yeon Kim</a> for pointing out this issue!)</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -143,14 +124,11 @@ issue!)</li>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
-<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
-Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
+  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>, <a href="https://tomoya-sasaki.github.io/" class="external-link">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

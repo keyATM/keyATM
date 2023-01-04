@@ -1,7 +1,7 @@
 # keyATM 0.4.3
 
 ### Changes
-* Pure R text loading to address issues related to UTF-8 encoding in Windows ([#189](https://github.com/keyATM/keyATM/issues/189))
+* Addressing issues related to UTF-8 encoding in Windows ([#189](https://github.com/keyATM/keyATM/issues/189))
 
 # keyATM 0.4.2
 

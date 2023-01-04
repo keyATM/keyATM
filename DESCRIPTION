@@ -14,7 +14,7 @@ Imports: Rcpp (>= 1.0.7),
   dplyr (>= 1.0.0),
   fastmap,
   future.apply,
-  ggplot2,
+  ggplot2 (>= 3.4.0),
   ggrepel,
   magrittr,
   Matrix,
@@ -24,6 +24,7 @@ Imports: Rcpp (>= 1.0.7),
   purrr,
   quanteda (>= 2.0.0),
   rlang,
+  scales (>= 1.2.1),
   stats,
   stringr,
   tibble,
@@ -38,6 +39,6 @@ URL: https://keyatm.github.io/keyATM/
 Encoding: UTF-8
 BugReports: https://github.com/keyATM/keyATM/issues
 LazyData: TRUE
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 SystemRequirements: C++11
 Roxygen: list(markdown = TRUE)
