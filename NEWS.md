@@ -1,16 +1,11 @@
-# keyATM 0.4.3
+# keyATM 0.4.2
 
 ### Major changes
+* Adding the `plot_topicprop()` function
 * Implementation of semantic coherence diagnostics from Mimno et al. (2011) via the `semantic_coherence()` function.
 
 ### Minor changes
 * Pure R text loading to address issues related to UTF-8 encoding in Windows ([#189](https://github.com/keyATM/keyATM/issues/189))
-
-# keyATM 0.4.2
-
-### Changes
-* Adding the `plot_topicprop()` function
-
 
 # keyATM 0.4.1
 
