@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -108,28 +108,49 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>the output from the dynamic keyATM model (see <code><a href="keyATM.html">keyATM()</a></code>).</p></dd>
+
+
 <dt>show_topic</dt>
 <dd><p>an integer or a vector. Indicate topics to visualize. Default is <code>NULL</code>.</p></dd>
+
+
 <dt>time_index_label</dt>
 <dd><p>a vector. The label for time index. The length should be equal to the number of documents (time index provided to <code><a href="keyATM.html">keyATM()</a></code>).</p></dd>
+
+
 <dt>ci</dt>
 <dd><p>value of the credible interval (between 0 and 1) to be estimated. Default is <code>0.9</code> (90%). This is an option when calculating credible intervals (you need to set <code>store_theta = TRUE</code> in <code><a href="keyATM.html">keyATM()</a></code>).</p></dd>
+
+
 <dt>method</dt>
 <dd><p>method for computing the credible interval. The Highest Density Interval (<code>hdi</code>, default) or Equal-tailed Interval (<code>eti</code>). This is an option when calculating credible intervals (you need to set <code>store_theta = TRUE</code> in <code><a href="keyATM.html">keyATM()</a></code>).</p></dd>
+
+
 <dt>point</dt>
 <dd><p>method for computing the point estimate. <code>mean</code> (default) or <code>median</code>. This is an option when calculating credible intervals (you need to set <code>store_theta = TRUE</code> in <code><a href="keyATM.html">keyATM()</a></code>).</p></dd>
+
+
 <dt>xlab</dt>
 <dd><p>a character.</p></dd>
+
+
 <dt>scales</dt>
 <dd><p>character. Control the scale of y-axis (the parameter in <a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">ggplot2::facet_wrap()</a>): <code>free</code> adjusts y-axis for parameters. Default is <code>fixed</code>.</p></dd>
+
+
 <dt>show_point</dt>
 <dd><p>logical. The default is <code>TRUE</code>. This is an option when calculating credible intervals.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments not used.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>keyATM_fig object.</p>
+    
+
+<p>keyATM_fig object.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -144,14 +165,11 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
-<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
-Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
+  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>, <a href="https://tomoya-sasaki.github.io/" class="external-link">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

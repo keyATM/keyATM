@@ -54,6 +54,20 @@ test_that("Plot pi", {
   expect_equal(as.numeric(values_fig(p2)$Lower[2]), 0.03485987, tolerance = 0.00001)
 })
 
+test_that("Plot topic plot", {
+  p <- plot_topicprop(base) ; expect_s3_class(p, "keyATM_fig")
+  p <- plot_topicprop(base, order = "topicid") ; expect_s3_class(p, "keyATM_fig")
+  p <- plot_topicprop(base, n = 5) ; expect_s3_class(p, "keyATM_fig")
+  p <- plot_topicprop(base, show_topwords = FALSE) ; expect_s3_class(p, "keyATM_fig")
+  p <- plot_topicprop(base, show_topic = 1:3, label_topic = paste0("T", 1:3)) ; expect_s3_class(p, "keyATM_fig")
+  p <- plot_topicprop(base, show_topic = 1:3, label_topic = paste0("T", 1:3), order = "topicid") ; expect_s3_class(p, "keyATM_fig")
+  p <- plot_topicprop(base, show_topic = c(1, 4, 7)) ; expect_s3_class(p, "keyATM_fig")
+
+  expect_error(plot_topicprop(base, show_topic = -1))
+  expect_error(plot_topicprop(base, show_topic = 5:100))
+  expect_error(plot_topicprop(base, label_topic = 5:100))
+})
+
 # Dynamic
 dyn <- keyATM(docs = keyATM_docs,
               no_keyword_topics = 3,
@@ -65,15 +79,18 @@ dyn <- keyATM(docs = keyATM_docs,
 
 test_that("Time series: with intervals", {
   p <- plot_timetrend(dyn) ; expect_s3_class(p, "keyATM_fig")
-  p <- plot_timetrend(dyn, time_index_label = bills_time_index, method = "eti")  
-  p2 <- plot_timetrend(dyn, time_index_label = bills_time_index, method = "hdi", ci = 0.89)  
+  p <- plot_timetrend(dyn, time_index_label = bills_time_index, method = "eti")
+  p2 <- plot_timetrend(dyn, time_index_label = bills_time_index, method = "hdi", ci = 0.89)
   expect_s3_class(p, "keyATM_fig")
+
   skip_on_cran()
   expect_message(save_fig(p, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
 
   skip_on_os("linux") ; skip_on_cran()
   expect_equal(values_fig(p)$Lower[2], 0.04844414, tolerance = 0.00001)
   expect_equal(values_fig(p2)$Upper[2], 0.1310682, tolerance = 0.00001)
+
+  p <- plot_topicprop(dyn) ; expect_s3_class(p, "keyATM_fig")
 })
 
 

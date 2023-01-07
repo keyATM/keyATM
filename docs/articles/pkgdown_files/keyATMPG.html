@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -136,8 +136,9 @@ We introduce the stick-breaking representation of the multinomial
 distribution () described in Linderman et al. (2015), <span class="math display">\[\begin{align}
   \mathbf{z}_{d} &amp;\sim \textsf{SB-Multi}(n_d, \boldsymbol{\psi}_d).
 \end{align}\]</span> rewrites the <span class="math inline">\(K\)</span>-dimensional multinomial distribution
-with <span class="math inline">\(K-1\)</span> binomial distributions. %
-<span class="math display">\[\begin{align}
+with <span class="math inline">\(K-1\)</span> binomial
+distributions.</p>
+<p><span class="math display">\[\begin{align}
   \textsf{SB-Multi}(\mathbf{z}_d \mid n_d, \boldsymbol{\psi}_d)
   &amp;= \prod_{k=1}^{K-1} \textsf{Bin}(n_{dk} \mid n_d -
 \textstyle\sum_{k' &lt; k} n_{dk'}, \psi_{dk}) \\
@@ -145,31 +146,30 @@ with <span class="math inline">\(K-1\)</span> binomial distributions. %
       \bigg( \frac{\exp(\psi_{dk})}{1 + \exp(\psi_{dk})} \bigg)^{n_{dk}}
       \bigg( \frac{1}{1 + \exp(\psi_{dk})} \bigg)^{N_{dk} - n_{dk}} \\
   &amp;= \prod_{k=1}^{K-1} \binom{N_{dk}}{n_{dk}}
-  \frac{\exp(\psi_{dk})^{n_{dk}}}{(1 + \exp(\psi_{dk}))^{N_{dk}}} \\
-\label{eq:sb-multi}
+  \frac{\exp(\psi_{dk})^{n_{dk}}}{(1 + \exp(\psi_{dk}))^{N_{dk}}}
+\tag{1} \\ \label{eq:sb-multi}
    N_{dk} &amp;= n_d - \sum_{k' &lt; k} n_{dk'}
 \end{align}\]</span></p>
 <p>We model the parameters in with the covariates. First, we assume that
 coefficients follow the multivariate normal distribution. <span class="math inline">\(\boldsymbol{\lambda}\)</span> is a <span class="math inline">\(M \times (K-1)\)</span> matrix, so we introduce
 the vectorization transformation to draw all elements from a single draw
-of the multivariate normal distribution. % <span class="math display">\[\begin{align}
+of the multivariate normal distribution.</p>
+<p><span class="math display">\[\begin{align}
   \text{vec}({\boldsymbol{\lambda}}) &amp;\sim
 \mathcal{N}(\text{vec}(\boldsymbol{\mu}_0), \boldsymbol{\Sigma}_0
-\otimes \boldsymbol{\Lambda}_0^{-1}) \\ \label{eq:prior_lambda}
+\otimes \boldsymbol{\Lambda}_0^{-1}) \tag{2} \\ \label{eq:prior_lambda}
   \boldsymbol{\Sigma}_0 &amp;\sim \mathcal{W}^{-1}(\mathbf{V}_0,
 \boldsymbol{\nu}_0)
 \end{align}\]</span> where we have the priors <span class="math inline">\(\boldsymbol{\mu}_0 = \mathbf{0}\)</span>, and
 <span class="math inline">\(\boldsymbol{\Sigma}_0\)</span> is a <span class="math inline">\((K-1) \times (K-1)\)</span> identity matrix (for
 topics). <span class="math inline">\(\boldsymbol{\Lambda}_0\)</span> is
 a <span class="math inline">\(M \times M\)</span> identity matrix (for
-covariates). % <span class="math inline">\(\boldsymbol{\Lambda}_\lambda
-= \frac{1}{\sigma_\lambda^2} \mathbf{1}_{M}\)</span>. <span class="math inline">\(\boldsymbol{\Sigma}_0 \otimes
+covariates). <span class="math inline">\(\boldsymbol{\Sigma}_0 \otimes
 \boldsymbol{\Lambda}_0^{-1}\)</span> becomes a diagonal matrix and
-equation~<span class="math inline">\(\eqref{eq:prior_lambda}\)</span> is
-the same as <span class="math inline">\(\boldsymbol{\lambda}_{k} \sim
+equation (2) is the same as <span class="math inline">\(\boldsymbol{\lambda}_{k} \sim
 \mathcal{N}((\boldsymbol{\mu}_{0})_{k}, (\boldsymbol{\Sigma}_0)_{kk}
-\boldsymbol{\Lambda}_0^{-1}), \text{ for } k = 1, \ldots, K-1\)</span>.
-%</p>
+\boldsymbol{\Lambda}_0^{-1}), \text{ for } k = 1, \ldots,
+K-1\)</span>.</p>
 <p>Next, we use covariates to model the parameters in . <span class="math display">\[\begin{align}
   \boldsymbol{\psi}_d &amp;\sim \mathcal{N}(\boldsymbol{\lambda}^\top
 \mathbf{x}_d, \boldsymbol{\Sigma}_0)
@@ -190,14 +190,14 @@ implementation.</p>
 <h2 id="estimation">Estimation<a class="anchor" aria-label="anchor" href="#estimation"></a>
 </h2>
 <p>We sample <span class="math inline">\(\boldsymbol{\lambda}\)</span>,
-<span class="math inline">\(\boldsymbol{\Psi}\)</span>, and
-P{'{o}}lya-gamma auxiliary variables <span class="math inline">\(\boldsymbol{\omega}\)</span>.</p>
+<span class="math inline">\(\boldsymbol{\Psi}\)</span>, and Pólya-gamma
+auxiliary variables <span class="math inline">\(\boldsymbol{\omega}\)</span>.</p>
 <div class="section level3">
 <h3 id="sampling-boldsymbolpsi">Sampling <span class="math inline">\(\boldsymbol{\Psi}\)</span><a class="anchor" aria-label="anchor" href="#sampling-boldsymbolpsi"></a>
 </h3>
-<p>Equation~<span class="math inline">\(\eqref{eq:sb-multi}\)</span> has
-the same form as Theorem 1 of Polson et al. (2013) and we can introduce
-P{'{o}}lya-gamma auxiliary variables. % <span class="math display">\[\begin{align}
+<p>Equation (1) has the same form as Theorem 1 of Polson et al. (2013)
+and we can introduce P{'{o}}lya-gamma auxiliary variables.</p>
+<p><span class="math display">\[\begin{align}
   p(\mathbf{z}_d, \boldsymbol{\omega}_d \mid n_d, \boldsymbol{\psi}_d)
 &amp;\propto
   \prod_{k = 1}^{K - 1} \exp \big( (n_{dk} - {N_{dk}}/{2}) \psi_{dk} -
@@ -262,7 +262,7 @@ Dependent multinomial models made easy: Stick breaking with the
 Pólya-gamma augmentation. Advances in Neural Information Processing
 Systems, 2015, 3456-3464.</li>
 <li>Polson, N. G., Scott, J. G., &amp; Windle, J. (2013). Bayesian
-inference for logistic models using Pólya–Gamma latent variables.
+inference for logistic models using Pólya-Gamma latent variables.
 Journal of the American statistical Association, 108(504),
 1339-1349.</li>
 <li>Rossi, P. E., Allenby, G. M., &amp; McCulloch, R. (2012). Bayesian
@@ -286,15 +286,12 @@ Learning Research, 18(1), 7479-7511.</li>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
-<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
-Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
+<p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>, <a href="https://tomoya-sasaki.github.io/" class="external-link">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

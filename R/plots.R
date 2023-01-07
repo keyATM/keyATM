@@ -43,6 +43,7 @@ print.keyATM_fig <- function(x, ...)
 }
 
 
+
 #' Show a diagnosis plot of alpha
 #'
 #' @param x the output from a keyATM model (see [keyATM()]).
@@ -205,11 +206,12 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 
     p <- ggplot(temp, aes(y = .data$Point, x = .data$Topic)) +
          theme_bw() + geom_point() +
-         geom_errorbar(aes(ymin = .data$Lower, ymax = .data$Upper), data = temp, width = 0.01, size = 1) +
+         geom_errorbar(aes(ymin = .data$Lower, ymax = .data$Upper), data = temp, width = 0.01, linewidth = 1) +
          xlab("Topic") + ylab("Probability") +
          ggtitle("Probability of words drawn from keyword topic-word distribution") +
          theme(plot.title = element_text(hjust = 0.5))
   } else {
+    message("Plotting pi from the final MCMC draw. \nPlease set `store_pi` to `TRUE` if you want to plot pi over iterations.")
     x$pi %>%
       dplyr::mutate(Probability = .data$Proportion / 100) %>%
       dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
@@ -226,6 +228,112 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
   class(p) <- c("keyATM_fig", class(p))
   return(p)
 }
+
+
+#' Show the expected proportion of the corpus belonging to each topic
+#'
+#' @param x the output from a keyATM model (see [keyATM()]).
+#' @param n The number of top words to show. Default is \code{3}.
+#' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
+#' @param show_topwords logical. Show topwords. The default is \code{TRUE}.
+#' @param order The order of topics.
+#' @param label_topic a character vector. The name of the topics in the plot.
+#' @param xmax a numeric. Indicate the max value on the x axis
+#' @return keyATM_fig object
+#' @import magrittr
+#' @import ggplot2
+#' @importFrom rlang .data
+#' @seealso [save_fig()]
+#' @export
+plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, label_topic = NULL, order = c("proportion", "topicid"), xmax = NULL)
+{
+  check_arg_type(x, "keyATM_output")
+  order <- match.arg(order)
+
+  total_k <- x$keyword_k + x$no_keyword_topics
+  if (is.null(show_topic)) {
+    show_topic <- 1:total_k
+  } else {
+    if (max(show_topic) > total_k | min(show_topic) < 1) {
+      stop("Invalid topic ID in `show_topic`.")
+    }
+  }
+
+  topwords <- top_words(x, n = n)[, show_topic]
+
+  if (!is.null(label_topic)) {
+    if (length(label_topic) != ncol(topwords)) {
+      stop("The length of `label_topic` is incorrect.")
+    }
+    colnames(topwords) <- label_topic
+  }
+
+  topwords %>%
+    dplyr::summarise(dplyr::across(dplyr::everything(), ~stringr::str_c(.x, collapse = ", "))) %>%
+    tidyr::pivot_longer(dplyr::everything(),
+                        values_to = "Topwords",
+                        names_to = "Topic") -> topwords_commas
+
+  theta_use <- x$theta[, show_topic]
+  if (!is.null(label_topic)) {
+    colnames(theta_use) <- label_topic
+  }
+
+  theta_use %>%
+    tibble::as_tibble() %>%
+    dplyr::summarise(dplyr::across(dplyr::everything(), ~mean(.x))) %>%
+    tidyr::pivot_longer(dplyr::everything(),
+                        values_to = "Topicprop",
+                        names_to = "Topic") %>%
+    dplyr::left_join(topwords_commas, by = "Topic") -> theta_use_tbl
+
+  if (order == "proportion") {
+    theta_use_tbl %>%
+      dplyr::mutate(Topic = stringr::str_remove(.data$Topic, "^\\d+_")) -> theta_use_tbl
+    theta_use_tbl %>%
+      dplyr::arrange(dplyr::desc(.data$Topicprop)) %>%
+      dplyr::pull(.data$Topic) -> use_order
+  } else if (order == "topicid") {
+    theta_use_tbl %>%
+      dplyr::pull(.data$Topic) -> use_order
+  }
+
+  theta_use_tbl %>%
+    dplyr::mutate(
+      Topic = factor(.data$Topic, levels = rev(use_order)),
+      xpos = max(.data$Topicprop) + 0.01
+    ) %>%
+    dplyr::arrange(dplyr::desc(.data$Topic)) -> plot_obj
+
+  if (is.null(xmax)) {
+    if (show_topwords) {
+      xmax <- min(max(plot_obj$Topicprop) * 2.5, 1)
+    } else {
+      xmax <- max(plot_obj$Topicprop) + 0.02
+    }
+  }
+
+  p <- ggplot(plot_obj, aes(x = .data$Topicprop, y = .data$Topic)) +
+        geom_col() +
+        {if (show_topwords)
+            geom_text(
+              aes(x = .data$xpos, y = .data$Topic, label = .data$Topwords),
+              hjust = 0, size = max(10 / n + 1, 2.5))
+        } +
+        scale_x_continuous(
+          "Expected topic proportions", limits = c(0, xmax), labels = scales::label_percent()
+        ) +
+        theme_bw() +
+        theme(panel.grid.major.x = element_blank(),
+              panel.grid.minor.x = element_blank(),
+              panel.grid.major.y = element_blank(),
+              panel.grid.minor.y = element_blank())
+
+  p <- list(figure = p, values = plot_obj)
+  class(p) <- c("keyATM_fig", class(p))
+  return(p)
+}
+
 
 
 #' Plot document-topic distribution by strata (for covariate models)
@@ -281,11 +389,17 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
 
   variables <- unique(tables$label)
 
+  if (point == "mean") {
+    ylabel <- expression(paste("Mean of ", theta))
+  } else {
+    ylabel <- expression(paste("Median of ", theta))
+  }
+
   p <- ggplot(tables) +
         coord_flip() +
         scale_x_discrete(limits = rev(variables)) +
         xlab(paste0(by_var)) +
-        ylab(expression(paste("Mean of ", theta))) +
+        ylab(ylabel) +
         guides(color = guide_legend(title = "Topic")) +
         theme_bw()
 
@@ -365,7 +479,7 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
   if (is.null(x$values_iter$theta_iter)) {
     dat <- format_theta(x$theta, time_index, tnames[show_topic])
     p <- ggplot(dat, aes(x = .data$time_index, y = .data$Proportion, group = .data$Topic)) +
-          geom_line(size = 0.8, color = "blue") + geom_point(size = 0.9)
+          geom_line(linewidth = 0.8, color = "blue") + geom_point(size = 0.9)
   } else {
     dplyr::bind_rows(lapply(x$values_iter$theta_iter, format_theta, time_index, tnames[show_topic])) %>%
       dplyr::group_by(.data$time_index, .data$Topic) %>%
@@ -375,7 +489,7 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
       stats::setNames(c("time_index", "Topic", "Lower", "Point", "Upper")) -> dat
     p <- ggplot(dat, aes(x = .data$time_index, y = .data$Point, group = .data$Topic)) +
           geom_ribbon(aes(ymin = .data$Lower, ymax = .data$Upper), fill = "gray75") +
-          geom_line(size = 0.8, color = "blue")
+          geom_line(linewidth = 0.8, color = "blue")
 
     if (show_point)
       p <- p + geom_point(size = 0.9)

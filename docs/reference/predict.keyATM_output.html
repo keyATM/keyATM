@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -111,28 +111,51 @@
     <h2>Arguments</h2>
     <dl><dt>object</dt>
 <dd><p>the keyATM_output object for the covariate model.</p></dd>
+
+
 <dt>newdata</dt>
 <dd><p>New observations which should be predicted.</p></dd>
+
+
 <dt>transform</dt>
 <dd><p>Transorm and standardize the <code>newdata</code> with the same formula and option as <code>model_settings</code> used in <code><a href="keyATM.html">keyATM()</a></code>.</p></dd>
+
+
 <dt>burn_in</dt>
 <dd><p>integer. Burn-in period. If not specified, it is the half of samples. Default is <code>NULL</code>.</p></dd>
+
+
 <dt>parallel</dt>
 <dd><p>logical. If <code>TRUE</code>, parallelization for speeding up. Default is <code>TRUE</code>. Please <code>plan()</code> before use this function.</p></dd>
+
+
 <dt>posterior_mean</dt>
 <dd><p>logical. If <code>TRUE</code>, the quantity of interest to estimate is the posterior mean. Default is <code>TRUE</code>.</p></dd>
+
+
 <dt>ci</dt>
 <dd><p>value of the credible interval (between 0 and 1) to be estimated. Default is <code>0.9</code> (90%).</p></dd>
+
+
 <dt>method</dt>
 <dd><p>method for computing the credible interval. The Highest Density Interval (<code>hdi</code>, default) or Equal-tailed Interval (<code>eti</code>).</p></dd>
+
+
 <dt>point</dt>
 <dd><p>method for computing the point estimate. <code>mean</code> (default) or <code>median</code>.</p></dd>
+
+
 <dt>label</dt>
 <dd><p>a character. Add a <code>label</code> column to the output. The default is <code>NULL</code> (do not add it).</p></dd>
+
+
 <dt>raw_values</dt>
 <dd><p>a logical. Returns raw values. The default is <code>FALSE</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments not used.</p></dd>
+
 </dl></div>
 
   </div>
@@ -143,14 +166,11 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
-<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
-Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
+  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>, <a href="https://tomoya-sasaki.github.io/" class="external-link">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

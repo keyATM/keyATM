@@ -11,6 +11,18 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// word_in_doc
+bool word_in_doc(StringVector doc, std::string word);
+RcppExport SEXP _keyATM_word_in_doc(SEXP docSEXP, SEXP wordSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< StringVector >::type doc(docSEXP);
+    Rcpp::traits::input_parameter< std::string >::type word(wordSEXP);
+    rcpp_result_gen = Rcpp::wrap(word_in_doc(doc, word));
+    return rcpp_result_gen;
+END_RCPP
+}
 // calc_PGtheta_R
 NumericMatrix calc_PGtheta_R(const NumericMatrix& theta_tilda, Eigen::MatrixXd& theta, const int num_doc, const int num_topics);
 RcppExport SEXP _keyATM_calc_PGtheta_R(SEXP theta_tildaSEXP, SEXP thetaSEXP, SEXP num_docSEXP, SEXP num_topicsSEXP) {
@@ -50,14 +62,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // read_dfm_cpp
-List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, List W_read, CharacterVector vocab, bool show_progress_bar, double split);
+List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, List W_read, StringVector vocab, bool show_progress_bar, double split);
 RcppExport SEXP _keyATM_read_dfm_cpp(SEXP dfmSEXP, SEXP W_readSEXP, SEXP vocabSEXP, SEXP show_progress_barSEXP, SEXP splitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Eigen::SparseMatrix<int> >::type dfm(dfmSEXP);
     Rcpp::traits::input_parameter< List >::type W_read(W_readSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type vocab(vocabSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type vocab(vocabSEXP);
     Rcpp::traits::input_parameter< bool >::type show_progress_bar(show_progress_barSEXP);
     Rcpp::traits::input_parameter< double >::type split(splitSEXP);
     rcpp_result_gen = Rcpp::wrap(read_dfm_cpp(dfm, W_read, vocab, show_progress_bar, split));
@@ -162,6 +174,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_keyATM_word_in_doc", (DL_FUNC) &_keyATM_word_in_doc, 2},
     {"_keyATM_calc_PGtheta_R", (DL_FUNC) &_keyATM_calc_PGtheta_R, 4},
     {"_keyATM_make_wsz_cpp", (DL_FUNC) &_keyATM_make_wsz_cpp, 3},
     {"_keyATM_keyATMvb_call", (DL_FUNC) &_keyATM_keyATMvb_call, 1},

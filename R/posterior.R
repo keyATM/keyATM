@@ -101,9 +101,9 @@ keyATM_output <- function(model, keep)
       keep <- c("model_settings", keep)
 
     model$model_settings$PG_params$theta_last <- NULL  # remove redundant information
-    model$model_settings$PG_params$PG_Phi <- NULL  
-    model$model_settings$PG_params$theta_tilda <- NULL  
-    model$model_settings$PG_params$PG_Lambda <- NULL  
+    model$model_settings$PG_params$PG_Phi <- NULL
+    model$model_settings$PG_params$theta_tilda <- NULL
+    model$model_settings$PG_params$PG_Lambda <- NULL
   }
 
   if (model$model %in% c("hmm", "ldahmm")) {
@@ -262,7 +262,7 @@ keyATM_output_theta <- function(model, info)
 keyATM_output_theta_iter <- function(model, info)
 {
   if (model$model %in% c("cov", "ldacov") & info$covmodel == "PG") {
-    return(model$stored_values$theta_PG) 
+    return(model$stored_values$theta_PG)
   }
 
   if (model$model %in% c("cov", "ldacov") & info$covmodel == "DirMulti") {
@@ -695,7 +695,7 @@ top_words_calc <- function(n, measure, show_keyword,
         # Keywords of topic i, overwriting above
         if (i <= length(keywords_raw)) {
           inds <- which(res[inds_all, i] %in% keywords_raw[[i]])
-          display[inds] <- paste(res[inds_all, i][inds], paste0("[", "\U2713" ,"]"))
+          display[inds] <- paste(res[inds_all, i][inds], paste0("[", "\U2713", "]"))
         }
 
         # Put it back to the original table
@@ -756,4 +756,53 @@ top_docs <- function(x, n = 10)
 
   res <- as.data.frame(apply(x$theta, 2, measuref), stringsAsFactors = FALSE)
   return(res)
+}
+
+#' Semantic Coherence: Mimno et al. (2011)
+#'
+#' Mimno, David et al. 2011. “Optimizing Semantic Coherence in Topic Models.”
+#' In Proceedings of the 2011 Conference on Empirical Methods in Natural
+#' Language Processing, Edinburgh, Scotland, UK.: Association for Computational
+#' Linguistics, 262–72. https://aclanthology.org/D11-1024.
+#'
+#' Equation 1 of Mimno et al. 2011 adopted to keyATM.
+#'
+#' @param x the output from a keyATM model (see [keyATM()]).
+#' @param docs texts read via [keyATM_read()].
+#' @param n integer. The number terms to visualize. Default is \code{10}.
+#' @return A vector of topic coherence metric calculated by each topic.
+#' @import magrittr
+#' @importFrom utils combn
+#' @export
+semantic_coherence <- function(x, docs, n = 10) {
+  docs <- docs$W_raw # list whose elements are split texts. The length of the list equals to the number of doc.
+
+  # Create combinations of top keywords
+  topic_top_words <- top_words(x, n = n, show_keyword = FALSE)
+  K <- ncol(topic_top_words)
+
+  topic_coherence <- vector("list", length = K)
+  names(topic_coherence) <- names(topic_top_words)
+  for (k in seq(K)) {
+    combn_top_words <- utils::combn(topic_top_words[, k], 2)
+    # Eq. 1
+    topic_coherence[[k]] <- seq(ncol(combn_top_words)) %>%
+      purrr::map_dbl(
+        function(x) {
+          # Calculate D(v, v-prime) in Eq. 1
+          row1 <- docs %>%
+            purrr::map_dbl(
+              ~ word_in_doc(.x, combn_top_words[1, x])
+            )
+          row2 <- docs %>%
+            purrr::map_dbl(
+              ~ word_in_doc(.x, combn_top_words[2, x])
+            )
+          out <- log((sum(row1 & row2) + 1) / sum(row2))
+          return(out)
+        }
+      ) %>%
+      sum()
+  }
+  return(unlist(topic_coherence))
 }

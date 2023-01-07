@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -86,36 +86,25 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.0" id="keyatm-040">keyATM 0.4.0<small>2021-02-14</small><a class="anchor" aria-label="anchor" href="#keyatm-040"></a></h2>
-<p><a href="https://github.com/keyATM/keyATM/projects/3" class="external-link">Roadmap</a> for
-this version.</p>
+<p><a href="https://github.com/keyATM/keyATM/projects/3" class="external-link">Roadmap</a> for this version.</p>
 <div class="section level4">
 <h4 id="major-changes-0-4-0">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-0-4-0"></a></h4>
 <ul><li>Implementation of Polya-Gamma covariate keyATM</li>
-<li>Use <code>future.apply</code> instead of <code>parallel</code> (no
-backward compatibility if you use the <code>init_parallel</code>
-option)</li>
-<li>The <code><a href="../reference/keyATM_read.html">keyATM_read()</a></code> function returns a list of objects
-(e.g., text and document index)</li>
-<li>An option to store document names in a quanteda dfm object. The
-<code>keep_docnames</code> option in the <code><a href="../reference/keyATM_read.html">keyATM_read()</a></code>
-function (thank you <a href="https://github.com/debusklaneml" class="external-link">Morgan
-‘Les’ DeBusk-Lane</a> for the suggestion!)</li>
-<li>An option to split a dfm to choose keywords with an unsupervised
-topic model</li>
+<li>Use <code>future.apply</code> instead of <code>parallel</code> (no backward compatibility if you use the <code>init_parallel</code> option)</li>
+<li>The <code><a href="../reference/keyATM_read.html">keyATM_read()</a></code> function returns a list of objects (e.g., text and document index)</li>
+<li>An option to store document names in a quanteda dfm object. The <code>keep_docnames</code> option in the <code><a href="../reference/keyATM_read.html">keyATM_read()</a></code> function (thank you <a href="https://github.com/debusklaneml" class="external-link">Morgan ‘Les’ DeBusk-Lane</a> for the suggestion!)</li>
+<li>An option to split a dfm to choose keywords with an unsupervised topic model</li>
 </ul></div>
 <div class="section level4">
 <h4 id="bug-fix-0-4-0">Bug fix<a class="anchor" aria-label="anchor" href="#bug-fix-0-4-0"></a></h4>
-<ul><li>Using just first 58 speeches of inaugural corpus in test (thank you
-<a href="https://github.com/kbenoit" class="external-link">Ken Benoit</a> for catching
-this!)</li>
+<ul><li>Using just first 58 speeches of inaugural corpus in test (thank you <a href="https://github.com/kbenoit" class="external-link">Ken Benoit</a> for catching this!)</li>
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.4.1" id="keyatm-041">keyATM 0.4.1<a class="anchor" aria-label="anchor" href="#keyatm-041"></a></h2>
+<h2 class="page-header" data-toc-text="0.4.1" id="keyatm-041">keyATM 0.4.1<small>2022-06-11</small><a class="anchor" aria-label="anchor" href="#keyatm-041"></a></h2>
 <div class="section level4">
 <h4 id="minor-changes-0-4-1">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-4-1"></a></h4>
-<ul><li>Remove an unused argument (<code>width</code>) in the
-<code><a href="../reference/plot_timetrend.html">plot_timetrend()</a></code> function</li>
+<ul><li>Remove an unused argument (<code>width</code>) in the <code><a href="../reference/plot_timetrend.html">plot_timetrend()</a></code> function</li>
 <li>Use <code>Rcpp::message()</code> if <code>verbose = TRUE</code>
 </li>
 <li>Completely remove <code><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">parallel::mclapply</a></code>
@@ -124,9 +113,19 @@ this!)</li>
 <div class="section level4">
 <h4 id="bug-fix-0-4-1">Bug fix<a class="anchor" aria-label="anchor" href="#bug-fix-0-4-1"></a></h4>
 <ul><li>
-<code><a href="../reference/by_strata_DocTopic.html">by_strata_DocTopic()</a></code> takes the correct arguments (<a href="https://github.com/keyATM/keyATM/issues/180" class="external-link">#180</a>, thank you
-<a href="https://github.com/pmeiners" class="external-link">@pmeiners</a> for reporting
-this!)</li>
+<code><a href="../reference/by_strata_DocTopic.html">by_strata_DocTopic()</a></code> takes the correct arguments (<a href="https://github.com/keyATM/keyATM/issues/180" class="external-link">#180</a>, thank you <a href="https://github.com/pmeiners" class="external-link">@pmeiners</a> for reporting this!)</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.2" id="keyatm-042">keyATM 0.4.2<small>2023-01-06</small><a class="anchor" aria-label="anchor" href="#keyatm-042"></a></h2>
+<div class="section level4">
+<h4 id="major-changes-0-4-2">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-0-4-2"></a></h4>
+<ul><li>Adding the <code><a href="../reference/plot_topicprop.html">plot_topicprop()</a></code> function</li>
+<li>Implementation of semantic coherence diagnostics from Mimno et al. (2011) via the <code><a href="../reference/semantic_coherence.html">semantic_coherence()</a></code> function.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="minor-changes-0-4-2">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-4-2"></a></h4>
+<ul><li>Pure R text loading to address issues related to UTF-8 encoding in Windows (<a href="https://github.com/keyATM/keyATM/issues/189" class="external-link">#189</a>)</li>
 </ul></div>
 </div>
   </div>
@@ -139,14 +138,11 @@ this!)</li>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
-<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
-Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
+  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>, <a href="https://tomoya-sasaki.github.io/" class="external-link">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

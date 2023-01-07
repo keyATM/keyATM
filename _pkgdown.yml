@@ -8,7 +8,7 @@ authors:
   Shusei Eshima:
     href: "https://shusei-e.github.io"
   Tomoya Sasaki:
-    href: "https://polisci.mit.edu/people/tomoya-sasaki"
+    href: "https://tomoya-sasaki.github.io/"
   William Lowe:
     href: "http://conjugateprior.org/"
   Kosuke Imai:
@@ -81,6 +81,7 @@ reference:
   - '`plot_modelfit`'
   - '`plot_pi`'
   - '`plot_timetrend`'
+  - '`plot_topicprop`'
   - '`save_fig`'
   - '`values_fig`'
 - title: Additional analyses
@@ -92,14 +93,19 @@ reference:
   - '`covariates_info`'
   - '`plot.strata_doctopic`'
   - '`predict.keyATM_output`'
+- title: Diagnostics
+  desc: ~
+  contents:
+  - '`semantic_coherence`'
 - title: Built-in data
   desc: ~
   contents:
   - '`keyATM_data_bills`'
-- title: Package-level
+- title: Misc.
   desc: ~
   contents:
   - '`keyATM-package`'
+  - '`multiPGreg`'
 
 toc:
   depth: 2

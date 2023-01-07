@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -199,13 +199,22 @@ the <em>Government</em> topic, while “peace” appears in top words of the
 <span class="co">## 8   strength          whose   respect  country       well</span>
 <span class="co">## 9       come           take    future   change       many</span>
 <span class="co">## 10   believe          given resources     find       much</span></code></pre>
+<p>Researchers can also examine how likely each topic appears in the
+corpus with <code><a href="../../reference/plot_topicprop.html">plot_topicprop()</a></code>. This function creates a
+figure that shows the expected proportions of the corpus belonging to
+each estimated topic along with the top three words associated with the
+topic. The figure below demonstrates that the ``Peace’’ topic is most
+likely to appear in the corpus.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../../reference/plot_topicprop.html">plot_topicprop</a></span><span class="op">(</span><span class="va">out</span>, show_topic <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></code></pre></div>
+<p><img src="keyATM_base_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>To explore documents that are highly associated with each topic, the
 <code><a href="../../reference/top_docs.html">top_docs()</a></code> function returns a table of document indexes in
 which a topic has high proportion.</p>
 <p>The table below indicates, for example, that the ninth document in
 the corpus has the highest proportion of the <em>Government</em> topic
 among all other documents.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../../reference/top_docs.html">top_docs</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##    1_Government 2_Congress 3_Peace 4_Constitution 5_ForeignAffairs Other_1</span>
 <span class="co">## 1             9         31      52              2                5      46</span>
@@ -232,7 +241,7 @@ among all other documents.</p>
 <p>Researchers may want to obtain the entire document-topic distribution
 and topic-word distribution. The output of the <code><a href="../../reference/keyATM.html">keyATM()</a></code>
 function contains both quantities.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">out</span><span class="op">$</span><span class="va">theta</span>  <span class="co"># Document-topic distribution</span>
 <span class="va">out</span><span class="op">$</span><span class="va">phi</span>    <span class="co"># Topic-word distribution</span></code></pre></div>
 <p>The <strong>keyATM</strong> provides other functions to diagnose and
@@ -244,22 +253,22 @@ perplexity.</p>
 increases. The <code><a href="../../reference/plot_modelfit.html">plot_modelfit()</a></code> function visualizes the
 within sample log-likelihood and perplexity and the created figure can
 be saved with the <code><a href="../../reference/save_fig.html">save_fig()</a></code> function.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig_modelfit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/plot_modelfit.html">plot_modelfit</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span>
 <span class="va">fig_modelfit</span></code></pre></div>
-<p><img src="keyATM_base_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p><img src="keyATM_base_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../../reference/save_fig.html">save_fig</a></span><span class="op">(</span><span class="va">fig_modelfit</span>, <span class="st">"figures/base_modelfit.pdf"</span>, width <span class="op">=</span> <span class="fl">7</span>, height <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
 <p>Furthermore, the <strong>keyATM</strong> can visualize <span class="math inline">\(\boldsymbol{\alpha}\)</span>, the prior for the
 document-topic distribution, and <span class="math inline">\(\boldsymbol{\pi}\)</span>, the probability that
 each topic uses keyword topic-word distribution. Values of these
 parameters should also stabilize over time.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../../reference/plot_alpha.html">plot_alpha</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
-<p><img src="keyATM_base_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../../reference/plot_pi.html">plot_pi</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../../reference/plot_alpha.html">plot_alpha</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
 <p><img src="keyATM_base_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../../reference/plot_pi.html">plot_pi</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
+<p><img src="keyATM_base_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
 <p>We can use the <code><a href="../../reference/save_fig.html">save_fig()</a></code> function for both the
 <code><a href="../../reference/plot_alpha.html">plot_alpha()</a></code> and the <code><a href="../../reference/plot_pi.html">plot_pi()</a></code> functions.</p>
 </div>
@@ -277,15 +286,12 @@ parameters should also stabilize over time.</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
-<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
-Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
+<p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>, <a href="https://tomoya-sasaki.github.io/" class="external-link">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

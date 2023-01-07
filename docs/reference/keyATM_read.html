@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -104,20 +104,33 @@
     <h2>Arguments</h2>
     <dl><dt>texts</dt>
 <dd><p>input. keyATM takes a quanteda dfm (dgCMatrix), data.frame, <span class="pkg">tibble</span> tbl_df, or a vector of file paths.</p></dd>
+
+
 <dt>encoding</dt>
 <dd><p>character. Only used when <code>texts</code> is a vector of file paths. Default is <code>UTF-8</code>.</p></dd>
+
+
 <dt>check</dt>
 <dd><p>logical. If <code>TRUE</code>, check whether there is anything wrong with the structure of texts. Default is <code>TRUE</code>.</p></dd>
+
+
 <dt>keep_docnames</dt>
 <dd><p>logical. If <code>TRUE</code>, it keeps the document names in a quanteda dfm. Default is <code>FALSE</code>.</p></dd>
+
+
 <dt>progress_bar</dt>
 <dd><p>logical. If <code>TRUE</code>, it shows a progress bar (currently it only supports a quanteda object). Default is <code>FALSE</code>.</p></dd>
+
+
 <dt>split</dt>
 <dd><p>numeric. This option works only with a quanteda dfm. It creates a two subset of the dfm by randomly splitting each document (i.e., the total number of documents is the same between two subsets). This option specifies the split proportion. Default is <code>0</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a keyATM_docs object. The first element is a list whose elements are split texts. The length of the list equals to the number of documents.</p>
+    
+
+<p>a keyATM_docs object. The first element is a list whose elements are split texts. The length of the list equals to the number of documents.</p>
     </div>
 
     <div id="ref-examples">
@@ -145,14 +158,11 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>,
-<a href="https://polisci.mit.edu/people/tomoya-sasaki" class="external-link">Tomoya
-Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
+  <p></p><p>Developed by <a href="https://shusei-e.github.io" class="external-link">Shusei Eshima</a>, <a href="https://tomoya-sasaki.github.io/" class="external-link">Tomoya Sasaki</a>, <a href="https://imai.fas.harvard.edu/" class="external-link">Kosuke Imai</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
