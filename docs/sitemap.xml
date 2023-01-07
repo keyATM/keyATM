@@ -190,6 +190,9 @@
     <loc>/reference/save_fig.keyATM_viz.html</loc>
   </url>
   <url>
+    <loc>/reference/semantic_coherence.html</loc>
+  </url>
+  <url>
     <loc>/reference/top_docs.html</loc>
   </url>
   <url>
@@ -206,5 +209,8 @@
   </url>
   <url>
     <loc>/reference/weightedLDA.html</loc>
+  </url>
+  <url>
+    <loc>/reference/word_in_doc.html</loc>
   </url>
 </urlset>
