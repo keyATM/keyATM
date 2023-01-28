@@ -15,15 +15,22 @@ namespace sampler{
   std::vector<int> shuffled_indexes(const int m)
   {
     // Returns a vector of shuffled indexes for sampling
+    // Fisher-Yates Shuffle Algorithm
     std::vector<int> v(m);
     std::iota(v.begin(), v.end(), 0);
-    std::random_shuffle(v.begin(), v.end(), sampler::rand_wrapper);
+    int j;
+
+    for (int i = 0; i < m-1; i++) {
+      j = i + rand_wrapper(m - i);
+      std::swap(v[i], v[j]);
+    }
+
     return v;
   }
 
 
   int rcat(Eigen::VectorXd &prob, const int size)
-  { 
+  {
     double u = R::unif_rand();
     double temp = 0.0;
     int index = 0;
@@ -40,7 +47,7 @@ namespace sampler{
 
 
   int rcat_without_normalize(Eigen::VectorXd &prob, const double total, const int size)
-  { 
+  {
     // Draw from a categorial distribution
     // This function does not requiare a normalized probability vector.
     double u = R::unif_rand() * total;
@@ -59,7 +66,7 @@ namespace sampler{
 
   int rcat_eqsize(const int size)
   {
-    double u = R::unif_rand(); 
+    double u = R::unif_rand();
     double temp = 0.0;
     int index = 0;
     double prob = 1.0 / size;
@@ -77,7 +84,7 @@ namespace sampler{
 
   int rcat_eqprob(const double prob, const int size)
   {
-    double u = R::unif_rand(); 
+    double u = R::unif_rand();
     double temp = 0.0;
     int index = 0;
 
@@ -88,6 +95,6 @@ namespace sampler{
         break;
       }
     }
-    return index; 
+    return index;
   }
 }
