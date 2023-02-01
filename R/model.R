@@ -131,7 +131,7 @@ print.keyATM_docs <- function(x, ...)
 summary.keyATM_docs <- function(object, ...)
 {
   doc_len <- sapply(object$W_raw, length)
-  cat(paste0("keyATM_docs object of: ",
+  cat(paste0("keyATM_docs object of ",
               length(object$W_raw), " documents",
               ".\n",
               "Length of documents:",
@@ -310,7 +310,7 @@ get_doc_index <- function(W_raw, check = FALSE)
   if (length(zero_index) != 0) {
     if (check) {
       warning("Number of documents with 0 length: ", length(zero_index), "\n",
-              "This may cause invalid covariates or time index.", "\n",
+              "This may cause invalid covariates or time indexes.", "\n",
               "Please review the preprocessing steps.", "\n",
               "Document index to check: ", paste(zero_index, collapse = ", "),
               immediate. = TRUE)
