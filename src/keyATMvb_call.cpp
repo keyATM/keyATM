@@ -6,7 +6,7 @@
 #include "sampler.h"
 #include "keyATMvb_main.h"
 
-// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::plugins(cpp17)]]
 // [[Rcpp::depends(RcppEigen)]]
 
 

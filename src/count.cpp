@@ -3,7 +3,7 @@ using namespace std;
 using namespace Rcpp;
 
 // Use c++11 and link functions to R
-// [[Rcpp::plugins("cpp11")]]
+// [[Rcpp::plugins("cpp17")]]
 
 //' Checking if a word is in a document
 //'

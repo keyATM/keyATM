@@ -27,7 +27,7 @@ calc_PGtheta_R <- function(theta_tilda, theta, num_doc, num_topics) {
 #' Initialize assignments
 #'
 #' @param info Various information
-#' @param initialized Store initialized objects (W, S and Z) 
+#' @param initialized Store initialized objects (W, S and Z)
 #'
 #' @keywords internal
 make_wsz_cpp <- function(docs_, info_, initialized_) {
