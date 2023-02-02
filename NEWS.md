@@ -1,6 +1,6 @@
 # keyATM 0.4.3
-### Minor changes
-* Migrating to C++17
+### Major changes
+* Migrating to C++17 to follow [the new CRAN check](https://developer.r-project.org/blosxom.cgi/R-devel/2023/01/27#n2023-01-27). We edited `shuffled_indexes()` that internally used `std::random_shuffle()`. This change does not guarantee backward compatibility across all platforms.
 
 # keyATM 0.4.2
 
