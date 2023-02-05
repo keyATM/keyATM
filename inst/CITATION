@@ -2,10 +2,10 @@ citHeader("To cite keyATM in publications use:")
 
 bibentry(bibtype = "article",
          title = "Keyword Assisted Topic Models",
-         journal = "Working Paper",
+         journal = "American Journal of Political Science, Forthcoming",
          author = c(person("Shusei", "Eshima"),
                     person("Kosuke", "Imai"),
                     person("Tomoya", "Sasaki")),
          url = "https://arxiv.org/abs/2004.05964",
-         year = 2020
+         year = "2023+"
 )

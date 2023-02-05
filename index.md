@@ -25,7 +25,7 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 
 
 ## How to cite
-*  Shusei Eshima, Kosuke Imai, and Tomoya Sasaki. 2020. ``Keyword Assisted Topic Models.'' Working Paper, <a href='http://arxiv.org/abs/2004.05964'>arXiv:2004.05964</a>.
+*  Shusei Eshima, Kosuke Imai, and Tomoya Sasaki. ``Keyword Assisted Topic Models.'' American Journal of Political Science, Forthcoming. <a href='http://arxiv.org/abs/2004.05964'>arXiv:2004.05964</a>.
 * Shusei Eshima, Tomoya Sasaki, and Kosuke Imai. 2019. keyATM: Keyword Assisted Topic Models. R package version 0.4.0. https://keyatm.github.io/keyATM/
 
 ## How to report a bug

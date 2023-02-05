@@ -1,3 +1,7 @@
+# keyATM 0.4.3
+### Major changes
+* Migrating to C++17 to follow [the new CRAN check](https://developer.r-project.org/blosxom.cgi/R-devel/2023/01/27#n2023-01-27). We edited `shuffled_indexes()` that internally used `std::random_shuffle()`. This change does not guarantee backward compatibility across all platforms.
+
 # keyATM 0.4.2
 
 ### Major changes
@@ -78,7 +82,7 @@
 * log-likelihood of dynamic models
 * saving figures
 * topic labels when there is no keyword topic
-* `summary.strata_doctopic()`: the last topic is removed when the number of no-keyword topic is 0 (thank you [Emma Ebowe](https://gov.harvard.edu/people/emma-ebowe) for pointing out this issue!)
+* `summary.strata_doctopic()`: the last topic is removed when the number of no-keyword topic is 0 (thank you [Emma Ebowe](https://www.gov.harvard.edu/directory/emma-ebowe/) for pointing out this issue!)
 
 # keyATM 0.1.0
 ### Major changes
