@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -216,7 +216,7 @@ infrequent terms with the <code><a href="https://quanteda.io/reference/dfm_trim.
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_dfm</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">keyATM_docs</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## keyATM_docs object of: 58 documents.</span>
+<pre><code><span class="co">## keyATM_docs object of 58 documents.</span>
 <span class="co">## Length of documents:</span>
 <span class="co">##   Avg: 876.19</span>
 <span class="co">##   Min: 48</span>
@@ -238,7 +238,7 @@ fitted. The example below shows the warning that the
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">keyATM_docs0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_dfm_len0</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Warning in get_doc_index(W_raw, check = TRUE): Number of documents with 0 length: 2</span>
-<span class="co">## This may cause invalid covariates or time index.</span>
+<span class="co">## This may cause invalid covariates or time indexes.</span>
 <span class="co">## Please review the preprocessing steps.</span>
 <span class="co">## Document index to check: 10, 50</span></code></pre>
 <p>The warning message above indicates that there are two documents in
