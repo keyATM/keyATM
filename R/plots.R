@@ -3,7 +3,7 @@
 #' @param x the keyATM_fig object.
 #' @param filename file name to create on disk.
 #' @param ... other arguments passed on to the [ggplot2::ggsave()][ggplot2::ggsave] function.
-#' @seealso [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()], [values_fig()]
+#' @seealso [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [plot_topicprop()], [by_strata_DocTopic()], [values_fig()]
 #' @export
 save_fig <- function(x, filename, ...) {
   UseMethod("save_fig")
@@ -13,7 +13,7 @@ save_fig <- function(x, filename, ...) {
 #' Get values used to create a figure
 #'
 #' @param x the keyATM_fig object.
-#' @seealso [save_fig()], [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [by_strata_DocTopic()]
+#' @seealso [save_fig()], [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [plot_topicprop()], [by_strata_DocTopic()]
 #' @export
 values_fig <- function(x) {
   UseMethod("values_fig")

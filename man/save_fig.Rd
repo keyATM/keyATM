@@ -17,5 +17,5 @@ save_fig(x, filename, ...)
 Save a figure
 }
 \seealso{
-\code{\link[=visualize_keywords]{visualize_keywords()}}, \code{\link[=plot_alpha]{plot_alpha()}}, \code{\link[=plot_modelfit]{plot_modelfit()}}, \code{\link[=plot_pi]{plot_pi()}}, \code{\link[=plot_timetrend]{plot_timetrend()}}, \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}}, \code{\link[=values_fig]{values_fig()}}
+\code{\link[=visualize_keywords]{visualize_keywords()}}, \code{\link[=plot_alpha]{plot_alpha()}}, \code{\link[=plot_modelfit]{plot_modelfit()}}, \code{\link[=plot_pi]{plot_pi()}}, \code{\link[=plot_timetrend]{plot_timetrend()}}, \code{\link[=plot_topicprop]{plot_topicprop()}}, \code{\link[=by_strata_DocTopic]{by_strata_DocTopic()}}, \code{\link[=values_fig]{values_fig()}}
 }

@@ -207,13 +207,16 @@ contribute to interpreting topics.</p>
 <p>Before loading data into the <strong>keyATM</strong>, we construct a
 document-feature matrix (<code>dfm</code> object) with the
 <code><a href="https://quanteda.io/reference/dfm.html" class="external-link">dfm()</a></code> function in the <strong>quanteda</strong>. We trim
-infrequent terms with the <code><a href="https://quanteda.io/reference/dfm_trim.html" class="external-link">dfm_trim()</a></code> function.</p>
+infrequent terms with the <code><a href="https://quanteda.io/reference/dfm_trim.html" class="external-link">dfm_trim()</a></code> function. We typically
+aim for 7000 to 10000 unique words at the maximum.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">data_dfm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html" class="external-link">dfm</a></span><span class="op">(</span><span class="va">data_tokens</span><span class="op">)</span> <span class="op"><a href="https://quanteda.io/reference/pipe.html" class="external-link">%&gt;%</a></span>
-              <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html" class="external-link">dfm_trim</a></span><span class="op">(</span>min_termfreq <span class="op">=</span> <span class="fl">5</span>, min_docfreq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+              <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html" class="external-link">dfm_trim</a></span><span class="op">(</span>min_termfreq <span class="op">=</span> <span class="fl">5</span>, min_docfreq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">data_dfm</span><span class="op">)</span>  <span class="co"># the number of unique words</span></code></pre></div>
+<pre><code><span class="co">## [1] 2568</span></code></pre>
 <p>Finally, <code>keyATM_read</code> function reads your data for
 <strong>keyATM</strong>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_dfm</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">keyATM_docs</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## keyATM_docs object of 58 documents.</span>
@@ -222,7 +225,7 @@ infrequent terms with the <code><a href="https://quanteda.io/reference/dfm_trim.
 <span class="co">##   Min: 48</span>
 <span class="co">##   Max: 3001</span>
 <span class="co">##    SD: 509.977</span>
-<span class="co">## Number of unique words: 2685</span></code></pre>
+<span class="co">## Number of unique words: 2568</span></code></pre>
 <p>Researchers are required to remove any documents that do not contain
 any terms before using the <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code> function. If there
 are documents that do not contain any terms, the
@@ -235,7 +238,7 @@ preprocessing. As explained in the later section, this process is
 especially critical when the covariate model or the dynamic model is
 fitted. The example below shows the warning that the
 <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code> function displays.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">keyATM_docs0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_dfm_len0</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Warning in get_doc_index(W_raw, check = TRUE): Number of documents with 0 length: 2</span>
 <span class="co">## This may cause invalid covariates or time indexes.</span>
@@ -245,7 +248,7 @@ fitted. The example below shows the warning that the
 <code>data_dfm_len0</code> that do not contain any terms (the index 10
 and 50). In the <strong>quanteda</strong>, we can easily remove
 documents without any word counts with the following function.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">data_dfm_rm0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm_subset.html" class="external-link">dfm_subset</a></span><span class="op">(</span><span class="va">data_dfm_len0</span>, <span class="fu"><a href="https://quanteda.io/reference/ntoken.html" class="external-link">ntoken</a></span><span class="op">(</span><span class="va">data_dfm_len0</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
@@ -273,7 +276,7 @@ format.</p>
 4 h.r h.r one one one hundred hundred first first congress cong...
 5 congress congress one united united united united united unit...
 6 h.r h.r one one one one one hundred hundred first congress co...</code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Read texts into keyATM</span>
 <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span><span class="va">docs</span><span class="op">)</span></code></pre></div>
 </div>
@@ -282,7 +285,7 @@ format.</p>
 </h4>
 <p>If you have preprocessed text files, you can pass a list of files to
 <code><a href="../../reference/keyATM_read.html">keyATM_read()</a></code>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Create a list of paths to text files</span>
 <span class="va">textfiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">PATH_TO_THE_FOLDER</span>, pattern <span class="op">=</span> <span class="st">"*.txt"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
@@ -304,7 +307,7 @@ substantive knowledge and to carefully select keywords.</p>
 <em>Government</em>, <em>Congress</em>, <em>Peace</em>,
 <em>Constitution</em>, and <em>Foreign affairs</em> and choose keywords
 for each of these topics.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">keywords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Government     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"laws"</span>, <span class="st">"law"</span>, <span class="st">"executive"</span><span class="op">)</span>,
                  Congress       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"congress"</span>, <span class="st">"party"</span><span class="op">)</span>,
                  Peace          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"peace"</span>, <span class="st">"world"</span>, <span class="st">"freedom"</span><span class="op">)</span>,
@@ -320,7 +323,7 @@ different number of keywords.</p>
 <p>Keywords should appear reasonable times (typically more than 0.1% of
 the corpus) in the documents. The <code><a href="../../reference/visualize_keywords.html">visualize_keywords()</a></code>
 function plots the frequency of keywords by topic.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">key_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/visualize_keywords.html">visualize_keywords</a></span><span class="op">(</span>docs <span class="op">=</span> <span class="va">keyATM_docs</span>, keywords <span class="op">=</span> <span class="va">keywords</span><span class="op">)</span>
 <span class="va">key_viz</span></code></pre></div>
 <p><img src="Preparation_files/figure-html/unnamed-chunk-12-1.png" width="700" style="display: block; margin: auto;">
@@ -338,12 +341,12 @@ I(w_{di} = v) }{\sum_{d=1}^{D} N_d}
 of the document <span class="math inline">\(d\)</span> and <span class="math inline">\(I\)</span> is an indicator function. Keywords of
 each topic are ordered by the proportion (x-axis).</p>
 <p>You can save the plot with the <code><a href="../../reference/save_fig.html">save_fig()</a></code> function,</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">key_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/visualize_keywords.html">visualize_keywords</a></span><span class="op">(</span>docs <span class="op">=</span> <span class="va">keyATM_docs</span>, keywords <span class="op">=</span> <span class="va">keywords</span><span class="op">)</span>
 <span class="fu"><a href="../../reference/save_fig.html">save_fig</a></span><span class="op">(</span><span class="va">key_viz</span>, <span class="st">"figures/keyword.pdf"</span>, width <span class="op">=</span> <span class="fl">6.5</span>, height <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></code></pre></div>
 <p>and get the actual values with the <code><a href="../../reference/values_fig.html">values_fig()</a></code>
 function.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../../reference/values_fig.html">values_fig</a></span><span class="op">(</span><span class="va">key_viz</span><span class="op">)</span> </code></pre></div>
 <pre><code><span class="co">## <span style="color: #949494;"># A tibble: 12 × 5</span></span>
 <span class="co">## <span style="color: #949494;"># Groups:   Topic [5]</span></span>
@@ -365,14 +368,14 @@ function.</p>
 <code><a href="../../reference/visualize_keywords.html">visualize_keywords()</a></code> function is <code>TRUE</code> by
 default. It drops keywords that do not appear in the corpus and raises a
 warning if there is any.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">keywords_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Government <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"laws"</span>, <span class="st">"law"</span>, <span class="st">"non-exist"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">key_viz2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/visualize_keywords.html">visualize_keywords</a></span><span class="op">(</span>docs <span class="op">=</span> <span class="va">keyATM_docs</span>, keywords <span class="op">=</span> <span class="va">keywords_2</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Warning in check_keywords(unique(unlisted), keywords, prune): A keyword will be</span>
 <span class="co">## pruned because it does not appear in documents: non-exist</span></code></pre>
 <p>If all keywords assigned to a topic is pruned, it raises an
 error.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">keywords_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Government <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"non-exist"</span>, <span class="st">"non-exist2"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">key_viz3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/visualize_keywords.html">visualize_keywords</a></span><span class="op">(</span>docs <span class="op">=</span> <span class="va">keyATM_docs</span>, keywords <span class="op">=</span> <span class="va">keywords_3</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Error in check_keywords(unique(unlisted), keywords, prune): All keywords are pruned. Please check: Government</span></code></pre>
@@ -393,7 +396,7 @@ corpus). This computer-assisted keyword selection does not mean that
 researchers need to select all keywords from the top words of the LDA.
 Researchers can use other methods such as a keyword selection algorithm
 proposed in King, Lam and Roberts (2017).</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">225</span><span class="op">)</span>  <span class="co"># set the seed before split the dfm</span>
 <span class="va">docs_withSplit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_dfm</span>,
                               split <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>  <span class="co"># split each document</span>
