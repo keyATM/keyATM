@@ -74,11 +74,12 @@ and `tokens_select` drops
 short words that do not usually contribute to interpreting topics.
 
 Before loading data into the **keyATM**, we construct a document-feature matrix (`dfm` object) 
-with the `dfm()` function in the **quanteda**. We trim infrequent terms with the `dfm_trim()` function.
+with the `dfm()` function in the **quanteda**. We trim infrequent terms with the `dfm_trim()` function. We typically aim for 7000 to 10000 unique words at the maximum.
 
 ```{r, warning=FALSE, message=FALSE}
 data_dfm <- dfm(data_tokens) %>%
               dfm_trim(min_termfreq = 5, min_docfreq = 2)
+ncol(data_dfm)  # the number of unique words
 ```
 
 Finally, `keyATM_read` function reads your data for **keyATM**.
