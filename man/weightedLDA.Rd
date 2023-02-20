@@ -72,7 +72,7 @@ Fit weighted LDA models.
   out <- weightedLDA(docs = keyATM_docs, model = "covariates",
                      number_of_topics = 5,
                      model_settings = list(covariates_data = bills_cov,
-                                           covariates_formula = ~ RepParty))                   
+                                           covariates_formula = ~ RepParty))
 
   # Weighted LDA Dynamic
   bills_time_index <- keyATM_data_bills$time_index

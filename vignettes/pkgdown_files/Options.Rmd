@@ -11,7 +11,7 @@ output:
 `keyATM` takes various options. You can set options through a list.
 ```{r, eval=F, warning=FALSE, message=FALSE, fig.align='center'}
 my_options <- list(seed          = NULL, # automatically generate random seed
-                   iterations    = 1500,
+                   iterations    = 3000,
                    verbose       = FALSE,
                    llk_per       = 10,
                    use_weights   = TRUE,
@@ -36,7 +36,7 @@ This is a seed used to generate random numbers. The same seed is used for initia
 
 
 ### `iterations`
-The  default value is `1500`.
+The  default value is `3000`.
 
 
 ### `verbose`

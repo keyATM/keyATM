@@ -913,8 +913,8 @@ check_arg_options <- function(obj, model, info)
 
   # iterations
   if (is.null(obj$iterations))
-    obj$iterations <- 1500L
-  if (!is.numeric(obj$iterations) | obj$iterations < 0| obj$iterations%%1 != 0) {
+    obj$iterations <- 3000L
+  if (!is.numeric(obj$iterations) | obj$iterations < 0 | obj$iterations %% 1 != 0) {
       stop("An invalid value in `options$iterations`")
   }
 

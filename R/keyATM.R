@@ -10,7 +10,7 @@
 #' @param priors a list of priors of parameters.
 #' @param options a list of options \itemize{
 #'      \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
-#'      \item \strong{iterations}: An integer. Number of iterations. Default is \code{1500}.
+#'      \item \strong{iterations}: An integer. Number of iterations. Default is \code{3000}.
 #'      \item \strong{verbose}: If \code{TRUE}, it prints loglikelihood and perplexity. Default is \code{FALSE}.
 #'      \item \strong{llk_per}: An integer. If the value is \code{j} \strong{keyATM} stores loglikelihood and perplexity every \eqn{j} iteration. Default value is \code{10} per iterations
 #'      \item \strong{use_weights}: If \code{TRUE} use weight. Default is \code{TRUE}.
@@ -28,7 +28,7 @@
 #'      \item \strong{parallel_init}: Parallelize processes to speed up initialization. Default is \code{FALSE}. Please `plan()` before use this feature.
 #' }
 #' @param keep a vector of the names of elements you want to keep in output.
-#' 
+#'
 #' @return A \code{keyATM_output} object containing:
 #'   \describe{
 #'     \item{keyword_k}{number of keyword topics}
@@ -108,7 +108,7 @@ keyATM <- function(docs, model, no_keyword_topics,
 
   # 0 iterations
   if (fitted$options$iterations == 0)
-    return(fitted) 
+    return(fitted)
 
   # Get output
   out <- keyATM_output(fitted, keep)
@@ -170,7 +170,7 @@ keyATM <- function(docs, model, no_keyword_topics,
 #'   out <- weightedLDA(docs = keyATM_docs, model = "covariates",
 #'                      number_of_topics = 5,
 #'                      model_settings = list(covariates_data = bills_cov,
-#'                                            covariates_formula = ~ RepParty))                   
+#'                                            covariates_formula = ~ RepParty))
 #'
 #'   # Weighted LDA Dynamic
 #'   bills_time_index <- keyATM_data_bills$time_index
@@ -206,7 +206,7 @@ weightedLDA <- function(docs, model, number_of_topics,
 
   # 0 iterations
   if (fitted$options$iterations == 0)
-    return(fitted) 
+    return(fitted)
 
   # Get output
   out <- keyATM_output(fitted, keep)

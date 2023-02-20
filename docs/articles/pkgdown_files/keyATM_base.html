@@ -134,14 +134,14 @@ this example does not use covariates or time stamps, <code>base</code>
 is the appropriate model.</p>
 <p>To guarantee the replicability, we recommend to set the random seed
 in the <code>option</code> argument (see <a href="Options.html">here</a>
-for other options). The default number of iterations is 1500.</p>
+for other options). The default number of iterations is 3000.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,    <span class="co"># text input</span>
               no_keyword_topics <span class="op">=</span> <span class="fl">5</span>,              <span class="co"># number of topics without keywords</span>
               keywords          <span class="op">=</span> <span class="va">keywords</span>,       <span class="co"># keywords</span>
               model             <span class="op">=</span> <span class="st">"base"</span>,         <span class="co"># select the model</span>
               options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>The default number of iterations is <code>1500</code>. Please check
+<p>The default number of iterations is <code>3000</code>. Please check
 <a href="Options.html">this page</a> for available options.</p>
 </div>
 <div class="section level2">
@@ -177,28 +177,28 @@ the <em>Government</em> topic, while “peace” appears in top words of the
 <em>Other_3</em> topic, it is a keyword of the <em>peace</em> topic.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs</span>
-<span class="co">## 1        law [✓]        great   world [✓]           states           public</span>
-<span class="co">## 2       laws [✓]      justice         new       government            union</span>
-<span class="co">## 3          state congress [✓] freedom [✓] constitution [✓]          war [✓]</span>
-<span class="co">## 4  executive [✓]       united     america            power          nations</span>
-<span class="co">## 5         policy      service         let         citizens      foreign [✓]</span>
-<span class="co">## 6          whole    party [✓]   peace [✓]       rights [✓]       principles</span>
-<span class="co">## 7       american        force        life             duty           duties</span>
-<span class="co">## 8        however       office        time        interests             good</span>
-<span class="co">## 9         spirit        means        work           united             just</span>
-<span class="co">## 10          full   prosperity    american           powers         interest</span>
+<pre><code><span class="co">##       1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs</span>
+<span class="co">## 1          law [✓] congress [✓]   world [✓]           states           public</span>
+<span class="co">## 2            state      justice         new constitution [✓]            union</span>
+<span class="co">## 3    executive [✓]       people freedom [✓]           united          war [✓]</span>
+<span class="co">## 4           policy      service     america            great          nations</span>
+<span class="co">## 5            whole    party [✓]         let         citizens      foreign [✓]</span>
+<span class="co">## 6             part        means   peace [✓]            power       principles</span>
+<span class="co">## 7           spirit   prosperity        time       rights [✓]           duties</span>
+<span class="co">## 8          parties       action        work        interests            equal</span>
+<span class="co">## 9  fellow-citizens        order        free           powers         interest</span>
+<span class="co">## 10          effect     republic        know          present             just</span>
 <span class="co">##      Other_1        Other_2   Other_3  Other_4    Other_5</span>
-<span class="co">## 1      years       national   country   nation     people</span>
-<span class="co">## 2     fellow      political peace [3]      men government</span>
-<span class="co">## 3    purpose administration      time     hope      every</span>
-<span class="co">## 4  president         system   support    first        one</span>
-<span class="co">## 5     spirit     confidence    secure progress        now</span>
-<span class="co">## 6        day        federal important      man       made</span>
-<span class="co">## 7        yet        liberty     since    power      right</span>
-<span class="co">## 8   strength          whose   respect  country       well</span>
-<span class="co">## 9       come           take    future   change       many</span>
-<span class="co">## 10   believe          given resources     find       much</span></code></pre>
+<span class="co">## 1      years     government  laws [1]   nation     people</span>
+<span class="co">## 2     spirit       national peace [3]    great      every</span>
+<span class="co">## 3  president           duty      best      men        one</span>
+<span class="co">## 4        day      political   country     hope    country</span>
+<span class="co">## 5        yet administration      time     many        now</span>
+<span class="co">## 6   strength         system   support     good       made</span>
+<span class="co">## 7       come     confidence     force    first      right</span>
+<span class="co">## 8    believe       american    office    power       well</span>
+<span class="co">## 9       home        federal    secure progress government</span>
+<span class="co">## 10    things          whose  commerce    never       much</span></code></pre>
 <p>Researchers can also examine how likely each topic appears in the
 corpus with <code><a href="../../reference/plot_topicprop.html">plot_topicprop()</a></code>. This function creates a
 figure that shows the expected proportions of the corpus belonging to
@@ -217,27 +217,27 @@ among all other documents.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../../reference/top_docs.html">top_docs</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##    1_Government 2_Congress 3_Peace 4_Constitution 5_ForeignAffairs Other_1</span>
-<span class="co">## 1             9         31      52              2                5      46</span>
-<span class="co">## 2            14         35      47             15               10      47</span>
-<span class="co">## 3             8         34      53             12               11      54</span>
-<span class="co">## 4            26         32      58             11                6      48</span>
-<span class="co">## 5            16         36      46             14                3      53</span>
-<span class="co">## 6            13         29      40             18               15      49</span>
-<span class="co">## 7            19         28      57             19                7      50</span>
-<span class="co">## 8            12         41      51              9                8      56</span>
-<span class="co">## 9            28         33      50             23               20      57</span>
-<span class="co">## 10           36         30      54             17               16      43</span>
+<span class="co">## 1             9         31      47              2                5      46</span>
+<span class="co">## 2            14         36      52             15                6      40</span>
+<span class="co">## 3            26         35      53             18               11      47</span>
+<span class="co">## 4             8         34      46             19                7      49</span>
+<span class="co">## 5            15         29      50             14               10      54</span>
+<span class="co">## 6            16         28      57             12               20      53</span>
+<span class="co">## 7            10         41      58             11                1      48</span>
+<span class="co">## 8            31         30      51              9                8      57</span>
+<span class="co">## 9            29         26      40             23               15      51</span>
+<span class="co">## 10            3         33      54              8                3      50</span>
 <span class="co">##    Other_2 Other_3 Other_4 Other_5</span>
-<span class="co">## 1        1      28      45      19</span>
-<span class="co">## 2       31       8      44      21</span>
-<span class="co">## 3       27       6      38       2</span>
-<span class="co">## 4       11      31      58       4</span>
-<span class="co">## 5       36      35      51      20</span>
-<span class="co">## 6       33      22      30       1</span>
-<span class="co">## 7       23      23      55      53</span>
-<span class="co">## 8       17      10      39      32</span>
-<span class="co">## 9       37       9      46      45</span>
-<span class="co">## 10      25      16      52      58</span></code></pre>
+<span class="co">## 1       27      31      44      19</span>
+<span class="co">## 2       12      28      45       2</span>
+<span class="co">## 3       23       8      38       4</span>
+<span class="co">## 4       25       9      30       1</span>
+<span class="co">## 5       34      22      32       3</span>
+<span class="co">## 6       14      21      51      58</span>
+<span class="co">## 7        1      35      58      20</span>
+<span class="co">## 8       17      16      39      21</span>
+<span class="co">## 9       11      23      46      52</span>
+<span class="co">## 10      36      11      43      22</span></code></pre>
 <p>Researchers may want to obtain the entire document-topic distribution
 and topic-word distribution. The output of the <code><a href="../../reference/keyATM.html">keyATM()</a></code>
 function contains both quantities.</p>
