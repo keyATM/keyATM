@@ -10,7 +10,7 @@
 #' @param priors a list of priors of parameters.
 #' @param options a list of options \itemize{
 #'      \item \strong{seed}: A numeric value for random seed. If it is not provided, the package randomly selects a seed.
-#'      \item \strong{iterations}: An integer. Number of iterations. Default is \code{3000}.
+#'      \item \strong{iterations}: An integer. Number of iterations. Default is \code{1500}.
 #'      \item \strong{verbose}: If \code{TRUE}, it prints loglikelihood and perplexity. Default is \code{FALSE}.
 #'      \item \strong{llk_per}: An integer. If the value is \code{j} \strong{keyATM} stores loglikelihood and perplexity every \eqn{j} iteration. Default value is \code{10} per iterations
 #'      \item \strong{use_weights}: If \code{TRUE} use weight. Default is \code{TRUE}.
