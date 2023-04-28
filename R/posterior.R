@@ -215,19 +215,27 @@ keyATM_output_theta <- function(model, info)
 
   } else if (model$model %in% c("cov", "ldacov") & info$covmodel == "PG") {
     theta <-  model$model_settings$PG_params$theta_last
-  } else if (model$model %in% c("base", "lda", "label")) {
+  } else if (model$model %in% c("base", "multi-base", "lda", "label")) {
     if (model$options$estimate_alpha) {
       alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]
     } else {
       alpha <- model$priors$alpha
     }
-
-    posterior_z_base <- function(zvec) {
-      tt <- table(factor(zvec, levels = 1:(info$allK) - 1L))
-      (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
+  
+    if(model$model != "multi-base"){
+      posterior_z_base <- function(zvec) {
+        tt <- table(factor(zvec, levels = 1:(info$allK) - 1L))
+        (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
+      }
+      theta <- bind_tables(lapply(model$Z, posterior_z_base))
+    } else {
+      posterior_z_base <- function(zvec, alpha_vec) {
+        tt <- table(factor(zvec, levels = 1:(info$allK) - 1L))
+        (tt + alpha_vec) / (sum(tt) + sum(alpha_vec)) # posterior mean
+      }
+      e_alpha <- alpha[,model$model_settings$corpus_id]
+      theta <- bind_tables(mapply(posterior_z_base, model$Z, split(e_alpha, c(col(e_alpha)))))
     }
-
-    theta <- bind_tables(lapply(model$Z, posterior_z_base))
 
   } else if (model$model %in% c("hmm", "ldahmm")) {
     R <- model$stored_values$R_iter[[length(model$stored_values$R_iter)]] + 1L  # adjust index for R

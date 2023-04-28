@@ -10,6 +10,7 @@
 
 // keyATM models
 #include "keyATM_base.h"
+#include "keyATM_multi_base.h"
 #include "keyATM_cov.h"
 #include "keyATM_covPG.h"
 #include "keyATM_HMM.h"
@@ -45,6 +46,21 @@ List keyATM_fit_base(List model, int iter = 0)
   model = keyATMbase_model.return_model();
   return model;
 }
+
+//' Run the Collapsed Gibbs sampler for the multi-corpora keyATM Base
+ //'
+ //' @param model A initialized model
+ //' @param iter Required number of iterations
+ //'
+ //' @keywords internal
+ // [[Rcpp::export]]
+ List keyATM_fit_multi_base(List model, int iter = 0)
+ {
+   keyATMmultibase keyATMmultibase_model(model, iter);
+   keyATMmultibase_model.fit();
+   model = keyATMmultibase_model.return_model();
+   return model;
+ }
 
 
 //' Run the Collapsed Gibbs sampler for the keyATM covariates (Dir-Multi)

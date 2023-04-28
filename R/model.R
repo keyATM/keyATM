@@ -343,12 +343,12 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 
   no_keyword_topics <- as.integer(no_keyword_topics)
 
-  if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm", "label")) {
+  if (!model %in% c("base", "multi-base" ,"cov", "hmm", "lda", "ldacov", "ldahmm", "label")) {
     stop("Please select a correct model.")
   }
 
   info <- list(
-                models_keyATM = c("base", "cov", "hmm", "label"),
+                models_keyATM = c("base", "multi-base","cov", "hmm", "label"),
                 models_lda = c("lda", "ldacov", "ldahmm")
               )
   keywords <- check_arg(keywords, "keywords", model, info)
@@ -366,8 +366,10 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   info$keyword_k <- length(keywords)
   info$total_k <- length(keywords) + no_keyword_topics
 
+
   # Set default values
   model_settings <- check_arg(model_settings, "model_settings", model, info)
+  info$num_corpus <- model_settings$num_corpus
   priors <- check_arg(priors, "priors", model, info)
   options <- check_arg(options, "options", model, info)
   info$parallel_init <- options$parallel_init
@@ -422,7 +424,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)),
                         doc_index = info$use_doc_index, keyATMdoc_meta = docs[-c(1, 3)])
 
-  if (model %in% c("base", "lda", "label")) {
+  if (model %in% c("base", "multi-base" ,"lda", "label")) {
     if (options$estimate_alpha)
       stored_values$alpha_iter <- list()
   }
@@ -492,6 +494,8 @@ fitting_models <- function(key_model, model, options)
 
   if (model == "base") {
     key_model <- keyATM_fit_base(key_model, iter = options$iterations)
+  } else if (model == "multi-base"){
+    key_model <- keyATM_fit_multi_base(key_model, iter = options$iteration)
   } else if (model == "hmm") {
     key_model <- keyATM_fit_HMM(key_model, iter = options$iteration)
   } else if (model == "lda") {
@@ -599,7 +603,7 @@ check_arg_model_settings <- function(obj, model, info)
   check_arg_type(obj, "list")
   allowed_arguments <- c()
 
-  if (model %in% c("base", "lda", "hmm", "ldahmm", "label")) {
+  if (model %in% c("base", "multi-base", "lda", "hmm", "ldahmm", "label")) {
     # Slice Sampling Settings
     if (is.null(obj$slice_min)) {
       obj$slice_min <- 1e-9
@@ -624,6 +628,18 @@ check_arg_model_settings <- function(obj, model, info)
     }
 
     allowed_arguments <- c(allowed_arguments, "slice_min", "slice_max")
+    
+    if(model == "multi-base"){
+      if((is.null(obj$corpus_id)) || (length(obj$corpus_id) !=  info$num_doc)){
+        stop("Please provide a vector of unique corpus identifiers for each document through `model_settings$corpus_id`.")
+      }
+      unique_corpora <- unique(obj$corpus_id)
+      obj$num_corpus <- dplyr::n_distinct(obj$corpus_id)
+      obj$corpus_id <- match(obj$corpus_id, unique_corpora) - 1
+      obj$global_id <- split(seq_len(info$num_doc) - 1, obj$corpus_id)[unique_corpora]
+      obj$docs_per_corpus <- table(obj$corpus_id)[unique_corpora]
+      allowed_arguments <- c(allowed_arguments, "num_corpus", "corpus_id", "global_id", "docs_per_corpus")
+    }
   }
 
   # check model settings for covariate model
@@ -855,13 +871,24 @@ check_arg_priors <- function(obj, model, info)
 
 
   # alpha
-  if (model %in% c("base", "lda", "label")) {
-    if (is.null(obj$alpha)) {
-      obj$alpha <- rep(1/info$total_k, info$total_k)
+  if (model %in% c("base", "multi-base", "lda", "label")) {
+    if(model != "multi-base"){
+      if (is.null(obj$alpha)) {
+        obj$alpha <- rep(1/info$total_k, info$total_k)
+      }
+      if (length(obj$alpha) != info$total_k) {
+        stop("Starting alpha must be a vector of length ", info$total_k)
+      }
+    } else {
+      if (is.null(obj$alpha)) {
+        obj$alpha <- array(1/info$total_k, c(info$total_k, info$num_corpus))
+      }
+      if (identical(dim(obj$alpha), c(as.integer(info$total_k),
+                                      as.integer(info$num_corpus)))) {
+        stop("Starting alpha must be a matrix of dimensions ", c(info$total_k, info$num_corpus))
+      }
     }
-    if (length(obj$alpha) != info$total_k) {
-      stop("Starting alpha must be a vector of length ", info$total_k)
-    }
+      
     allowed_arguments <- c(allowed_arguments, "alpha")
 
   }

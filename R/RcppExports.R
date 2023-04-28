@@ -56,6 +56,9 @@ read_dfm_cpp <- function(dfm, W_read, vocab, show_progress_bar, split) {
     .Call(`_keyATM_read_dfm_cpp`, dfm, W_read, vocab, show_progress_bar, split)
 }
 
+#' Run the Collapsed Gibbs sampler for the multi-corpora keyATM Base
+NULL
+
 #' Run the Collapsed Gibbs sampler for the keyATM Base
 #'
 #' @param model A initialized model
@@ -64,6 +67,10 @@ read_dfm_cpp <- function(dfm, W_read, vocab, show_progress_bar, split) {
 #' @keywords internal
 keyATM_fit_base <- function(model, iter = 0L) {
     .Call(`_keyATM_keyATM_fit_base`, model, iter)
+}
+
+keyATM_fit_multi_base <- function(model, iter = 0L) {
+    .Call(`_keyATM_keyATM_fit_multi_base`, model, iter)
 }
 
 #' Run the Collapsed Gibbs sampler for the keyATM covariates (Dir-Multi)

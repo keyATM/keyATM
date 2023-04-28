@@ -158,14 +158,14 @@ class keyATMmeta
     int sample_z_label(VectorXd &alpha, int z, int s,
                        int w, int doc_id);
 
-    int sample_s(int z, int s, int w, int doc_id);
+    virtual int sample_s(int z, int s, int w, int doc_id);
     int sample_s_label(VectorXd &alpha, int z, int s,
                        int w, int doc_id);
 
     void sampling_store(int r_index);
     virtual void parameters_store(int r_index);
     void store_theta_iter(int r_index);
-    void store_pi_iter(int r_index);
+    virtual void store_pi_iter(int r_index);
 
     virtual void verbose_special(int r_index);
 
@@ -274,7 +274,7 @@ class keyATMmeta
       return (u.x - 4606921278410026770) * 1.539095918623324e-16;
     };
 
-    List return_model();
+    virtual List return_model();
 
 };
 
