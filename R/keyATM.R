@@ -102,9 +102,9 @@ keyATM <- function(docs, model, no_keyword_topics,
 
   # Fit keyATM
   fitted <- keyATM_fit(
-                       docs, model, no_keyword_topics,
-                       keywords, model_settings, priors, options
-                      )
+    docs, model, no_keyword_topics,
+    keywords, model_settings, priors, options
+  )
 
   # 0 iterations
   if (fitted$options$iterations == 0)

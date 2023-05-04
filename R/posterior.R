@@ -4,7 +4,7 @@
 #' @import magrittr
 keyATM_output <- function(model, keep)
 {
-  message("Creating an output object. It may take time...")
+  cli::cli_alert("Creating an output object. It may take time...")
 
   check_arg_type(model, "keyATM_fitted")
 
@@ -158,7 +158,7 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
 
   # Check used topics
   if (nrow(temp) != nrow(prior)) {
-    warning("Some of the topics are not used.")
+    cli::cli_alert_warning("Some of the topics are not used.")
     missing <- setdiff(1:nrow(prior), temp$Topic)
     temp %>%
       tibble::add_row(Topic = missing, count = 0, sums = 0) %>%
@@ -247,8 +247,7 @@ keyATM_output_theta <- function(model, info)
   colnames(theta) <- info$tnames # label seeded topics
   if (!is.null(info$keyATMdoc_meta$docnames)) {
     if (nrow(theta) != length(info$keyATMdoc_meta$docnames)) {
-      warning("The length of stored document names do not match with the number of documents fitted.
-              Check if any document has a length 0.")
+      cli::cli_alert_warning("The length of stored document names do not match with the number of documents fitted. Check if any document has a length 0.")
     } else {
       row.names(theta) <- info$keyATMdoc_meta$docnames
     }

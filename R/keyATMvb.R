@@ -21,7 +21,7 @@ keyATMvb <- function(docs, model, no_keyword_topics,
                      keywords = list(), model_settings = list(), vb_options = list(),
                      priors = list(), options = list(), keep = list())
 {
-  message("keyATMvb is an experimental function. DO NOT USE THIS FOR THE FINAL RESULT.")
+  cli::cli_alert_info("keyATMvb is an experimental function. DO NOT USE THIS FOR THE FINAL RESULT.")
   # Check type
   if (length(keep) != 0)
     check_arg_type(keep, "character")
@@ -48,11 +48,11 @@ keyATMvb <- function(docs, model, no_keyword_topics,
 
 
 #' Fit a keyATM model with Collapsed Variational Bayes
-#' 
+#'
 #' @keywords internal
 keyATMvb_fit <- function(docs, model, no_keyword_topics,
                          keywords = list(), model_settings = list(), vb_options = list(),
-                         priors = list(), options = list()) 
+                         priors = list(), options = list())
 {
 
   #
@@ -60,12 +60,12 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
   #
   check_arg_type(docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
   if (!is.integer(no_keyword_topics) & !is.numeric(no_keyword_topics))
-    stop("`no_keyword_topics` is neigher numeric nor integer.")
+    cli::cli_abort("`no_keyword_topics` is neigher numeric nor integer.")
 
   no_keyword_topics <- as.integer(no_keyword_topics)
 
   if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm", "label")) {
-    stop("Please select a correct model.")  
+    cli::cli_abort("Please select a correct model.")
   }
 
   info <- list(
@@ -80,7 +80,7 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
   } else {
     info$use_doc_index <- docs$doc_index
     if (length(docs$doc_index) != length(docs$W_raw))
-      warning("Some documents have 0 length. Please review the preprocessing steps.")
+      cli::cli_warn("Some documents have 0 length. Please review the preprocessing steps.")
   }
   docs$W_raw <- docs$W_raw[info$use_doc_index]
   info$num_doc <- length(docs$W_raw)
@@ -98,7 +98,7 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
 
   #
   # Initialization
-  # 
+  #
   set.seed(options$seed)
 
   ## Initialize W, Z, S
@@ -122,15 +122,15 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
   initialized$S <- rlang::duplicate(initialized$W)
 
   if (model %in% info$models_keyATM) {
-    initialized$model_key <- 1L 
+    initialized$model_key <- 1L
   } else {
-    initialized$model_key <- 0L 
+    initialized$model_key <- 0L
   }
 
   initialized <- make_wsz_cpp(docs$W_raw, info, initialized)
   W <- initialized$W
   Z <- initialized$Z
-  keywords_id <- initialized$keywords_id 
+  keywords_id <- initialized$keywords_id
   S <- initialized$S
 
   # Organize
@@ -139,12 +139,12 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
 
   if (model %in% c("base")) {
     if (options$estimate_alpha)
-      stored_values$alpha_iter <- list()  
+      stored_values$alpha_iter <- list()
   }
 
   if (model %in% c("hmm")) {
     options$estimate_alpha <- 1
-    stored_values$alpha_iter <- list()  
+    stored_values$alpha_iter <- list()
   }
 
   if (model %in% c("cov")) {
@@ -155,13 +155,13 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
     stored_values$R_iter <- list()
 
     if (options$store_transition_matrix) {
-      stored_values$P_iter <- list()  
+      stored_values$P_iter <- list()
     }
   }
 
   if (model %in% info$models_keyATM) {
     if (options$store_pi)
-      stored_values$pi_vectors <- list() 
+      stored_values$pi_vectors <- list()
   }
 
   if (options$store_theta)
@@ -187,19 +187,19 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
 
   # MCMC initialization
   if (vb_options$init == "mcmc") {
-    message("Initializing with MCMC..")
-    key_model <- fitting_models(key_model, model, options) 
+    cli::cli_alert("Initializing with MCMC..")
+    key_model <- fitting_models(key_model, model, options)
   } else {
-   # Do nothing 
+   # Do nothing
     options$iterations <- 1L
     key_model$options$iterations <- 1L
-    key_model <- fitting_models(key_model, model, options) 
+    key_model <- fitting_models(key_model, model, options)
   }
 
 
   # Fit VB
   set.seed(key_model$options$seed)
-  message("Fitting Variational Bayes...")
+  cli::cli_alert("Fitting Variational Bayes...")
   key_model$vb_options$Perplexity_VB <- list(value = list(), iter = list())
   key_model <- keyATMvb_call(key_model)
   class(key_model) <- c("keyATM_fitted_VB", class(key_model))
@@ -214,20 +214,20 @@ check_arg_vboptions <- function(obj, model, info)
   allowed_arguments <- c("convtol", "init")
 
   if (is.null(obj$convtol)) {
-    obj$convtol <- 1e-4 
+    obj$convtol <- 1e-4
   } else {
     if (!is.numeric(obj$convtol)) {
-      stop("`vb_options$convtol` should be a numeric value.")
+      cli::cli_abort("`vb_options$convtol` should be a numeric value.")
     }
     if (obj$convtol <= 0) {
-      stop("`vb_options$convtol` should be a positive value.")
-    }  
+      cli::cli_abort("`vb_options$convtol` should be a positive value.")
+    }
   }
 
   if (is.null(obj$init)) {
     obj$init <- "mcmc"
     if (!obj$init %in% c("mcmc", "random")) {
-      stop("`vb_options$init` should be `mcmc` or `random`.")
+      cli::cli_abort("`vb_options$init` should be `mcmc` or `random`.")
     }
   }
 

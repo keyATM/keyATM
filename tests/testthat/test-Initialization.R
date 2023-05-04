@@ -189,3 +189,11 @@ test_that("Documents with length 0: label", {
 })
 
 
+# Check `get_doc_index()` function
+test_that("`get_doc_index() function", {
+  W_raw <- list(c("a", "b"), c(), c("a", "b", "c"))
+  expect_warning(tmp <- keyATM:::get_doc_index(W_raw, check = TRUE))
+  expect_warning(tmp <- keyATM:::get_doc_index(W_raw, check = FALSE))
+  W_raw2 <- list(c("a", "b"), c(), c("a", "b", "c"), c())
+  expect_warning(tmp <- keyATM:::get_doc_index(W_raw2, check = FALSE))
+})

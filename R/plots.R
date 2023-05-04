@@ -62,16 +62,16 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
   modelname <- extract_full_model_name(x)
 
   if (modelname %in% c("lda", "ldacov", "ldahmm")) {
-    stop(paste0("This is not a model with keywords."))  # only plot keywords later
+    cli::cli_abort(paste0("This is not a model with keywords."))  # only plot keywords later
   }
   if (!"alpha_iter" %in% names(x$values_iter)) {
-    stop("`alpha` is not stored. Please check the options.\nNote that the covariate model does not have `alpha`.\nPlease check our paper for details.")
+    cli::cli_abort("`alpha` is not stored. Please check the options.\nNote that the covariate model does not have `alpha`.\nPlease check our paper for details.")
   }
   if (is.null(show_topic)) {
     show_topic <- 1:x$keyword_k
   }
   if (!is.numeric(start) | length(start) != 1) {
-    stop("`start` argument is invalid.")
+    cli::cli_abort("`start` argument is invalid.")
   }
 
   tnames <- c(names(x$keywords_raw))[show_topic]
@@ -127,7 +127,7 @@ plot_modelfit <- function(x, start = 1)
   modelfit <- x$model_fit
 
   if (!is.numeric(start) | length(start) != 1) {
-    stop("`start` argument is invalid.")
+    cli::cli_abort("`start` argument is invalid.")
   }
 
   if (!is.null(start)) {
@@ -171,17 +171,17 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
   modelname <- extract_full_model_name(x)
 
   if (modelname %in% c("lda", "ldacov", "ldahmm")) {
-    stop(paste0("This is not a model with keywords."))
+    cli::cli_abort(paste0("This is not a model with keywords."))
   }
 
   if (is.null(show_topic)) {
     show_topic <- 1:x$keyword_k
   } else if (sum(!show_topic %in% 1:x$keyword_k) != 0) {
-    stop("`plot_pi` only visualize keyword topics.")
+    cli::cli_abort("`plot_pi` only visualize keyword topics.")
   }
 
   if (!is.numeric(start) | length(start) != 1) {
-    stop("`start` argument is invalid.")
+    cli::cli_abort("`start` argument is invalid.")
   }
 
   tnames <- c(names(x$keywords_raw))[show_topic]
@@ -195,7 +195,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
       dplyr::select(-.data$Iteration) -> pi_mat
 
     if (nrow(pi_mat) == 0) {
-      stop("Nothing left to plot. Please check arguments.")
+      cli::cli_abort("Nothing left to plot. Please check arguments.")
     }
 
     pi_mat %>%
@@ -211,7 +211,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
          ggtitle("Probability of words drawn from keyword topic-word distribution") +
          theme(plot.title = element_text(hjust = 0.5))
   } else {
-    message("Plotting pi from the final MCMC draw. \nPlease set `store_pi` to `TRUE` if you want to plot pi over iterations.")
+    cli::cli_alert_info("Plotting pi from the final MCMC draw. Please set `store_pi` to `TRUE` if you want to plot pi over iterations.")
     x$pi %>%
       dplyr::mutate(Probability = .data$Proportion / 100) %>%
       dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
@@ -255,7 +255,7 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, la
     show_topic <- 1:total_k
   } else {
     if (max(show_topic) > total_k | min(show_topic) < 1) {
-      stop("Invalid topic ID in `show_topic`.")
+      cli::cli_abort("Invalid topic ID in `show_topic`.")
     }
   }
 
@@ -263,7 +263,7 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, la
 
   if (!is.null(label_topic)) {
     if (length(label_topic) != ncol(topwords)) {
-      stop("The length of `label_topic` is incorrect.")
+      cli::cli_abort("The length of `label_topic` is incorrect.")
     }
     colnames(topwords) <- label_topic
   }
@@ -448,12 +448,12 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
   if (!modelname %in% c("hmm", "ldahmm")) {
-    stop(paste0("This is not a model with time trends."))
+    cli::cli_abort(paste0("This is not a model with time trends."))
   }
 
   if (!is.null(time_index_label)) {
     if (length(x$values_iter$time_index) != length(time_index_label)) {
-      stop("The length of `time_index_label` does not match with the number of documents.")
+      cli::cli_abort("The length of `time_index_label` does not match with the number of documents.")
     }
     time_index <- time_index_label
   } else {
