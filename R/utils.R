@@ -20,8 +20,8 @@ is.formula <- function(x) {
 full_model_name <- function(model = c("base", "covariates", "dynamic", "label"),
                             type = c("keyATM", "lda"))
 {
-  model <- match.arg(model)
-  type <- match.arg(type)
+  model <- rlang::arg_match(model)
+  type <- rlang::arg_match(type)
 
   if (type == "keyATM") {
 

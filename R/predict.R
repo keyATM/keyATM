@@ -17,8 +17,8 @@ predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = 
                                   posterior_mean = TRUE, ci = 0.9, method = c("hdi", "eti"),
                                   point = c("mean", "median"), label = NULL, raw_values = FALSE, ...)
 {
-  method <- match.arg(method)
-  point <- match.arg(point)
+  method <- rlang::arg_match(method)
+  point <- rlang::arg_match(point)
 
   if (object$model != "covariates" | !("keyATM_output" %in% class(object)))
     cli::cli_abort("This is not an output of covariate model")

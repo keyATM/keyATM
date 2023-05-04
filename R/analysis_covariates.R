@@ -162,8 +162,8 @@ summary.strata_doctopic <- function(object, ...)
 #' @keywords internal
 strata_doctopic_CI <- function(theta, ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"), label = NULL, ...)
 {
-  method <- match.arg(method)
-  point <- match.arg(point)
+  method <- rlang::arg_match(method)
+  point <- rlang::arg_match(point)
 
   q <- as.data.frame(apply(theta, 2, calc_ci, ci, method, point))
   q$CI <- c("Lower", "Point", "Upper")

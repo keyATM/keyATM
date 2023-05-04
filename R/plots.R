@@ -165,8 +165,8 @@ plot_modelfit <- function(x, start = 1)
 #' @export
 plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"))
 {
-  method <- match.arg(method)
-  point <- match.arg(point)
+  method <- rlang::arg_match(method)
+  point <- rlang::arg_match(point)
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
 
@@ -248,7 +248,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, label_topic = NULL, order = c("proportion", "topicid"), xmax = NULL)
 {
   check_arg_type(x, "keyATM_output")
-  order <- match.arg(order)
+  order <- rlang::arg_match(order)
 
   total_k <- x$keyword_k + x$no_keyword_topics
   if (is.null(show_topic)) {
@@ -358,9 +358,9 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
                                  ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"),
                                  width = 0.1, show_point = TRUE, ...)
 {
-  by <- match.arg(by)
-  method <- match.arg(method)
-  point <- match.arg(point)
+  by <- rlang::arg_match(by)
+  method <- rlang::arg_match(method)
+  point <- rlang::arg_match(point)
 
   tables <- summary.strata_doctopic(x, ci, method, point)
   by_var <- x$by_var
@@ -443,8 +443,8 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
                            ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"),
                            xlab = "Time", scales = "fixed", show_point = TRUE, ...)
 {
-  method <- match.arg(method)
-  point <- match.arg(point)
+  method <- rlang::arg_match(method)
+  point <- rlang::arg_match(point)
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
   if (!modelname %in% c("hmm", "ldahmm")) {

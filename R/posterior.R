@@ -626,7 +626,7 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
 top_words.strata_topicword <- function(x, n = 10, measure = c("probability", "lift"),
                                   show_keyword = TRUE)
 {
-  measure <- match.arg(measure)
+  measure <- rlang::arg_match(measure)
   top_words <- lapply(x$phi,  # list of phis
                       function(obj) {
                        top_words_calc(
@@ -646,7 +646,7 @@ top_words.keyATM_output <- function(x, n = 10, measure = c("probability", "lift"
 {
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
-  measure <- match.arg(measure)
+  measure <- rlang::arg_match(measure)
 
   if (modelname %in% c("lda", "ldacov", "ldahmm"))
      show_keyword <- FALSE
