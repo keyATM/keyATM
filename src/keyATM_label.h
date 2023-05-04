@@ -1,5 +1,6 @@
 #ifndef __keyATM_label__INCLUDED__
 #define __keyATM_label__INCLUDED__
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -13,7 +14,7 @@ using namespace std;
 
 class keyATMlabel : virtual public keyATMmeta
 {
-  public:  
+  public:
     //
     // Parameters
     //
@@ -28,7 +29,7 @@ class keyATMlabel : virtual public keyATMmeta
 
     double loglik;
     double fixed_part;
-          // 
+          //
     MatrixXd Alpha;
     MatrixXd label_dk;
     VectorXd Alpha_sum_vec;
@@ -50,20 +51,19 @@ class keyATMlabel : virtual public keyATMmeta
       keyATMmeta(model_, iter_) {};
 
     // Read data
-    void read_data_specific();
+    void read_data_specific() override final;
 
     // Initialization
-    void initialize_specific();
+    void initialize_specific() override final;
 
-    // Iteration
-    virtual void iteration_single(int it);
-    void sample_parameters(int it);
+    // Iteration (LDA version of label is not implemented so it's with `final)
+    virtual void iteration_single(int it) override final;
+    virtual void sample_parameters(int it) override final;
     void sample_alpha();
     double alpha_loglik_label(int k);
-    virtual double loglik_total();
-    double loglik_total_label();
+    virtual double loglik_total() override final;
+    double loglik_total_label() override final;
 };
 
 
 #endif
-

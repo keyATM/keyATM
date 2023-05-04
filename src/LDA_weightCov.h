@@ -1,5 +1,6 @@
 #ifndef __keyATM_weightCov__INCLUDED__
 #define __keyATM_weightCov__INCLUDED__
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -21,14 +22,10 @@ class LDAcov : public LDAbase, public keyATMcov
       LDAbase(model_, iter_),
       keyATMcov(model_, iter_) {};
 
-
     // Functions
-    void iteration_single(int it) final;
-    double loglik_total() final;
-
+    void iteration_single(int it) override final;
+    double loglik_total() override final;
 };
 
 #endif
-
-
 

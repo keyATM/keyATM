@@ -2,7 +2,10 @@
 #define __keyATMvb_main__INCLUDED__
 
 #include <Rcpp.h>
+
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 #include <RcppEigen.h>
+
 #include <unordered_set>
 #include <algorithm>
 #include "sampler.h"
@@ -105,7 +108,7 @@ class keyATMvb
         void read_data_documents();
         void read_data_keywords();
     virtual void read_data_specific();
-    
+
     // Initialize
     void initialize();
     void initialize_common();
@@ -113,12 +116,12 @@ class keyATMvb
       virtual void initialize_common_q();
       virtual void initialize_common_qz(int doc_id, int w,
                                         int z, int s, vector<double> &qzdk);
-      virtual void initialize_common_qs(int doc_id, int w, 
+      virtual void initialize_common_qs(int doc_id, int w,
                                         int z, int s, vector<double> &qsds);
       void initialize_common_expectation();
       void initialize_weightedlen();
     void initialize_specific();
-    
+
     // Iteration
     void iteration();
       void iteration_single();

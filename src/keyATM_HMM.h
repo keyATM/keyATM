@@ -1,5 +1,6 @@
 #ifndef __keyATM_HMM__INCLUDED__
 #define __keyATM_HMM__INCLUDED__
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -59,20 +60,20 @@ class keyATMhmm : virtual public keyATMmeta
         std::vector<int> topic_ids;
         VectorXd keep_current_param;
         MatrixXd ndk_a;
-  
-    // 
+
+    //
     // Functions
     //
     // Utilities
     int get_state_index(const int doc_id);
-  
+
     // Read data and Initialize
-    void read_data_specific() final;
-    void initialize_specific() final;
-  
+    virtual void read_data_specific() override final;
+    virtual void initialize_specific() override final;
+
     // Iteration
-    virtual void iteration_single(int it);
-    void sample_parameters(int it);
+    virtual void iteration_single(int it) override;
+    virtual void sample_parameters(int it) override final;
 
     void sample_alpha();
     void sample_alpha_state(int state, int state_start, int state_end);
@@ -85,9 +86,9 @@ class keyATMhmm : virtual public keyATMmeta
     void store_P_est();
 
     double polyapdfln(int t, VectorXd &alpha);
-    virtual double loglik_total();
-    double loglik_total_label();
-    void verbose_special(int r_index);
+    virtual double loglik_total() override;
+    virtual double loglik_total_label() override;
+    virtual void verbose_special(int r_index) override;
 };
 
 #endif

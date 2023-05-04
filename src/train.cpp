@@ -1,5 +1,8 @@
 #include <Rcpp.h>
+
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 #include <RcppEigen.h>
+
 #include <iostream>
 #include <algorithm>
 #include <unordered_set>

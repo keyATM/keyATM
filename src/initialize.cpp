@@ -1,5 +1,8 @@
 #include <Rcpp.h>
+
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 #include <RcppEigen.h>
+
 #include <iostream>
 #include <algorithm>
 #include <string>
@@ -17,7 +20,6 @@
 using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
-
 
 
 //
@@ -111,7 +113,6 @@ void keyATMinitialize::initialize_keyATM()
   int keyword_num_appear;
 
   double u;
-  double prob;
   double prob_allK = 1.0 / total_k;
   int index;
 

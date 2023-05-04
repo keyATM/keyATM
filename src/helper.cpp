@@ -1,3 +1,4 @@
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 #include <Rcpp.h>
 #include <RcppEigen.h>
 
@@ -42,5 +43,4 @@ NumericMatrix calc_PGtheta_R(const NumericMatrix &theta_tilda, Eigen::MatrixXd &
   NumericMatrix theta_R = Rcpp::wrap(theta);
   return theta_R;
 }
-
 

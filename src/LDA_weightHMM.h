@@ -1,5 +1,6 @@
 #ifndef __keyATM_weightHMM__INCLUDED__
 #define __keyATM_weightHMM__INCLUDED__
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -22,11 +23,8 @@ class LDAhmm : public LDAbase, public keyATMhmm
       keyATMhmm(model_, iter_) {};
 
     // Functions
-    void iteration_single(int it) final;
-    double loglik_total() final;
-
+    void iteration_single(int it) override final;
+    double loglik_total() override final;
 };
 
 #endif
-
-

@@ -2,7 +2,10 @@
 #define __keyATMmeta__INCLUDED__
 
 #include <Rcpp.h>
+
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 #include <RcppEigen.h>
+
 #include <unordered_set>
 #include "sampler.h"
 #include "utils.h"
@@ -30,6 +33,8 @@ class keyATMmeta
   //
   //    weightedLDA models inherit this class but modify some
   //    initialization functions.
+  //
+  //    Overwritten functions have `override` keyword in each model.
 
   public:
     //
@@ -121,7 +126,6 @@ class keyATMmeta
       double min_v;
       double max_v;
       int max_shrink_time;
-
 
 
     //
@@ -275,7 +279,6 @@ class keyATMmeta
     };
 
     List return_model();
-
 };
 
 #endif

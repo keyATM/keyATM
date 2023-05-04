@@ -1,5 +1,6 @@
 #ifndef __Initialize__INCLUDED__
 #define __Initialize__INCLUDED__
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -59,7 +60,7 @@ class keyATMinitialize
     keyATMinitialize(List docs_, List info_,  List initialized_);
     ~keyATMinitialize();
 
-  
+
     //
     // Main functions
     //
@@ -76,7 +77,6 @@ class keyATMinitialize
 
     // Return model
     List return_initialized();
-
 };
 
 
