@@ -37,7 +37,6 @@ full_model_name <- function(model = c("base", "covariates", "dynamic", "label"),
       cli::cli_abort("Please select a correct model.")
     }
 
-
   } else if (type == "lda") {
 
     if (model == "base") {
@@ -46,8 +45,6 @@ full_model_name <- function(model = c("base", "covariates", "dynamic", "label"),
       return("ldacov")
     } else if (model == "dynamic") {
       return("ldahmm")
-    # } else if (model == "label") {
-    #   cli::cli_abort("Label LDA is currently not available.")
     } else {
       cli::cli_abort("Please select a correct model.")
     }
@@ -73,7 +70,6 @@ abb_model_name <- function(fullname)
   } else {
     cli::cli_abort("Invalid full model name.")
   }
-
 }
 
 
@@ -95,7 +91,6 @@ extract_full_model_name <- function(obj)
   } else if ("label" %in% class(obj)) {
     return("label")
   }
-
 }
 
 
@@ -108,12 +103,8 @@ rdirichlet <- function(alpha, n = 1) {
 
 
 rmvn <- function(n = 1, mu, Sigma)
-{  # Edited version of the code in LaplacesDemon package
+{ # Edited version of the code in LaplacesDemon package
   mu <- rbind(mu)
-  # if(missing(Sigma)) Sigma <- diag(ncol(mu))
-  # if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
-  # if(!is.positive.definite(Sigma))
-       # cli::cli_abort("Matrix Sigma is not positive-definite.")
   k <- ncol(Sigma)
   if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow = TRUE)
   z <- matrix(stats::rnorm(n*k), n, k) %*% chol(Sigma)
@@ -123,7 +114,7 @@ rmvn <- function(n = 1, mu, Sigma)
 
 
 rmvn1 <- function(mu, Sigma)
-{  # Edited version of the code in LaplacesDemon package
+{ # Edited version of the code in LaplacesDemon package
   mu <- as.numeric(mu)
   k <- ncol(Sigma)
   z <- stats::rnorm(k) %*% chol(Sigma)
@@ -133,21 +124,21 @@ rmvn1 <- function(mu, Sigma)
 
 
 rnorminvwishart <- function(n = 1, mu0, lambda, S, nu)
-{  # Edited version of the code in LaplacesDemon package
+{ # Edited version of the code in LaplacesDemon package
   Sigma <- rinvwishart(nu, S)
   mu <- rmvn(n, mu0, 1/lambda*Sigma)
   return(list(mu = mu, Sigma = Sigma))
 }
 
 rinvwishart <- function(nu, S)
-{  # Edited version of the code in LaplacesDemon package
+{ # Edited version of the code in LaplacesDemon package
   S <- chol2inv(chol(S))
   k <- nrow(S)
   Z <- matrix(0, k, k)
   x <- stats::rchisq(k, nu:{nu - k + 1})
   x[which(x == 0)] <- 1e-100
   diag(Z) <- sqrt(x)
-  if(k > 1) {
+  if (k > 1) {
       kseq <- 1:(k-1)
       Z[rep(k*kseq, kseq) +
            unlist(lapply(kseq, seq))] <- stats::rnorm(k*{k - 1}/2)
