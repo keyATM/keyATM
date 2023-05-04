@@ -1,8 +1,8 @@
 Package: keyATM
-Version: 0.4.3
+Version: 0.5.0
 Title: Keyword Assisted Topic Models
-Description: Fits keyword assisted topic models (keyATM) using collapsed Gibbs samplers. The keyATM combines the latent dirichlet allocation (LDA) models with a small number of keywords selected by researchers in order to improve the interpretability and topic classification of the LDA. The keyATM can also incorporate covariates and directly model time trends. The keyATM is proposed in Eshima, Imai, and Sasaki (2020) <arXiv:2004.05964>.
-Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", role = c("aut","cre"), comment = c(ORCID = "0000-0003-3613-4046")),
+Description: Fits keyword assisted topic models (keyATM) using collapsed Gibbs samplers. The keyATM combines the latent dirichlet allocation (LDA) models with a small number of keywords selected by researchers in order to improve the interpretability and topic classification of the LDA. The keyATM can also incorporate covariates and directly model time trends. The keyATM is proposed in Eshima, Imai, and Sasaki (2023) <doi:10.1111/ajps.12779>.
+Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@gmail.com", role = c("aut","cre"), comment = c(ORCID = "0000-0003-3613-4046")),
     person("Tomoya", "Sasaki", email = "tomoyas@mit.edu", role = c("aut")),
     person("Kosuke", "Imai", email = "imai@harvard.edu", role = c("aut")),
     person("Chung-hong", "Chan", email = "chainsawtiney@gmail.com", role = c("ctb"), comment = c(ORCID = "0000-0002-6232-7530")),
@@ -12,6 +12,7 @@ Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@g.harvard.edu", ro
 License: GPL-3
 Depends: R (>= 3.6)
 Imports: Rcpp (>= 1.0.7),
+  cli (>= 3.6.1),
   dplyr (>= 1.0.0),
   fastmap,
   future.apply,

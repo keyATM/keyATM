@@ -777,7 +777,5 @@ List keyATMmeta::return_model()
   stored_values["vocab_weights"] = vocab_weights_R;
   model["stored_values"] = stored_values;
 
-  model["stored_values"] = stored_values;
-
   return model;
 }

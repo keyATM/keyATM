@@ -16,7 +16,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Shusei Eshima \email{shuseieshima@g.harvard.edu} (\href{https://orcid.org/0000-0003-3613-4046}{ORCID})
+\strong{Maintainer}: Shusei Eshima \email{shuseieshima@gmail.com} (\href{https://orcid.org/0000-0003-3613-4046}{ORCID})
 
 Authors:
 \itemize{

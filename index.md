@@ -7,7 +7,7 @@
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![R build status](https://github.com/keyATM/keyATM/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/keyATM/keyATM/actions)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/keyATM/keyATM&style=flat)](https://mergify.io)
-[![DevVersion](https://img.shields.io/badge/Dev-v0.4.x-orange)](https://github.com/keyATM/keyATM/projects/3)
+[![DevVersion](https://img.shields.io/badge/Dev-v0.5.x-orange)](https://github.com/keyATM/keyATM/projects/3)
 <!-- badges: end -->
 
 <br>
@@ -25,8 +25,8 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 
 
 ## How to cite
-*  Shusei Eshima, Kosuke Imai, and Tomoya Sasaki. ``Keyword Assisted Topic Models.'' American Journal of Political Science, Forthcoming. <a href='http://arxiv.org/abs/2004.05964'>arXiv:2004.05964</a>.
-* Shusei Eshima, Tomoya Sasaki, and Kosuke Imai. 2019. keyATM: Keyword Assisted Topic Models. R package version 0.4.0. https://keyatm.github.io/keyATM/
+*  Shusei Eshima, Kosuke Imai, and Tomoya Sasaki. 2023. ``Keyword Assisted Topic Models.'' __American Journal of Political Science__.  <a href="https://doi.org/10.1111/ajps.12779">Paper</a> / <a href="http://arxiv.org/abs/2004.05964">arXiv</a>.
+* Shusei Eshima, Tomoya Sasaki, and Kosuke Imai. 2019. keyATM: Keyword Assisted Topic Models. R package version 0.5.0. https://keyatm.github.io/keyATM/
 
 ## How to report a bug
 We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/keyATM/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format (it will appear as a template in GitHub Issue).
