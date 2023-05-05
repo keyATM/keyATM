@@ -1,6 +1,6 @@
 ---
 title: "keyATM Label"
-output: 
+output:
   html_document:
     toc: true
 ---
@@ -9,7 +9,7 @@ output:
 knitr::opts_chunk$set(eval = T, echo = TRUE)
 ```
 
-## Preparing documents and labels 
+## Preparing documents and labels
 Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. We use bills data we prapared ([documents](Preparation.html#reading-documents-into-keyatm) and [keywords](Preparation.html#preparing-keywords)).
 
 
@@ -23,7 +23,7 @@ bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda dfm object
 keyATM_docs <- keyATM_read(bills_dfm)
 ```
 
-Label model needs a vector of labels. Values of the vector represent topics. If a document does not have a label, the corresponding element in the label vector should have `NA`. 
+Label model needs a vector of labels. Values of the vector represent topics. If a document does not have a label, the corresponding element in the label vector should have `NA`.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 labels_use <- keyATM_data_bills$labels
@@ -36,13 +36,13 @@ Please make sure that **the order of label index is the same as the order of doc
 ## Fitting the model
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(
-              docs              = keyATM_docs,                # text input
-              no_keyword_topics = 3,                          # number of topics without keywords
-              keywords          = bills_keywords,             # keywords
-              model             = "label",                    # select the model
-              model_settings    = list(labels = labels_use),  # set labels
-              options           = list(seed = 250)
-             )
+  docs              = keyATM_docs,                # text input
+  no_keyword_topics = 3,                          # number of topics without keywords
+  keywords          = bills_keywords,             # keywords
+  model             = "label",                    # select the model
+  model_settings    = list(labels = labels_use),  # set labels
+  options           = list(seed = 250)
+)
 ```
 
 ## Saving the model

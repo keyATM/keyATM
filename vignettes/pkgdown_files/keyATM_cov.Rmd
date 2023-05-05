@@ -118,13 +118,15 @@ and the formula with the `model_settings` argument.
 The text data is the same as what we use in the [Base model](keyATM_base.html).
 Please check [this page](Options.html) for available options.
 ```{r, warning=FALSE, message=FALSE, results="hide"}
-out <- keyATM(docs              = keyATM_docs,
-              no_keyword_topics = 5,
-              keywords          = keywords,
-              model             = "covariates",
-              model_settings    = list(covariates_data    = vars_selected,
-                                       covariates_formula = ~ Party + Period),
-              options           = list(seed = 250))
+out <- keyATM(
+  docs              = keyATM_docs,
+  no_keyword_topics = 5,
+  keywords          = keywords,
+  model             = "covariates",
+  model_settings    = list(covariates_data    = vars_selected,
+                           covariates_formula = ~ Party + Period),
+  options           = list(seed = 250)
+)
 ```
 
 Once you fit the model, you can save the model with `save()` for replication. This is the same as the [Base model](keyATM_base.html#saving-the-model).
@@ -179,8 +181,10 @@ in `by_var` argument and label each value in the variable (ascending order).
 In this case, the `Period20_21c` equals zero indicates speeches in the 18th
 and 19th century and equals one for the speeches in the 20th and 21st century.
 ```{r, warning=FALSE, message=FALSE}
-strata_topic <- by_strata_DocTopic(out, by_var = "Period20_21c",
-                                   labels = c("18_19c", "20_21c"))
+strata_topic <- by_strata_DocTopic(
+  out, by_var = "Period20_21c",
+  labels = c("18_19c", "20_21c")
+)
 ```
 
 We can visualize results with the `plot()` function.
@@ -203,8 +207,10 @@ We can visualize results by covariate with `by = "covariate"` argument.
 The plot below combines two panels in the previous plot and
 display in the same panel.
 ```{r, message=FALSE, warning=FALSE, fig.align='center'}
-fig_doctopic <- plot(strata_topic, var_name = "Period",
-                     show_topic = c(4, 5), by = "covariate")
+fig_doctopic <- plot(
+  strata_topic, var_name = "Period",
+  show_topic = c(4, 5), by = "covariate"
+)
 ```
 
 Using the output of the `keyATM`, we can calculate 90% credible intervals
@@ -227,10 +233,14 @@ theta_diff_quantile
 Furthermore, we can use the `predict()` function to get the predicted mean of
 the document-topic distribution for three party categories.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-strata_rep <- by_strata_DocTopic(out, by_var = "PartyRepublican",
-                                 labels = c("Non-Republican", "Republican"))
-strata_dem <- by_strata_DocTopic(out, by_var = "PartyDemocratic",
-                                 labels = c("Non-Democratic", "Democratic"))
+strata_rep <- by_strata_DocTopic(
+  out, by_var = "PartyRepublican",
+  labels = c("Non-Republican", "Republican")
+)
+strata_dem <- by_strata_DocTopic(
+  out, by_var = "PartyDemocratic",
+  labels = c("Non-Democratic", "Democratic")
+)
 
 est_rep <- summary(strata_rep)[["Republican"]]  # Republican data
 est_dem <- summary(strata_dem)[["Democratic"]]  # Democratic data
@@ -275,16 +285,20 @@ The example below demonstrates top words associated to each topic for speeches f
 different parties using the `Party` covariate.
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
-out <- keyATM(docs              = keyATM_docs,
-              no_keyword_topics = 5,
-              keywords          = keywords,
-              model             = "covariates",
-              model_settings    = list(covariates_data    = vars_selected,
-                                       covariates_formula = ~ Party + Period),
-              options           = list(seed = 250),
-              keep              = c("Z", "S"))
-strata_tw <- by_strata_TopicWord(out, keyATM_docs,
-                                 by = as.vector(vars_selected$Party))
+out <- keyATM(
+  docs              = keyATM_docs,
+  no_keyword_topics = 5,
+  keywords          = keywords,
+  model             = "covariates",
+  model_settings    = list(covariates_data    = vars_selected,
+                           covariates_formula = ~ Party + Period),
+  options           = list(seed = 250),
+  keep              = c("Z", "S")
+)
+strata_tw <- by_strata_TopicWord(
+  out, keyATM_docs,
+  by = as.vector(vars_selected$Party)
+)
 ```
 
 We check the result.
@@ -301,14 +315,16 @@ Please read [technical details](keyATMPG.html) before use this option.
 
 To estimate keyATM Covariate with the Pólya-Gamma augmentation, set `covariates_model = "PG"`.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-out <- keyATM(docs              = keyATM_docs,
-              no_keyword_topics = 5,
-              keywords          = keywords,
-              model             = "covariates",
-              model_settings    = list(covariates_data    = vars_selected,
-                                       covariates_formula = ~ Party + Period,
-                                       covariates_model = "PG"),
-              options           = list(seed = 250))
+out <- keyATM(
+  docs              = keyATM_docs,
+  no_keyword_topics = 5,
+  keywords          = keywords,
+  model             = "covariates",
+  model_settings    = list(covariates_data    = vars_selected,
+                           covariates_formula = ~ Party + Period,
+                           covariates_model = "PG"),
+  options           = list(seed = 250)
+)
 top_words(out)
 ```
 
