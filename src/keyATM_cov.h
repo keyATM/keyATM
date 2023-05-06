@@ -57,7 +57,6 @@ class keyATMcov : virtual public keyATMmeta
     void sample_lambda_slice();
     double alpha_loglik();
     virtual double loglik_total() override;
-    virtual double loglik_total_label() override;
 
     double likelihood_lambda(int k, int t);
     void proposal_lambda(int k);

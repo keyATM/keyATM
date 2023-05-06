@@ -75,8 +75,6 @@ class keyATMmeta
     int num_vocab, num_doc, total_words;
     double total_words_weighted;
 
-    VectorXi labels_true;
-    int use_labels;
     MatrixXd beta_s0kv;
     SparseMatrix<double, RowMajor> beta_s1kv;
     VectorXd Vbeta_k;
@@ -159,12 +157,8 @@ class keyATMmeta
 
     virtual int sample_z(VectorXd &alpha, int z, int s,
                          int w, int doc_id);
-    int sample_z_label(VectorXd &alpha, int z, int s,
-                       int w, int doc_id);
 
     int sample_s(int z, int s, int w, int doc_id);
-    int sample_s_label(VectorXd &alpha, int z, int s,
-                       int w, int doc_id);
 
     void sampling_store(int r_index);
     virtual void parameters_store(int r_index);
@@ -174,7 +168,6 @@ class keyATMmeta
     virtual void verbose_special(int r_index);
 
     virtual double loglik_total() = 0;
-    virtual double loglik_total_label();
 
     //
     // Utilities

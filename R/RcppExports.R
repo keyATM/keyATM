@@ -96,16 +96,6 @@ keyATM_fit_HMM <- function(model, iter = 0L) {
     .Call(`_keyATM_keyATM_fit_HMM`, model, iter)
 }
 
-#' Run the Collapsed Gibbs sampler for the keyATM label
-#'
-#' @param model A initialized model
-#' @param iter Required number of iterations
-#'
-#' @keywords internal
-keyATM_fit_label <- function(model, iter = 0L) {
-    .Call(`_keyATM_keyATM_fit_label`, model, iter)
-}
-
 #' Run the Collapsed Gibbs sampler for weighted LDA
 #'
 #' @param model A initialized model

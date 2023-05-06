@@ -19,8 +19,8 @@ void LDAbase::read_data_common()
   // document-related constants
   num_vocab = vocab.size();
   num_doc = W.size();
-  // alpha -> specific function  
-  
+  // alpha -> specific function
+
   // Options
   options_list = model["options"];
   use_weights = options_list["use_weights"];
@@ -60,9 +60,6 @@ void LDAbase::initialize_common()
   // Slice sampling initialization
   max_shrink_time = 200;
 
-  // No labels in LDA
-  use_labels = 0;
- 
   //
   // Vocabulary weights
   //
@@ -72,13 +69,13 @@ void LDAbase::initialize_common()
   int doc_len;
   IntegerVector doc_z, doc_w;
 
-  
+
   // Construct vocab weights
   for (int doc_id = 0; doc_id < num_doc; doc_id++) {
     doc_w = W[doc_id];
     doc_len = doc_w.size();
     doc_each_len.push_back(doc_len);
-  
+
     for (int w_position = 0; w_position < doc_len; w_position++) {
       w = doc_w[w_position];
       vocab_weights(w) += 1.0;
@@ -88,17 +85,17 @@ void LDAbase::initialize_common()
 
   if (weights_type == "inv-freq" || weights_type == "inv-freq-normalized") {
     // Inverse frequency
-    weights_invfreq(); 
+    weights_invfreq();
   } else if (weights_type == "information-theory" || weights_type == "information-theory-normalized") {
-    // Information theory 
+    // Information theory
     weights_inftheory();
   }
-    
+
   // Normalize weights
-  if (weights_type == "inv-freq-normalized" || 
+  if (weights_type == "inv-freq-normalized" ||
       weights_type == "information-theory-normalized") {
-    weights_normalize_total(); 
-  } 
+    weights_normalize_total();
+  }
 
   // Do you want to use weights?
   if (use_weights == 0) {
@@ -134,7 +131,7 @@ void LDAbase::initialize_common()
     doc_each_len_weighted.push_back(temp);
     total_words_weighted += temp;
   }
-  
+
 
   // Use during the iteration
   z_prob_vec = VectorXd::Zero(num_topics);

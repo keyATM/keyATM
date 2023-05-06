@@ -87,7 +87,6 @@ class keyATMhmm : virtual public keyATMmeta
 
     double polyapdfln(int t, VectorXd &alpha);
     virtual double loglik_total() override;
-    virtual double loglik_total_label() override;
     virtual void verbose_special(int r_index) override;
 };
 

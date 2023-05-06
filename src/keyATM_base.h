@@ -49,7 +49,6 @@ class keyATMbase : virtual public keyATMmeta
     void sample_alpha();
     double alpha_loglik(int k);
     virtual double loglik_total() override;
-    virtual double loglik_total_label() override;
 };
 
 
