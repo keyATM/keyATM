@@ -57,7 +57,7 @@ keyATM_output <- function(model, keep)
     values_iter$time_index <- model$model_settings$time_index
   }
 
-  if ((model$model %in% c("base", "lda", "label"))) {
+  if ((model$model %in% c("base", "lda"))) {
     if (model$options$estimate_alpha)
       values_iter$alpha_iter <- keyATM_output_alpha_iter_base(model, info)
   }
@@ -73,7 +73,7 @@ keyATM_output <- function(model, keep)
   }
 
   # pi
-  if (model$model %in% c("base", "cov", "hmm", "label")) {
+  if (model$model %in% c("base", "cov", "hmm")) {
     pi_estimated <- keyATM_output_pi(model$Z, model$S, model$priors$gamma)
   } else {
     pi_estimated <- NULL
@@ -215,7 +215,7 @@ keyATM_output_theta <- function(model, info)
 
   } else if (model$model %in% c("cov", "ldacov") & info$covmodel == "PG") {
     theta <-  model$model_settings$PG_params$theta_last
-  } else if (model$model %in% c("base", "lda", "label")) {
+  } else if (model$model %in% c("base", "lda")) {
     if (model$options$estimate_alpha) {
       alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]
     } else {
@@ -244,7 +244,7 @@ keyATM_output_theta <- function(model, info)
   }
 
   theta <- as.matrix(theta)
-  colnames(theta) <- info$tnames # label seeded topics
+  colnames(theta) <- info$tnames # label keyword topics
   if (!is.null(info$keyATMdoc_meta$docnames)) {
     if (nrow(theta) != length(info$keyATMdoc_meta$docnames)) {
       cli::cli_alert_warning("The length of stored document names do not match with the number of documents fitted. Check if any document has a length 0.")
@@ -311,7 +311,7 @@ keyATM_output_phi <- function(model, info)
   all_words <- model$vocab[as.integer(unlist(model$W, use.names = FALSE)) + 1L]
   all_topics <- as.integer(unlist(model$Z, use.names = FALSE))
 
-  if (model$model %in% c("base", "cov", "hmm", "label")) {
+  if (model$model %in% c("base", "cov", "hmm")) {
     pi_estimated <- keyATM_output_pi(model$Z, model$S, model$priors$gamma)
     all_s <- as.integer(unlist(model$S, use.names = FALSE))
 

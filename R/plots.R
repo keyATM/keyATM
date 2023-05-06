@@ -80,7 +80,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
     dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
     tidyr::pivot_wider(names_from = "Topic", values_from = "alpha") -> temp
 
-  if (modelname %in% c("base", "lda", "label")) {
+  if (modelname %in% c("base", "lda")) {
     temp %>% dplyr::rename_at(vars(-"Iteration"), ~tnames) %>%
       tidyr::pivot_longer(-"Iteration", names_to = "Topic", values_to = "alpha") -> res_alpha
 

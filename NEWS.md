@@ -1,9 +1,10 @@
 # keyATM 0.5.0
 ### Major changes
 * Migrating to C++17 to follow [the new CRAN check](https://developer.r-project.org/blosxom.cgi/R-devel/2023/01/27#n2023-01-27). We edited `shuffled_indexes()` that internally used `std::random_shuffle()`. This change does not guarantee backward compatibility across all platforms.
-* A bug fix in `summary.keyATM_docs()`.
 * Using the package `cli` instead of the base R `message()` and `warning()` functions.
-* An experimental feature to resume the iteration.
+* A new feature to resume the iteration.
+* Stopped support for the `label` model in `keyATM()` (it was an experimental feature).
+
 
 ### Bug fix
 * A bug fix in `summary.keyATM_docs()`.

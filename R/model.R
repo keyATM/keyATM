@@ -331,12 +331,12 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
 
   no_keyword_topics <- as.integer(no_keyword_topics)
 
-  if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm", "label")) {
+  if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm")) {
     cli::cli_abort("Please select a correct model.")
   }
 
   info <- list(
-                models_keyATM = c("base", "cov", "hmm", "label"),
+                models_keyATM = c("base", "cov", "hmm"),
                 models_lda = c("lda", "ldacov", "ldahmm")
               )
   keywords <- check_arg(keywords, "keywords", model, info)
@@ -410,7 +410,7 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)),
                         doc_index = info$use_doc_index, keyATMdoc_meta = docs[-c(1, 3)])
 
-  if (model %in% c("base", "lda", "label")) {
+  if (model %in% c("base", "lda")) {
     if (options$estimate_alpha)
       stored_values$alpha_iter <- list()
   }
@@ -484,8 +484,6 @@ fitting_models <- function(key_model, model, options)
     key_model <- keyATM_fit_LDAcov(key_model, iter = options$iteration)
   } else if (model == "ldahmm") {
     key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration)
-  } else if (model == "label") {
-    key_model <- keyATM_fit_label(key_model, iter = options$iteration)
   } else if (model == "cov" & key_model$model_settings$covariates_model == "PG") {
     key_model <- keyATM_fit_covPG(key_model, iter = options$iteration)
   } else if (model == "cov" & key_model$model_settings$covariates_model == "DirMulti") {
@@ -583,7 +581,7 @@ check_arg_model_settings <- function(obj, model, info)
   check_arg_type(obj, "list")
   allowed_arguments <- c()
 
-  if (model %in% c("base", "lda", "hmm", "ldahmm", "label")) {
+  if (model %in% c("base", "lda", "hmm", "ldahmm")) {
     # Slice Sampling Settings
     if (is.null(obj$slice_min)) {
       obj$slice_min <- 1e-9
@@ -763,32 +761,6 @@ check_arg_model_settings <- function(obj, model, info)
 
   }
 
-  # check model settings for label model
-  if (model %in% "label") {
-    if (is.null(obj$labels)) {
-      cli::cli_abort("`model_settings$labels` is not provided.")
-    }
-
-    obj$labels <- obj$labels[info$use_doc_index]
-
-    if (length(obj$labels) != info$num_doc) {
-      cli::cli_abort("The length of `model_settings$labels` does not match with the number of documents")
-    }
-    if (max(obj$labels, na.rm = TRUE) > info$keyword_k | min(obj$labels, na.rm = TRUE) <= 0) {
-      cli::cli_abort("`model_settings$labels` must only contain integer values less than the total number of the keyword topics for labeled documents and `NA` should be assigned to non-labeled documents.")
-    }
-
-    obj$labels[is.na(obj$labels)] <- 0 # insert -1 to NA values
-    obj$labels <- as.integer(obj$labels) - 1L  # index starts from 0 in C++, you do not need to worry about NA here
-
-
-    if (!isTRUE(all(obj$labels == floor(obj$labels)))) {
-      cli::cli_abort("`model_settings$labels` must only contain integer values for labeled documents and `NA` should be assigned to non-labeled documents")
-    }
-
-    allowed_arguments <- c(allowed_arguments, "labels")
-  }
-
   show_unused_arguments(obj, "`model_settings`", allowed_arguments)
   return(obj)
 }
@@ -839,7 +811,7 @@ check_arg_priors <- function(obj, model, info)
 
 
   # alpha
-  if (model %in% c("base", "lda", "label")) {
+  if (model %in% c("base", "lda")) {
     if (is.null(obj$alpha)) {
       obj$alpha <- rep(1/info$total_k, info$total_k)
     }
@@ -927,7 +899,7 @@ check_arg_options <- function(obj, model, info)
 
 
   # Estimate alpha
-  if (model %in% c("base", "lda", "label")) {
+  if (model %in% c("base", "lda")) {
     if (is.null(obj$estimate_alpha)) {
       obj$estimate_alpha <- 1L
     } else {

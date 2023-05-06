@@ -18,7 +18,7 @@ keyATM(
 \arguments{
 \item{docs}{texts read via \code{\link[=keyATM_read]{keyATM_read()}}.}
 
-\item{model}{keyATM model: \code{base}, \code{covariates}, \code{dynamic}, and \code{label}.}
+\item{model}{keyATM model: \code{base}, \code{covariates}, and \code{dynamic}.}
 
 \item{no_keyword_topics}{the number of regular topics.}
 

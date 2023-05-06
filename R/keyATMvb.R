@@ -26,7 +26,7 @@ keyATMvb <- function(docs, model, no_keyword_topics,
   if (length(keep) != 0)
     check_arg_type(keep, "character")
 
-  model <- full_model_name(model, type="keyATM")
+  model <- full_model_name(model, type = "keyATM")
   if (is.null(options$iterations)) {
     options$iterations <- 100
   }
@@ -64,12 +64,12 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
 
   no_keyword_topics <- as.integer(no_keyword_topics)
 
-  if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm", "label")) {
+  if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm")) {
     cli::cli_abort("Please select a correct model.")
   }
 
   info <- list(
-                models_keyATM = c("base", "cov", "hmm", "label"),
+                models_keyATM = c("base", "cov", "hmm"),
                 models_lda = c("lda", "ldacov", "ldahmm")
               )
   keywords <- check_arg(keywords, "keywords", model, info)

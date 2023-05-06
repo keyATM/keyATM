@@ -17,7 +17,7 @@ is.formula <- function(x) {
 }
 
 
-full_model_name <- function(model = c("base", "covariates", "dynamic", "label"),
+full_model_name <- function(model = c("base", "covariates", "dynamic"),
                             type = c("keyATM", "lda"))
 {
   model <- rlang::arg_match(model)
@@ -31,8 +31,6 @@ full_model_name <- function(model = c("base", "covariates", "dynamic", "label"),
       return("cov")
     } else if (model == "dynamic") {
       return("hmm")
-    } else if (model == "label") {
-      return("label")
     } else {
       cli::cli_abort("Please select a correct model.")
     }
@@ -65,8 +63,6 @@ abb_model_name <- function(fullname)
     return("covariates")
   } else if (fullname %in% c("hmm", "ldahmm")) {
     return("dynamic")
-  } else if (fullname %in% "label") {
-    return("label")
   } else {
     cli::cli_abort("Invalid full model name.")
   }
@@ -88,8 +84,6 @@ extract_full_model_name <- function(obj)
     return("ldacov")
   } else if ("ldahmm" %in% class(obj)) {
     return("ldahmm")
-  } else if ("label" %in% class(obj)) {
-    return("label")
   }
 }
 

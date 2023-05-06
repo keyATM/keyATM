@@ -3,7 +3,7 @@
 #' Fit keyATM models.
 #'
 #' @param docs texts read via [keyATM_read()].
-#' @param model keyATM model: \code{base}, \code{covariates}, \code{dynamic}, and \code{label}.
+#' @param model keyATM model: \code{base}, \code{covariates}, and \code{dynamic}.
 #' @param no_keyword_topics the number of regular topics.
 #' @param keywords a list of keywords.
 #' @param model_settings a list of model specific settings (details are in the online documentation).

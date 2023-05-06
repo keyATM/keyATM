@@ -32,8 +32,6 @@ navbar:
           href: articles/pkgdown_files/keyATM_cov.html
         - text: "keyATM Dynamic"
           href: articles/pkgdown_files/keyATM_dynamic.html
-        - text: "keyATM Label"
-          href: articles/pkgdown_files/keyATM_label.html
         - text: "Weighted LDA"
           href: articles/pkgdown_files/Weighted_LDA.html
         - text: "Customizing Plots"
