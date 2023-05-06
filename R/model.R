@@ -312,11 +312,11 @@ get_doc_index <- function(W_raw, check = FALSE)
 }
 
 
-#' Fit a keyATM model
+#' Initialize a keyATM model
 #'
-#' keyATM_fit is wrapped by keyATM() and weightedLDA()
+#' keyATM_initialize is wrapped by keyATM() and weightedLDA()
 #' @keywords internal
-keyATM_fit <- function(docs, model, no_keyword_topics,
+keyATM_initialize <- function(docs, model, no_keyword_topics,
                        keywords = list(), model_settings = list(),
                        priors = list(), options = list())
 {
@@ -457,20 +457,19 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   rm(info)
   class(key_model) <- c("keyATM_model", model, class(key_model))
 
-  if (options$iterations == 0) {
-    cli::cli_alert_info("`options$iterations` is 0. keyATM returns an initialized object.")
-    return(key_model)
-  }
-
-
-  ##
-  ## Fitting
-  ##
-  return(fitting_models(key_model, model, options))
+  keyATM_initialized <- list(model = key_model, model_name = model, options = options)
+  class(keyATM_initialized) <- c("keyATM_initialized", class(keyATM_initialized))
+  return(keyATM_initialized)
 }
 
-fitting_models <- function(key_model, model, options)
+keyATM_fit <- function(keyATM_initialized)
 {
+  if (! "keyATM_initialized" %in% class(keyATM_initialized))
+    cli::cli_abort("The input is not an initialized object.")
+  key_model <- keyATM_initialized$model
+  model <- keyATM_initialized$model_name
+  options <- keyATM_initialized$options
+
   cli::cli_alert("Fitting the model. {options$iterations} iteration{?s}...")
   set.seed(options$seed)
 

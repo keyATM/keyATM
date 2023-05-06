@@ -100,15 +100,19 @@ keyATM <- function(docs, model, no_keyword_topics,
     options$seed <- floor(stats::runif(1)*1e5)
   set.seed(options$seed)
 
-  # Fit keyATM
-  fitted <- keyATM_fit(
+  # Initialize keyATM
+  initialized <- keyATM_initialize(
     docs, model, no_keyword_topics,
     keywords, model_settings, priors, options
   )
 
   # 0 iterations
-  if (fitted$options$iterations == 0)
-    return(fitted)
+  if (initialized$options$iterations == 0) {
+    cli::cli_alert_info("`options$iterations` is 0. keyATM returns an initialized object.")
+    return(initialized)
+  }
+
+  fitted <- keyATM_fit(initialized)
 
   # Get output
   out <- keyATM_output(fitted, keep)
@@ -196,17 +200,19 @@ weightedLDA <- function(docs, model, number_of_topics,
   model <- full_model_name(model, type = "lda")
 
   # Fit keyATM
-  fitted <- keyATM_fit(
-                       docs, model, number_of_topics,
-                       keywords = list(),
-                       model_settings = model_settings,
-                       priors = priors,
-                       options = options
-                      )
+  initialized <- keyATM_initialize(
+    docs, model, number_of_topics,
+    keywords = list(), model_settings = model_settings,
+    priors = priors, options = options
+  )
 
   # 0 iterations
-  if (fitted$options$iterations == 0)
-    return(fitted)
+  if (initialized$options$iterations == 0) {
+    cli::cli_alert_info("`options$iterations` is 0. keyATM returns an initialized object.")
+    return(initialized)
+  }
+
+  fitted <- keyATM_fit(initialized)
 
   # Get output
   out <- keyATM_output(fitted, keep)

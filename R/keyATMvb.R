@@ -185,17 +185,19 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
   rm(info)
   class(key_model) <- c("keyATM_model", model, class(key_model))
 
+  keyATM_initialized <- list(model = key_model, model_name = model, options = options)
+  class(keyATM_initialized) <- c("keyATM_initialized", class(keyATM_initialized))
+
   # MCMC initialization
   if (vb_options$init == "mcmc") {
     cli::cli_alert("Initializing with MCMC..")
-    key_model <- fitting_models(key_model, model, options)
+    key_model <- keyATM_fit(keyATM_initialized)
   } else {
    # Do nothing
-    options$iterations <- 1L
-    key_model$options$iterations <- 1L
-    key_model <- fitting_models(key_model, model, options)
+    keyATM_initialized$options$iterations <- 1L
+    keyATM_initialized$model$options$iterations <- 1L
+    key_model <- keyATM_fit(keyATM_initialized)
   }
-
 
   # Fit VB
   set.seed(key_model$options$seed)

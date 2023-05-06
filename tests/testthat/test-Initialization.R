@@ -28,8 +28,8 @@ test_that("Parallel initialization", {
                 keywords = bills_keywords,  # keywords
                 model = "base",  # select the model
                 options = list(seed = 250, iterations = 0, parallel_init = TRUE))
-  expect_identical(out$Z[[1]][3], 1L)
-  expect_identical(out$Z[[140]][15], 3L)
+  expect_identical(out$model$Z[[1]][3], 1L)
+  expect_identical(out$model$Z[[140]][15], 3L)
 })
 
 
@@ -96,7 +96,7 @@ test_that("Documents with length 0: base", {
                   model = "base",  # select the model
                   options = list(seed = 250, iterations = 0))
   )
-  expect_identical(length(out$Z), 138L)
+  expect_identical(length(out$model$Z), 138L)
 
   expect_warning(
     out <- keyATM(docs = docs0,  # text input
@@ -123,8 +123,8 @@ test_that("Documents with length 0: covariate", {
                   options = list(seed = 250, iterations = 0))
   )
 
-  expect_identical(length(out$Z), 138L)
-  expect_identical(nrow(out$model_settings$covariates_data_use), 138L)
+  expect_identical(length(out$model$Z), 138L)
+  expect_identical(nrow(out$model$model_settings$covariates_data_use), 138L)
 
   expect_warning(
     out <- keyATM(docs = docs0,  # text input
@@ -153,8 +153,8 @@ test_that("Documents with length 0: dynamic", {
                   options = list(seed = 250, iterations = 0))
   )
 
-  expect_identical(length(out$Z), 138L)
-  expect_identical(length(out$model_settings$time_index), 138L)
+  expect_identical(length(out$model$Z), 138L)
+  expect_identical(length(out$model$model_settings$time_index), 138L)
 
   expect_warning(
     out <- keyATM(docs = docs0,  # text input
