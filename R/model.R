@@ -194,15 +194,15 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
   unnested_data <- tibble::tibble(text_split = unlisted)
   totalwords <- nrow(unnested_data)
 
-  unnested_data %>%
+  data <- unnested_data %>%
     dplyr::rename(Word = .data$text_split) %>%
     dplyr::group_by(.data$Word) %>%
     dplyr::summarize(WordCount = dplyr::n()) %>%
     dplyr::mutate(`Proportion(%)` = round(.data$WordCount / totalwords * 100, 3)) %>%
     dplyr::arrange(dplyr::desc(.data$WordCount)) %>%
-    dplyr::mutate(Ranking = 1:(dplyr::n())) -> data
+    dplyr::mutate(Ranking = 1:(dplyr::n()))
 
-  keywords <- lapply(keywords, function(x) {unlist(strsplit(x," "))})
+  keywords <- lapply(keywords, function(x) {unlist(strsplit(x, " "))})
   ext_k <- length(keywords)
   max_num_words <- max(unlist(lapply(keywords, function(x) {length(x)}), use.names = FALSE))
 
@@ -225,11 +225,11 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
   keywords_df <- keywords_df[2:nrow(keywords_df), ]
   keywords_df$Topic <- factor(keywords_df$Topic, levels = unique(keywords_df$Topic))
 
-  dplyr::right_join(data, keywords_df, by = "Word") %>%
+  temp <- dplyr::right_join(data, keywords_df, by = "Word") %>%
     dplyr::group_by(.data$Topic) %>%
     dplyr::arrange(dplyr::desc(.data$WordCount)) %>%
     dplyr::mutate(Ranking  =  1:(dplyr::n())) %>%
-    dplyr::arrange(.data$Topic, .data$Ranking) -> temp
+    dplyr::arrange(.data$Topic, .data$Ranking)
 
   # Visualize
   visualize_keywords <-
@@ -261,29 +261,19 @@ check_keywords <- function(unique_words, keywords, prune)
   if (prune) {
     # Prune keywords
     if (length(non_existent) != 0) {
-     if (length(non_existent) == 1) {
-       cli::cli_warn("A keyword will be pruned because it does not appear in documents: ",
-               paste(non_existent, collapse = ", "), immediate. = TRUE)
-     } else {
-       cli::cli_warn("Keywords will be pruned because they do not appear in documents: ",
-               paste(non_existent, collapse = ", "), immediate. = TRUE)
-     }
+      cli::cli_warn(
+        "{?A keyword/Keywords} {?is/are} pruned because {?it does/they do} not appear in the documents: {non_existent}",
+        immediate. = TRUE
+      )
     }
 
-    keywords <- lapply(keywords,
-                       function(x) {
-                          x[!x %in% non_existent]
-                       })
+    keywords <- lapply(keywords, function(x) {x[!x %in% non_existent]})
 
   } else {
 
     # Raise error
     if (length(non_existent) != 0) {
-     if (length(non_existent) == 1) {
-       cli::cli_abort("A keyword not found in texts: ", paste(non_existent, collapse = ", "))
-     } else {
-       cli::cli_abort("Keywords not found in texts: ", paste(non_existent, collapse = ", "))
-     }
+      cli::cli_abort("{?A keyword/Keywords} {?is/are} not found in the documents: {non_existent}", immediate. = TRUE)
     }
 
   }
@@ -306,22 +296,16 @@ get_doc_index <- function(W_raw, check = FALSE)
   len <- lapply(W_raw, length) %>% unlist(use.names = FALSE)
   index <- 1:length(W_raw)
   nonzero_index <- index[index[len != 0]]
-  zero_index <- index[index[len == 0]]
-  zero_index_num <- length(zero_index)
-  if (zero_index_num != 0) {
+  zero_index <- as.character(index[index[len == 0]])  # as.character to use `cli::cli_warn`
+  if (length(zero_index) != 0) {
     if (check) {
-      cli::cli_warn(c(paste0(
-        "There {?is/are} {zero_index_num} document{?s} with length 0 length. {?Index/Indexes} to check: ",
-          paste(zero_index, collapse = ", ")),
+      cli::cli_warn(c(
+        "There {?is a/are} document{?s} with length 0 length. {?Index/Indexes} to check: {zero_index}",
         "i" = paste0(
-          "This may cause invalid covariates or time indexes. ",
-          "Please review the preprocessing steps."
+          "This may cause invalid covariates or time indexes. Please review the preprocessing steps."
         )), immediate. = TRUE)
     } else {
-      cli::cli_warn(c(paste0(
-        "There {?is/are} {zero_index_num} document{?s} dropped because of 0 length. {?Index/Indexes} to check: ",
-        paste(zero_index, collapse = ", ")
-        )), immediate. = TRUE)
+      cli::cli_warn("There {?is a/are}  document{?s} dropped because of 0 length. {?Index/Indexes} to check: {zero_index}", immediate. = TRUE)
     }
   }
   return(nonzero_index)
@@ -460,19 +444,15 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
   }
 
   key_model <- list(
-                    W = W, Z = Z, S = S,
-                    model = abb_model_name(model),
-                    keywords = keywords_id, keywords_raw = keywords_raw,
-                    no_keyword_topics = no_keyword_topics,
-                    keyword_k = length(keywords_raw),
-                    vocab = info$wd_names,
-                    model_settings = model_settings,
-                    priors = priors,
-                    options = options,
-                    stored_values = stored_values,
-                    model_fit = list(),
-                    call = match.call()
-                   )
+    W = W, Z = Z, S = S,
+    model = abb_model_name(model),
+    keywords = keywords_id, keywords_raw = keywords_raw,
+    no_keyword_topics = no_keyword_topics,
+    keyword_k = length(keywords_raw),
+    vocab = info$wd_names,
+    model_settings = model_settings, priors = priors, options = options,
+    stored_values = stored_values, model_fit = list(), call = match.call()
+  )
 
   rm(info)
   class(key_model) <- c("keyATM_model", model, class(key_model))

@@ -95,7 +95,7 @@ keyATM <- function(docs, model, no_keyword_topics,
   if (length(keep) != 0)
     check_arg_type(keep, "character")
 
-  model <- full_model_name(model, type="keyATM")
+  model <- full_model_name(model, type = "keyATM")
   if (is.null(options$seed))
     options$seed <- floor(stats::runif(1)*1e5)
   set.seed(options$seed)
@@ -193,7 +193,7 @@ weightedLDA <- function(docs, model, number_of_topics,
   if (length(keep) != 0)
     check_arg_type(keep, "character")
 
-  model <- full_model_name(model, type="lda")
+  model <- full_model_name(model, type = "lda")
 
   # Fit keyATM
   fitted <- keyATM_fit(
