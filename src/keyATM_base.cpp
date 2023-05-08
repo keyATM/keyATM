@@ -5,7 +5,7 @@ using namespace Rcpp;
 using namespace std;
 
 
-void keyATMbase::read_data_specific()
+void keyATMbase::initialize_specific()
 {
   nv_alpha = priors_list["alpha"];
   alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
@@ -19,12 +19,21 @@ void keyATMbase::read_data_specific()
 }
 
 
-void keyATMbase::initialize_specific()
+void keyATMbase::resume_initialize_specific()
 {
-  // No additional initialization
-  // This part is used when there is a model specific need
-  // to initialize variables.
+  estimate_alpha = options_list["estimate_alpha"];
+  if (estimate_alpha == 0) {
+    nv_alpha = priors_list["alpha"];
+    alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
+    store_alpha = 0;
+  } else {
+    List alpha_iter = stored_values["alpha_iter"];
+    NumericVector alpha_rvec = alpha_iter[alpha_iter.size() - 1];  // last estimated alpha
+    alpha = Rcpp::as<Eigen::VectorXd>(alpha_rvec);
+    store_alpha = 1;
+  }
 }
+
 
 void keyATMbase::iteration_single(int it)
 { // Single iteration

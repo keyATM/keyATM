@@ -63,7 +63,11 @@ List keyATM_fit_base(List model, bool resume = false)
 List keyATM_fit_cov(List model, bool resume = false)
 {
   keyATMcov keyATMcov_model(model);
-  keyATMcov_model.fit();
+  if (resume) {
+    keyATMcov_model.resume_fit();
+  } else {
+    keyATMcov_model.fit();
+  }
   model = keyATMcov_model.return_model();
   return model;
 }
@@ -79,7 +83,11 @@ List keyATM_fit_cov(List model, bool resume = false)
 List keyATM_fit_covPG(List model, bool resume = false)
 {
   keyATMcovPG keyATMcov_modelPG(model);
-  keyATMcov_modelPG.fit();
+  if (resume) {
+    keyATMcov_modelPG.resume_fit();
+  } else {
+    keyATMcov_modelPG.fit();
+  }
   model = keyATMcov_modelPG.return_model();
   return model;
 }
@@ -95,7 +103,11 @@ List keyATM_fit_covPG(List model, bool resume = false)
 List keyATM_fit_HMM(List model, bool resume = false)
 {
   keyATMhmm hmm_model(model);
-  hmm_model.fit();
+  if (resume) {
+    hmm_model.resume_fit();
+  } else {
+    hmm_model.fit();
+  }
   model = hmm_model.return_model();
   return model;
 }
@@ -111,7 +123,11 @@ List keyATM_fit_HMM(List model, bool resume = false)
 List keyATM_fit_LDA(List model, bool resume = false)
 {
   LDAweight LDAweight_model(model);
-  LDAweight_model.fit();
+  if (resume) {
+    LDAweight_model.resume_fit();
+  } else {
+    LDAweight_model.fit();
+  }
   model = LDAweight_model.return_model();
   return model;
 }
@@ -127,7 +143,11 @@ List keyATM_fit_LDA(List model, bool resume = false)
 List keyATM_fit_LDAcov(List model, bool resume = false)
 {
   LDAcov ldacov_model(model);
-  ldacov_model.fit();
+  if (resume) {
+    ldacov_model.resume_fit();
+  } else {
+    ldacov_model.fit();
+  }
   model = ldacov_model.return_model();
   return model;
 }
@@ -143,7 +163,11 @@ List keyATM_fit_LDAcov(List model, bool resume = false)
 List keyATM_fit_LDAHMM(List model, bool resume = false)
 {
   LDAhmm ldahmm_model(model);
-  ldahmm_model.fit();
+  if (resume) {
+    ldahmm_model.resume_fit();
+  } else {
+    ldahmm_model.fit();
+  }
   model = ldahmm_model.return_model();
   return model;
 }

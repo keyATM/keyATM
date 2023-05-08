@@ -218,10 +218,10 @@ weightedLDA <- function(docs, model, number_of_topics,
 
  # Check if there is a resume object
   if ("resume" %in% names(options) && fs::file_exists(options$resume)) {
-    fitted <- fitted_load(options$resume)
-    fitted <- fitted_update_iterations(fitted, options)
-    exists_iter <- fitted$used_iter
     resume <- TRUE
+    fitted <- fitted_load(options$resume)
+    exists_iter <- fitted$used_iter
+    fitted <- fitted_update_iterations(fitted, options)
     fitted <- keyATM_fit(fitted, resume = TRUE)
     used_iter <- get_used_iter(fitted, resume, exists = exists_iter)
   } else {
@@ -278,7 +278,7 @@ fitted_save <- function(filename, fitted, model_name, used_iter) {
     model = fitted,
     model_name = model_name,
     used_iter = used_iter,
-    rand_state = .Random.seed
+    rand_state = .GlobalEnv$.Random.seed
   )
   class(saveobj) <- c("keyATM_resume", class(saveobj))
   saveRDS(object = saveobj, file = filename)

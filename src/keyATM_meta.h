@@ -138,7 +138,7 @@ class keyATMmeta
     // Reading and Initialization
     void read_data();
       virtual void read_data_common();
-      virtual void read_data_specific() = 0;
+      virtual void read_data_specific() {};
 
     void initialize();
       virtual void initialize_common();
@@ -149,8 +149,7 @@ class keyATMmeta
       void weights_normalize_total();
 
     void resume_initialize();
-      // virtual void resume_initialize_common();
-      // virtual void resume_initialize_specific() = 0;
+      virtual void resume_initialize_specific() {};
 
 
     //

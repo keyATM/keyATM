@@ -20,18 +20,18 @@ void LDAweight::iteration_single(int it)
     doc_id_ = doc_indexes[ii];
     doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
-    
+
     token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
-    
+
     // Iterate each word in the document
     for (int jj = 0; jj < doc_length; jj++) {
       w_position = token_indexes[jj];
       z_ = doc_z[w_position], w_ = doc_w[w_position];
-    
+
       new_z = sample_z(alpha, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
     }
-    
+
     Z[doc_id_] = doc_z;
   }
   sample_parameters(it);

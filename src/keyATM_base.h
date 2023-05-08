@@ -37,11 +37,11 @@ class keyATMbase : virtual public keyATMmeta
     keyATMbase(List model_) :
       keyATMmeta(model_) {};
 
-    // Read data
-    virtual void read_data_specific() override final;
-
-    // Initialization
+    // Initialize
     virtual void initialize_specific() override final;
+
+    // Resume
+    virtual void resume_initialize_specific() override final;
 
     // Iteration
     virtual void iteration_single(int it) override;

@@ -461,7 +461,7 @@ keyATM_fit <- function(keyATM_initialized, resume = FALSE)
   iterations <- key_model$options$iter_new
 
   if ("keyATM_resume" %in% class(keyATM_initialized)) {
-    .Random.seed <- keyATM_initialized$rand_state  # to resume
+    .GlobalEnv$.Random.seed <- keyATM_initialized$rand_state  # to resume
     cli::cli_inform("Fitting the model... (adding {iterations} iteration{?s} to the existing {key_model$options$iterations - iterations} iteration{?s} for a total of {key_model$options$iterations} iteration{?s})")
   } else {
     set.seed(key_model$options$seed)

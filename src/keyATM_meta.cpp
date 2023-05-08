@@ -287,8 +287,8 @@ void keyATMmeta::weights_normalize_total()
 //
 void keyATMmeta::resume_initialize()
 {
-  Rcout << "Update resume_initialie" << endl;
-  initialize();
+  initialize_common();
+  resume_initialize_specific();
 }
 
 
