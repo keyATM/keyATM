@@ -129,9 +129,11 @@ class keyATMmeta
     //
     // Functions
     //
-    keyATMmeta(List model_, const int iter_);
+    keyATMmeta(List model_);
     ~keyATMmeta();
+
     void fit();
+    void resume_fit();
 
     // Reading and Initialization
     void read_data();
@@ -146,7 +148,10 @@ class keyATMmeta
       void weights_inftheory();
       void weights_normalize_total();
 
-      void initialize_betas();
+    void resume_initialize();
+      // virtual void resume_initialize_common();
+      // virtual void resume_initialize_specific() = 0;
+
 
     //
     // Sampling

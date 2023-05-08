@@ -28,8 +28,8 @@ class keyATMcovPG : virtual public keyATMmeta
       std::vector<int> cov_ids;
 
     // Constructor
-    keyATMcovPG(List model_, const int iter_) :
-      keyATMmeta(model_, iter_) {};
+    keyATMcovPG(List model_) :
+      keyATMmeta(model_) {};
 
     // Read data
     void read_data_specific() override final;

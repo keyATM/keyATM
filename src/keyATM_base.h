@@ -34,8 +34,8 @@ class keyATMbase : virtual public keyATMmeta
     //
 
     // Constructor
-    keyATMbase(List model_, const int iter_) :
-      keyATMmeta(model_, iter_) {};
+    keyATMbase(List model_) :
+      keyATMmeta(model_) {};
 
     // Read data
     virtual void read_data_specific() override final;

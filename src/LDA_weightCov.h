@@ -17,10 +17,10 @@ class LDAcov : public LDAbase, public keyATMcov
 {
   public:
     // Constructor
-    LDAcov(List model_, const int iter_) :
-      keyATMmeta(model_, iter_),
-      LDAbase(model_, iter_),
-      keyATMcov(model_, iter_) {};
+    LDAcov(List model_) :
+      keyATMmeta(model_),
+      LDAbase(model_),
+      keyATMcov(model_) {};
 
     // Functions
     void iteration_single(int it) override final;

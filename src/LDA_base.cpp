@@ -158,8 +158,7 @@ int LDAbase::sample_z(VectorXd &alpha, int z, int s, int w, int doc_id)
   n_dk(doc_id, z) -= vocab_weights(w);
   n_dk_noWeight(doc_id, z) -= 1;
 
-  new_z = -1; // debug
-
+  new_z = -1; // initialize
 
   for (int k = 0; k < num_topics; ++k) {
 

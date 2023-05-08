@@ -118,11 +118,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
 #' @export
 print.keyATM_docs <- function(x, ...)
 {
-  cat(paste0("keyATM_docs object of ",
-                 length(x$W_raw), " documents",
-                 ".\n"
-                )
-      )
+  cli::cli_inform("keyATM_docs object of {length(x$W_raw)} documents.")
 }
 
 
@@ -131,18 +127,11 @@ print.keyATM_docs <- function(x, ...)
 summary.keyATM_docs <- function(object, ...)
 {
   doc_len <- sapply(object$W_raw, length)
-  cat(paste0("keyATM_docs object of ",
-              length(object$W_raw), " documents",
-              ".\n",
-              "Length of documents:",
-              "\n  Avg: ", round(mean(doc_len), 3),
-              "\n  Min: ", round(min(doc_len), 3),
-              "\n  Max: ", round(max(doc_len), 3),
-              "\n   SD: ", round(stats::sd(doc_len), 3),
-              "\nNumber of unique words: ", length(object$wd_names),
-              "\n"
-             )
-         )
+  cli::cli_inform("keyATM_docs object of {length(object$W_raw)} documents.")
+  ul <- cli::cli_ul()
+  cli::cli_li("Average (min/max) document length: {round(mean(doc_len), 2)} ({min(doc_len)}/{max(doc_len)}) words")
+  cli::cli_li("Number of unique words: {length(object$wd_names)}")
+  cli::cli_end(ul)
 }
 
 
@@ -367,7 +356,7 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
   ##
   ## Initialization
   ##
-  cli::cli_alert("Initializing the model...")
+  cli::cli_inform("Initializing the model...")
   set.seed(options$seed)
 
   # W
@@ -457,41 +446,48 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
   rm(info)
   class(key_model) <- c("keyATM_model", model, class(key_model))
 
-  keyATM_initialized <- list(model = key_model, model_name = model, options = options)
+  keyATM_initialized <- list(model = key_model, model_name = model)
   class(keyATM_initialized) <- c("keyATM_initialized", class(keyATM_initialized))
   return(keyATM_initialized)
 }
 
-keyATM_fit <- function(keyATM_initialized)
+keyATM_fit <- function(keyATM_initialized, resume = FALSE)
 {
-  if (! "keyATM_initialized" %in% class(keyATM_initialized))
+  if (! ("keyATM_initialized" %in% class(keyATM_initialized) | "keyATM_resume" %in% class(keyATM_initialized)))
     cli::cli_abort("The input is not an initialized object.")
+
   key_model <- keyATM_initialized$model
-  model <- keyATM_initialized$model_name
-  options <- keyATM_initialized$options
+  model_name <- keyATM_initialized$model_name
+  iterations <- key_model$options$iter_new
 
-  cli::cli_alert("Fitting the model. {options$iterations} iteration{?s}...")
-  set.seed(options$seed)
-
-  if (model == "base") {
-    key_model <- keyATM_fit_base(key_model, iter = options$iterations)
-  } else if (model == "hmm") {
-    key_model <- keyATM_fit_HMM(key_model, iter = options$iteration)
-  } else if (model == "lda") {
-    key_model <- keyATM_fit_LDA(key_model, iter = options$iteration)
-  } else if (model == "ldacov") {
-    key_model <- keyATM_fit_LDAcov(key_model, iter = options$iteration)
-  } else if (model == "ldahmm") {
-    key_model <- keyATM_fit_LDAHMM(key_model, iter = options$iteration)
-  } else if (model == "cov" & key_model$model_settings$covariates_model == "PG") {
-    key_model <- keyATM_fit_covPG(key_model, iter = options$iteration)
-  } else if (model == "cov" & key_model$model_settings$covariates_model == "DirMulti") {
-    key_model <- keyATM_fit_cov(key_model, iter = options$iteration)
+  if ("keyATM_resume" %in% class(keyATM_initialized)) {
+    .Random.seed <- keyATM_initialized$rand_state  # to resume
+    cli::cli_inform("Fitting the model... (adding {iterations} iteration{?s} to the existing {key_model$options$iterations - iterations} iteration{?s} for a total of {key_model$options$iterations} iteration{?s})")
   } else {
-    cli::cli_abort("Please check {.var mode}.")
+    set.seed(key_model$options$seed)
+    cli::cli_inform("Fitting the model. {iterations} iteration{?s}...")
   }
 
-  class(key_model) <- c("keyATM_fitted", class(key_model))
+  if (model_name == "base") {
+    key_model <- keyATM_fit_base(key_model, resume = resume)
+  } else if (model_name == "hmm") {
+    key_model <- keyATM_fit_HMM(key_model, resume = resume)
+  } else if (model_name == "lda") {
+    key_model <- keyATM_fit_LDA(key_model, resume = resume)
+  } else if (model_name == "ldacov") {
+    key_model <- keyATM_fit_LDAcov(key_model, resume = resume)
+  } else if (model_name == "ldahmm") {
+    key_model <- keyATM_fit_LDAHMM(key_model, resume = resume)
+  } else if (model_name == "cov" & key_model$model_settings$covariates_model == "PG") {
+    key_model <- keyATM_fit_covPG(key_model,  resume = resume)
+  } else if (model_name == "cov" & key_model$model_settings$covariates_model == "DirMulti") {
+    key_model <- keyATM_fit_cov(key_model, resume = resume)
+  } else {
+    cli::cli_abort("Please check {.var model}.")
+  }
+  if (! "keyATM_fitted" %in% class(key_model))
+    class(key_model) <- c("keyATM_fitted", class(key_model))
+
   return(key_model)
 }
 
@@ -500,14 +496,7 @@ keyATM_fit <- function(keyATM_initialized)
 #' @export
 print.keyATM_model <- function(x, ...)
 {
-  cat(
-      paste0(
-             "keyATM_model object for the ",
-             x$model,
-             " model.\nThis is an initialized object without fitting the model.",
-             "\n"
-            )
-     )
+  cli::cli_inform("keyATM_model object for the {x$model} model.")
 }
 
 
@@ -516,19 +505,15 @@ check_arg <- function(obj, name, model, info = list())
   if (name == "keywords") {
     return(check_arg_keywords(obj, model, info))
   }
-
   if (name == "model_settings") {
     return(check_arg_model_settings(obj, model, info))
   }
-
   if (name == "priors") {
     return(check_arg_priors(obj, model, info))
   }
-
   if (name == "options") {
     return(check_arg_options(obj, model, info))
   }
-
   if (name == "vb_options") {
     return(check_arg_vboptions(obj, model, info))
   }
@@ -546,7 +531,6 @@ check_arg_keywords <- function(keywords, model, info)
   if (length(keywords) != 0 & model %in% info$models_lda) {
     cli::cli_abort("This model does not take keywords.")
   }
-
 
   # Name of keywords topic
   if (model %in% info$models_keyATM) {
@@ -830,10 +814,10 @@ check_arg_options <- function(obj, model, info)
 {
   check_arg_type(obj, "list")
   allowed_arguments <- c("seed", "llk_per", "thinning",
-                         "iterations", "verbose",
+                         "iterations", "iter_new", "verbose",
                          "use_weights", "weights_type",
                          "prune", "store_theta", "slice_shape",
-                         "parallel_init")
+                         "parallel_init", "resume")
 
   # llk_per
   if (is.null(obj$llk_per))
@@ -862,13 +846,11 @@ check_arg_options <- function(obj, model, info)
       cli::cli_abort("An invalid value in `options$thinning`")
   }
 
-  # seed
-  if (is.null(obj$seed))
-    obj$seed <- floor(stats::runif(1)*1e5)
-
   # iterations
-  if (is.null(obj$iterations))
+  if (is.null(obj$iterations)) {
     obj$iterations <- 1500L
+  }
+  obj$iter_new <- obj$iterations  # this is initialization so new iteration = total number of iterations
   if (!is.numeric(obj$iterations) | obj$iterations < 0 | obj$iterations %% 1 != 0) {
       cli::cli_abort("An invalid value in `options$iterations`")
   }
@@ -970,7 +952,11 @@ check_arg_options <- function(obj, model, info)
       cli::cli_abort("`obj$parallel_init` should be TRUE/FALSE")
     }
   }
-  allowed_arguments <- c(allowed_arguments, "parallel_init")
+
+  # Use parallel function in initialization
+  if (!"resume" %in% names(obj)) {
+    obj$resume <- ""
+  }
 
   # Check unused arguments
   show_unused_arguments(obj, "`options`", allowed_arguments)

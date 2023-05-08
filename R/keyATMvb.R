@@ -30,16 +30,20 @@ keyATMvb <- function(docs, model, no_keyword_topics,
   if (is.null(options$iterations)) {
     options$iterations <- 100
   }
+  if (is.null(options$seed))
+    options$seed <- floor(stats::runif(1) * 1e5)
+  set.seed(options$seed)
 
   # Initialize and fit keyATM (if MCMC initialization)
   fitted <- keyATMvb_fit(
-                         docs, model, no_keyword_topics,
-                         keywords, model_settings, vb_options,
-                         priors, options
-                        )
+    docs, model, no_keyword_topics,
+    keywords, model_settings, vb_options,
+    priors, options
+  )
 
   # Get output
-  out <- keyATM_output(fitted, keep)
+  used_iter <- get_used_iter(fitted, resume = FALSE)
+  out <- keyATM_output(fitted, keep, used_iter)
   # Add VB options
   out$vb_options <- fitted$vb_options
 
@@ -190,18 +194,18 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
 
   # MCMC initialization
   if (vb_options$init == "mcmc") {
-    cli::cli_alert("Initializing with MCMC..")
+    cli::cli_inform("Initializing with MCMC..")
     key_model <- keyATM_fit(keyATM_initialized)
   } else {
    # Do nothing
-    keyATM_initialized$options$iterations <- 1L
     keyATM_initialized$model$options$iterations <- 1L
+    keyATM_initialized$model$options$iter_new <- 1L
     key_model <- keyATM_fit(keyATM_initialized)
   }
 
   # Fit VB
   set.seed(key_model$options$seed)
-  cli::cli_alert("Fitting Variational Bayes...")
+  cli::cli_inform("Fitting Variational Bayes...")
   key_model$vb_options$Perplexity_VB <- list(value = list(), iter = list())
   key_model <- keyATMvb_call(key_model)
   class(key_model) <- c("keyATM_fitted_VB", class(key_model))

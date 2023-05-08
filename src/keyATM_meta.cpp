@@ -6,11 +6,10 @@ using namespace std;
 
 # define PI_V   3.14159265358979323846  /* pi */
 
-keyATMmeta::keyATMmeta(List model_, const int iter_)
+keyATMmeta::keyATMmeta(List model_)
 {
   // Constructor
   model = model_;
-  iter = iter_;
 }
 
 
@@ -25,6 +24,15 @@ void keyATMmeta::fit()
   // Read data, initialize the model and fit the model
   read_data();
   initialize();
+  iteration();
+}
+
+
+void keyATMmeta::resume_fit()
+{
+  // Resume from the saved object
+  read_data();
+  resume_initialize();
   iteration();
 }
 
@@ -146,7 +154,6 @@ void keyATMmeta::initialize_common()
   int doc_len;
   IntegerVector doc_s, doc_z, doc_w;
 
-
   //
   // Construct vocab weights
   //
@@ -183,6 +190,15 @@ void keyATMmeta::initialize_common()
     Rcpp::Rcout << "Not using weights!! Check `options$use_weights`." << std::endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
+
+  // Store weights
+  NumericVector vocab_weights_R = stored_values["vocab_weights"];
+
+  for (int v = 0; v < num_vocab; v++) {
+    vocab_weights_R[v] = vocab_weights(v);
+  }
+  stored_values["vocab_weights"] = vocab_weights_R;
+  model["stored_values"] = stored_values;
 
 
   //
@@ -266,12 +282,27 @@ void keyATMmeta::weights_normalize_total()
 }
 
 
+//
+// Initializing using the resume data
+//
+void keyATMmeta::resume_initialize()
+{
+  Rcout << "Update resume_initialie" << endl;
+  initialize();
+}
+
+
 void keyATMmeta::iteration()
 {
-  // Iteration
-  Progress progress_bar(iter, !(bool)verbose);
+  // Calculation thte number of iterations
+  iter = options_list["iterations"];  // total number of iterations after this fitting, defined at the class level
+  int iter_new = options_list["iter_new"];  // how many iterations to add
+  int iter_start = iter - iter_new;  // starting iteration number
 
-  for (int it = 0; it < iter; ++it) {
+  // Iteration
+  Progress progress_bar(iter_new, !(bool)verbose);
+
+  for (int it = iter_start; it < iter; ++it) {
     // Run iteration
     iteration_single(it);
 
@@ -385,7 +416,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int z, int s,
   n_dk(doc_id, z) -= vocab_weights(w);
   n_dk_noWeight(doc_id, z) -= 1.0;
 
-  new_z = -1; // debug
+  new_z = -1; // initialize
   if (s == 0) {
     for (int k = 0; k < num_topics; ++k) {
 
@@ -546,15 +577,5 @@ double keyATMmeta::gammaln_frac(const double value, const int count)
 List keyATMmeta::return_model()
 {
   // Return output to R
-
-  // Vocabulary weights
-  NumericVector vocab_weights_R = stored_values["vocab_weights"];
-
-  for (int v = 0; v < num_vocab; v++) {
-    vocab_weights_R[v] = vocab_weights(v);
-  }
-  stored_values["vocab_weights"] = vocab_weights_R;
-  model["stored_values"] = stored_values;
-
   return model;
 }

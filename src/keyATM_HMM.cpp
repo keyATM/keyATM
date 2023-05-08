@@ -91,10 +91,6 @@ void keyATMhmm::initialize_specific()
   }
   P_est(index_states, index_states) = 1;
 
-  // cout << R_est_num.transpose() << endl;  //debug
-  // cout << R_est.transpose() << endl;  //debug
-  // cout << P_est << endl;  //debug
-
   // Initialize alphas;
   alphas = MatrixXd::Constant(num_states, num_topics, 50.0/num_topics);
 

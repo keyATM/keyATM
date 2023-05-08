@@ -77,86 +77,86 @@ BEGIN_RCPP
 END_RCPP
 }
 // keyATM_fit_base
-List keyATM_fit_base(List model, int iter);
-RcppExport SEXP _keyATM_keyATM_fit_base(SEXP modelSEXP, SEXP iterSEXP) {
+List keyATM_fit_base(List model, bool resume);
+RcppExport SEXP _keyATM_keyATM_fit_base(SEXP modelSEXP, SEXP resumeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_fit_base(model, iter));
+    Rcpp::traits::input_parameter< bool >::type resume(resumeSEXP);
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_base(model, resume));
     return rcpp_result_gen;
 END_RCPP
 }
 // keyATM_fit_cov
-List keyATM_fit_cov(List model, int iter);
-RcppExport SEXP _keyATM_keyATM_fit_cov(SEXP modelSEXP, SEXP iterSEXP) {
+List keyATM_fit_cov(List model, bool resume);
+RcppExport SEXP _keyATM_keyATM_fit_cov(SEXP modelSEXP, SEXP resumeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_fit_cov(model, iter));
+    Rcpp::traits::input_parameter< bool >::type resume(resumeSEXP);
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_cov(model, resume));
     return rcpp_result_gen;
 END_RCPP
 }
 // keyATM_fit_covPG
-List keyATM_fit_covPG(List model, int iter);
-RcppExport SEXP _keyATM_keyATM_fit_covPG(SEXP modelSEXP, SEXP iterSEXP) {
+List keyATM_fit_covPG(List model, bool resume);
+RcppExport SEXP _keyATM_keyATM_fit_covPG(SEXP modelSEXP, SEXP resumeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_fit_covPG(model, iter));
+    Rcpp::traits::input_parameter< bool >::type resume(resumeSEXP);
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_covPG(model, resume));
     return rcpp_result_gen;
 END_RCPP
 }
 // keyATM_fit_HMM
-List keyATM_fit_HMM(List model, int iter);
-RcppExport SEXP _keyATM_keyATM_fit_HMM(SEXP modelSEXP, SEXP iterSEXP) {
+List keyATM_fit_HMM(List model, bool resume);
+RcppExport SEXP _keyATM_keyATM_fit_HMM(SEXP modelSEXP, SEXP resumeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_fit_HMM(model, iter));
+    Rcpp::traits::input_parameter< bool >::type resume(resumeSEXP);
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_HMM(model, resume));
     return rcpp_result_gen;
 END_RCPP
 }
 // keyATM_fit_LDA
-List keyATM_fit_LDA(List model, int iter);
-RcppExport SEXP _keyATM_keyATM_fit_LDA(SEXP modelSEXP, SEXP iterSEXP) {
+List keyATM_fit_LDA(List model, bool resume);
+RcppExport SEXP _keyATM_keyATM_fit_LDA(SEXP modelSEXP, SEXP resumeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_fit_LDA(model, iter));
+    Rcpp::traits::input_parameter< bool >::type resume(resumeSEXP);
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_LDA(model, resume));
     return rcpp_result_gen;
 END_RCPP
 }
 // keyATM_fit_LDAcov
-List keyATM_fit_LDAcov(List model, int iter);
-RcppExport SEXP _keyATM_keyATM_fit_LDAcov(SEXP modelSEXP, SEXP iterSEXP) {
+List keyATM_fit_LDAcov(List model, bool resume);
+RcppExport SEXP _keyATM_keyATM_fit_LDAcov(SEXP modelSEXP, SEXP resumeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_fit_LDAcov(model, iter));
+    Rcpp::traits::input_parameter< bool >::type resume(resumeSEXP);
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_LDAcov(model, resume));
     return rcpp_result_gen;
 END_RCPP
 }
 // keyATM_fit_LDAHMM
-List keyATM_fit_LDAHMM(List model, int iter);
-RcppExport SEXP _keyATM_keyATM_fit_LDAHMM(SEXP modelSEXP, SEXP iterSEXP) {
+List keyATM_fit_LDAHMM(List model, bool resume);
+RcppExport SEXP _keyATM_keyATM_fit_LDAHMM(SEXP modelSEXP, SEXP resumeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(keyATM_fit_LDAHMM(model, iter));
+    Rcpp::traits::input_parameter< bool >::type resume(resumeSEXP);
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_LDAHMM(model, resume));
     return rcpp_result_gen;
 END_RCPP
 }

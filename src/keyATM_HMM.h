@@ -40,8 +40,8 @@ class keyATMhmm : virtual public keyATMmeta
     MatrixXd alphas;  // (num_states, num_topics)
 
     // Constructor
-    keyATMhmm(List model_, const int iter_) :
-      keyATMmeta(model_, iter_) {};
+    keyATMhmm(List model_) :
+      keyATMmeta(model_) {};
 
     // During sampling
       // sample_forward()

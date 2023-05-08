@@ -17,10 +17,10 @@ class LDAhmm : public LDAbase, public keyATMhmm
 {
   public:
     // Constructor
-    LDAhmm(List model_, const int iter_) :
-      keyATMmeta(model_, iter_),
-      LDAbase(model_, iter_),
-      keyATMhmm(model_, iter_) {};
+    LDAhmm(List model_) :
+      keyATMmeta(model_),
+      LDAbase(model_),
+      keyATMhmm(model_) {};
 
     // Functions
     void iteration_single(int it) override final;

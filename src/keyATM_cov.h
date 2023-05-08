@@ -40,8 +40,8 @@ class keyATMcov : virtual public keyATMmeta
     //
 
     // Constructor
-    keyATMcov(List model_, const int iter_) :
-      keyATMmeta(model_, iter_) {};
+    keyATMcov(List model_) :
+      keyATMmeta(model_) {};
 
     // Read data
     virtual void read_data_specific() override final;

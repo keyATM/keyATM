@@ -16,6 +16,7 @@ Imports: Rcpp (>= 1.0.7),
   dplyr (>= 1.0.0),
   fastmap,
   future.apply,
+  fs (>= 1.6.0),
   ggplot2 (>= 3.4.0),
   ggrepel,
   magrittr,
@@ -36,7 +37,7 @@ LinkingTo: Rcpp,
   RcppProgress
 Suggests:
     readtext,
-    testthat (>= 2.1.0)
+    testthat (>= 3.1.5)
 URL: https://keyatm.github.io/keyATM/
 Encoding: UTF-8
 BugReports: https://github.com/keyATM/keyATM/issues

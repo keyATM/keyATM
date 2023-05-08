@@ -370,8 +370,6 @@ void keyATMvb::initialize_common_qz(int doc_id, int w, int z, int s, vector<doub
         (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
-      // if (k == z)  // checking, debug
-      //   z_prob_vec(k) *= 5;
     }
 
   } else {
@@ -388,8 +386,6 @@ void keyATMvb::initialize_common_qz(int doc_id, int w, int z, int s, vector<doub
         (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
-      // if (k == z)  // checking, debug
-      //   z_prob_vec(k) *= 5;
     }
 
   }

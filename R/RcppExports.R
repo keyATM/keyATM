@@ -59,70 +59,70 @@ read_dfm_cpp <- function(dfm, W_read, vocab, show_progress_bar, split) {
 #' Run the Collapsed Gibbs sampler for the keyATM Base
 #'
 #' @param model A initialized model
-#' @param iter Required number of iterations
+#' @param resume resume or not
 #'
 #' @keywords internal
-keyATM_fit_base <- function(model, iter = 0L) {
-    .Call(`_keyATM_keyATM_fit_base`, model, iter)
+keyATM_fit_base <- function(model, resume = FALSE) {
+    .Call(`_keyATM_keyATM_fit_base`, model, resume)
 }
 
 #' Run the Collapsed Gibbs sampler for the keyATM covariates (Dir-Multi)
 #'
 #' @param model A initialized model
-#' @param iter Required number of iterations
+#' @param resume resume or not
 #'
 #' @keywords internal
-keyATM_fit_cov <- function(model, iter = 0L) {
-    .Call(`_keyATM_keyATM_fit_cov`, model, iter)
+keyATM_fit_cov <- function(model, resume = FALSE) {
+    .Call(`_keyATM_keyATM_fit_cov`, model, resume)
 }
 
 #' Run the Collapsed Gibbs sampler for the keyATM covariates (Polya-Gamma)
 #'
 #' @param model A initialized model
-#' @param iter Required number of iterations
+#' @param resume resume or not
 #'
 #' @keywords internal
-keyATM_fit_covPG <- function(model, iter = 0L) {
-    .Call(`_keyATM_keyATM_fit_covPG`, model, iter)
+keyATM_fit_covPG <- function(model, resume = FALSE) {
+    .Call(`_keyATM_keyATM_fit_covPG`, model, resume)
 }
 
 #' Run the Collapsed Gibbs sampler for the keyATM Dynamic
 #'
 #' @param model A initialized model
-#' @param iter Required number of iterations
+#' @param resume resume or not
 #'
 #' @keywords internal
-keyATM_fit_HMM <- function(model, iter = 0L) {
-    .Call(`_keyATM_keyATM_fit_HMM`, model, iter)
+keyATM_fit_HMM <- function(model, resume = FALSE) {
+    .Call(`_keyATM_keyATM_fit_HMM`, model, resume)
 }
 
 #' Run the Collapsed Gibbs sampler for weighted LDA
 #'
 #' @param model A initialized model
-#' @param iter Required number of iterations
+#' @param resume resume or not
 #'
 #' @keywords internal
-keyATM_fit_LDA <- function(model, iter = 0L) {
-    .Call(`_keyATM_keyATM_fit_LDA`, model, iter)
+keyATM_fit_LDA <- function(model, resume = FALSE) {
+    .Call(`_keyATM_keyATM_fit_LDA`, model, resume)
 }
 
 #' Run the Collapsed Gibbs sampler for weighted LDA with covariates
 #'
 #' @param model A initialized model
-#' @param iter Required number of iterations
+#' @param resume resume or not
 #'
 #' @keywords internal
-keyATM_fit_LDAcov <- function(model, iter = 0L) {
-    .Call(`_keyATM_keyATM_fit_LDAcov`, model, iter)
+keyATM_fit_LDAcov <- function(model, resume = FALSE) {
+    .Call(`_keyATM_keyATM_fit_LDAcov`, model, resume)
 }
 
 #' Run the Collapsed Gibbs sampler for the weighted LDA with HMM model
 #'
 #' @param model A initialized model
-#' @param iter Required number of iterations
+#' @param resume resume or not
 #'
 #' @keywords internal
-keyATM_fit_LDAHMM <- function(model, iter = 0L) {
-    .Call(`_keyATM_keyATM_fit_LDAHMM`, model, iter)
+keyATM_fit_LDAHMM <- function(model, resume = FALSE) {
+    .Call(`_keyATM_keyATM_fit_LDAHMM`, model, resume)
 }
 

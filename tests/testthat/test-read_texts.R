@@ -13,10 +13,16 @@ test_that("Split dfm", {
   expect_error(keyATM_read(bills_dfm, split = 1.5))
 })
 
+test_that("Check print function", {
+  expect_message(print(keyATM_docs), "keyATM_docs object of 140 documents.")
+  expect_message(print(keyATM_docsSplit), "keyATM_docs object of 140 documents.")
+  expect_message(print(keyATM_docsSplit$W_split), "keyATM_docs object of 140 documents.")
+})
+
 test_that("Check summary function", {
-  expect_output(print(keyATM_docs), "keyATM_docs object of 140 documents.")
-  expect_output(print(keyATM_docsSplit), "keyATM_docs object of 140 documents.")
-  expect_output(print(keyATM_docsSplit$W_split), "keyATM_docs object of 140 documents.")
+  expect_message(summary(keyATM_docs), "Number of unique words")
+  expect_message(summary(keyATM_docsSplit), "Number of unique words")
+  expect_message(summary(keyATM_docsSplit$W_split), "Number of unique words")
 })
 
 

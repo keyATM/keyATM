@@ -2,9 +2,9 @@
 #'
 #' @keywords internal
 #' @import magrittr
-keyATM_output <- function(model, keep)
+keyATM_output <- function(model, keep, used_iter)
 {
-  cli::cli_alert("Creating an output object. It may take time...")
+  cli::cli_inform("Creating an output object. It may take time...")
 
   check_arg_type(model, "keyATM_fitted")
 
@@ -39,10 +39,7 @@ keyATM_output <- function(model, keep)
   if (model$options$store_theta) {
     values_iter$theta_iter <- keyATM_output_theta_iter(model, info)
   }
-  # used_iter is useful quantity
-  total_iter <- 1:(model$options$iterations)
-  thinning <- model$options$thinning
-  values_iter$used_iter <- total_iter[(total_iter %% thinning == 0) | (total_iter == 1) | total_iter == max(total_iter)]
+  values_iter$used_iter <- used_iter  # created in `get_used_iter()`
   info$used_iter <- values_iter$used_iter
 
   # Phi (topic-word distribution)

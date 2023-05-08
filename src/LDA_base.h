@@ -19,8 +19,8 @@ class LDAbase : virtual public keyATMmeta
 
   public:
     // Constructor
-    LDAbase(List model_, const int iter_) :
-      keyATMmeta(model_, iter_) {};
+    LDAbase(List model_) :
+      keyATMmeta(model_) {};
 
     // Variables
     MatrixXd n_kv;

@@ -36,14 +36,18 @@ using namespace std;
 //' Run the Collapsed Gibbs sampler for the keyATM Base
 //'
 //' @param model A initialized model
-//' @param iter Required number of iterations
+//' @param resume resume or not
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_base(List model, int iter = 0)
+List keyATM_fit_base(List model, bool resume = false)
 {
-  keyATMbase keyATMbase_model(model, iter);
-  keyATMbase_model.fit();
+  keyATMbase keyATMbase_model(model);
+  if (resume) {
+    keyATMbase_model.resume_fit();
+  } else {
+    keyATMbase_model.fit();
+  }
   model = keyATMbase_model.return_model();
   return model;
 }
@@ -52,13 +56,13 @@ List keyATM_fit_base(List model, int iter = 0)
 //' Run the Collapsed Gibbs sampler for the keyATM covariates (Dir-Multi)
 //'
 //' @param model A initialized model
-//' @param iter Required number of iterations
+//' @param resume resume or not
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_cov(List model, int iter = 0)
+List keyATM_fit_cov(List model, bool resume = false)
 {
-  keyATMcov keyATMcov_model(model, iter);
+  keyATMcov keyATMcov_model(model);
   keyATMcov_model.fit();
   model = keyATMcov_model.return_model();
   return model;
@@ -68,13 +72,13 @@ List keyATM_fit_cov(List model, int iter = 0)
 //' Run the Collapsed Gibbs sampler for the keyATM covariates (Polya-Gamma)
 //'
 //' @param model A initialized model
-//' @param iter Required number of iterations
+//' @param resume resume or not
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_covPG(List model, int iter = 0)
+List keyATM_fit_covPG(List model, bool resume = false)
 {
-  keyATMcovPG keyATMcov_modelPG(model, iter);
+  keyATMcovPG keyATMcov_modelPG(model);
   keyATMcov_modelPG.fit();
   model = keyATMcov_modelPG.return_model();
   return model;
@@ -84,13 +88,13 @@ List keyATM_fit_covPG(List model, int iter = 0)
 //' Run the Collapsed Gibbs sampler for the keyATM Dynamic
 //'
 //' @param model A initialized model
-//' @param iter Required number of iterations
+//' @param resume resume or not
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_HMM(List model, int iter = 0)
+List keyATM_fit_HMM(List model, bool resume = false)
 {
-  keyATMhmm hmm_model(model, iter);
+  keyATMhmm hmm_model(model);
   hmm_model.fit();
   model = hmm_model.return_model();
   return model;
@@ -100,13 +104,13 @@ List keyATM_fit_HMM(List model, int iter = 0)
 //' Run the Collapsed Gibbs sampler for weighted LDA
 //'
 //' @param model A initialized model
-//' @param iter Required number of iterations
+//' @param resume resume or not
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_LDA(List model, int iter = 0)
+List keyATM_fit_LDA(List model, bool resume = false)
 {
-  LDAweight LDAweight_model(model, iter);
+  LDAweight LDAweight_model(model);
   LDAweight_model.fit();
   model = LDAweight_model.return_model();
   return model;
@@ -116,13 +120,13 @@ List keyATM_fit_LDA(List model, int iter = 0)
 //' Run the Collapsed Gibbs sampler for weighted LDA with covariates
 //'
 //' @param model A initialized model
-//' @param iter Required number of iterations
+//' @param resume resume or not
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_LDAcov(List model, int iter = 0)
+List keyATM_fit_LDAcov(List model, bool resume = false)
 {
-  LDAcov ldacov_model(model, iter);
+  LDAcov ldacov_model(model);
   ldacov_model.fit();
   model = ldacov_model.return_model();
   return model;
@@ -132,13 +136,13 @@ List keyATM_fit_LDAcov(List model, int iter = 0)
 //' Run the Collapsed Gibbs sampler for the weighted LDA with HMM model
 //'
 //' @param model A initialized model
-//' @param iter Required number of iterations
+//' @param resume resume or not
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List keyATM_fit_LDAHMM(List model, int iter = 0)
+List keyATM_fit_LDAHMM(List model, bool resume = false)
 {
-  LDAhmm ldahmm_model(model, iter);
+  LDAhmm ldahmm_model(model);
   ldahmm_model.fit();
   model = ldahmm_model.return_model();
   return model;

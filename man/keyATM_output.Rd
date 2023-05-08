@@ -4,7 +4,7 @@
 \alias{keyATM_output}
 \title{Create an output object}
 \usage{
-keyATM_output(model, keep)
+keyATM_output(model, keep, used_iter)
 }
 \description{
 Create an output object
