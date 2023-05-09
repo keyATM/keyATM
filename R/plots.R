@@ -43,7 +43,6 @@ print.keyATM_fig <- function(x, ...)
 }
 
 
-
 #' Show a diagnosis plot of alpha
 #'
 #' @param x the output from a keyATM model (see [keyATM()]).
@@ -465,7 +464,7 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
   }
 
   format_theta <- function(theta, time_index, tnames) {
-    theta[ , show_topic, drop = FALSE] %>%
+    theta[, show_topic, drop = FALSE] %>%
       tibble::as_tibble(.name_repair = ~tnames) %>%
       dplyr::mutate(time_index = time_index) %>%
       tidyr::pivot_longer(-.data$time_index, names_to = "Topic", values_to = "Proportion") %>%
@@ -481,12 +480,12 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
     p <- ggplot(dat, aes(x = .data$time_index, y = .data$Proportion, group = .data$Topic)) +
           geom_line(linewidth = 0.8, color = "blue") + geom_point(size = 0.9)
   } else {
-    dplyr::bind_rows(lapply(x$values_iter$theta_iter, format_theta, time_index, tnames[show_topic])) %>%
+    dat <- dplyr::bind_rows(lapply(x$values_iter$theta_iter, format_theta, time_index, tnames[show_topic])) %>%
       dplyr::group_by(.data$time_index, .data$Topic) %>%
       dplyr::summarise(x = list(tibble::enframe(calc_ci(.data$Proportion, ci, method, point), "q", "value"))) %>%
       tidyr::unnest(.data$x) %>% dplyr::ungroup() %>%
       tidyr::pivot_wider(names_from = .data$q, values_from = .data$value) %>%
-      stats::setNames(c("time_index", "Topic", "Lower", "Point", "Upper")) -> dat
+      stats::setNames(c("time_index", "Topic", "Lower", "Point", "Upper"))
     p <- ggplot(dat, aes(x = .data$time_index, y = .data$Point, group = .data$Topic)) +
           geom_ribbon(aes(ymin = .data$Lower, ymax = .data$Upper), fill = "gray75") +
           geom_line(linewidth = 0.8, color = "blue")
@@ -496,6 +495,7 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
   }
   p <- p + xlab(xlab) + ylab(expression(paste("Mean of ", theta))) +
         facet_wrap(~.data$Topic, scales = scales) + theme_bw() + theme(panel.grid.minor = element_blank())
+  dat$state_id <- x$values_iter$R_iter_last[dat$time_index]
   p <- list(figure = p, values = dat)
   class(p) <- c("keyATM_fig", class(p))
   return(p)

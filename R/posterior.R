@@ -119,6 +119,11 @@ keyATM_output <- function(model, keep, used_iter)
     kept_values$stored_values$Z_tables <- NULL  # duplicate information
   }
 
+  # Additional information
+  if (model$model %in% c("hmm", "ldahmm")) {
+    values_iter$R_iter_last <- model$stored_values$R_iter[[length(model$stored_values$R_iter)]] + 1L  # maps time_index -> state
+  }
+
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
              V = length(model$vocab), N = length(model$Z),

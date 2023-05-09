@@ -26,6 +26,7 @@
 #'            \item \emph{P}: For the dynamic model. The state transition probability.
 #'      }
 #'      \item \strong{parallel_init}: Parallelize processes to speed up initialization. Default is \code{FALSE}. Please `plan()` before use this feature.
+#'      \item \strong{resume}: The resume argument is used to save and load the intermediate results of the keyATM fitting process, allowing you to resume the fitting from a previous state. The default value is `NULL` (do not resume).
 #' }
 #' @param keep a vector of the names of elements you want to keep in output.
 #'
@@ -66,22 +67,6 @@
 #'   # keyATM Base
 #'   out <- keyATM(docs = keyATM_docs, model = "base",
 #'                 no_keyword_topics = 5, keywords = bills_keywords)
-#'
-#'   # keyATM Covariates
-#'   bills_cov <- as.data.frame(keyATM_data_bills$cov)
-#'   out <- keyATM(docs = keyATM_docs, model = "covariates",
-#'                 no_keyword_topics = 5, keywords = bills_keywords,
-#'                 model_settings = list(covariates_data = bills_cov,
-#'                                       covariates_formula = ~ RepParty))
-#'
-#'   # keyATM Dynamic
-#'   bills_time_index <- keyATM_data_bills$time_index
-#'   # Time index should start from 1 and increase by 1
-#'   bills_time_index <- as.integer(bills_time_index - 100)
-#'   out <- keyATM(docs = keyATM_docs, model = "dynamic",
-#'                 no_keyword_topics = 5, keywords = bills_keywords,
-#'                 model_settings = list(num_states = 5,
-#'                                       time_index = bills_time_index))
 #'
 #'   # Visit our website for full examples: https://keyatm.github.io/keyATM/
 #' }
@@ -182,22 +167,6 @@ keyATM <- function(docs, model, no_keyword_topics,
 #'   # Weighted LDA
 #'   out <- weightedLDA(docs = keyATM_docs, model = "base",
 #'                      number_of_topics = 5)
-#'
-#'   # Weighted LDA Covariates
-#'   bills_cov <- as.data.frame(keyATM_data_bills$cov)
-#'   out <- weightedLDA(docs = keyATM_docs, model = "covariates",
-#'                      number_of_topics = 5,
-#'                      model_settings = list(covariates_data = bills_cov,
-#'                                            covariates_formula = ~ RepParty))
-#'
-#'   # Weighted LDA Dynamic
-#'   bills_time_index <- keyATM_data_bills$time_index
-#'   # Time index should start from 1 and increase by 1
-#'   bills_time_index <- as.integer(bills_time_index - 100)
-#'   out <- weightedLDA(docs = keyATM_docs, model = "dynamic",
-#'                      number_of_topics = 5,
-#'                      model_settings = list(num_states = 5,
-#'                                            time_index = bills_time_index))
 #'
 #'   # Visit our website for full examples: https://keyatm.github.io/keyATM/
 #' }
