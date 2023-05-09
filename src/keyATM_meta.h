@@ -10,10 +10,8 @@
 #include "sampler.h"
 #include "utils.h"
 
-// RcppProgress
-//   shows a progress bar during the iteration
-#include <progress.hpp>
-#include <progress_bar.hpp>
+// Progress bar
+#include <cli/progress.h>
 
 using namespace Eigen;
 using namespace Rcpp;

@@ -300,7 +300,8 @@ void keyATMmeta::iteration()
   int iter_start = iter - iter_new;  // starting iteration number
 
   // Iteration
-  Progress progress_bar(iter_new, !(bool)verbose);
+  SEXP progress_bar = PROTECT(cli_progress_bar(iter_new, NULL));
+  cli_progress_set_name(progress_bar, "Fitting the model");
 
   for (int it = iter_start; it < iter; ++it) {
     // Run iteration
@@ -317,11 +318,17 @@ void keyATMmeta::iteration()
     }
 
     // Progress bar
-    progress_bar.increment();
+    if (CLI_SHOULD_TICK) {
+      cli_progress_set(progress_bar, it - iter_start);
+    }
 
     // Check keybord interruption to cancel the iteration
     checkUserInterrupt();
   }
+
+  // Progress bar
+  cli_progress_done(progress_bar);
+  UNPROTECT(1);
 
   model["model_fit"] = model_fit;
 }

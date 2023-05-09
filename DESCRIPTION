@@ -34,7 +34,7 @@ Imports: Rcpp (>= 1.0.7),
   tidyr (>= 1.0.0)
 LinkingTo: Rcpp,
   RcppEigen,
-  RcppProgress
+  cli
 Suggests:
     readtext,
     testthat (>= 3.1.5)

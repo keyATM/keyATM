@@ -9,7 +9,6 @@ keyATM_read(
   encoding = "UTF-8",
   check = TRUE,
   keep_docnames = FALSE,
-  progress_bar = FALSE,
   split = 0
 )
 }
@@ -21,8 +20,6 @@ keyATM_read(
 \item{check}{logical. If \code{TRUE}, check whether there is anything wrong with the structure of texts. Default is \code{TRUE}.}
 
 \item{keep_docnames}{logical. If \code{TRUE}, it keeps the document names in a quanteda dfm. Default is \code{FALSE}.}
-
-\item{progress_bar}{logical. If \code{TRUE}, it shows a progress bar (currently it only supports a quanteda object). Default is \code{FALSE}.}
 
 \item{split}{numeric. This option works only with a quanteda dfm. It creates a two subset of the dfm by randomly splitting each document (i.e., the total number of documents is the same between two subsets). This option specifies the split proportion. Default is \code{0}.}
 }

@@ -7,7 +7,6 @@
 #' @param encoding character. Only used when \code{texts} is a vector of file paths. Default is \code{UTF-8}.
 #' @param check logical. If \code{TRUE}, check whether there is anything wrong with the structure of texts. Default is \code{TRUE}.
 #' @param keep_docnames logical. If \code{TRUE}, it keeps the document names in a quanteda dfm. Default is \code{FALSE}.
-#' @param progress_bar logical. If \code{TRUE}, it shows a progress bar (currently it only supports a quanteda object). Default is \code{FALSE}.
 #' @param split numeric. This option works only with a quanteda dfm. It creates a two subset of the dfm by randomly splitting each document (i.e., the total number of documents is the same between two subsets). This option specifies the split proportion. Default is \code{0}.
 #'
 #' @return a keyATM_docs object. The first element is a list whose elements are split texts. The length of the list equals to the number of documents.
@@ -29,8 +28,7 @@
 #' @import magrittr
 #' @importFrom rlang .data
 #' @export
-keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames = FALSE,
-                        progress_bar = FALSE, split = 0)
+keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames = FALSE, split = 0)
 {
 
   # Detect input
@@ -72,7 +70,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
   W_read <- list(W_raw = list(), W_split = list())
   if (!is.null(text_dfm)) {
     vocabulary <- colnames(text_dfm)
-    W_read <- read_dfm_cpp(text_dfm, W_read, vocabulary, as.logical(progress_bar), split)
+    W_read <- read_dfm_cpp(text_dfm, W_read, vocabulary, split)
     if (keep_docnames) {
       docnames <- quanteda::docnames(text_dfm)
     }
@@ -356,7 +354,7 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
   ##
   ## Initialization
   ##
-  cli::cli_inform("Initializing the model...")
+  cli::cli_progress_step("Initializing the model", spinner = TRUE)
   set.seed(options$seed)
 
   # W
@@ -463,10 +461,10 @@ keyATM_fit <- function(keyATM_initialized, resume = FALSE)
 
   if ("keyATM_resume" %in% class(keyATM_initialized)) {
     .GlobalEnv$.Random.seed <- keyATM_initialized$rand_state  # to resume
-    cli::cli_inform("Fitting the model... (adding {iterations} iteration{?s} to the existing {key_model$options$iterations - iterations} iteration{?s} for a total of {key_model$options$iterations} iteration{?s})")
+    cli::cli_progress_step("Fitting the model: adding {iterations} iteration{?s} to the existing {key_model$options$iterations - iterations} iteration{?s} for a total of {key_model$options$iterations} iteration{?s}", spinner = TRUE)
   } else {
     set.seed(key_model$options$seed)
-    cli::cli_inform("Fitting the model. {iterations} iteration{?s}...")
+    cli::cli_progress_step("Fitting the model: {iterations} iteration{?s}", spinner = TRUE)
   }
 
   if (model_name == "base") {

@@ -259,7 +259,7 @@ fitted_load <- function(filename) {
   fitted <- readRDS(filename)
   if (! "keyATM_resume" %in% class(fitted))
     cli::cli_abort("The file is not a keyATM object.")
-  cli::cli_inform("The fitted model is loaded from {.file {filename}}.")
+  cli::cli_alert_success("The fitted model is loaded from {.file {filename}}.")
   return(fitted)
 }
 
@@ -282,7 +282,7 @@ fitted_save <- function(filename, fitted, model_name, used_iter) {
   )
   class(saveobj) <- c("keyATM_resume", class(saveobj))
   saveRDS(object = saveobj, file = filename)
-  cli::cli_inform("The fitted model is saved in {.file {filename}}.")
+  cli::cli_alert_success("The fitted model is saved in {.file {filename}}.")
 }
 
 # Get indexes of used iterations

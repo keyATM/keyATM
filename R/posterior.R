@@ -4,7 +4,7 @@
 #' @import magrittr
 keyATM_output <- function(model, keep, used_iter)
 {
-  cli::cli_inform("Creating an output object. It may take time...")
+  cli::cli_progress_step("Creating an output object", spinner = TRUE)
 
   check_arg_type(model, "keyATM_fitted")
 
