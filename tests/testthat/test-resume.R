@@ -73,6 +73,38 @@ test_that("keyATM cov, resume", {
 })
 
 
+test_that("keyATM dynamic, resume", {
+  all <- keyATM(
+    docs = keyATM_docs,
+    no_keyword_topics = 3,
+    keywords = bills_keywords,
+    model = "dynamic",
+    model_settings = list(time_index = bills_time_index - 100,
+                          num_states = 5),
+    options = list(seed = 250, iterations = 19))
+
+  resumed <- keyATM(
+    docs = keyATM_docs,
+    no_keyword_topics = 3,
+    keywords = bills_keywords,
+    model = "dynamic",
+    model_settings = list(time_index = bills_time_index - 100,
+                          num_states = 5),
+    options = list(seed = 250, iterations = 7, resume = paste0(tempdir(), "/resume.rds")))
+  resumed <- keyATM(
+    docs = keyATM_docs,
+    no_keyword_topics = 3,
+    keywords = bills_keywords,
+    model = "dynamic",
+    model_settings = list(time_index = bills_time_index - 100,
+                          num_states = 5),
+    options = list(seed = 250, iterations = 12, resume = paste0(tempdir(), "/resume.rds")))
+
+  fs::file_delete(paste0(tempdir(), "/resume.rds"))
+  expect_equal(all$model_fit$Perplexity[3], resumed$model_fit$Perplexity[4])
+})
+
+
 #
 # Weighted LDA
 #
@@ -128,6 +160,35 @@ test_that("weightedLDA cov, resume", {
   expect_equal(all$model_fit$Perplexity[3], resumed$model_fit$Perplexity[4])
 })
 
+
+
+test_that("weightedLDA dynamic, resume", {
+  all <- weightedLDA(
+    docs = keyATM_docs,
+    number_of_topics = 5,
+    model = "dynamic",
+    model_settings = list(time_index = bills_time_index - 100,
+                          num_states = 5),
+    options = list(seed = 250, iterations = 19))
+
+  resumed <- weightedLDA(
+    docs = keyATM_docs,
+    number_of_topics = 5,
+    model = "dynamic",
+    model_settings = list(time_index = bills_time_index - 100,
+                          num_states = 5),
+    options = list(seed = 250, iterations = 7, resume = paste0(tempdir(), "/resume.rds")))
+  resumed <- weightedLDA(
+    docs = keyATM_docs,
+    number_of_topics = 5,
+    model = "dynamic",
+    model_settings = list(time_index = bills_time_index - 100,
+                          num_states = 5),
+    options = list(seed = 250, iterations = 12, resume = paste0(tempdir(), "/resume.rds")))
+
+  fs::file_delete(paste0(tempdir(), "/resume.rds"))
+  expect_equal(all$model_fit$Perplexity[3], resumed$model_fit$Perplexity[4])
+})
 
 
 #

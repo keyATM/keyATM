@@ -71,6 +71,9 @@ class keyATMhmm : virtual public keyATMmeta
     virtual void read_data_specific() override final;
     virtual void initialize_specific() override final;
 
+    // Resume
+    virtual void resume_initialize_specific() override final;
+
     // Iteration
     virtual void iteration_single(int it) override;
     virtual void sample_parameters(int it) override final;
@@ -82,8 +85,9 @@ class keyATMhmm : virtual public keyATMmeta
     void sample_forward();  // calculate Prk
     void sample_backward();  // sample R_est
     void sample_P();  // sample P_est
-    void store_R_est();
-    void store_P_est();
+    void store_R_est();  // store state
+    void store_P_est();  // store the transition matrix
+    void keep_P_est();  // keep the latest transition matrix
 
     double polyapdfln(int t, VectorXd &alpha);
     virtual double loglik_total() override;

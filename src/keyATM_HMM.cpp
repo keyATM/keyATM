@@ -21,7 +21,7 @@ void keyATMhmm::read_data_specific()
   int index_prev = -1;
   int index;
   int store_index = 0;
-  for (int d = 0; d < num_doc; ++d) {
+  for (int d = 0; d < num_doc; d++) {
      index = time_index[d];
     if (index != index_prev) {
       time_doc_start[store_index] = d;
@@ -30,7 +30,7 @@ void keyATMhmm::read_data_specific()
     }
   }
 
-  for (int s = 0; s < num_time-1; ++s) {
+  for (int s = 0; s < num_time-1; s++) {
     time_doc_end(s) = time_doc_start(s + 1) - 1;
   }
   time_doc_end(num_time-1) = num_doc-1;
@@ -41,9 +41,6 @@ void keyATMhmm::read_data_specific()
 
 void keyATMhmm::initialize_specific()
 {
-  // Initialize Prk
-  Prk = MatrixXd::Zero(num_time, num_states);
-
   // Initialize R_est
   // Use multinomial distribution (with flat probability)
   // to decide the number of each state
@@ -53,13 +50,15 @@ void keyATMhmm::initialize_specific()
   double cumulative = 1.0 / num_states;
   double u;
   int index;
-  for (int i = 0; i < num_states; i++) {
+  for (int i = 0; i < num_states; ++i) {
     R_est_temp(i) = cumulative * (i + 1);
   }
 
-  for (int j = 0; j < num_time-num_states; j++) {
+  for (int j = 0; j < num_time-num_states; ++j) {
+    // `num_time - num_states` because all states have at least one time
+    // `R_est_num` is initialized to 1
     u = R::runif(0, 1);
-    for (int i = 0; i < num_states; i++) {
+    for (int i = 0; i < num_states; ++i) {
       if (u < R_est_temp(i)) {
         index = i;
         break;
@@ -68,14 +67,13 @@ void keyATMhmm::initialize_specific()
     R_est_num(index) += 1;
   }
 
-
   R_est = VectorXi::Zero(num_time);
   R_count = R_est_num;
   int count;
   index = 0;
-  for (int i = 0; i < num_states; i++) {
+  for (int i = 0; i < num_states; ++i) {
     count = R_est_num(i);
-    for (int j = 0; j < count; j++) {
+    for (int j = 0; j < count; ++j) {
       R_est(index) = i;
       index += 1;
     }
@@ -91,10 +89,11 @@ void keyATMhmm::initialize_specific()
   }
   P_est(index_states, index_states) = 1;
 
-  // Initialize alphas;
+  // Initialize alphas
   alphas = MatrixXd::Constant(num_states, num_topics, 50.0/num_topics);
 
   // Initialize variables we use in the sampling
+  Prk = MatrixXd::Zero(num_time, num_states);
   logfy = VectorXd::Zero(num_states);
   rt_k = VectorXd::Zero(num_states);
   logrt_k = VectorXd::Zero(num_states);
@@ -103,6 +102,47 @@ void keyATMhmm::initialize_specific()
   states_start = VectorXi::Zero(num_states);
   states_end = VectorXi::Zero(num_states);
 }
+
+
+void keyATMhmm::resume_initialize_specific()
+{
+  // Resume R_est
+  List R_iter = stored_values["R_iter"];
+  NumericVector state_R = R_iter[R_iter.size() - 1];
+  R_est = Rcpp::as<Eigen::VectorXi>(state_R);
+
+  // Create R_count (the number of each state)
+  R_count = VectorXi::Zero(num_states);
+  for (int t = 0; t < num_time; t++) {
+    R_count(R_est(t)) += 1;
+  }
+
+  // Resume P_est
+  List P_iter;
+  if (store_transition_matrix) {
+    P_iter = stored_values["P_iter"];
+  } else {
+    P_iter = stored_values["P_last"];
+  }
+  Rcpp::NumericMatrix mat_R = P_iter[P_iter.size() - 1];
+  P_est = Rcpp::as<Eigen::MatrixXd>(mat_R);
+
+  // Resume alphas
+  List alpha_iter = stored_values["alpha_iter"];
+  NumericMatrix alphas_R = alpha_iter[alpha_iter.size() - 1];
+  alphas = Rcpp::as<Eigen::MatrixXd>(alphas_R);
+
+  // Initialize variables we use in the sampling
+  Prk = MatrixXd::Zero(num_time, num_states);
+  logfy = VectorXd::Zero(num_states);
+  rt_k = VectorXd::Zero(num_states);
+  logrt_k = VectorXd::Zero(num_states);
+  state_prob_vec = VectorXd::Zero(num_states);
+
+  states_start = VectorXi::Zero(num_states);
+  states_end = VectorXi::Zero(num_states);
+}
+
 
 
 int keyATMhmm::get_state_index(const int doc_id)
@@ -177,7 +217,7 @@ void keyATMhmm::sample_parameters(int it)
   sample_backward();  // sample R_est
   sample_P();  // sample P_est
 
-  // Store alpha and S
+  // Store alpha, state, and the transition matrix
   int r_index = it + 1;
   if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
     Rcpp::NumericMatrix alphas_R = Rcpp::wrap(alphas);
@@ -185,12 +225,15 @@ void keyATMhmm::sample_parameters(int it)
     alpha_iter.push_back(alphas_R);
     stored_values["alpha_iter"] = alpha_iter;
 
-    // Store S
+    // Store state
     store_R_est();
 
     // Store transition matrix
-    if (store_transition_matrix)
+    if (store_transition_matrix) {
       store_P_est();
+    } else {
+      keep_P_est();
+    }
   }
 
 }
@@ -316,8 +359,6 @@ void keyATMhmm::sample_forward()
   double logsum;
   int added;
   double loglik;
-
-  // Prk = MatrixXd::Zero(num_time, num_states);
 
   for (int t = 0; t < num_time; ++t) {
     if (t == 0) {
@@ -448,11 +489,26 @@ void keyATMhmm::store_R_est()
 
 void keyATMhmm::store_P_est()
 {
-  // Store state
+  // Store transition matrix
   Rcpp::NumericMatrix mat_R = Rcpp::wrap(P_est);
   List P_iter = stored_values["P_iter"];
   P_iter.push_back(mat_R);
   stored_values["P_iter"] = P_iter;
+}
+
+
+void keyATMhmm::keep_P_est()
+{
+  // Keep the latest transition matrix
+  Rcpp::NumericMatrix mat_R = Rcpp::wrap(P_est);
+  List P_last = stored_values["P_last"];
+  if (P_last.size() == 0) {
+    P_last.push_back(mat_R);
+  } else {
+    P_last.erase(0);   // only keep the latest one
+    P_last.push_back(mat_R);
+  }
+  stored_values["P_last"] = P_last;
 }
 
 

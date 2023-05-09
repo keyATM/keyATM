@@ -409,7 +409,6 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
     stored_values$alpha_iter <- list()
   }
 
-
   if (model %in% c("cov", "ldacov")) {
     stored_values$Lambda_iter <- list()
   }
@@ -419,6 +418,8 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
 
     if (options$store_transition_matrix) {
       stored_values$P_iter <- list()
+    } else {
+      stored_values$P_last <- list()  # for resume
     }
   }
 
@@ -733,7 +734,6 @@ check_arg_model_settings <- function(obj, model, info)
     if (max(obj$time_index) < obj$num_states)
       cli::cli_abort("`model_settings$num_states` should not exceed the maximum of `model_settings$time_index`.")
 
-
     check <- unique(obj$time_index[2:length(obj$time_index)] - obj$time_index[1:(length(obj$time_index)-1)])
     if (sum(!unique(check) %in% c(0,1)) != 0)
       cli::cli_abort("`model_settings$time_index` does not increment by 1.")
@@ -741,7 +741,6 @@ check_arg_model_settings <- function(obj, model, info)
     obj$time_index <- as.integer(obj$time_index)
 
     allowed_arguments <- c(allowed_arguments, "num_states", "time_index")
-
   }
 
   show_unused_arguments(obj, "`model_settings`", allowed_arguments)
@@ -779,7 +778,6 @@ check_arg_priors <- function(obj, model, info)
     allowed_arguments <- c(allowed_arguments, "gamma")
   }
 
-
   # beta
   if (!"beta" %in% names(obj)) {
     obj$beta <- 0.01
@@ -791,7 +789,6 @@ check_arg_priors <- function(obj, model, info)
     }
     allowed_arguments <- c(allowed_arguments, "beta_s")
   }
-
 
   # alpha
   if (model %in% c("base", "lda")) {
@@ -826,7 +823,6 @@ check_arg_options <- function(obj, model, info)
   if (!is.numeric(obj$llk_per) | obj$llk_per < 0 | obj$llk_per%%1 != 0) {
       cli::cli_abort("An invalid value in `options$llk_per`")
   }
-
 
   # verbose
   if (is.null(obj$verbose)) {
@@ -877,7 +873,6 @@ check_arg_options <- function(obj, model, info)
     }
     allowed_arguments <- c(allowed_arguments, "store_pi")
   }
-
 
   # Estimate alpha
   if (model %in% c("base", "lda")) {
