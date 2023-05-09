@@ -26,11 +26,12 @@ void keyATMcov::read_data_specific()
   mh_use = model_settings["mh_use"];
 }
 
+
 void keyATMcov::initialize_specific()
 {
   // Alpha
-  Alpha = MatrixXd::Zero(num_doc, num_topics);
-  alpha = VectorXd::Zero(num_topics); // use in iteration
+  Alpha = MatrixXd::Zero(num_doc, num_topics);  // used in iteration
+  alpha = VectorXd::Zero(num_topics);  // used in iteration
 
   // Lambda
   mu = 0.0;
@@ -42,6 +43,22 @@ void keyATMcov::initialize_specific()
       Lambda(k, i) = R::rnorm(0.0, 0.3);
     }
   }
+}
+
+
+void keyATMcov::resume_initialize_specific()
+{
+  // Alpha
+  Alpha = MatrixXd::Zero(num_doc, num_topics);
+  alpha = VectorXd::Zero(num_topics); // used in iteration
+
+  // Lambda
+  mu = 0.0;
+  sigma = 1.0;
+  Lambda = MatrixXd::Zero(num_topics, num_cov);
+  List Lambda_iter = stored_values["Lambda_iter"];
+  NumericMatrix Lambda_r = Lambda_iter[Lambda_iter.size() - 1];
+  Lambda = Rcpp::as<Eigen::MatrixXd>(Lambda_r);
 }
 
 

@@ -49,6 +49,9 @@ class keyATMcov : virtual public keyATMmeta
     // Initialization
     virtual void initialize_specific() override final;
 
+    // Resume
+    virtual void resume_initialize_specific() override final;
+
     // Iteration
     virtual void iteration_single(int it) override;
     virtual void sample_parameters(int it) override final;
