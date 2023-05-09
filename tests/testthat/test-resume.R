@@ -70,38 +70,83 @@ test_that("keyATM cov, resume", {
 
   fs::file_delete(paste0(tempdir(), "/resume.rds"))
   expect_equal(all$model_fit$Perplexity[3], resumed$model_fit$Perplexity[4])
+  expect_equal(all$values_iter$Lambda_iter[[5]][7, 1], resumed$values_iter$Lambda_iter[[6]][7, 1])
 })
 
 
-test_that("keyATM dynamic, resume", {
+test_that("keyATM dynamic, resume (without storing the transition matrix)", {
   all <- keyATM(
     docs = keyATM_docs,
     no_keyword_topics = 3,
     keywords = bills_keywords,
     model = "dynamic",
-    model_settings = list(time_index = bills_time_index - 100,
-                          num_states = 5),
-    options = list(seed = 250, iterations = 19))
+    model_settings = list(time_index = bills_time_index - 100, num_states = 5),
+    options = list(
+      seed = 250, iterations = 19, store_transition_matrix = 0
+    ))
 
   resumed <- keyATM(
     docs = keyATM_docs,
     no_keyword_topics = 3,
     keywords = bills_keywords,
     model = "dynamic",
-    model_settings = list(time_index = bills_time_index - 100,
-                          num_states = 5),
-    options = list(seed = 250, iterations = 7, resume = paste0(tempdir(), "/resume.rds")))
+    model_settings = list(time_index = bills_time_index - 100, num_states = 5),
+    options = list(
+      seed = 250, iterations = 7, resume = paste0(tempdir(), "/resume.rds"),
+      store_transition_matrix = 0
+    ))
   resumed <- keyATM(
     docs = keyATM_docs,
     no_keyword_topics = 3,
     keywords = bills_keywords,
     model = "dynamic",
-    model_settings = list(time_index = bills_time_index - 100,
-                          num_states = 5),
-    options = list(seed = 250, iterations = 12, resume = paste0(tempdir(), "/resume.rds")))
+    model_settings = list(time_index = bills_time_index - 100, num_states = 5),
+    options = list(
+      seed = 250, iterations = 12, resume = paste0(tempdir(), "/resume.rds"),
+      store_transition_matrix = 0
+    ))
 
   fs::file_delete(paste0(tempdir(), "/resume.rds"))
   expect_equal(all$model_fit$Perplexity[3], resumed$model_fit$Perplexity[4])
+  expect_equal(all$values_iter$alpha_iter$alpha[175], resumed$values_iter$alpha_iter$alpha[210])
+})
+
+
+test_that("keyATM dynamic, resume (with storing the transition matrix)", {
+  all <- keyATM(
+    docs = keyATM_docs,
+    no_keyword_topics = 3,
+    keywords = bills_keywords,
+    model = "dynamic",
+    model_settings = list(time_index = bills_time_index - 100, num_states = 5),
+    options = list(
+      seed = 250, iterations = 19, store_transition_matrix = 1
+    ))
+
+  resumed <- keyATM(
+    docs = keyATM_docs,
+    no_keyword_topics = 3,
+    keywords = bills_keywords,
+    model = "dynamic",
+    model_settings = list(time_index = bills_time_index - 100, num_states = 5),
+    options = list(
+      seed = 250, iterations = 7, resume = paste0(tempdir(), "/resume.rds"),
+      store_transition_matrix = 1
+    ))
+  resumed <- keyATM(
+    docs = keyATM_docs,
+    no_keyword_topics = 3,
+    keywords = bills_keywords,
+    model = "dynamic",
+    model_settings = list(time_index = bills_time_index - 100, num_states = 5),
+    options = list(
+      seed = 250, iterations = 12, resume = paste0(tempdir(), "/resume.rds"),
+      store_transition_matrix = 1
+    ))
+
+  fs::file_delete(paste0(tempdir(), "/resume.rds"))
+  expect_equal(all$model_fit$Perplexity[3], resumed$model_fit$Perplexity[4])
+  expect_equal(all$values_iter$alpha_iter$alpha[175], resumed$values_iter$alpha_iter$alpha[210])
 })
 
 
