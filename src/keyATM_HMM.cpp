@@ -21,7 +21,7 @@ void keyATMhmm::read_data_specific()
   int index_prev = -1;
   int index;
   int store_index = 0;
-  for (int d = 0; d < num_doc; d++) {
+  for (int d = 0; d < num_doc; ++d) {
      index = time_index[d];
     if (index != index_prev) {
       time_doc_start[store_index] = d;
@@ -30,7 +30,7 @@ void keyATMhmm::read_data_specific()
     }
   }
 
-  for (int s = 0; s < num_time-1; s++) {
+  for (int s = 0; s < num_time-1; ++s) {
     time_doc_end(s) = time_doc_start(s + 1) - 1;
   }
   time_doc_end(num_time-1) = num_doc-1;
@@ -82,7 +82,7 @@ void keyATMhmm::initialize_specific()
   // Initializae P_est
   P_est = MatrixXd::Zero(num_states, num_states);
   double prob;
-  for (int i = 0; i <= (index_states-1); i++) {
+  for (int i = 0; i <= (index_states-1); ++i) {
     prob = R::rbeta(1.0, 1.0);
     P_est(i, i) = prob;
     P_est(i, i + 1) = 1-prob;
@@ -113,7 +113,7 @@ void keyATMhmm::resume_initialize_specific()
 
   // Create R_count (the number of each state)
   R_count = VectorXi::Zero(num_states);
-  for (int t = 0; t < num_time; t++) {
+  for (int t = 0; t < num_time; ++t) {
     R_count(R_est(t)) += 1;
   }
 

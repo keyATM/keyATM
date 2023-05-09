@@ -91,7 +91,7 @@ void keyATMinitialize::data_load()
   vocab_size = wd_names.size();
   string word;
 
-  for (int wid = 0; wid < vocab_size; wid++) {
+  for (int wid = 0; wid < vocab_size; ++wid) {
     word = wd_names[wid];
     wd_map[word] = wid;
   }
@@ -116,7 +116,7 @@ void keyATMinitialize::initialize_keyATM()
   double prob_allK = 1.0 / total_k;
   int index;
 
-  for (int doc_id = 0; doc_id < doc_num; doc_id++) {
+  for (int doc_id = 0; doc_id < doc_num; ++doc_id) {
     doc = docs[doc_id];
     doc_len = doc.size();
 
@@ -124,7 +124,7 @@ void keyATMinitialize::initialize_keyATM()
     IntegerVector Z_doc = Z[doc_id];
     IntegerVector S_doc = S[doc_id];
 
-    for (int doc_pos = 0; doc_pos < doc_len; doc_pos++) {
+    for (int doc_pos = 0; doc_pos < doc_len; ++doc_pos) {
       // W
       word = doc[doc_pos];
       wid = wd_map[word];
@@ -178,11 +178,11 @@ void keyATMinitialize::initialize_keywords()
   string keyword;
   int keyword_id;
 
-  for (int k = 0; k < keywords_raw.size(); k++) {
+  for (int k = 0; k < keywords_raw.size(); ++k) {
     keywords_topic = keywords_raw[k];
     IntegerVector keywords_id_k = keywords_id[k];
 
-    for (int j = 0; j < keywords_topic.size(); j++) {
+    for (int j = 0; j < keywords_topic.size(); ++j) {
       keyword = keywords_topic[j];
       keyword_id = wd_map[keyword];
       keywords_id_k[j] = wd_map[keyword];
@@ -217,7 +217,7 @@ void keyATMinitialize::initialize_LDA()
   int doc_len;
   double prob = 1.0 / total_k;
 
-  for (int doc_id = 0; doc_id < doc_num; doc_id++) {
+  for (int doc_id = 0; doc_id < doc_num; ++doc_id) {
     doc = docs[doc_id];
     doc_len = doc.size();
 
@@ -225,7 +225,7 @@ void keyATMinitialize::initialize_LDA()
     IntegerVector Z_doc = Z[doc_id];
     IntegerVector S_doc = S[doc_id];
 
-    for (int doc_pos = 0; doc_pos < doc_len; doc_pos++) {
+    for (int doc_pos = 0; doc_pos < doc_len; ++doc_pos) {
       word = doc[doc_pos];
       wid = wd_map[word];
       W_doc[doc_pos] = wid;

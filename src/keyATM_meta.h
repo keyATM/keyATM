@@ -224,7 +224,7 @@ class keyATMmeta
       double vmax = vec.maxCoeff();
       double sum = 0.0;
 
-      for(int i = 0; i < size; i++){
+      for(int i = 0; i < size; ++i){
         sum += exp(vec(i) - vmax);
       }
 

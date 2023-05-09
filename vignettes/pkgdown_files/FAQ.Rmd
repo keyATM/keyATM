@@ -59,9 +59,9 @@ The next table compares inference methods and speeds. CGS stands for Collapsed G
 
 |                                   |        Inference      |                  Speed                 |
 |----------------------------------:|:----------------------|:---------------------------------------|
-|[keyATM Base](keyATM_base.html)    |       CGS + SS       |                  Fast                  |
-|[keyATM Covariate](keyATM_cov.html)|       CGS + SS / PG  | Moderate  (Depends on # of covariates) |
-|[keyATM Dynamic](keyATM_dynamic.html)|        CGS + SS     |                  Fast                 |
+|[keyATM Base](keyATM_base.html)    |       CGS + SS        |                  Fast                  |
+|[keyATM Covariate](keyATM_cov.html)|       CGS + SS / PG   | Moderate  (Depends on # of covariates) |
+|[keyATM Dynamic](keyATM_dynamic.html)|        CGS + SS     |                  Fast                  |
 |            LDA Weighted           |        CGS + SS       |                  Fast                  |
 |          LDA Weighted Cov         |        CGS + SS       |  Moderate (Depends on # of covariates) |
 |          LDA Weighted HMM         |        CGS + SS       |                  Fast                  |
@@ -101,6 +101,23 @@ out <- keyATM(docs              = keyATM_docs_n2,    # text input
               model             = "base",            # select the model
               options           = list(seed = 250))
 top_words(out, 5)
+```
+
+# Keywords
+
+
+## Can we use a wildcard character in keywords list?
+
+We can use the `dfm_select()` function from the **quanteda** package.
+```{r, eval = FALSE, warning=FALSE, message=FALSE}
+keyATM_docs <- keyATM_read(texts = data_dfm)
+
+law_all <- colnames(dfm_select(data_dfm, pattern = "law*"))  # terms start with `law`
+keywords <- list(
+  Government     = c(law_all, "executive"),
+  Constitution   = c("constitution", "rights"),
+  ForeignAffairs = c("foreign", "war")
+)
 ```
 
 

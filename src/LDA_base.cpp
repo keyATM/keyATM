@@ -71,12 +71,12 @@ void LDAbase::initialize_common()
 
 
   // Construct vocab weights
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+  for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_w = W[doc_id];
     doc_len = doc_w.size();
     doc_each_len.push_back(doc_len);
 
-    for (int w_position = 0; w_position < doc_len; w_position++) {
+    for (int w_position = 0; w_position < doc_len; ++w_position) {
       w = doc_w[w_position];
       vocab_weights(w) += 1.0;
     }
@@ -114,11 +114,11 @@ void LDAbase::initialize_common()
 
   total_words_weighted = 0.0;
   double temp;
-  for(int doc_id = 0; doc_id < num_doc; doc_id++){
+  for(int doc_id = 0; doc_id < num_doc; ++doc_id){
     doc_z = Z[doc_id], doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
 
-    for(int w_position = 0; w_position < doc_len; w_position++){
+    for(int w_position = 0; w_position < doc_len; ++w_position){
       z = doc_z[w_position], w = doc_w[w_position];
 
       n_kv(z, w) += vocab_weights(w);

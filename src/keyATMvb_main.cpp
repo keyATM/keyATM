@@ -117,10 +117,10 @@ void keyATMvb::read_data_common_alpha_base()
   VectorXd alpha = VectorXd::Zero(num_topics);
 
   int divide = 0;
-  for (int iter = floor(total * 0.9); iter < total; iter++) {
+  for (int iter = floor(total * 0.9); iter < total; ++iter) {
     alpha_R = alpha_iter[iter];
 
-    for (int k = 0; k < num_topics; k++) {
+    for (int k = 0; k < num_topics; ++k) {
       alpha(k) += alpha_R[k];
     }
 
@@ -129,7 +129,7 @@ void keyATMvb::read_data_common_alpha_base()
   alpha = alpha.array() / (double)divide;  // take a mean
 
   // Into a D \times K form
-  for (int d = 0; d < num_doc; d++) {
+  for (int d = 0; d < num_doc; ++d) {
     alphas.row(d) = alpha.transpose();
   }
 }
@@ -150,11 +150,11 @@ void keyATMvb::read_data_common_alpha_cov()
   MatrixXd Lambda = MatrixXd::Zero(num_topics, num_cov);
 
   int divide = 0;
-  for (int iter = floor(total * 0.9); iter < total; iter++) {
+  for (int iter = floor(total * 0.9); iter < total; ++iter) {
     NumericMatrix Lambda_R = Lambda_iter[iter];
 
-    for (int k = 0; k < num_topics; k++) {
-      for (int c = 0; c < num_cov; c++) {
+    for (int k = 0; k < num_topics; ++k) {
+      for (int c = 0; c < num_cov; ++c) {
         Lambda(k, c) += Lambda_R(k, c);
       }
     }
@@ -193,11 +193,11 @@ void keyATMvb::read_data_common_alpha_hmm()
   MatrixXd alpha_t = MatrixXd::Zero(num_states, num_topics);
 
   int divide = 0;
-  for (int iter = floor(total * 0.9); iter < total; iter++) {
+  for (int iter = floor(total * 0.9); iter < total; ++iter) {
     NumericMatrix alpha_R = alpha_iter[iter];
 
-    for (int s = 0; s < num_states; s++) {
-      for (int k = 0; k < num_topics; k++) {
+    for (int s = 0; s < num_states; ++s) {
+      for (int k = 0; k < num_topics; ++k) {
         alpha_t(s, k) += alpha_R(s, k);
       }
     }
@@ -208,7 +208,7 @@ void keyATMvb::read_data_common_alpha_hmm()
 
   // Into a D \times K form
   int time, state;
-  for (int d = 0; d < num_doc; d++) {
+  for (int d = 0; d < num_doc; ++d) {
     time =  time_index(d);
     state = R(time);
     alphas.row(d) = alpha_t.row(state);
@@ -228,12 +228,12 @@ void keyATMvb::read_data_keywords()
 {
   int wd_id;
   IntegerVector wd_ids;
-  for (int ii = 0; ii < keyword_k; ii++) {
+  for (int ii = 0; ii < keyword_k; ++ii) {
     wd_ids = keywords_list[ii];
     keywords_num.push_back(wd_ids.size());
 
     std::unordered_set<int> keywords_set;
-    for (int jj = 0; jj < wd_ids.size(); jj++) {
+    for (int jj = 0; jj < wd_ids.size(); ++jj) {
       wd_id = wd_ids(jj);
       keywords_set.insert(wd_id);
       keywords_all.insert(wd_id);
@@ -242,7 +242,7 @@ void keyATMvb::read_data_keywords()
     keywords.push_back(keywords_set);
   }
 
-  for (int i = keyword_k; i < num_topics; i++) {
+  for (int i = keyword_k; i < num_topics; ++i) {
     std::unordered_set<int> keywords_set{ -1 };
 
     keywords_num.push_back(0);
@@ -290,11 +290,11 @@ void keyATMvb::initialize_common_MCMCcount()
   n_s1_k = VectorXd::Zero(num_topics);
   n_dk = MatrixXd::Zero(num_doc, num_topics);
 
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+  for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_s = S[doc_id], doc_z = Z[doc_id], doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
 
-    for (int w_position = 0; w_position < doc_len; w_position++) {
+    for (int w_position = 0; w_position < doc_len; ++w_position) {
       s = doc_s[w_position], z = doc_z[w_position], w = doc_w[w_position];
       if (s == 0){
         n_s0_kv(z, w) += vocab_weights(w);
@@ -322,7 +322,7 @@ void keyATMvb::initialize_common_q()
   // Decide the values
   z_prob_vec = VectorXd::Zero(num_topics);
 
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+  for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_len = doc_each_len[doc_id];
     std::vector<std::vector<double>> qzd;  // store document level qz
     doc_z = Z[doc_id];
@@ -331,7 +331,7 @@ void keyATMvb::initialize_common_q()
     doc_s = S[doc_id];
     doc_w = W[doc_id];
 
-    for (int w_position = 0; w_position < doc_len; w_position++) {
+    for (int w_position = 0; w_position < doc_len; ++w_position) {
       z = doc_z[w_position];
       s = doc_s[w_position];
       w = doc_w[w_position];
@@ -393,7 +393,7 @@ void keyATMvb::initialize_common_qz(int doc_id, int w, int z, int s, vector<doub
   sum = z_prob_vec.sum();
   z_prob_vec = z_prob_vec.array() / sum;
 
-  for (int k = 0; k < num_topics; k++) {
+  for (int k = 0; k < num_topics; ++k) {
     qzdk[k]  = z_prob_vec(k);
   }
 
@@ -452,14 +452,14 @@ void keyATMvb::initialize_common_expectation()
   n_dk = MatrixXd::Zero(num_doc, num_topics);
 
 
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+  for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
 
-    for (int w_position = 0; w_position < doc_len; w_position++) {
+    for (int w_position = 0; w_position < doc_len; ++w_position) {
       w = doc_w[w_position];
 
-      for (int k = 0; k < num_topics; k++){
+      for (int k = 0; k < num_topics; ++k){
         n_s0_kv(k, w) += qz[doc_id][w_position][k] * qs[doc_id][w_position][0] * vocab_weights(w);
         n_s1_kv(k, w) += qz[doc_id][w_position][k] * qs[doc_id][w_position][1] * vocab_weights(w);
 
@@ -483,13 +483,13 @@ void keyATMvb::initialize_weightedlen()
   IntegerVector doc_s, doc_z, doc_w;
   int w;
 
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+  for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_w = W[doc_id];
     doc_len = doc_w.size();
     doc_each_len.push_back(doc_len);
 
     doc_len_weighted = 0.0;
-    for (int w_position = 0; w_position < doc_len; w_position++) {
+    for (int w_position = 0; w_position < doc_len; ++w_position) {
       w = doc_w[w_position];
       total_words_weighted += vocab_weights(w);
       doc_len_weighted += vocab_weights(w);
@@ -527,7 +527,7 @@ void keyATMvb::iteration()
   } else {
     // If you check a subset of documents
     ppl_words = 0.0;
-    for (int d = 0; d < num_doc_perp; d++) {
+    for (int d = 0; d < num_doc_perp; ++d) {
       doc_id = ppl_doc_indexes[d];
       ppl_words += doc_each_len[doc_id];
     }
@@ -578,19 +578,19 @@ void keyATMvb::update_q()
   double temp_sum;
   int v;
 
-  for (int ii = 0; ii < num_doc; ii++) {
+  for (int ii = 0; ii < num_doc; ++ii) {
     doc_id = doc_indexes[ii];
     doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
 
-    for (int w_position = 0; w_position < doc_len; w_position++) {
+    for (int w_position = 0; w_position < doc_len; ++w_position) {
       v = doc_w[w_position];
       update_decrese_count(doc_id, w_position, v);
 
       //
       // Update qz
       //
-      for (int k = 0; k < num_topics; k++) {
+      for (int k = 0; k < num_topics; ++k) {
         z_prob_vec(k) = exp(
                           qs[doc_id][w_position][0] *
                               (
@@ -616,7 +616,7 @@ void keyATMvb::update_q()
       }
 
       temp_sum = z_prob_vec.sum();
-      for (int k = 0; k < num_topics; k++) {
+      for (int k = 0; k < num_topics; ++k) {
         // Normalize
         qz[doc_id][w_position][k] = z_prob_vec(k) / temp_sum;
       }
@@ -632,7 +632,7 @@ void keyATMvb::update_q()
       } else {
         // Can use a keyword
 
-        for (int k = 0; k < num_topics; k++) {
+        for (int k = 0; k < num_topics; ++k) {
           s0_temp(k) = qz[doc_id][w_position][k] *
                           (
                             // log(n_s0_kv(k, v) + beta) - log(n_s0_k(k) + Vbeta)
@@ -655,7 +655,7 @@ void keyATMvb::update_q()
         s_prob_vec(1) = exp(s1_temp.sum());
 
         temp_sum = s_prob_vec.sum();
-        for (int s = 0; s < 2; s++) {
+        for (int s = 0; s < 2; ++s) {
           // Normalize
           qs[doc_id][w_position][s] = s_prob_vec(s) / temp_sum;
         }
@@ -675,7 +675,7 @@ void keyATMvb::update_decrese_count(int doc_id, int w_position, int v)
   double temp0;
   double temp1;
 
-  for(int k = 0; k < num_topics; k++) {
+  for(int k = 0; k < num_topics; ++k) {
     temp0 = qz[doc_id][w_position][k] * qs[doc_id][w_position][0] * vocab_weights(v);
     temp1 = qz[doc_id][w_position][k] * qs[doc_id][w_position][1] * vocab_weights(v);
     n_s0_kv(k, v) -= temp0;
@@ -694,7 +694,7 @@ void keyATMvb::update_increase_count(int doc_id, int w_position, int v)
   double temp0;
   double temp1;
 
-  for(int k = 0; k < num_topics; k++) {
+  for(int k = 0; k < num_topics; ++k) {
     temp0 = qz[doc_id][w_position][k] * qs[doc_id][w_position][0] * vocab_weights(v);
     temp1 = qz[doc_id][w_position][k] * qs[doc_id][w_position][1] * vocab_weights(v);
 
@@ -718,7 +718,7 @@ double keyATMvb::calc_perplexity(int iter)
   int doc_len;
   int v;
 
-  for (int ii = 0; ii < num_doc_perp; ii++) {
+  for (int ii = 0; ii < num_doc_perp; ++ii) {
     // Limit the number of documents to calculate the perplexity
     // to reduce the computation time
 
@@ -726,12 +726,12 @@ double keyATMvb::calc_perplexity(int iter)
     doc_len = doc_each_len[doc_id];
     doc_w = W[doc_id];
 
-    for (int i = 0; i < doc_len; i++) {
+    for (int i = 0; i < doc_len; ++i) {
       v = doc_w[i];
       llk_v = 0.0;
 
       // Word
-      for (int k = 0; k < num_topics; k++) {
+      for (int k = 0; k < num_topics; ++k) {
         llk_v += (
                    (n_s0_kv(k, v) + beta) / (n_s0_k(k) + Vbeta)
                     * (n_s0_k(k) + prior_gamma(k, 1)) / (n_s0_k(k) + prior_gamma(k, 1) + n_s1_k(k) + prior_gamma(k, 0))
@@ -783,12 +783,12 @@ void keyATMvb::get_QOI()
   int z, s;
   int doc_len;
 
-  for (int doc_id = 0; doc_id < num_doc; doc_id++) {
+  for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_len = doc_each_len[doc_id];
     doc_z = Z[doc_id];
     doc_s = S[doc_id];
 
-    for (int i = 0; i < doc_len; i++){
+    for (int i = 0; i < doc_len; ++i){
       z = max_element(qz[doc_id][i].begin(), qz[doc_id][i].end()) - qz[doc_id][i].begin();
       s = max_element(qs[doc_id][i].begin(), qs[doc_id][i].end()) - qs[doc_id][i].begin();
 

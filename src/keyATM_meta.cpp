@@ -194,7 +194,7 @@ void keyATMmeta::initialize_common()
   // Store weights
   NumericVector vocab_weights_R = stored_values["vocab_weights"];
 
-  for (int v = 0; v < num_vocab; v++) {
+  for (int v = 0; v < num_vocab; ++v) {
     vocab_weights_R[v] = vocab_weights(v);
   }
   stored_values["vocab_weights"] = vocab_weights_R;
