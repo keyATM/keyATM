@@ -83,7 +83,7 @@ List keyATM_fit_covPG(List model, bool resume = false)
 {
   keyATMcovPG keyATMcov_modelPG(model);
   if (resume) {
-    keyATMcov_modelPG.resume_fit();
+    Rcout << "Resume is not supported for Polya-Gamma model" << endl;
   } else {
     keyATMcov_modelPG.fit();
   }
