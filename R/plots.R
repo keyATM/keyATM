@@ -68,20 +68,24 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
   }
   if (is.null(show_topic)) {
     show_topic <- 1:x$keyword_k
+  } else {
+    if (!all(show_topic %in% 1:x$keyword_k))
+      cli::cli_abort("Topics specified in `show_topic` are not the keyword topics.")
   }
   if (!is.numeric(start) | length(start) != 1) {
     cli::cli_abort("`start` argument is invalid.")
   }
 
-  tnames <- c(names(x$keywords_raw))[show_topic]
-  x$values_iter$alpha_iter %>%
+  tnames <- as.character(show_topic)
+  names(tnames) <- c(names(x$keywords_raw))[show_topic]
+  temp <- x$values_iter$alpha_iter %>%
     dplyr::filter(.data$Iteration >= start) %>%
     dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
-    tidyr::pivot_wider(names_from = "Topic", values_from = "alpha") -> temp
+    tidyr::pivot_wider(names_from = "Topic", values_from = "alpha")
 
   if (modelname %in% c("base", "lda")) {
-    temp %>% dplyr::rename_at(vars(-"Iteration"), ~tnames) %>%
-      tidyr::pivot_longer(-"Iteration", names_to = "Topic", values_to = "alpha") -> res_alpha
+    res_alpha <- temp %>% dplyr::rename(tidyselect::all_of(tnames)) %>%
+      tidyr::pivot_longer(-"Iteration", names_to = "Topic", values_to = "alpha")
 
     p <- ggplot(res_alpha, aes(x = .data$Iteration, y = .data$alpha, group = .data$Topic)) +
           geom_line() +
@@ -91,8 +95,8 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
   } else if (modelname %in% c("hmm", "ldahmm")) {
-    temp %>% dplyr::rename_at(vars(-.data$Iteration, -.data$State), ~tnames) %>%
-      tidyr::pivot_longer(-c("Iteration", "State"), names_to = "Topic", values_to = "alpha") -> res_alpha
+    res_alpha <- temp %>% dplyr::rename(tidyselect::all_of(tnames)) %>%
+      tidyr::pivot_longer(-c("Iteration", "State"), names_to = "Topic", values_to = "alpha")
     res_alpha$State <- factor(res_alpha$State, levels = 1:max(res_alpha$State))
 
     p <- ggplot(res_alpha, aes(x = .data$Iteration, y = .data$alpha, group = .data$State, colour = .data$State)) +
@@ -191,7 +195,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
       tibble::as_tibble(.name_repair = ~ tnames) %>%
       dplyr::mutate(Iteration = x$values_iter$used_iter) %>%
       dplyr::filter(.data$Iteration >= start) %>%
-      dplyr::select(-.data$Iteration) -> pi_mat
+      dplyr::select(-tidyselect::all_of("Iteration")) -> pi_mat
 
     if (nrow(pi_mat) == 0) {
       cli::cli_abort("Nothing left to plot. Please check arguments.")
@@ -201,7 +205,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
       tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Topic") %>%
       dplyr::group_by(.data$Topic) %>%
       dplyr::summarise(x = list(tibble::enframe(calc_ci(.data$value, ci, method, point), "q", "value")), .groups = "drop_last") %>%
-      tidyr::unnest(x) %>% tidyr::pivot_wider(names_from = .data$q, values_from = .data$value) -> temp
+      tidyr::unnest(x) %>% tidyr::pivot_wider(names_from = tidyselect::all_of("q"), values_from = tidyselect::all_of("value")) -> temp
 
     p <- ggplot(temp, aes(y = .data$Point, x = .data$Topic)) +
          theme_bw() + geom_point() +
@@ -312,6 +316,10 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, la
     }
   }
 
+  label_percent <- function(x) {
+    paste0(round(x * 100, 2), "%")
+  }
+
   p <- ggplot(plot_obj, aes(x = .data$Topicprop, y = .data$Topic)) +
         geom_col() +
         {if (show_topwords)
@@ -320,7 +328,7 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, la
               hjust = 0, size = max(10 / n + 1, 2.5))
         } +
         scale_x_continuous(
-          "Expected topic proportions", limits = c(0, xmax), labels = scales::label_percent()
+          "Expected topic proportions", limits = c(0, xmax), labels = label_percent
         ) +
         theme_bw() +
         theme(panel.grid.major.x = element_blank(),
@@ -468,7 +476,7 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
     theta[, show_topic, drop = FALSE] %>%
       tibble::as_tibble(.name_repair = ~tnames) %>%
       dplyr::mutate(time_index = time_index) %>%
-      tidyr::pivot_longer(-.data$time_index, names_to = "Topic", values_to = "Proportion") %>%
+      tidyr::pivot_longer(-tidyselect::all_of("time_index"), names_to = "Topic", values_to = "Proportion") %>%
       dplyr::group_by(.data$time_index, .data$Topic) %>%
       dplyr::summarize(Proportion = base::mean(.data$Proportion), .groups = "drop_last") -> res
     return(res)
@@ -484,8 +492,8 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
     dat <- dplyr::bind_rows(lapply(x$values_iter$theta_iter, format_theta, time_index, tnames[show_topic])) %>%
       dplyr::group_by(.data$time_index, .data$Topic) %>%
       dplyr::summarise(x = list(tibble::enframe(calc_ci(.data$Proportion, ci, method, point), "q", "value"))) %>%
-      tidyr::unnest(.data$x) %>% dplyr::ungroup() %>%
-      tidyr::pivot_wider(names_from = .data$q, values_from = .data$value) %>%
+      tidyr::unnest(tidyselect::all_of("x")) %>% dplyr::ungroup() %>%
+      tidyr::pivot_wider(names_from = tidyselect::all_of("q"), values_from = tidyselect::all_of("value")) %>%
       stats::setNames(c("time_index", "Topic", "Lower", "Point", "Upper"))
     p <- ggplot(dat, aes(x = .data$time_index, y = .data$Point, group = .data$Topic)) +
           geom_ribbon(aes(ymin = .data$Lower, ymax = .data$Upper), fill = "gray75") +

@@ -20,27 +20,31 @@ base <- keyATM(docs = keyATM_docs,
                               store_pi = 1, use_weights = 1, thinning = 1))
 
 
-test_that("Plot modelfit", {
+test_that("Plot modelfit: the base model", {
   p <- plot_modelfit(base)
   expect_s3_class(p, "keyATM_fig")
   skip_on_cran()
   expect_message(save_fig(p, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(values_fig(p)$value[2], -9903822, tolerance = 0.001)
+  expect_equal(values_fig(p)$value[2], -9903822, tolerance = 0.00001)
 })
 
 
-test_that("Plot alpha", {
+test_that("Plot alpha: the base model", {
   p <- plot_alpha(base)
   expect_s3_class(p, "keyATM_fig")
   skip_on_cran()
   expect_message(save_fig(p, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(values_fig(p)$alpha[2], 3.553541, tolerance = 0.001)
+  expect_equal(values_fig(p)$alpha[2], 3.553541, tolerance = 0.00001)
+  expect_identical(values_fig(p)$Topic[3], "3_Health")
+
+  p <- plot_alpha(base, show_topic = c(1, 4))
+  expect_identical(values_fig(p)$Topic[3], "1_Education")
 })
 
 
-test_that("Plot pi", {
+test_that("Plot pi: the base model", {
   p <- plot_pi(base, ci = 0.95, method = "eti")
   p2 <- plot_pi(base, method = "hdi")
   expect_s3_class(p, "keyATM_fig")
@@ -53,13 +57,13 @@ test_that("Plot pi", {
   expect_equal(as.numeric(values_fig(p2)$Lower[2]), 0.03485987, tolerance = 0.00001)
 })
 
-test_that("Plot topic plot", {
+test_that("Plot topic plot: the base model", {
   p <- plot_topicprop(base) ; expect_s3_class(p, "keyATM_fig")
   p <- plot_topicprop(base, order = "topicid") ; expect_s3_class(p, "keyATM_fig")
   p <- plot_topicprop(base, n = 5) ; expect_s3_class(p, "keyATM_fig")
   p <- plot_topicprop(base, show_topwords = FALSE) ; expect_s3_class(p, "keyATM_fig")
   p <- plot_topicprop(base, show_topic = 1:3, label_topic = paste0("T", 1:3)) ; expect_s3_class(p, "keyATM_fig")
-  p <- plot_topicprop(base, show_topic = 1:3, label_topic = paste0("T", 1:3), order = "topicid") ; expect_s3_class(p, "keyATM_fig")
+  p <- plot_topicprop(base, show_topic = c(1, 3, 5), label_topic = paste0("T", c(1, 3, 5)), order = "topicid") ; expect_s3_class(p, "keyATM_fig")
   p <- plot_topicprop(base, show_topic = c(1, 4, 7)) ; expect_s3_class(p, "keyATM_fig")
 
   expect_error(plot_topicprop(base, show_topic = -1))
@@ -76,7 +80,7 @@ dyn <- keyATM(docs = keyATM_docs,
                                     num_states = 5),
               options = list(seed = 250, verbose = FALSE, store_theta = TRUE, iterations = 20, thinning = 1))
 
-test_that("Time series: with intervals", {
+test_that("Plot time series: with intervals", {
   p <- plot_timetrend(dyn) ; expect_s3_class(p, "keyATM_fig")
   p <- plot_timetrend(dyn, time_index_label = bills_time_index, method = "eti")
   p2 <- plot_timetrend(dyn, time_index_label = bills_time_index, method = "hdi", ci = 0.89)
@@ -90,6 +94,16 @@ test_that("Time series: with intervals", {
   expect_equal(values_fig(p2)$Upper[2], 0.1310682, tolerance = 0.00001)
 
   p <- plot_topicprop(dyn) ; expect_s3_class(p, "keyATM_fig")
+})
+
+test_that("Plot alpha: the dynamic model", {
+  skip_on_cran()
+  p <- plot_alpha(dyn)
+  expect_equal(tail(values_fig(p), 1)$alpha[1], 1.341934, tolerance = 0.00001)
+  expect_identical(values_fig(p)$Topic[10], "2_Law")
+
+  p <- plot_alpha(dyn, show_topic = c(1, 4))
+  expect_identical(values_fig(p)$Topic[3], "1_Education")
 })
 
 

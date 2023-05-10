@@ -175,7 +175,7 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
   p <- (a + s) / (a + b + n)
   temp %>%
     dplyr::mutate(Proportion = p * 100) %>%
-    dplyr::select(-.data$sums) -> pi_estimated
+    dplyr::select(-tidyselect::all_of("sums")) -> pi_estimated
   return(pi_estimated)
 }
 

@@ -30,7 +30,6 @@
 #' @export
 keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames = FALSE, split = 0)
 {
-
   # Detect input
   if ("tbl" %in% class(texts)) {
     cli::cli_alert_info("Using tibble.")
@@ -48,11 +47,10 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
     files <- NULL
     text_df <- NULL
   } else if ("character" %in% class(texts)) {
-    cli::cli_warn("Reading from files. Please make sure files are preprocessed.", immediate. = TRUE)
+    cli::cli_alert_info("Reading from files. Please make sure files are preprocessed. Encoding: {encoding}.")
     text_dfm <- NULL
     files <- texts
     text_df <- NULL
-    cli::cli_alert_info(paste0("Encoding: ", encoding))
   } else {
     cli::cli_abort(c("x" = "Check `texts` argument.",
          "i" = "It can take quanteda dfm, data.frame, tibble, and a vector of characters."))
@@ -88,7 +86,7 @@ keyATM_read <- function(texts, encoding = "UTF-8", check = TRUE, keep_docnames =
     text_df <- text_df %>% dplyr::mutate(text_split = stringr::str_split(.data$text, pattern = " "))
 
     # Extract split text and create a list
-    W_read$W_raw <- text_df %>% dplyr::pull(.data$text_split)
+    W_read$W_raw <- text_df %>% dplyr::pull(tidyselect::all_of("text_split"))
   }
   W_raw <- W_read$W_raw
 
@@ -182,7 +180,7 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
   totalwords <- nrow(unnested_data)
 
   data <- unnested_data %>%
-    dplyr::rename(Word = .data$text_split) %>%
+    dplyr::rename(Word = "text_split") %>%
     dplyr::group_by(.data$Word) %>%
     dplyr::summarize(WordCount = dplyr::n()) %>%
     dplyr::mutate(`Proportion(%)` = round(.data$WordCount / totalwords * 100, 3)) %>%

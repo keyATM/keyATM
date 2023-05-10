@@ -226,7 +226,7 @@ covariates_standardize <- function(data, type, cov_formula = NULL) {
 #' \dontrun{
 #'   library(keyATM)
 #'   library(quanteda)
-#'   ## using the moral foundation dictiionary example from quanteda
+#'   ## using the moral foundation dictionary example from quanteda
 #'   dictfile <- tempfile()
 #'   download.file("http://bit.ly/37cV95h", dictfile)
 #'   data(keyATM_data_bills)

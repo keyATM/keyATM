@@ -157,7 +157,6 @@ summary.strata_doctopic <- function(object, ...)
 
 
 #' @noRd
-#' @importFrom rlang .data
 #' @import magrittr
 #' @keywords internal
 strata_doctopic_CI <- function(theta, ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"), label = NULL, ...)

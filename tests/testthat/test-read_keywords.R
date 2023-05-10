@@ -17,8 +17,8 @@ test_that("resolving and split", {
     ## a simplfied example from koheiw/quanteda.seededlda
     corp <- corpus(c("air force 1", "soldier soldiers navy army politician", "party members", "parliament is politicians' party politics leaders leadership"))
     toks <- tokens(corp, remove_punct = TRUE)
-    dfmt <- dfm(toks) %>% 
-        dfm_select("^[A-Za-z]+$", valuetype = "regex") %>% 
+    dfmt <- dfm(toks) %>%
+        dfm_select("^[A-Za-z]+$", valuetype = "regex") %>%
         dfm_remove(stopwords('en'))
     docs <- keyATM_read(texts = dfmt)
     smalldictionary <- dictionary(list(politics = c("parliament*", "congress*", "party leader*", "party member*", "voter*", "lawmaker*", "politician*"), military = c("military", "soldier*", "air force", "marine", "navy", "army")))
@@ -34,7 +34,7 @@ test_that("file I/O", {
     ## the example of the function
     skip_on_cran() ; skip_on_os("linux")
     dictfile <- tempfile()
-    download.file("http://bit.ly/37cV95h", dictfile)
+    download.file("https://moralfoundations.org/wp-content/uploads/files/downloads/moral%20foundations%20dictionary.dic", dictfile, quiet = TRUE)
     ## first position is file.
     x <- read_keywords(dictfile, docs = keyATM_docs, format = "LIWC")
     expect_true("terrorism" %in% x$IngroupVice)
@@ -44,18 +44,18 @@ test_that("Integration",{
     skip_on_cran() ; skip_on_os("linux")
     ## exact example: koheiw/quanteda.seededlda
     rdsfile <- tempfile()
-    download.file("https://github.com/koheiw/quanteda.seededlda/raw/master/tests/data/data_corpus_sputnik.RDS", rdsfile)
+    download.file("https://github.com/koheiw/quanteda.seededlda/raw/master/tests/data/data_corpus_sputnik.RDS", rdsfile, quiet = TRUE)
 
     corp <- readRDS(rdsfile)
     toks <- tokens(corp, remove_punct = TRUE)
-    dfmt <- dfm(toks) %>% 
-    dfm_select("^[A-Za-z]+$", valuetype = "regex") %>% 
-    dfm_remove(stopwords('en')) %>% 
-    dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile", 
+    dfmt <- dfm(toks) %>%
+    dfm_select("^[A-Za-z]+$", valuetype = "regex") %>%
+    dfm_remove(stopwords('en')) %>%
+    dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
              max_docfreq = 0.1, docfreq_type = "prop")
     docs <- keyATM_read(texts = dfmt)
     dictfile <- tempfile(fileext = ".yml")
-    download.file("https://raw.githubusercontent.com/koheiw/quanteda.seededlda/master/tests/data/topics.yml", dictfile)
+    download.file("https://raw.githubusercontent.com/koheiw/quanteda.seededlda/master/tests/data/topics.yml", dictfile, quiet = TRUE)
     kw <- read_keywords(dictfile, docs = docs)
     res <- keyATM(docs, no_keyword_topics = 0, keywords = kw, model = "base", options = list(seed = 1234, iterations = 20))
     ## syria is related to military
