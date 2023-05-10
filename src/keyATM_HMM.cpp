@@ -567,6 +567,3 @@ double keyATMhmm::loglik_total()
   return loglik;
 }
 
-
-
-

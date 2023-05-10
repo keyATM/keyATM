@@ -690,10 +690,10 @@ check_arg_model_settings <- function(obj, model, info)
       obj$PG_params$PG_SigmaPhi <- diag(rep(1, K-1))
       Mu <- X %*% obj$PG_params$PG_Lambda
       Sigma <- diag(rep(1, K-1))
-      sapply(1:D,
+      Phi <- sapply(1:D,
              function(d) {
                   Phi_d <- rmvn1(mu = Mu[d, ], Sigma = Sigma)
-             }) -> Phi
+             })
       Phi <- t(Phi)
       colnames(Phi) <- NULL
       row.names(Phi) <- NULL

@@ -458,6 +458,7 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
   } else {
     time_index <- x$values_iter$time_index
   }
+  time_index_tbl <- tibble::tibble(time_index = time_index, time_index_raw = x$values_iter$time_index) %>% dplyr::distinct()
 
   if (is.null(show_topic)) {
     show_topic <- 1:x$keyword_k
@@ -495,7 +496,8 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
   }
   p <- p + xlab(xlab) + ylab(expression(paste("Mean of ", theta))) +
         facet_wrap(~.data$Topic, scales = scales) + theme_bw() + theme(panel.grid.minor = element_blank())
-  dat$state_id <- x$values_iter$R_iter_last[dat$time_index]
+  dat <- dplyr::left_join(dat, time_index_tbl, by = "time_index") %>%
+    dplyr::mutate(state_id = x$values_iter$R_iter_last[.data$time_index_raw])
   p <- list(figure = p, values = dat)
   class(p) <- c("keyATM_fig", class(p))
   return(p)
