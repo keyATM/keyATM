@@ -17,13 +17,13 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     User's Guide
      
     <span class="caret"></span>
@@ -44,13 +44,13 @@
       <a href="../articles/pkgdown_files/keyATM_dynamic.html">keyATM Dynamic</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_files/keyATM_label.html">keyATM Label</a>
-    </li>
-    <li>
       <a href="../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_files/Plot.html">Customizing Plots</a>
+      <a href="../articles/pkgdown_files/Resume.html">Resume Fitting</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown_files/Plot.html">Plot Customization</a>
     </li>
     <li>
       <a href="../articles/pkgdown_files/Options.html">Options</a>
@@ -90,14 +90,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">keyATM_read</span><span class="op">(</span>
-  <span class="va">texts</span>,
-  encoding <span class="op">=</span> <span class="st">"UTF-8"</span>,
-  check <span class="op">=</span> <span class="cn">TRUE</span>,
-  keep_docnames <span class="op">=</span> <span class="cn">FALSE</span>,
-  progress_bar <span class="op">=</span> <span class="cn">FALSE</span>,
-  split <span class="op">=</span> <span class="fl">0</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">keyATM_read</span><span class="op">(</span></span>
+<span>  <span class="va">texts</span>,</span>
+<span>  encoding <span class="op">=</span> <span class="st">"UTF-8"</span>,</span>
+<span>  check <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  keep_docnames <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  split <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -118,10 +117,6 @@
 <dd><p>logical. If <code>TRUE</code>, it keeps the document names in a quanteda dfm. Default is <code>FALSE</code>.</p></dd>
 
 
-<dt>progress_bar</dt>
-<dd><p>logical. If <code>TRUE</code>, it shows a progress bar (currently it only supports a quanteda object). Default is <code>FALSE</code>.</p></dd>
-
-
 <dt>split</dt>
 <dd><p>numeric. This option works only with a quanteda dfm. It creates a two subset of the dfm by randomly splitting each document (i.e., the total number of documents is the same between two subsets). This option specifies the split proportion. Default is <code>0</code>.</p></dd>
 
@@ -135,19 +130,19 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"> <span class="co"># Use quanteda dfm</span></span>
-<span class="r-in"> <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu">keyATM_read</span><span class="op">(</span>texts <span class="op">=</span> <span class="va">quanteda_dfm</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"> <span class="co"># Use data.frame or tibble (texts should be stored in a column named `text`)</span></span>
-<span class="r-in"> <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu">keyATM_read</span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_frame_object</span><span class="op">)</span></span>
-<span class="r-in"> <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu">keyATM_read</span><span class="op">(</span>texts <span class="op">=</span> <span class="va">tibble_object</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"> <span class="co"># Use a vector that stores full paths to the text files</span></span>
-<span class="r-in"> <span class="va">files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">doc_folder</span>, pattern <span class="op">=</span> <span class="st">"*.txt"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"> <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu">keyATM_read</span><span class="op">(</span>texts <span class="op">=</span> <span class="va">files</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span> <span class="co"># Use quanteda dfm</span></span></span>
+<span class="r-in"><span> <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu">keyATM_read</span><span class="op">(</span>texts <span class="op">=</span> <span class="va">quanteda_dfm</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span> <span class="co"># Use data.frame or tibble (texts should be stored in a column named `text`)</span></span></span>
+<span class="r-in"><span> <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu">keyATM_read</span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_frame_object</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu">keyATM_read</span><span class="op">(</span>texts <span class="op">=</span> <span class="va">tibble_object</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span> <span class="co"># Use a vector that stores full paths to the text files</span></span></span>
+<span class="r-in"><span> <span class="va">files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">doc_folder</span>, pattern <span class="op">=</span> <span class="st">"*.txt"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu">keyATM_read</span><span class="op">(</span>texts <span class="op">=</span> <span class="va">files</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>

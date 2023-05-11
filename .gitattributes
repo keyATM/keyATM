@@ -1,2 +1,5 @@
+# Fix GitHub Linguist language detection
+# docs/ and man/ are automatically excluded
 tests/** linguist-vendored
-man/** linguist-vendored
+pkgdown/** linguist-vendored
+vignettes/** linguist-documentation

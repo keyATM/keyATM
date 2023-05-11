@@ -4,12 +4,12 @@
 \alias{keyATM_fit_LDAcov}
 \title{Run the Collapsed Gibbs sampler for weighted LDA with covariates}
 \usage{
-keyATM_fit_LDAcov(model, iter = 0L)
+keyATM_fit_LDAcov(model, resume = FALSE)
 }
 \arguments{
 \item{model}{A initialized model}
 
-\item{iter}{Required number of iterations}
+\item{resume}{resume or not}
 }
 \description{
 Run the Collapsed Gibbs sampler for weighted LDA with covariates

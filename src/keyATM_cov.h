@@ -1,5 +1,6 @@
 #ifndef __keyATM_cov__INCLUDED__
 #define __keyATM_cov__INCLUDED__
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -13,7 +14,7 @@ using namespace std;
 
 class keyATMcov : virtual public keyATMmeta
 {
-  public:  
+  public:
     //
     // Parameters
     //
@@ -33,30 +34,32 @@ class keyATMcov : virtual public keyATMmeta
       // Slice sampling
       double val_min;
       double val_max;
-    
+
     //
     // Functions
     //
 
     // Constructor
-    keyATMcov(List model_, const int iter_) :
-      keyATMmeta(model_, iter_) {};
+    keyATMcov(List model_) :
+      keyATMmeta(model_) {};
 
     // Read data
-    void read_data_specific() final;
+    virtual void read_data_specific() override final;
 
     // Initialization
-    void initialize_specific() final;
+    virtual void initialize_specific() override final;
+
+    // Resume
+    virtual void resume_initialize_specific() override final;
 
     // Iteration
-    virtual void iteration_single(int it);
-    void sample_parameters(int it);
+    virtual void iteration_single(int it) override;
+    virtual void sample_parameters(int it) override final;
     void sample_lambda();
     void sample_lambda_mh();
     void sample_lambda_slice();
     double alpha_loglik();
-    virtual double loglik_total();
-    double loglik_total_label();
+    virtual double loglik_total() override;
 
     double likelihood_lambda(int k, int t);
     void proposal_lambda(int k);
@@ -64,5 +67,3 @@ class keyATMcov : virtual public keyATMmeta
 
 
 #endif
-
-

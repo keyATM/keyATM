@@ -1,15 +1,17 @@
 #include <Rcpp.h>
+
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 #include <RcppEigen.h>
+
 #include <iostream>
 #include <algorithm>
 #include <string>
-#include <progress.hpp>
-#include <progress_bar.hpp>
 
+// Progress bar
+#include <cli/progress.h>
 
 // [[Rcpp::plugins(cpp17)]]
 // [[Rcpp::depends(RcppEigen)]]
-// [[Rcpp::depends(RcppProgress)]]
 
 using namespace Eigen;
 using namespace Rcpp;
@@ -21,14 +23,12 @@ using namespace std;
 //' @param dfm a dfm input (sparse Matrix)
 //' @param W_raw an object to return
 //' @param vocab a vector of vocabulary
-//' @param show_progress_bar show a progress bar
 //' @param split split proportion
 //'
 //' @keywords internal
 // [[Rcpp::export]]
 List read_dfm_cpp(Eigen::SparseMatrix<int> dfm,
-                  List W_read, StringVector vocab, bool show_progress_bar,
-                  double split)
+                  List W_read, StringVector vocab, double split)
 {
   dfm = dfm.transpose();  // SparseMatrix is colmajor
   int doc_num = dfm.cols();
@@ -39,7 +39,8 @@ List read_dfm_cpp(Eigen::SparseMatrix<int> dfm,
   List W_raw = W_read["W_raw"];
   List W_split = W_read["W_split"];
 
-  Progress progress_bar(doc_num, show_progress_bar);
+  SEXP progress_bar = PROTECT(cli_progress_bar(doc_num, NULL));
+  cli_progress_set_name(progress_bar, "Loading documents");
 
   for (int doc_id = 0; doc_id < doc_num; ++doc_id) {
     vector<string> doc_words;
@@ -68,7 +69,6 @@ List read_dfm_cpp(Eigen::SparseMatrix<int> dfm,
           doc_words.push_back(word_id);
         }
       }
-
     }
 
     StringVector R_doc_words = Rcpp::wrap(doc_words);
@@ -79,9 +79,16 @@ List read_dfm_cpp(Eigen::SparseMatrix<int> dfm,
       W_split.push_back(R_doc_words_split);
     }
 
-    // Progress bar
-    progress_bar.increment();
+    if (CLI_SHOULD_TICK) {
+      cli_progress_set(progress_bar, doc_id);
+    }
+
+    // Check keybord interruption to cancel the iteration
+    checkUserInterrupt();
   }
+
+  cli_progress_done(progress_bar);
+  UNPROTECT(1);
 
   // make an output
   W_read["W_raw"] = W_raw;

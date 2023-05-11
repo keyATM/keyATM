@@ -1,0 +1,106 @@
+---
+title: "Resume Fitting"
+output:
+  html_document:
+    toc: true
+---
+
+```{r setup II, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+```
+
+```{r, include=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+library(keyATM)
+library(quanteda)
+library(magrittr)
+data(data_corpus_inaugural, package = "quanteda")
+data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
+
+data_tokens <- tokens(data_corpus_inaugural,
+                      remove_numbers = TRUE,
+                      remove_punct = TRUE,
+                      remove_symbols = TRUE,
+                      remove_separators = TRUE,
+                      remove_url = TRUE) %>%
+                 tokens_tolower() %>%
+                 tokens_remove(c(stopwords("english"),
+                               "may", "shall", "can",
+                               "must", "upon", "with", "without")) %>%
+                 tokens_select(min_nchar = 3)
+
+data_dfm <- dfm(data_tokens) %>%
+               dfm_trim(min_termfreq = 5, min_docfreq = 2)
+
+keywords <- list(Government     = c("laws", "law", "executive"),
+                 Congress       = c("congress", "party"),
+                 Peace          = c("peace", "world", "freedom"),
+                 Constitution   = c("constitution", "rights"),
+                 ForeignAffairs = c("foreign", "war"))
+
+keyATM_docs <- keyATM_read(data_dfm)
+```
+
+
+In some cases, you may want to resume the fitting iteration for a variety of reasons, such as working with a cluster computer or dealing with large datasets that take a significant amount of time to process. The resume feature in **keyATM** allows you to split the fitting process, ensuring that you can achieve the desired number of iterations without having to run them all at once.
+
+
+To use the resume feature, you can simply split the desired number of iterations into smaller chunks and specify the `resume` argument. For example, if you want to run a total of 1000 iterations, you can run 500 iterations twice to achieve the same result as running 1000 iterations at once (you can resume as many times as you want).
+
+In the following code, we demonstrate how to run a total of 50 iterations using the resume feature.
+
+In the following code, the `resume` argument is used to save and load the results of the **keyATM** fitting process, allowing you to resume the fitting from a previous state. The argument specifies the path where the results will be saved as an RDS object named `keyATM_resume.rds`. In this case, the object will be saved in your current working directory.
+
+```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+# 50 iterations all at once
+out <- keyATM(
+  docs              = keyATM_docs,    # text input
+  no_keyword_topics = 5,              # number of topics without keywords
+  keywords          = keywords,       # keywords
+  model             = "base",
+  options           = list(seed = 250, iterations = 50)
+)
+
+# Conducting 10 iterations five times to achieve the same result as above
+for (i in 1:5) {
+  resumed <- keyATM(
+    docs              = keyATM_docs,    # text input
+    no_keyword_topics = 5,              # number of topics without keywords
+    keywords          = keywords,       # keywords
+    model             = "base",
+    options           = list(seed = 250, iterations = 10, resume = "./keyATM_resume.rds")
+  )
+}
+```
+
+When running the `keyATM()` function wit the `resume` argument, the **keyATM** function will check if the `./keyATM_resume.rds` file exists. If it does, the function will load the saved object and resume the fitting process from the last saved state. If the file does not exist, the **keyATM** will perform the fitting process from the beginning and save the intermediate result as `keyATM_resume.rds` in the specified location.
+
+```{r, include=FALSE, warning=FALSE, fig.align='center'}
+out <- keyATM(
+  docs              = keyATM_docs,    # text input
+  no_keyword_topics = 5,              # number of topics without keywords
+  keywords          = keywords,       # keywords
+  model             = "base",
+  options           = list(seed = 250, iterations = 50)
+)
+
+for (i in 1:5) {
+  resumed <- keyATM(
+    docs              = keyATM_docs,    # text input
+    no_keyword_topics = 5,              # number of topics without keywords
+    keywords          = keywords,       # keywords
+    model             = "base",
+    options           = list(seed = 250, iterations = 10, resume = paste0(tempdir(), "/keyATM_resume.rds"))
+  )
+}
+testthat::expect_equal(tail(out$model_fit$Perplexity, 1), tail(resumed$model_fit$Perplexity, 1))
+```
+
+We can confirm that the last perplexity is the same for both cases.
+
+```{r, warning=FALSE, fig.align='center'}
+tail(out$model_fit$Perplexity, 1)  # 50 iterations all at once
+tail(resumed$model_fit$Perplexity, 1)  # using the `resume` argument
+```
+
+Please note that the intermediate results are saved only after the completion of the specified number of iterations. For instance, if you set `iterations = 1000` and specify the `resume` argument, **keyATM** will only save the output after all 1000 iterations have been completed. It does not save the output intermittently during the iteration process.
+

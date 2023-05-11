@@ -4,7 +4,6 @@ bills_keywords <- keyATM_data_bills$keywords
 keyATM_docs <- keyATM_read(bills_dfm)
 bills_cov <- keyATM_data_bills$cov
 bills_time_index <- keyATM_data_bills$time_index
-labels_use <- keyATM_data_bills$labels
 
 test_that("Reading documents from quanteda dfm", {
   expect_identical(keyATM_docs$W_raw[[1]][3], "one")
@@ -170,22 +169,25 @@ test_that("Documents with length 0: dynamic", {
   expect_identical(length(out$kept_values$model_settings$time_index), 138L)
 })
 
-
-test_that("Documents with length 0: label", {
-  expect_warning(docs0 <- keyATM_read(bills_dfm_0))
-
+# keyATM runs without setting seed
+test_that("Initialize without setting seed", {
   skip_on_cran()
-  expect_warning(
-    out <- keyATM(docs = docs0,  # text input
+  expect_no_error(
+    out <- keyATM(docs = keyATM_docs,  # text input
                   no_keyword_topics = 3,  # number of regular topics
                   keywords = bills_keywords,  # keywords
-                  model = "label",
-                  model_settings = list(labels = labels_use),
-                  options = list(seed = 250, iterations = 0))
+                  model = "base",  # select the model
+                  options = list(iterations = 0))
   )
-
-  expect_identical(length(out$Z), 138L)
-  expect_identical(length(out$model_settings$labels), 138L)
 })
 
 
+
+# Check `get_doc_index()` function
+test_that("`get_doc_index() function", {
+  W_raw <- list(c("a", "b"), c(), c("a", "b", "c"))
+  expect_warning(tmp <- keyATM:::get_doc_index(W_raw, check = TRUE))
+  expect_warning(tmp <- keyATM:::get_doc_index(W_raw, check = FALSE))
+  W_raw2 <- list(c("a", "b"), c(), c("a", "b", "c"), c())
+  expect_warning(tmp <- keyATM:::get_doc_index(W_raw2, check = FALSE))
+})

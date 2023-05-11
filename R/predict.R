@@ -17,22 +17,22 @@ predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = 
                                   posterior_mean = TRUE, ci = 0.9, method = c("hdi", "eti"),
                                   point = c("mean", "median"), label = NULL, raw_values = FALSE, ...)
 {
-  method <- match.arg(method)
-  point <- match.arg(point)
+  method <- rlang::arg_match(method)
+  point <- rlang::arg_match(point)
 
   if (object$model != "covariates" | !("keyATM_output" %in% class(object)))
-    stop("This is not an output of covariate model")
+    cli::cli_abort("This is not an output of covariate model")
 
   if (transform) {
     if (!identical(colnames(newdata), colnames(object$kept_values$model_settings$covariates_data)))
-      stop("Column names in `newdata` are different from the data provided to `keyATM()` when fitting the model.")
+      cli::cli_abort("Column names in `newdata` are different from the data provided to `keyATM()` when fitting the model.")
     newdata <- covariates_standardize(newdata, type = object$kept_values$model_settings$standardize,
                                       cov_formula = object$kept_values$model_settings$covariates_formula)
   }
 
   data_used <- covariates_get(object)
   if (dim(newdata)[1] != dim(data_used)[1] | dim(newdata)[2] != dim(data_used)[2])
-    stop("Dimension of the `newdata` should match with the fitted data. Check the output of `covariates_get()`")
+    cli::cli_abort("Dimension of the `newdata` should match with the fitted data. Check the output of `covariates_get()`")
 
   if (is.null(burn_in))
     burn_in <- floor(max(object$model_fit$Iteration) / 2)

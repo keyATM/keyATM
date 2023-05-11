@@ -5,7 +5,7 @@ using namespace Rcpp;
 using namespace std;
 
 
-void keyATMbase::read_data_specific()
+void keyATMbase::initialize_specific()
 {
   nv_alpha = priors_list["alpha"];
   alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
@@ -19,12 +19,21 @@ void keyATMbase::read_data_specific()
 }
 
 
-void keyATMbase::initialize_specific()
+void keyATMbase::resume_initialize_specific()
 {
-  // No additional initialization
-  // This part is used when there is a model specific need
-  // to initialize variables.
+  estimate_alpha = options_list["estimate_alpha"];
+  if (estimate_alpha == 0) {
+    nv_alpha = priors_list["alpha"];
+    alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
+    store_alpha = 0;
+  } else {
+    List alpha_iter = stored_values["alpha_iter"];
+    NumericVector alpha_rvec = alpha_iter[alpha_iter.size() - 1];  // last estimated alpha
+    alpha = Rcpp::as<Eigen::VectorXd>(alpha_rvec);
+    store_alpha = 1;
+  }
 }
+
 
 void keyATMbase::iteration_single(int it)
 { // Single iteration
@@ -40,25 +49,25 @@ void keyATMbase::iteration_single(int it)
     doc_id_ = doc_indexes[ii];
     doc_s = S[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
-    
+
     token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
-    
+
     // Iterate each word in the document
     for (int jj = 0; jj < doc_length; ++jj) {
       w_position = token_indexes[jj];
       s_ = doc_s[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
-    
+
       new_z = sample_z(alpha, z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
-    
-      if (keywords[new_z].find(w_) == keywords[new_z].end())	
+
+      if (keywords[new_z].find(w_) == keywords[new_z].end())
         continue;
-  
+
       z_ = doc_z[w_position]; // use updated z
       new_s = sample_s(z_, s_, w_, doc_id_);
       doc_s[w_position] = new_s;
     }
-    
+
     Z[doc_id_] = doc_z;
     S[doc_id_] = doc_s;
   }
@@ -78,7 +87,7 @@ void keyATMbase::sample_parameters(int it)
       NumericVector alpha_rvec = alpha_reformat(alpha, num_topics);
       List alpha_iter = stored_values["alpha_iter"];
       alpha_iter.push_back(alpha_rvec);
-      stored_values["alpha_iter"] = alpha_iter;  
+      stored_values["alpha_iter"] = alpha_iter;
     }
   }
 }
@@ -100,7 +109,7 @@ void keyATMbase::sample_alpha()
     end = max_v;  // shrinked with shrinkp()
 
     previous_p = alpha(k) / (1.0 + alpha(k)); // shrinkp
-    slice_ = store_loglik - 2.0 * log(1.0 - previous_p) 
+    slice_ = store_loglik - 2.0 * log(1.0 - previous_p)
             + log(unif_rand()); // <-- using R random uniform
 
     for (int shrink_time = 0; shrink_time < max_shrink_time; ++shrink_time) {
@@ -133,8 +142,8 @@ double keyATMbase::alpha_loglik(int k)
 
   ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
   double alpha_sum_val = alpha.sum();
-  
-  
+
+
   fixed_part += mylgamma(alpha_sum_val); // first term numerator
   fixed_part -= mylgamma(alpha(k)); // first term denominator
   // Add prior
@@ -184,9 +193,9 @@ double keyATMbase::loglik_total()
       loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
 
       // s
-      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) ) 
+      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) )
                 - mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1))
-                + mylgamma(n_s1_k(k) + prior_gamma(k, 0));  
+                + mylgamma(n_s1_k(k) + prior_gamma(k, 0));
     }
   }
 
@@ -203,47 +212,4 @@ double keyATMbase::loglik_total()
   return loglik;
 }
 
-double keyATMbase::loglik_total_label()
-{
-  double loglik = 0.0;
-  double fixed_part = 0.0;
 
-  for (int k = 0; k < num_topics; ++k) {
-    for (int v = 0; v < num_vocab; ++v) { // word
-      loglik += mylgamma(beta_s0kv(k, v) + n_s0_kv(k, v) ) - mylgamma(beta_s0kv(k, v));
-    }
-
-    // word normalization
-    loglik += mylgamma( Vbeta_k(k) ) - mylgamma(Vbeta_k(k) + n_s0_k(k) );
-
-    if (k < keyword_k) {
-      // For keyword topics
-
-      // n_s1_kv
-      for (SparseMatrix<double,RowMajor>::InnerIterator it(n_s1_kv, k); it; ++it) {
-        loglik += mylgamma(beta_s1kv.coeffRef(k, it.index()) + it.value()) - mylgamma(beta_s1kv.coeffRef(k, it.index()));
-      }
-      loglik += mylgamma( Lbeta_sk(k) ) - mylgamma(Lbeta_sk(k) + n_s1_k(k) );
-
-      // Normalization
-      loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
-
-      // s
-      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) ) 
-                - mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1))
-                + mylgamma(n_s1_k(k) + prior_gamma(k, 0));  
-    }
-  }
-
-  // z
-  fixed_part = alpha.sum();
-  for (int d = 0; d < num_doc; ++d) {
-    loglik += mylgamma( fixed_part ) - mylgamma( doc_each_len_weighted[d] + fixed_part );
-
-    for (int k = 0; k < num_topics; ++k) {
-      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
-    }
-  }
-
-  return loglik;
-}

@@ -2,15 +2,16 @@
 #define __keyATMmeta__INCLUDED__
 
 #include <Rcpp.h>
+
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 #include <RcppEigen.h>
+
 #include <unordered_set>
 #include "sampler.h"
 #include "utils.h"
 
-// RcppProgress
-//   shows a progress bar during the iteration
-#include <progress.hpp>
-#include <progress_bar.hpp>
+// Progress bar
+#include <cli/progress.h>
 
 using namespace Eigen;
 using namespace Rcpp;
@@ -30,6 +31,8 @@ class keyATMmeta
   //
   //    weightedLDA models inherit this class but modify some
   //    initialization functions.
+  //
+  //    Overwritten functions have `override` keyword in each model.
 
   public:
     //
@@ -70,8 +73,6 @@ class keyATMmeta
     int num_vocab, num_doc, total_words;
     double total_words_weighted;
 
-    VectorXi labels_true;
-    int use_labels;
     MatrixXd beta_s0kv;
     SparseMatrix<double, RowMajor> beta_s1kv;
     VectorXd Vbeta_k;
@@ -123,18 +124,19 @@ class keyATMmeta
       int max_shrink_time;
 
 
-
     //
     // Functions
     //
-    keyATMmeta(List model_, const int iter_);
+    keyATMmeta(List model_);
     ~keyATMmeta();
+
     void fit();
+    void resume_fit();
 
     // Reading and Initialization
     void read_data();
       virtual void read_data_common();
-      virtual void read_data_specific() = 0;
+      virtual void read_data_specific() {};
 
     void initialize();
       virtual void initialize_common();
@@ -144,7 +146,9 @@ class keyATMmeta
       void weights_inftheory();
       void weights_normalize_total();
 
-      void initialize_betas();
+    void resume_initialize();
+      virtual void resume_initialize_specific() {};
+
 
     //
     // Sampling
@@ -155,12 +159,8 @@ class keyATMmeta
 
     virtual int sample_z(VectorXd &alpha, int z, int s,
                          int w, int doc_id);
-    int sample_z_label(VectorXd &alpha, int z, int s,
-                       int w, int doc_id);
 
     int sample_s(int z, int s, int w, int doc_id);
-    int sample_s_label(VectorXd &alpha, int z, int s,
-                       int w, int doc_id);
 
     void sampling_store(int r_index);
     virtual void parameters_store(int r_index);
@@ -170,7 +170,6 @@ class keyATMmeta
     virtual void verbose_special(int r_index);
 
     virtual double loglik_total() = 0;
-    virtual double loglik_total_label();
 
     //
     // Utilities
@@ -223,7 +222,7 @@ class keyATMmeta
       double vmax = vec.maxCoeff();
       double sum = 0.0;
 
-      for(int i = 0; i < size; i++){
+      for(int i = 0; i < size; ++i){
         sum += exp(vec(i) - vmax);
       }
 
@@ -275,7 +274,6 @@ class keyATMmeta
     };
 
     List return_model();
-
 };
 
 #endif

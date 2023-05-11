@@ -34,14 +34,14 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     User's Guide
      
     <span class="caret"></span>
@@ -63,13 +63,13 @@
       <a href="../../articles/pkgdown_files/keyATM_dynamic.html">keyATM Dynamic</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_files/keyATM_label.html">keyATM Label</a>
-    </li>
-    <li>
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_files/Plot.html">Customizing Plots</a>
+      <a href="../../articles/pkgdown_files/Resume.html">Resume Fitting</a>
+    </li>
+    <li>
+      <a href="../../articles/pkgdown_files/Plot.html">Plot Customization</a>
     </li>
     <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
@@ -121,46 +121,50 @@
 </h2>
 <p>We use the text data we prepared for the base keyATM (see <a href="Preparation.html#preprocessing-data">Preparation</a>).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://keyatm.github.io/keyATM/" class="external-link">keyATM</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://quanteda.io" class="external-link">quanteda</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span>, package <span class="op">=</span> <span class="st">"quanteda"</span><span class="op">)</span>
-<span class="va">data_corpus_inaugural</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span>, n <span class="op">=</span> <span class="fl">58</span><span class="op">)</span>
-
-<span class="va">data_tokens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens.html" class="external-link">tokens</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span>,
-                      remove_numbers <span class="op">=</span> <span class="cn">TRUE</span>, 
-                      remove_punct <span class="op">=</span> <span class="cn">TRUE</span>, 
-                      remove_symbols <span class="op">=</span> <span class="cn">TRUE</span>,
-                      remove_separators <span class="op">=</span> <span class="cn">TRUE</span>,
-                      remove_url <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://quanteda.io/reference/pipe.html" class="external-link">%&gt;%</a></span>
-                 <span class="fu"><a href="https://quanteda.io/reference/tokens_tolower.html" class="external-link">tokens_tolower</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://quanteda.io/reference/pipe.html" class="external-link">%&gt;%</a></span>
-                 <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html" class="external-link">tokens_remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/stopwords/man/stopwords.html" class="external-link">stopwords</a></span><span class="op">(</span><span class="st">"english"</span><span class="op">)</span>, 
-                               <span class="st">"may"</span>, <span class="st">"shall"</span>, <span class="st">"can"</span>,
-                               <span class="st">"must"</span>, <span class="st">"upon"</span>, <span class="st">"with"</span>, <span class="st">"without"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://quanteda.io/reference/pipe.html" class="external-link">%&gt;%</a></span>
-                 <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html" class="external-link">tokens_select</a></span><span class="op">(</span>min_nchar <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
-
-<span class="va">data_dfm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html" class="external-link">dfm</a></span><span class="op">(</span><span class="va">data_tokens</span><span class="op">)</span> <span class="op"><a href="https://quanteda.io/reference/pipe.html" class="external-link">%&gt;%</a></span>
-              <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html" class="external-link">dfm_trim</a></span><span class="op">(</span>min_termfreq <span class="op">=</span> <span class="fl">5</span>, min_docfreq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
-
-<span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_dfm</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://keyatm.github.io/keyATM/" class="external-link">keyATM</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://quanteda.io" class="external-link">quanteda</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span>, package <span class="op">=</span> <span class="st">"quanteda"</span><span class="op">)</span></span>
+<span><span class="va">data_corpus_inaugural</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span>, n <span class="op">=</span> <span class="fl">58</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data_tokens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens.html" class="external-link">tokens</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_corpus_inaugural</span>,</span>
+<span>  remove_numbers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  remove_punct <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  remove_symbols <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  remove_separators <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  remove_url <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://quanteda.io/reference/tokens_tolower.html" class="external-link">tokens_tolower</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html" class="external-link">tokens_remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/stopwords/man/stopwords.html" class="external-link">stopwords</a></span><span class="op">(</span><span class="st">"english"</span><span class="op">)</span>,</span>
+<span>                <span class="st">"may"</span>, <span class="st">"shall"</span>, <span class="st">"can"</span>,</span>
+<span>                <span class="st">"must"</span>, <span class="st">"upon"</span>, <span class="st">"with"</span>, <span class="st">"without"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html" class="external-link">tokens_select</a></span><span class="op">(</span>min_nchar <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data_dfm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html" class="external-link">dfm</a></span><span class="op">(</span><span class="va">data_tokens</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html" class="external-link">dfm_trim</a></span><span class="op">(</span>min_termfreq <span class="op">=</span> <span class="fl">5</span>, min_docfreq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_dfm</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,    <span class="co"># text input</span>
-                   number_of_topics  <span class="op">=</span> <span class="fl">5</span>,              <span class="co"># number of topics without keywords</span>
-                   model             <span class="op">=</span> <span class="st">"base"</span>,         <span class="co"># select the model</span>
-                   options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span></span>
+<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,    <span class="co"># text input</span></span>
+<span>  number_of_topics  <span class="op">=</span> <span class="fl">5</span>,              <span class="co"># number of topics without keywords</span></span>
+<span>  model             <span class="op">=</span> <span class="st">"base"</span>,         <span class="co"># select the model</span></span>
+<span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##    Topic_1      Topic_2  Topic_3    Topic_4    Topic_5</span>
-<span class="co">## 1    world       states      war      great     people</span>
-<span class="co">## 2      new      country      men      every government</span>
-<span class="co">## 3   nation constitution   spirit government     public</span>
-<span class="co">## 4   people       united    never       made       laws</span>
-<span class="co">## 5  freedom        union     long   congress        law</span>
-<span class="co">## 6  america     citizens progress       just       duty</span>
-<span class="co">## 7    peace       rights   common       best  interests</span>
-<span class="co">## 8      let          one  purpose      power  political</span>
-<span class="co">## 9     time        power american       much    nations</span>
-<span class="co">## 10    life          now      yet       part     policy</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##    Topic_1      Topic_2  Topic_3    Topic_4    Topic_5</span></span>
+<span><span class="co">## 1    world       states      war      great     people</span></span>
+<span><span class="co">## 2      new      country      men      every government</span></span>
+<span><span class="co">## 3   nation constitution   spirit government     public</span></span>
+<span><span class="co">## 4   people       united    never       made       laws</span></span>
+<span><span class="co">## 5  freedom        union     long   congress        law</span></span>
+<span><span class="co">## 6  america     citizens progress       just       duty</span></span>
+<span><span class="co">## 7    peace       rights   common       best  interests</span></span>
+<span><span class="co">## 8      let          one  purpose      power  political</span></span>
+<span><span class="co">## 9     time        power american       much    nations</span></span>
+<span><span class="co">## 10    life          now      yet       part     policy</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="weighted-lda-covariates">Weighted LDA Covariates<a class="anchor" aria-label="anchor" href="#weighted-lda-covariates"></a>
@@ -168,72 +172,76 @@
 <p>We use the covariate data we prepared for the covariate keyATM (see
 <a href="keyATM_cov.html#preparing-covariates">keyATM_cov</a>).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/docvars.html" class="external-link">docvars</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span><span class="op">)</span>
-
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
-<span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Period <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">Year</span> <span class="op">&lt;=</span> <span class="fl">1899</span> <span class="op">~</span> <span class="st">"18_19c"</span>,
-                            <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"20_21c"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Party <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">Party</span> <span class="op">==</span> <span class="st">"Democratic"</span> <span class="op">~</span> <span class="st">"Democratic"</span>,
-                           <span class="va">Party</span> <span class="op">==</span> <span class="st">"Republican"</span> <span class="op">~</span> <span class="st">"Republican"</span>,
-                           <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"Other"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Party</span>, <span class="va">Period</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_selected</span>
-
-<span class="va">vars_selected</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Party  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Party</span>, 
-                         levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Other"</span>, <span class="st">"Republican"</span>, <span class="st">"Democratic"</span><span class="op">)</span><span class="op">)</span>,
-         Period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Period</span>, 
-                         levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"18_19c"</span>, <span class="st">"20_21c"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_selected</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/docvars.html" class="external-link">docvars</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Period <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">Year</span> <span class="op">&lt;=</span> <span class="fl">1899</span> <span class="op">~</span> <span class="st">"18_19c"</span>,</span>
+<span>                            <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"20_21c"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Party <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">Party</span> <span class="op">==</span> <span class="st">"Democratic"</span> <span class="op">~</span> <span class="st">"Democratic"</span>,</span>
+<span>                           <span class="va">Party</span> <span class="op">==</span> <span class="st">"Republican"</span> <span class="op">~</span> <span class="st">"Republican"</span>,</span>
+<span>                           <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"Other"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Party</span>, <span class="va">Period</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_selected</span></span>
+<span></span>
+<span><span class="va">vars_selected</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Party  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Party</span>,</span>
+<span>                         levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Other"</span>, <span class="st">"Republican"</span>, <span class="st">"Democratic"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         Period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Period</span>,</span>
+<span>                         levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"18_19c"</span>, <span class="st">"20_21c"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_selected</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,
-                   number_of_topics  <span class="op">=</span> <span class="fl">5</span>,
-                   model             <span class="op">=</span> <span class="st">"covariates"</span>,
-                   model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>covariates_data    <span class="op">=</span> <span class="va">vars_selected</span>, 
-                                            covariates_formula <span class="op">=</span> <span class="op">~</span> <span class="va">Party</span> <span class="op">+</span> <span class="va">Period</span><span class="op">)</span>,
-                   options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span></span>
+<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
+<span>  number_of_topics  <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  model             <span class="op">=</span> <span class="st">"covariates"</span>,</span>
+<span>  model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>covariates_data    <span class="op">=</span> <span class="va">vars_selected</span>,</span>
+<span>                           covariates_formula <span class="op">=</span> <span class="op">~</span> <span class="va">Party</span> <span class="op">+</span> <span class="va">Period</span><span class="op">)</span>,</span>
+<span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##     Topic_1 Topic_2 Topic_3   Topic_4      Topic_5</span>
-<span class="co">## 1    people  united   world   country   government</span>
-<span class="co">## 2     peace     now     new     great       states</span>
-<span class="co">## 3   nations     war  nation      made       people</span>
-<span class="co">## 4     every  policy freedom  congress       public</span>
-<span class="co">## 5      free    part america      laws constitution</span>
-<span class="co">## 6     years    good     let       law        union</span>
-<span class="co">## 7       men  nation    time      best        power</span>
-<span class="co">## 8   justice   every    life      well     national</span>
-<span class="co">## 9      just  spirit     one     among       rights</span>
-<span class="co">## 10 american     far    work political     citizens</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##     Topic_1 Topic_2 Topic_3   Topic_4      Topic_5</span></span>
+<span><span class="co">## 1    people  united   world   country   government</span></span>
+<span><span class="co">## 2     peace     now     new     great       states</span></span>
+<span><span class="co">## 3   nations     war  nation      made       people</span></span>
+<span><span class="co">## 4     every  policy freedom  congress       public</span></span>
+<span><span class="co">## 5      free    part america      laws constitution</span></span>
+<span><span class="co">## 6     years    good     let       law        union</span></span>
+<span><span class="co">## 7       men  nation    time      best        power</span></span>
+<span><span class="co">## 8   justice   every    life      well     national</span></span>
+<span><span class="co">## 9      just  spirit     one     among       rights</span></span>
+<span><span class="co">## 10 american     far    work political     citizens</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="weighted-lda-dynamic">Weighted LDA Dynamic<a class="anchor" aria-label="anchor" href="#weighted-lda-dynamic"></a>
 </h2>
 <p>We use the time index we prepared for the dynamic keyATM (see <a href="keyATM_dynamic.html#preparing-time-index">keyATM_dynamic</a>).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Period <span class="op">=</span> <span class="op">(</span><span class="va">vars</span><span class="op">$</span><span class="va">Year</span> <span class="op">-</span> <span class="fl">1780</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%/%</a></span> <span class="fl">10</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_period</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Period <span class="op">=</span> <span class="op">(</span><span class="va">vars</span><span class="op">$</span><span class="va">Year</span> <span class="op">-</span> <span class="fl">1780</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%/%</a></span> <span class="fl">10</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_period</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span>docs             <span class="op">=</span> <span class="va">keyATM_docs</span>,  
-                   number_of_topics <span class="op">=</span> <span class="fl">3</span>,            
-                   model            <span class="op">=</span> <span class="st">"dynamic"</span>,    
-                   model_settings   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>, 
-                                           num_states <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,
-                   options          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span></span>
+<span>  docs             <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
+<span>  number_of_topics <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  model            <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
+<span>  model_settings   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,</span>
+<span>                          num_states <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  options          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##       Topic_1 Topic_2      Topic_3</span>
-<span class="co">## 1  government   world       states</span>
-<span class="co">## 2       great  nation       people</span>
-<span class="co">## 3       every  people      country</span>
-<span class="co">## 4         war   peace        power</span>
-<span class="co">## 5        made     new       public</span>
-<span class="co">## 6        laws    time constitution</span>
-<span class="co">## 7         law nations       united</span>
-<span class="co">## 8        well freedom        union</span>
-<span class="co">## 9   interests america     national</span>
-<span class="co">## 10       many    free       rights</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##       Topic_1 Topic_2      Topic_3</span></span>
+<span><span class="co">## 1  government   world       states</span></span>
+<span><span class="co">## 2       great  nation       people</span></span>
+<span><span class="co">## 3       every  people      country</span></span>
+<span><span class="co">## 4         war   peace        power</span></span>
+<span><span class="co">## 5        made     new       public</span></span>
+<span><span class="co">## 6        laws    time constitution</span></span>
+<span><span class="co">## 7         law nations       united</span></span>
+<span><span class="co">## 8        well freedom        union</span></span>
+<span><span class="co">## 9   interests america     national</span></span>
+<span><span class="co">## 10       many    free       rights</span></span></code></pre>
 </div>
   </div>
 

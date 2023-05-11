@@ -42,26 +42,26 @@ void keyATMcovPG::iteration_single(int it)
     doc_id_ = doc_indexes[ii];
     doc_s = S[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
-    
+
     token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
-    
-    
+
+
     // Iterate each word in the document
     for (int jj = 0; jj < doc_length; ++jj) {
       w_position = token_indexes[jj];
       s_ = doc_s[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
-    
+
       new_z = sample_z_PG(z_, s_, w_, doc_id_);
       doc_z[w_position] = new_z;
-    
-      if (keywords[new_z].find(w_) == keywords[new_z].end())	
+
+      if (keywords[new_z].find(w_) == keywords[new_z].end())
         continue;
-  
+
       z_ = doc_z[w_position]; // use updated z
       new_s = sample_s(z_, s_, w_, doc_id_);
       doc_s[w_position] = new_s;
     }
-    
+
     Z[doc_id_] = doc_z;
     S[doc_id_] = doc_s;
   }
@@ -72,7 +72,7 @@ void keyATMcovPG::sample_parameters(int it)
 {
   sample_PG(it);
 
-  // Store theta 
+  // Store theta
   int r_index = it + 1;
   if (store_theta) {
     if (r_index % thinning == 0 || r_index == 1 || r_index == iter) {
@@ -130,7 +130,7 @@ int keyATMcovPG::sample_z_PG(int z, int s, int w, int doc_id)
   n_dk(doc_id, z) -= vocab_weights(w);
   n_dk_noWeight(doc_id, z) -= 1.0;
 
-  new_z = -1; // debug
+  new_z = -1; // initialize
   if (s == 0) {
     for (int k = 0; k < num_topics; ++k) {
 
@@ -152,7 +152,7 @@ int keyATMcovPG::sample_z_PG(int z, int s, int w, int doc_id)
       if (keywords[k].find(w) == keywords[k].end()) {
         z_prob_vec(k) = 0.0;
         continue;
-      } else { 
+      } else {
         numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
           (n_s1_k(k) + prior_gamma(k, 0)) *
           theta(doc_id, k);
@@ -210,9 +210,9 @@ double keyATMcovPG::loglik_total()
       loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
 
       // s
-      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) ) 
+      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) )
                 - mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1))
-                + mylgamma( n_s1_k(k) + prior_gamma(k, 0) );  
+                + mylgamma( n_s1_k(k) + prior_gamma(k, 0) );
     }
   }
 

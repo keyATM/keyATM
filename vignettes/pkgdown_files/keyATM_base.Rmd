@@ -66,16 +66,20 @@ Since this example does not use covariates or time stamps, `base` is the appropr
 
 To guarantee the replicability, we recommend to set the random seed
 in the `option` argument (see [here](Options.html)
-for other options). The default number of iterations is 1500.
+for other options). The default number of iterations is 1,500.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center', results="hide"}
-out <- keyATM(docs              = keyATM_docs,    # text input
-              no_keyword_topics = 5,              # number of topics without keywords
-              keywords          = keywords,       # keywords
-              model             = "base",         # select the model
-              options           = list(seed = 250))
+out <- keyATM(
+  docs              = keyATM_docs,    # text input
+  no_keyword_topics = 5,              # number of topics without keywords
+  keywords          = keywords,       # keywords
+  model             = "base",         # select the model
+  options           = list(seed = 250)
+)
 ```
 The default number of iterations is `1500`. Please check [this page](Options.html) for available options.
+
+You can [resume](Resume.html) the iteration by specifying the `resume` argument.
 
 
 ## Saving the model

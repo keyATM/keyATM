@@ -4,12 +4,12 @@
 \alias{keyATM_fit_base}
 \title{Run the Collapsed Gibbs sampler for the keyATM Base}
 \usage{
-keyATM_fit_base(model, iter = 0L)
+keyATM_fit_base(model, resume = FALSE)
 }
 \arguments{
 \item{model}{A initialized model}
 
-\item{iter}{Required number of iterations}
+\item{resume}{resume or not}
 }
 \description{
 Run the Collapsed Gibbs sampler for the keyATM Base

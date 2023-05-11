@@ -1,5 +1,6 @@
 #ifndef __keyATM_HMM__INCLUDED__
 #define __keyATM_HMM__INCLUDED__
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -39,8 +40,8 @@ class keyATMhmm : virtual public keyATMmeta
     MatrixXd alphas;  // (num_states, num_topics)
 
     // Constructor
-    keyATMhmm(List model_, const int iter_) :
-      keyATMmeta(model_, iter_) {};
+    keyATMhmm(List model_) :
+      keyATMmeta(model_) {};
 
     // During sampling
       // sample_forward()
@@ -59,20 +60,23 @@ class keyATMhmm : virtual public keyATMmeta
         std::vector<int> topic_ids;
         VectorXd keep_current_param;
         MatrixXd ndk_a;
-  
-    // 
+
+    //
     // Functions
     //
     // Utilities
     int get_state_index(const int doc_id);
-  
+
     // Read data and Initialize
-    void read_data_specific() final;
-    void initialize_specific() final;
-  
+    virtual void read_data_specific() override final;
+    virtual void initialize_specific() override final;
+
+    // Resume
+    virtual void resume_initialize_specific() override final;
+
     // Iteration
-    virtual void iteration_single(int it);
-    void sample_parameters(int it);
+    virtual void iteration_single(int it) override;
+    virtual void sample_parameters(int it) override final;
 
     void sample_alpha();
     void sample_alpha_state(int state, int state_start, int state_end);
@@ -81,13 +85,13 @@ class keyATMhmm : virtual public keyATMmeta
     void sample_forward();  // calculate Prk
     void sample_backward();  // sample R_est
     void sample_P();  // sample P_est
-    void store_R_est();
-    void store_P_est();
+    void store_R_est();  // store state
+    void store_P_est();  // store the transition matrix
+    void keep_P_est();  // keep the latest transition matrix
 
     double polyapdfln(int t, VectorXd &alpha);
-    virtual double loglik_total();
-    double loglik_total_label();
-    void verbose_special(int r_index);
+    virtual double loglik_total() override;
+    virtual void verbose_special(int r_index) override;
 };
 
 #endif

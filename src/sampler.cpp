@@ -20,7 +20,7 @@ namespace sampler{
     std::iota(v.begin(), v.end(), 0);
     int j;
 
-    for (int i = 0; i < m-1; i++) {
+    for (int i = 0; i < m-1; ++i) {
       j = i + rand_wrapper(m - i);
       std::swap(v[i], v[j]);
     }
@@ -35,7 +35,7 @@ namespace sampler{
     double temp = 0.0;
     int index = 0;
 
-    for (int ii = 0; ii < size; ii++) {
+    for (int ii = 0; ii < size; ++ii) {
       temp += prob(ii);
       if (u < temp) {
         index = ii;
@@ -53,7 +53,7 @@ namespace sampler{
     double u = R::unif_rand() * total;
     double temp = 0.0;
     int index = 0;
-    for (int ii = 0; ii < size; ii++) {
+    for (int ii = 0; ii < size; ++ii) {
       temp += prob(ii);
       if (u < temp) {
         index = ii;
@@ -71,7 +71,7 @@ namespace sampler{
     int index = 0;
     double prob = 1.0 / size;
 
-    for (int ii = 0; ii < size; ii++) {
+    for (int ii = 0; ii < size; ++ii) {
       temp += prob;
       if (u < temp) {
         index = ii;
@@ -88,7 +88,7 @@ namespace sampler{
     double temp = 0.0;
     int index = 0;
 
-    for (int ii = 0; ii < size; ii++) {
+    for (int ii = 0; ii < size; ++ii) {
       temp += prob;
       if (u < temp) {
         index = ii;

@@ -1,6 +1,6 @@
 ---
 title: "keyATM with Collapsed Variational Bayes"
-output: 
+output:
   html_document:
     toc: true
 ---
@@ -22,12 +22,14 @@ bills_dfm <- keyATM_data_bills$doc_dfm
 bills_keywords <- keyATM_data_bills$keywords
 keyATM_docs <- keyATM_read(bills_dfm)
 
-out <- keyATMvb(docs = keyATM_docs,
-                no_keyword_topics = 3,
-                keywords = bills_keywords,
-                model = "base",
-                options = list(seed = 250),
-                vb_options = list(convtol = 1e-4, init = "mcmc"))
+out <- keyATMvb(
+  docs = keyATM_docs,
+  no_keyword_topics = 3,
+  keywords = bills_keywords,
+  model = "base",
+  options = list(seed = 250),
+  vb_options = list(convtol = 1e-4, init = "mcmc")
+)
 ```
 
 \newcommand{\Beta}{\textsf{Beta}}
@@ -168,7 +170,7 @@ Extract terms related $q(\zdi)$ from ELBO.
 We combine the results of Variational Bayes and Collapsed Gibbs Sampling. From Variational Bayes,
 \begin{align}
   &q(\zdik) \propto \exp \bigg( \int q(\sdione) q(\wt{\phi}_{kv})  \log \wt{\phi}_{kv}\   d\wt{\phi}_{kv} + \int q(\sdizero) q({\phi}_{kv})  \log {\phi}_{kv}\   d{\phi}_{kv}   \bigg) \\
-  &\quad \times \exp \bigg( \int q(\theta_{dk}) \log \theta_{dk}\ d\theta_{dk}  \bigg) 
+  &\quad \times \exp \bigg( \int q(\theta_{dk}) \log \theta_{dk}\ d\theta_{dk}  \bigg)
   \times \exp \bigg(  q(\sdione) \int q(\pi_k)\log \pi_k\ d\pi_k   \bigg) \times \exp \bigg( \int q(\pi_k)\log \pi_k\ d\pi_k  \bigg) \\
   %%%%%%%%
   &= \exp \bigg( q(\sdione) \int q(\wt{\phi}_{kv})  \log \wt{\phi}_{kv}\   d\wt{\phi}_{kv} + q(\sdione) \int q(\pi_k)\log \pi_k\ d\pi_k    \bigg) \\
@@ -179,12 +181,12 @@ We combine the results of Variational Bayes and Collapsed Gibbs Sampling. From V
 Results of Collapsed Gibbs Sampling show,
 \begin{align}
   &\quad \Pr(z_{di}=k \mid \bzremove, \bw, \bs, \balpha, \bbeta,
-    \wt{\bbeta}, \bgamma) 
-\propto 
+    \wt{\bbeta}, \bgamma)
+\propto
 \begin{cases} %
   \frac{\displaystyle \beta_v + n_{k v}^{- di} }{\displaystyle   V \beta_v +  n_{k}^{- di}} \cdot %
   \frac{\displaystyle n^{- di}_{k} + \gamma_1 }{\displaystyle \tilde{n}_{k}^{- di} + \gamma_1 + n^{- di}_{k} + \gamma_2 } \cdot %
-\left(n_{d{k}}^{- di} + \alpha_{dk}  \right)  & \ {\rm if \ } s_{di} = 0, \\ 
+\left(n_{d{k}}^{- di} + \alpha_{dk}  \right)  & \ {\rm if \ } s_{di} = 0, \\
 \frac{\displaystyle \tilde{\beta}_v + \tilde{n}_{k v}^{- di}    }{\displaystyle  L_{k} \tilde{\beta}_v + \tilde{n}_{k }^{- di}  } \cdot%
 \frac{\displaystyle \tilde{n}^{ - di}_{k} + \gamma_2 }{\displaystyle \tilde{n}^{- di}_{k} + \gamma_1 + n^{- di}_{k} + \gamma_2 } \cdot %
 \left(n_{d{k}}^{- di} + \alpha_{dk}  \right) & \ {\rm if \ } s_{di} = 1.
@@ -214,26 +216,26 @@ Next, we approximate expectations. We use Taylor expansion around $a$,
 If $a = \E[x]$,
 \begin{align}
   \E [\log x] &\approx \E \bigg[ \log \E[x] + \frac{1}{\E[x]} (x - \E[x]) \bigg]
-  = \log \E[x] + \frac{1}{\E[x]} (\E[x] - \E[x]) 
+  = \log \E[x] + \frac{1}{\E[x]} (\E[x] - \E[x])
   = \log \E[x],
 \end{align}
 which is called CVB0. For example
 \begin{align}
-  \E_{q}[\log ( \beta_v + n_{k v}^{- di})  ] &= \log \E_{q}[\beta_v + n_{k v}^{- di}] 
+  \E_{q}[\log ( \beta_v + n_{k v}^{- di})  ] &= \log \E_{q}[\beta_v + n_{k v}^{- di}]
   = \log ( \beta_v + \E_{q}[n_{k v}^{- di}] ).
 \end{align}
 
 Hence,
 \begin{align}
  & q(\zdik) \propto \frac{\exp \big[ q(\sdizero) \log (\E_{q}[n_{k v}^{- di} ] + \beta_v)  \big] }{\exp \big[ q(\sdizero) \log(\E_{q} [ n_{k}^{- di} ] + V \beta_v) \big]} \times \frac{\exp\big[ q(\sdizero) \log(\E_{q} [n^{- di}_{k} ] + \gamma_1)  \big]}{\exp \big[ q(\sdizero) \log(\E_{q} [ \tilde{n}_{k}^{- di} + n^{- di}_{k}] + \gamma_1 + \gamma_2) \big]}     \\
-  &\quad \times \frac{\exp \big[ q(\sdione) \log (\E_{q}[ \tilde{n}_{k v}^{- di} ] + \tilde{\beta}_v)   \big]}{ \exp \big[ q(\sdione) \log (\E_{q}[  \tilde{n}_{k}^{- di} ] +  L_{k} \tilde{\beta}_v) \big]} 
+  &\quad \times \frac{\exp \big[ q(\sdione) \log (\E_{q}[ \tilde{n}_{k v}^{- di} ] + \tilde{\beta}_v)   \big]}{ \exp \big[ q(\sdione) \log (\E_{q}[  \tilde{n}_{k}^{- di} ] +  L_{k} \tilde{\beta}_v) \big]}
   \times \frac{ \exp \big[ q(\sdione)\log(\E_{q}[ \tilde{n}^{ - di}_{k} ] + \gamma_2)] \big]} {\exp \big[ q(\sdione) \log (\E_{q}[ \tilde{n}^{- di}_{k}  + n^{- di}_{k}  ] + \gamma_1 + \gamma_2) \big]}   \\
   &\quad \times \big( \E_{q} [n_{d{k}}^{- di}  ]  + \alpha_{dk} \big) \\
 %%%%%%%%%%%%%%%%
   &= \exp \bigg[ q(\sdizero) \bigg( \log (\E_{q}[n_{k v}^{- di} ] + \beta_v) - \log(\E_{q} [ n_{k}^{- di} ] + V \beta_v) + \log(\E_{q} [n^{- di}_{k} ] + \gamma_1)  - \log(\E_{q} [ \tilde{n}_{k}^{- di} + n^{- di}_{k}] + \gamma_1 + \gamma_2) \bigg) \\
   &\quad +  q(\sdione) \bigg( \log (\E_{q}[ \tilde{n}_{k v}^{- di} ] + \tilde{\beta}_v) - \log (\E_{q}[  \tilde{n}_{k}^{- di} ] +  L_{k} \tilde{\beta}_v) + \log(\E_{q}[ \tilde{n}^{ - di}_{k} ] + \gamma_2) - \log (\E_{q}[ \tilde{n}^{- di}_{k}  + n^{- di}_{k}  ] + \gamma_1 + \gamma_2) \bigg) \bigg]  \\
   &\quad \times \big( \E_{q} [n_{d{k}}^{- di}  ]  + \alpha_{dk} \big)
-\end{align} 
+\end{align}
 where
 \begin{align}
   %%%%%%%%%%%%
@@ -252,7 +254,7 @@ where
   &= \sumd \sum_{i'\neq i}^{N_d} q(z_{di'} = k) q(s_{di'} = 1) \\
   %%%%%%%%%%%%
   \E_{q(\bzremove) q(\bs)} [n_{d{k}}^{- di}] &= \E_{q(\bzremove) q(\bs)} \bigg[ \sum_{i' \neq i}^{N_d}  \I(z_{di'} = k)  \bigg] \\
-  &= \sum_{i' \neq i}^{N_d} q(z_{di'} = k) 
+  &= \sum_{i' \neq i}^{N_d} q(z_{di'} = k)
   %%%%%%%%%%%%
   % \E_{q(\bzremove) q(\bs)} [\tilde{n}_{d{k}}^{- di}] &= \E_{q(\bzremove) q(\bs)} \bigg[ \sum_{i' \neq i}^{N_d}  \I(z_{di'} = k) \I(s_{di'} = 1) \bigg] \\
   % &= \sum_{i' \neq i}^{N_d} q(z_{di'} = k) q(s_{di'} = 1)
@@ -272,10 +274,10 @@ Results of the Collapsed Gibbs Sampling show,
 \begin{align}
   \Pr(s_{di}  = s \mid \bs^{- di}, \bz, \bw,  \bbeta,  \wt{\bbeta}, \bgamma)
   & \ \propto \
-\begin{cases}  
+\begin{cases}
 	\frac{\displaystyle \beta_v + n_{z_{di}, v}^{- di}    }{ \displaystyle V \beta_v + n_{z_{di}}^{ - di} } \cdot %
   (\displaystyle n^{- di}_{z_{di}} + \gamma_1 )  %
-	& {\rm if} \quad s  = 0, \\ 
+	& {\rm if} \quad s  = 0, \\
   \frac{\displaystyle \tilde{\beta}_v + \tilde{n}_{z_{di}, v}^{- di}    }{\displaystyle  L_{z_{di}}  \tilde{\beta}_v + \tilde{n}_{z_{di}}^{- di}  } \cdot%
   (\displaystyle \tilde{n}^{- di}_{z_{di}} + \gamma_2 ) %
 	&  {\rm if} \quad  s = 1.
@@ -309,8 +311,8 @@ We cannot calculate the log-likelihood explicityly, so we check the approximated
   &=  \sumk \int q(\bphi_{k}) \phi_{kv} d\phi_{k} \int  q(\theta_{d}) \theta_{dk} d\theta_{d} \int q(\sdizero \mid \pi_k) \pi_k  d\pi_k +
   \sumk  \int q(\wt{\bphi}_{k}) \wt{\bphi}_{kv} d\wt{\bphi}_{k} \int  q(\theta_{d}) \theta_{dk} d\theta_{d} \int q(\sdione \mid \pi_k) \pi_k  d\pi_k \\
 %%%%%%%%%%%%%%%%%%%%
-&= \sumk \bigg[ 
-  \frac{\displaystyle  \E_{q}[n_{k v} ] + \beta_v  }{\displaystyle \E_{q} [ n_{k} ] + V \beta_v} \cdot \dfrac{\E_{q} [n_{d{k}}  ]  + \alpha_{dk}}{ n_d + \sum_{k'=1}^K \alpha_{dk}} \cdot \frac{\displaystyle \E_q[n_k] + \gamma_2 }{\displaystyle \E_q[\tilde{n}_k] + \gamma_1 + \E_q[n_k] + \gamma_2 } 
- +  
+&= \sumk \bigg[
+  \frac{\displaystyle  \E_{q}[n_{k v} ] + \beta_v  }{\displaystyle \E_{q} [ n_{k} ] + V \beta_v} \cdot \dfrac{\E_{q} [n_{d{k}}  ]  + \alpha_{dk}}{ n_d + \sum_{k'=1}^K \alpha_{dk}} \cdot \frac{\displaystyle \E_q[n_k] + \gamma_2 }{\displaystyle \E_q[\tilde{n}_k] + \gamma_1 + \E_q[n_k] + \gamma_2 }
+ +
  \frac{\displaystyle  \E_{q}[\tilde{n}_{k v} ] + \beta_v  }{\displaystyle \E_{q} [ \tilde{n}_{k} ] + L_k \beta_v} \cdot \dfrac{\E_{q} [{n}_{d{k}}  ]  + \alpha_{dk}}{ {n}_d + \sum_{k'=1}^K \alpha_{dk}} \cdot \frac{\displaystyle \E_q[\tilde{n}_k] + \gamma_1 }{\displaystyle \E_q[\tilde{n}_k] + \gamma_1 + \E_q[n_k] + \gamma_2 }  \bigg]
 \end{align*}

@@ -1,6 +1,6 @@
 ---
 title: "keyATM Dynamic"
-output: 
+output:
   html_document:
     toc: true
 ---
@@ -30,17 +30,17 @@ data(data_corpus_inaugural, package = "quanteda")
 data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 
 data_tokens <- tokens(data_corpus_inaugural,
-                      remove_numbers = TRUE, 
-                      remove_punct = TRUE, 
+                      remove_numbers = TRUE,
+                      remove_punct = TRUE,
                       remove_symbols = TRUE,
                       remove_separators = TRUE,
                       remove_url = TRUE) %>%
                  tokens_tolower() %>%
-                 tokens_remove(c(stopwords("english"), 
+                 tokens_remove(c(stopwords("english"),
                                "may", "shall", "can",
                                "must", "upon", "with", "without")) %>%
                  tokens_select(min_nchar = 3)
-                
+
 data_dfm <- dfm(data_tokens) %>%
                dfm_trim(min_termfreq = 5, min_docfreq = 2)
 
@@ -58,12 +58,12 @@ Researchers are often interested in investigating how the prevalence of topics c
 over time. The **keyATM** can use time stamps for the prior for
 document-topic distribution through Hidden Markov Model ([Chib 1998](https://doi.org/10.1016/S0304-4076(97)00115-2)).
 
-Section 4 of [Eshima et al. (2020)](https://arxiv.org/abs/2004.05964) explains the dynamic keyATM in details.
+Section 4 of <a href="https://doi.org/10.1111/ajps.12779" target="_blank">Eshima et al. (2023)</a> explains the dynamic keyATM in details.
 As explained in [keyATM Covariates](keyATM_cov.html), we recommend researchers to
-construct a numeric or an integer vector of time stamps after preprocessing texts. 
+construct a numeric or an integer vector of time stamps after preprocessing texts.
 
 ## Preparing time index
-Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords. 
+Please read [Preparation](Preparation.html) for the reading of documents and creating a list of keywords.
 
 We use the US Presidential inaugural address data we prapared ([documents](Preparation.html#preparing-texts) and [keywords](Preparation.html#preparing-keywords)).
 
@@ -89,20 +89,24 @@ the number of hidden states with the `num_states` in the
 
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-out <- keyATM(docs              = keyATM_docs,                         
-              no_keyword_topics = 3,                                   
-              keywords          = keywords,                      
-              model             = "dynamic",                           
-              model_settings    = list(time_index = vars_period$Period,
-                                       num_states = 5),                
-              options           = list(seed = 250))
+out <- keyATM(
+  docs              = keyATM_docs,
+  no_keyword_topics = 3,
+  keywords          = keywords,
+  model             = "dynamic",
+  model_settings    = list(time_index = vars_period$Period,
+                           num_states = 5),
+  options           = list(seed = 250)
+)
 ```
 
+Once you fit the model, you can save the model with `save()` for replication. This is the same as the [base model](keyATM_base.html#saving-the-model).
+
+You can [resume](Resume.html) the iteration by specifying the `resume` argument.
 
 ## Interpreting results
-We can use the `top_words()`, `top_docs()`, `plot_modelfit()`, `plot_alpha()`,
-and `plot_pi()` functions
-as in [the base keyATM](keyATM_base.html). 
+We can use the interpretation functions, such as `top_words()`, `top_docs()`, `plot_modelfit()`,
+as in [the base keyATM](keyATM_base.html#interpreting-results).
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 top_words(out)
@@ -121,13 +125,15 @@ With the `time_index_label` argument, you can label each time index. Note that `
 in the `keyATM()` function should be `TRUE` to show 90% credible intervals.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
-out <- keyATM(docs              = keyATM_docs,                         
-              no_keyword_topics = 3,                                   
-              keywords          = keywords,                      
-              model             = "dynamic",                           
-              model_settings    = list(time_index = vars_period$Period,
-                                       num_states = 5),                
-              options           = list(seed = 250, store_theta = TRUE, thinning = 5))
+out <- keyATM(
+  docs              = keyATM_docs,
+  no_keyword_topics = 3,
+  keywords          = keywords,
+  model             = "dynamic",
+  model_settings    = list(time_index = vars_period$Period,
+                           num_states = 5),
+  options           = list(seed = 250, store_theta = TRUE, thinning = 5)
+)
 fig_timetrend <- plot_timetrend(out, time_index_label = vars$Year, xlab = "Year")
 fig_timetrend
 ```
@@ -135,4 +141,4 @@ fig_timetrend
 
 ## Reference
 * Chib, S. (1998). "Estimation and comparison of multiple change-point models." *Journal of econometrics*, 86(2), 221-241.
-* Eshima, S., Imai, K., & Sasaki, T. (2020). Keyword Assisted Topic Models. arXiv preprint arXiv:2004.05964.
+* Eshima, S., Imai, K., & Sasaki, T. (2023). "Keyword Assisted Topic Models." *American Journal of Political Science*.

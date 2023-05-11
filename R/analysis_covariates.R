@@ -11,16 +11,16 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 {
   # Check inputs
   if (!is.vector(by)) {
-    stop("`by` should be a vector.")
+    cli::cli_abort("`by` should be a vector.")
   }
   if (!"Z" %in% names(x$kept_values)) {
-    stop("`Z` and `S` should be in the output. Please check `keep` option in `keyATM()`.")
+    cli::cli_abort("`Z` and `S` should be in the output. Please check `keep` option in `keyATM()`.")
   }
   if (!"S" %in% names(x$kept_values)) {
-    stop("`Z` and `S` should be in the output. Please check `keep` option in `keyATM()`.")
+    cli::cli_abort("`Z` and `S` should be in the output. Please check `keep` option in `keyATM()`.")
   }
   if (length(keyATM_docs$W_raw) != length(by)) {
-    stop("The length of `by` should be the same as the length of documents.")
+    cli::cli_abort("The length of `by` should be the same as the length of documents.")
   }
 
 
@@ -59,7 +59,7 @@ by_strata_TopicWord <- function(x, keyATM_docs, by)
 #' @export
 covariates_info <- function(x) {
   if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
-    stop("This is not an output of the covariate model")
+    cli::cli_abort("This is not an output of the covariate model")
   }
   cat(paste0("Colnames: ", paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse = ", "),
              "\nStandardization: ", as.character(x$kept_values$model_settings$standardize),
@@ -74,7 +74,7 @@ covariates_info <- function(x) {
 #' @export
 covariates_get <- function(x) {
   if (x$model != "covariates" | !("keyATM_output" %in% class(x))) {
-    stop("This is not an output of the covariate model")
+    cli::cli_abort("This is not an output of the covariate model")
   }
   return(x$kept_values$model_settings$covariates_data_use)
 }
@@ -96,9 +96,9 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, ...)
   # Check inputs
   variables <- colnames(x$kept_values$model_settings$covariates_data_use)
   if (length(by_var) != 1)
-    stop("`by_var` should be a single variable.")
+    cli::cli_abort("`by_var` should be a single variable.")
   if (!by_var %in% variables)
-    stop(paste0(by_var, " is not in the set of covariates in keyATM model. Check with `covariates_info()`.",
+    cli::cli_abort(paste0(by_var, " is not in the set of covariates in keyATM model. Check with `covariates_info()`.",
                 "Covariates provided are: ",
                 paste(colnames(x$kept_values$model_settings$covariates_data_use), collapse = " , ")))
 
@@ -107,7 +107,7 @@ by_strata_DocTopic <- function(x, by_var, labels, by_values = NULL, ...)
     by_values <- sort(unique(x$kept_values$model_settings$covariates_data_use[, by_var]))
   }
   if (length(by_values) != length(labels)) {
-    stop("Length mismatches. Please check `labels`.")
+    cli::cli_abort("Length mismatches. Please check `labels`.")
   }
 
   apply_predict <- function(i, ...) {
@@ -157,13 +157,12 @@ summary.strata_doctopic <- function(object, ...)
 
 
 #' @noRd
-#' @importFrom rlang .data
 #' @import magrittr
 #' @keywords internal
 strata_doctopic_CI <- function(theta, ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"), label = NULL, ...)
 {
-  method <- match.arg(method)
-  point <- match.arg(point)
+  method <- rlang::arg_match(method)
+  point <- rlang::arg_match(point)
 
   q <- as.data.frame(apply(theta, 2, calc_ci, ci, method, point))
   q$CI <- c("Lower", "Point", "Upper")
@@ -197,7 +196,7 @@ calc_ci <- function(vec, ci, method, point)
     nCIs <-  length(sorted_points) - window_size
 
     if (window_size < 2 | nCIs < 1) {
-      warning("`ci` is too small or interations are not enough, using `eti` option instead.")
+      cli::cli_warn("`ci` is too small or interations are not enough, using `eti` option instead.")
       return(calc_ci(vec, ci, method = "eti", point))
     }
 

@@ -1,5 +1,6 @@
 #ifndef __LDAbase__INCLUDED__
 #define __LDAbase__INCLUDED__
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -15,12 +16,12 @@ class LDAbase : virtual public keyATMmeta
 {
   // Base function for the Weighted LDA models
   // This inherits keyATMmeta class.
-  
+
   public:
     // Constructor
-    LDAbase(List model_, const int iter_) :
-      keyATMmeta(model_, iter_) {};
-  
+    LDAbase(List model_) :
+      keyATMmeta(model_) {};
+
     // Variables
     MatrixXd n_kv;
     VectorXd n_k;
@@ -28,13 +29,11 @@ class LDAbase : virtual public keyATMmeta
 
     // Functions
     // In LDA, we do not need to read and initialize X
-    virtual void read_data_common();
-    virtual void initialize_common();
-    virtual void iteration_single(int it) = 0;
-    void parameters_store(int r_index); 
+    virtual void read_data_common() override final;
+    virtual void initialize_common() override final;
+    virtual void parameters_store(int r_index) override final;
     virtual int sample_z(VectorXd &alpha, int z, int s,
-                         int w, int doc_id) final;
-    virtual double loglik_total() = 0;
+                         int w, int doc_id) override final;
 };
 
 #endif

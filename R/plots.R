@@ -43,7 +43,6 @@ print.keyATM_fig <- function(x, ...)
 }
 
 
-
 #' Show a diagnosis plot of alpha
 #'
 #' @param x the output from a keyATM model (see [keyATM()]).
@@ -62,27 +61,31 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
   modelname <- extract_full_model_name(x)
 
   if (modelname %in% c("lda", "ldacov", "ldahmm")) {
-    stop(paste0("This is not a model with keywords."))  # only plot keywords later
+    cli::cli_abort(paste0("This is not a model with keywords."))  # only plot keywords later
   }
   if (!"alpha_iter" %in% names(x$values_iter)) {
-    stop("`alpha` is not stored. Please check the options.\nNote that the covariate model does not have `alpha`.\nPlease check our paper for details.")
+    cli::cli_abort("`alpha` is not stored. Please check the options.\nNote that the covariate model does not have `alpha`.\nPlease check our paper for details.")
   }
   if (is.null(show_topic)) {
     show_topic <- 1:x$keyword_k
+  } else {
+    if (!all(show_topic %in% 1:x$keyword_k))
+      cli::cli_abort("Topics specified in `show_topic` are not the keyword topics.")
   }
   if (!is.numeric(start) | length(start) != 1) {
-    stop("`start` argument is invalid.")
+    cli::cli_abort("`start` argument is invalid.")
   }
 
-  tnames <- c(names(x$keywords_raw))[show_topic]
-  x$values_iter$alpha_iter %>%
+  tnames <- as.character(show_topic)
+  names(tnames) <- c(names(x$keywords_raw))[show_topic]
+  temp <- x$values_iter$alpha_iter %>%
     dplyr::filter(.data$Iteration >= start) %>%
     dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
-    tidyr::pivot_wider(names_from = "Topic", values_from = "alpha") -> temp
+    tidyr::pivot_wider(names_from = "Topic", values_from = "alpha")
 
-  if (modelname %in% c("base", "lda", "label")) {
-    temp %>% dplyr::rename_at(vars(-"Iteration"), ~tnames) %>%
-      tidyr::pivot_longer(-"Iteration", names_to = "Topic", values_to = "alpha") -> res_alpha
+  if (modelname %in% c("base", "lda")) {
+    res_alpha <- temp %>% dplyr::rename(tidyselect::all_of(tnames)) %>%
+      tidyr::pivot_longer(-"Iteration", names_to = "Topic", values_to = "alpha")
 
     p <- ggplot(res_alpha, aes(x = .data$Iteration, y = .data$alpha, group = .data$Topic)) +
           geom_line() +
@@ -92,8 +95,8 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
           ggtitle("Estimated alpha") + theme_bw() +
           theme(plot.title = element_text(hjust = 0.5))
   } else if (modelname %in% c("hmm", "ldahmm")) {
-    temp %>% dplyr::rename_at(vars(-.data$Iteration, -.data$State), ~tnames) %>%
-      tidyr::pivot_longer(-c("Iteration", "State"), names_to = "Topic", values_to = "alpha") -> res_alpha
+    res_alpha <- temp %>% dplyr::rename(tidyselect::all_of(tnames)) %>%
+      tidyr::pivot_longer(-c("Iteration", "State"), names_to = "Topic", values_to = "alpha")
     res_alpha$State <- factor(res_alpha$State, levels = 1:max(res_alpha$State))
 
     p <- ggplot(res_alpha, aes(x = .data$Iteration, y = .data$alpha, group = .data$State, colour = .data$State)) +
@@ -127,7 +130,7 @@ plot_modelfit <- function(x, start = 1)
   modelfit <- x$model_fit
 
   if (!is.numeric(start) | length(start) != 1) {
-    stop("`start` argument is invalid.")
+    cli::cli_abort("`start` argument is invalid.")
   }
 
   if (!is.null(start)) {
@@ -165,23 +168,23 @@ plot_modelfit <- function(x, start = 1)
 #' @export
 plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"))
 {
-  method <- match.arg(method)
-  point <- match.arg(point)
+  method <- rlang::arg_match(method)
+  point <- rlang::arg_match(point)
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
 
   if (modelname %in% c("lda", "ldacov", "ldahmm")) {
-    stop(paste0("This is not a model with keywords."))
+    cli::cli_abort(paste0("This is not a model with keywords."))
   }
 
   if (is.null(show_topic)) {
     show_topic <- 1:x$keyword_k
   } else if (sum(!show_topic %in% 1:x$keyword_k) != 0) {
-    stop("`plot_pi` only visualize keyword topics.")
+    cli::cli_abort("`plot_pi` only visualize keyword topics.")
   }
 
   if (!is.numeric(start) | length(start) != 1) {
-    stop("`start` argument is invalid.")
+    cli::cli_abort("`start` argument is invalid.")
   }
 
   tnames <- c(names(x$keywords_raw))[show_topic]
@@ -192,17 +195,17 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
       tibble::as_tibble(.name_repair = ~ tnames) %>%
       dplyr::mutate(Iteration = x$values_iter$used_iter) %>%
       dplyr::filter(.data$Iteration >= start) %>%
-      dplyr::select(-.data$Iteration) -> pi_mat
+      dplyr::select(-tidyselect::all_of("Iteration")) -> pi_mat
 
     if (nrow(pi_mat) == 0) {
-      stop("Nothing left to plot. Please check arguments.")
+      cli::cli_abort("Nothing left to plot. Please check arguments.")
     }
 
     pi_mat %>%
       tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Topic") %>%
       dplyr::group_by(.data$Topic) %>%
       dplyr::summarise(x = list(tibble::enframe(calc_ci(.data$value, ci, method, point), "q", "value")), .groups = "drop_last") %>%
-      tidyr::unnest(x) %>% tidyr::pivot_wider(names_from = .data$q, values_from = .data$value) -> temp
+      tidyr::unnest(x) %>% tidyr::pivot_wider(names_from = tidyselect::all_of("q"), values_from = tidyselect::all_of("value")) -> temp
 
     p <- ggplot(temp, aes(y = .data$Point, x = .data$Topic)) +
          theme_bw() + geom_point() +
@@ -211,7 +214,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
          ggtitle("Probability of words drawn from keyword topic-word distribution") +
          theme(plot.title = element_text(hjust = 0.5))
   } else {
-    message("Plotting pi from the final MCMC draw. \nPlease set `store_pi` to `TRUE` if you want to plot pi over iterations.")
+    cli::cli_alert_info("Plotting pi from the final MCMC draw. Please set `store_pi` to `TRUE` if you want to plot pi over iterations.")
     x$pi %>%
       dplyr::mutate(Probability = .data$Proportion / 100) %>%
       dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
@@ -248,14 +251,14 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, label_topic = NULL, order = c("proportion", "topicid"), xmax = NULL)
 {
   check_arg_type(x, "keyATM_output")
-  order <- match.arg(order)
+  order <- rlang::arg_match(order)
 
   total_k <- x$keyword_k + x$no_keyword_topics
   if (is.null(show_topic)) {
     show_topic <- 1:total_k
   } else {
     if (max(show_topic) > total_k | min(show_topic) < 1) {
-      stop("Invalid topic ID in `show_topic`.")
+      cli::cli_abort("Invalid topic ID in `show_topic`.")
     }
   }
 
@@ -263,7 +266,7 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, la
 
   if (!is.null(label_topic)) {
     if (length(label_topic) != ncol(topwords)) {
-      stop("The length of `label_topic` is incorrect.")
+      cli::cli_abort("The length of `label_topic` is incorrect.")
     }
     colnames(topwords) <- label_topic
   }
@@ -313,6 +316,10 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, la
     }
   }
 
+  label_percent <- function(x) {
+    paste0(round(x * 100, 2), "%")
+  }
+
   p <- ggplot(plot_obj, aes(x = .data$Topicprop, y = .data$Topic)) +
         geom_col() +
         {if (show_topwords)
@@ -321,7 +328,7 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, la
               hjust = 0, size = max(10 / n + 1, 2.5))
         } +
         scale_x_continuous(
-          "Expected topic proportions", limits = c(0, xmax), labels = scales::label_percent()
+          "Expected topic proportions", limits = c(0, xmax), labels = label_percent
         ) +
         theme_bw() +
         theme(panel.grid.major.x = element_blank(),
@@ -358,9 +365,9 @@ plot.strata_doctopic <- function(x, show_topic = NULL, var_name = NULL, by = c("
                                  ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"),
                                  width = 0.1, show_point = TRUE, ...)
 {
-  by <- match.arg(by)
-  method <- match.arg(method)
-  point <- match.arg(point)
+  by <- rlang::arg_match(by)
+  method <- rlang::arg_match(method)
+  point <- rlang::arg_match(point)
 
   tables <- summary.strata_doctopic(x, ci, method, point)
   by_var <- x$by_var
@@ -443,32 +450,33 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
                            ci = 0.9, method = c("hdi", "eti"), point = c("mean", "median"),
                            xlab = "Time", scales = "fixed", show_point = TRUE, ...)
 {
-  method <- match.arg(method)
-  point <- match.arg(point)
+  method <- rlang::arg_match(method)
+  point <- rlang::arg_match(point)
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
   if (!modelname %in% c("hmm", "ldahmm")) {
-    stop(paste0("This is not a model with time trends."))
+    cli::cli_abort(paste0("This is not a model with time trends."))
   }
 
   if (!is.null(time_index_label)) {
     if (length(x$values_iter$time_index) != length(time_index_label)) {
-      stop("The length of `time_index_label` does not match with the number of documents.")
+      cli::cli_abort("The length of `time_index_label` does not match with the number of documents.")
     }
     time_index <- time_index_label
   } else {
     time_index <- x$values_iter$time_index
   }
+  time_index_tbl <- tibble::tibble(time_index = time_index, time_index_raw = x$values_iter$time_index) %>% dplyr::distinct()
 
   if (is.null(show_topic)) {
     show_topic <- 1:x$keyword_k
   }
 
   format_theta <- function(theta, time_index, tnames) {
-    theta[ , show_topic, drop = FALSE] %>%
+    theta[, show_topic, drop = FALSE] %>%
       tibble::as_tibble(.name_repair = ~tnames) %>%
       dplyr::mutate(time_index = time_index) %>%
-      tidyr::pivot_longer(-.data$time_index, names_to = "Topic", values_to = "Proportion") %>%
+      tidyr::pivot_longer(-tidyselect::all_of("time_index"), names_to = "Topic", values_to = "Proportion") %>%
       dplyr::group_by(.data$time_index, .data$Topic) %>%
       dplyr::summarize(Proportion = base::mean(.data$Proportion), .groups = "drop_last") -> res
     return(res)
@@ -481,12 +489,12 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
     p <- ggplot(dat, aes(x = .data$time_index, y = .data$Proportion, group = .data$Topic)) +
           geom_line(linewidth = 0.8, color = "blue") + geom_point(size = 0.9)
   } else {
-    dplyr::bind_rows(lapply(x$values_iter$theta_iter, format_theta, time_index, tnames[show_topic])) %>%
+    dat <- dplyr::bind_rows(lapply(x$values_iter$theta_iter, format_theta, time_index, tnames[show_topic])) %>%
       dplyr::group_by(.data$time_index, .data$Topic) %>%
       dplyr::summarise(x = list(tibble::enframe(calc_ci(.data$Proportion, ci, method, point), "q", "value"))) %>%
-      tidyr::unnest(.data$x) %>% dplyr::ungroup() %>%
-      tidyr::pivot_wider(names_from = .data$q, values_from = .data$value) %>%
-      stats::setNames(c("time_index", "Topic", "Lower", "Point", "Upper")) -> dat
+      tidyr::unnest(tidyselect::all_of("x")) %>% dplyr::ungroup() %>%
+      tidyr::pivot_wider(names_from = tidyselect::all_of("q"), values_from = tidyselect::all_of("value")) %>%
+      stats::setNames(c("time_index", "Topic", "Lower", "Point", "Upper"))
     p <- ggplot(dat, aes(x = .data$time_index, y = .data$Point, group = .data$Topic)) +
           geom_ribbon(aes(ymin = .data$Lower, ymax = .data$Upper), fill = "gray75") +
           geom_line(linewidth = 0.8, color = "blue")
@@ -496,6 +504,8 @@ plot_timetrend <- function(x, show_topic = NULL, time_index_label = NULL,
   }
   p <- p + xlab(xlab) + ylab(expression(paste("Mean of ", theta))) +
         facet_wrap(~.data$Topic, scales = scales) + theme_bw() + theme(panel.grid.minor = element_blank())
+  dat <- dplyr::left_join(dat, time_index_tbl, by = "time_index") %>%
+    dplyr::mutate(state_id = x$values_iter$R_iter_last[.data$time_index_raw])
   p <- list(figure = p, values = dat)
   class(p) <- c("keyATM_fig", class(p))
   return(p)

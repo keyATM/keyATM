@@ -13,8 +13,8 @@ keyATM_docs <- keyATM_read(bills_dfm)
 # weightedLDA base
 base <- weightedLDA(docs = keyATM_docs,
                       number_of_topics = 5,
-                      model="base",
-                      options=list(seed = 100, iterations = 30))
+                      model = "base",
+                      options = list(seed = 100, iterations = 30))
 
 test_that("weightedLDA base", {
   expect_error(plot_alpha(base, start = 10))
@@ -49,7 +49,7 @@ test_that("weightedLDA cov", {
 dyn <- weightedLDA(docs = keyATM_docs,
                    number_of_topics = 3,
                    model = "dynamic",
-                   model_settings = list(time_index = keyATM_data_bills$time_index - 100, 
+                   model_settings = list(time_index = keyATM_data_bills$time_index - 100,
                                          num_states = 5),
                    options = list(seed = 100, iterations = 10))
 

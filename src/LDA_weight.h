@@ -1,5 +1,6 @@
 #ifndef __LDA_weight__INCLUDED__
 #define __LDA_weight__INCLUDED__
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -14,7 +15,7 @@ using namespace std;
 
 class LDAweight : public LDAbase, public keyATMbase
 {
-  public:  
+  public:
     //
     // Parameters
     //
@@ -30,20 +31,20 @@ class LDAweight : public LDAbase, public keyATMbase
 
     // in alpha_loglik
     MatrixXd ndk_a;
-    
+
     //
     // Functions
     //
 
     // Constructor
-    LDAweight(List model_, const int iter_) :
-      keyATMmeta(model_, iter_),
-      LDAbase(model_, iter_),
-      keyATMbase(model_, iter_) {};
+    LDAweight(List model_) :
+      keyATMmeta(model_),
+      LDAbase(model_),
+      keyATMbase(model_) {};
 
     // Iteration
-    void iteration_single(int it) final;
-    double loglik_total() final;
+    virtual void iteration_single(int it) override final;
+    virtual double loglik_total() override final;
 };
 
 #endif

@@ -1,5 +1,6 @@
 #ifndef __utils__INCLUDED__
 #define __utils__INCLUDED__
+#define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 
 #include <Rcpp.h>
 #include <RcppEigen.h>

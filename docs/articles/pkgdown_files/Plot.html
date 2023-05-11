@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Customizing Plots • keyATM</title>
+<title>Plot Customization • keyATM</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../../bootstrap-toc.css">
 <script src="../../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
 <script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
-<meta property="og:title" content="Customizing Plots">
+<meta property="og:title" content="Plot Customization">
 <meta property="og:description" content="keyATM">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -34,14 +34,14 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     User's Guide
      
     <span class="caret"></span>
@@ -63,13 +63,13 @@
       <a href="../../articles/pkgdown_files/keyATM_dynamic.html">keyATM Dynamic</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_files/keyATM_label.html">keyATM Label</a>
-    </li>
-    <li>
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_files/Plot.html">Customizing Plots</a>
+      <a href="../../articles/pkgdown_files/Resume.html">Resume Fitting</a>
+    </li>
+    <li>
+      <a href="../../articles/pkgdown_files/Plot.html">Plot Customization</a>
     </li>
     <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
@@ -106,7 +106,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Customizing Plots</h1>
+      <h1 data-toc-skip>Plot Customization</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/keyATM/keyATM/blob/HEAD/vignettes/pkgdown_files/Plot.Rmd" class="external-link"><code>vignettes/pkgdown_files/Plot.Rmd</code></a></small>
@@ -120,51 +120,53 @@
 <code><a href="../../reference/values_fig.html">values_fig()</a></code> function. Here we have a time trend plot from
 <a href="keyATM_dynamic.html">keyATM Dynamic</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,                         
-              no_keyword_topics <span class="op">=</span> <span class="fl">3</span>,                                   
-              keywords          <span class="op">=</span> <span class="va">keywords</span>,                      
-              model             <span class="op">=</span> <span class="st">"dynamic"</span>,                           
-              model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,
-                                       num_states <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,                
-              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span>, store_theta <span class="op">=</span> <span class="cn">TRUE</span>, thinning <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span>
-<span class="va">fig_timetrend</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/plot_timetrend.html">plot_timetrend</a></span><span class="op">(</span><span class="va">out</span>, time_index_label <span class="op">=</span> <span class="va">vars</span><span class="op">$</span><span class="va">Year</span>, xlab <span class="op">=</span> <span class="st">"Year"</span><span class="op">)</span>
-<span class="va">fig_timetrend</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span></span>
+<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
+<span>  no_keyword_topics <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  keywords          <span class="op">=</span> <span class="va">keywords</span>,</span>
+<span>  model             <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
+<span>  model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,</span>
+<span>                           num_states <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span>, store_theta <span class="op">=</span> <span class="cn">TRUE</span>, thinning <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">fig_timetrend</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/plot_timetrend.html">plot_timetrend</a></span><span class="op">(</span><span class="va">out</span>, time_index_label <span class="op">=</span> <span class="va">vars</span><span class="op">$</span><span class="va">Year</span>, xlab <span class="op">=</span> <span class="st">"Year"</span><span class="op">)</span></span>
+<span><span class="va">fig_timetrend</span></span></code></pre></div>
 <p><img src="Plot_files/figure-html/unnamed-chunk-2-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>The <code><a href="../../reference/values_fig.html">values_fig()</a></code> function returns a tibble used to
 create the plot.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../../reference/values_fig.html">values_fig</a></span><span class="op">(</span><span class="va">fig_timetrend</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 290 × 5</span></span>
-<span class="co">##    time_index Topic             Lower  Point  Upper</span>
-<span class="co">##         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span>       <span style="text-decoration: underline;">1</span>789 1_Government     0.100  0.113  0.125 </span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span>       <span style="text-decoration: underline;">1</span>789 2_Congress       0.154  0.182  0.211 </span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span>       <span style="text-decoration: underline;">1</span>789 3_Peace          0.044<span style="text-decoration: underline;">1</span> 0.061<span style="text-decoration: underline;">8</span> 0.080<span style="text-decoration: underline;">0</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span>       <span style="text-decoration: underline;">1</span>789 4_Constitution   0.215  0.232  0.254 </span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span>       <span style="text-decoration: underline;">1</span>789 5_ForeignAffairs 0.121  0.148  0.173 </span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span>       <span style="text-decoration: underline;">1</span>793 1_Government     0.209  0.247  0.287 </span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span>       <span style="text-decoration: underline;">1</span>793 2_Congress       0.020<span style="text-decoration: underline;">7</span> 0.069<span style="text-decoration: underline;">9</span> 0.099<span style="text-decoration: underline;">1</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span>       <span style="text-decoration: underline;">1</span>793 3_Peace          0.057<span style="text-decoration: underline;">4</span> 0.087<span style="text-decoration: underline;">6</span> 0.112 </span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span>       <span style="text-decoration: underline;">1</span>793 4_Constitution   0.257  0.312  0.388 </span>
-<span class="co">## <span style="color: #BCBCBC;">10</span>       <span style="text-decoration: underline;">1</span>793 5_ForeignAffairs 0.052<span style="text-decoration: underline;">2</span> 0.081<span style="text-decoration: underline;">9</span> 0.112 </span>
-<span class="co">## <span style="color: #949494;"># … with 280 more rows</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/values_fig.html">values_fig</a></span><span class="op">(</span><span class="va">fig_timetrend</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 290 × 7</span></span></span>
+<span><span class="co">##    time_index Topic             Lower  Point  Upper time_index_raw state_id</span></span>
+<span><span class="co">##         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>       <span style="text-decoration: underline;">1</span>789 1_Government     0.100  0.113  0.125               1        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>       <span style="text-decoration: underline;">1</span>789 2_Congress       0.154  0.182  0.211               1        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>       <span style="text-decoration: underline;">1</span>789 3_Peace          0.044<span style="text-decoration: underline;">1</span> 0.061<span style="text-decoration: underline;">8</span> 0.080<span style="text-decoration: underline;">0</span>              1        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>       <span style="text-decoration: underline;">1</span>789 4_Constitution   0.215  0.232  0.254               1        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>       <span style="text-decoration: underline;">1</span>789 5_ForeignAffairs 0.121  0.148  0.173               1        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>       <span style="text-decoration: underline;">1</span>793 1_Government     0.209  0.247  0.287               2        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>       <span style="text-decoration: underline;">1</span>793 2_Congress       0.020<span style="text-decoration: underline;">7</span> 0.069<span style="text-decoration: underline;">9</span> 0.099<span style="text-decoration: underline;">1</span>              2        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>       <span style="text-decoration: underline;">1</span>793 3_Peace          0.057<span style="text-decoration: underline;">4</span> 0.087<span style="text-decoration: underline;">6</span> 0.112               2        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>       <span style="text-decoration: underline;">1</span>793 4_Constitution   0.257  0.312  0.388               2        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>       <span style="text-decoration: underline;">1</span>793 5_ForeignAffairs 0.052<span style="text-decoration: underline;">2</span> 0.081<span style="text-decoration: underline;">9</span> 0.112               2        1</span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 280 more rows</span></span></span></code></pre>
 <p>We can use it to customize the figure.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
-<span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/values_fig.html">values_fig</a></span><span class="op">(</span><span class="va">fig_timetrend</span><span class="op">)</span>
-
-<span class="va">values</span> <span class="op"><a href="https://quanteda.io/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Topic</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1_Government"</span>, <span class="st">"3_Peace"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://quanteda.io/reference/pipe.html" class="external-link">%&gt;%</a></span>  <span class="co"># extract two topics</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">time_index</span> <span class="op">&gt;=</span> <span class="fl">1900</span><span class="op">)</span> <span class="op"><a href="https://quanteda.io/reference/pipe.html" class="external-link">%&gt;%</a></span>  <span class="co"># from 1900</span>
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time_index</span>, y <span class="op">=</span> <span class="va">Point</span>, group <span class="op">=</span> <span class="va">Topic</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">Lower</span>, ymax <span class="op">=</span> <span class="va">Upper</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"gray75"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.8</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">Topic</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>shape <span class="op">=</span> <span class="fl">5</span>, size <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Year"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Mean of "</span>, <span class="va">theta</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html" class="external-link">annotate</a></span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="fl">2005</span>, y <span class="op">=</span> <span class="fl">0.12</span>, label <span class="op">=</span> <span class="st">"Government"</span>, colour <span class="op">=</span> <span class="st">"#F8766D"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html" class="external-link">annotate</a></span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="fl">2005</span>, y <span class="op">=</span> <span class="fl">0.28</span>, label <span class="op">=</span> <span class="st">"Peace"</span>, colour <span class="op">=</span> <span class="st">"#00BFC4"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggthemes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggthemes/man/theme_economist.html" class="external-link">theme_economist_white</a></span><span class="op">(</span>gray_bg <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/values_fig.html">values_fig</a></span><span class="op">(</span><span class="va">fig_timetrend</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">values</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Topic</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1_Government"</span>, <span class="st">"3_Peace"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>  <span class="co"># extract two topics</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">time_index</span> <span class="op">&gt;=</span> <span class="fl">1900</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>  <span class="co"># from 1900</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time_index</span>, y <span class="op">=</span> <span class="va">Point</span>, group <span class="op">=</span> <span class="va">Topic</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">Lower</span>, ymax <span class="op">=</span> <span class="va">Upper</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"gray75"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.8</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">Topic</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>shape <span class="op">=</span> <span class="fl">5</span>, size <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Year"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Mean of "</span>, <span class="va">theta</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html" class="external-link">annotate</a></span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="fl">2005</span>, y <span class="op">=</span> <span class="fl">0.12</span>, label <span class="op">=</span> <span class="st">"Government"</span>, colour <span class="op">=</span> <span class="st">"#F8766D"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html" class="external-link">annotate</a></span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="fl">2005</span>, y <span class="op">=</span> <span class="fl">0.28</span>, label <span class="op">=</span> <span class="st">"Peace"</span>, colour <span class="op">=</span> <span class="st">"#00BFC4"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggthemes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggthemes/man/theme_economist.html" class="external-link">theme_economist_white</a></span><span class="op">(</span>gray_bg <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Plot_files/figure-html/unnamed-chunk-4-1.png" width="624" style="display: block; margin: auto;"></p>
 <p>The <code><a href="../../reference/values_fig.html">values_fig()</a></code> function works with other
 <strong>keyATM</strong> plot functions. Check the reference for

@@ -34,14 +34,14 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     User's Guide
      
     <span class="caret"></span>
@@ -63,13 +63,13 @@
       <a href="../../articles/pkgdown_files/keyATM_dynamic.html">keyATM Dynamic</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_files/keyATM_label.html">keyATM Label</a>
-    </li>
-    <li>
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_files/Plot.html">Customizing Plots</a>
+      <a href="../../articles/pkgdown_files/Resume.html">Resume Fitting</a>
+    </li>
+    <li>
+      <a href="../../articles/pkgdown_files/Plot.html">Plot Customization</a>
     </li>
     <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
@@ -120,8 +120,9 @@
 of topics change over time. The <strong>keyATM</strong> can use time
 stamps for the prior for document-topic distribution through Hidden
 Markov Model (<a href="https://doi.org/10.1016/S0304-4076(97)00115-2" class="external-link">Chib 1998</a>).</p>
-<p>Section 4 of <a href="https://arxiv.org/abs/2004.05964" class="external-link">Eshima et
-al. (2020)</a> explains the dynamic keyATM in details. As explained in
+<p>Section 4 of
+<a href="https://doi.org/10.1111/ajps.12779" target="_blank" class="external-link">Eshima et
+al. (2023)</a> explains the dynamic keyATM in details. As explained in
 <a href="keyATM_cov.html">keyATM Covariates</a>, we recommend
 researchers to construct a numeric or an integer vector of time stamps
 after preprocessing texts.</p>
@@ -132,37 +133,37 @@ after preprocessing texts.</p>
 reading of documents and creating a list of keywords.</p>
 <p>We use the US Presidential inaugural address data we prapared (<a href="Preparation.html#preparing-texts">documents</a> and <a href="Preparation.html#preparing-keywords">keywords</a>).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Get meta information (time stamp)</span>
-<span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/docvars.html" class="external-link">docvars</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##   Year  President FirstName                 Party</span>
-<span class="co">## 1 1789 Washington    George                  none</span>
-<span class="co">## 2 1793 Washington    George                  none</span>
-<span class="co">## 3 1797      Adams      John            Federalist</span>
-<span class="co">## 4 1801  Jefferson    Thomas Democratic-Republican</span>
-<span class="co">## 5 1805  Jefferson    Thomas Democratic-Republican</span>
-<span class="co">## 6 1809    Madison     James Democratic-Republican</span></code></pre>
+<code class="sourceCode R"><span><span class="co"># Get meta information (time stamp)</span></span>
+<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/docvars.html" class="external-link">docvars</a></span><span class="op">(</span><span class="va">data_corpus_inaugural</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##   Year  President FirstName                 Party</span></span>
+<span><span class="co">## 1 1789 Washington    George                  none</span></span>
+<span><span class="co">## 2 1793 Washington    George                  none</span></span>
+<span><span class="co">## 3 1797      Adams      John            Federalist</span></span>
+<span><span class="co">## 4 1801  Jefferson    Thomas Democratic-Republican</span></span>
+<span><span class="co">## 5 1805  Jefferson    Thomas Democratic-Republican</span></span>
+<span><span class="co">## 6 1809    Madison     James Democratic-Republican</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Divide by a decade</span>
-<span class="co"># Timestamp should start with 1 (the variable "Period")</span>
-<span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Period <span class="op">=</span> <span class="op">(</span><span class="va">vars</span><span class="op">$</span><span class="va">Year</span> <span class="op">-</span> <span class="fl">1780</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%/%</a></span> <span class="fl">10</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_period</span>
-<span class="va">vars_period</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Year</span>, <span class="va">Period</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 58 × 2</span></span>
-<span class="co">##     Year Period</span>
-<span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">1</span>789      1</span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">1</span>793      2</span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">1</span>797      2</span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">1</span>801      3</span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">1</span>805      3</span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">1</span>809      3</span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">1</span>813      4</span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">1</span>817      4</span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">1</span>821      5</span>
-<span class="co">## <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">1</span>825      5</span>
-<span class="co">## <span style="color: #949494;"># … with 48 more rows</span></span></code></pre>
+<code class="sourceCode R"><span><span class="co"># Divide by a decade</span></span>
+<span><span class="co"># Timestamp should start with 1 (the variable "Period")</span></span>
+<span><span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Period <span class="op">=</span> <span class="op">(</span><span class="va">vars</span><span class="op">$</span><span class="va">Year</span> <span class="op">-</span> <span class="fl">1780</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%/%</a></span> <span class="fl">10</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_period</span></span>
+<span><span class="va">vars_period</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Year</span>, <span class="va">Period</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 58 × 2</span></span></span>
+<span><span class="co">##     Year Period</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">1</span>789      1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">1</span>793      2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">1</span>797      2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">1</span>801      3</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">1</span>805      3</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">1</span>809      3</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">1</span>813      4</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">1</span>817      4</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">1</span>821      5</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">1</span>825      5</span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 48 more rows</span></span></span></code></pre>
 <p>The time index (<code>Period</code>) should start from <code>1</code>
 and increment by 1 (ascending order). To properly process date, please
 consider using the <a href="https://lubridate.tidyverse.org/" class="external-link">lubridate</a> package.</p>
@@ -170,52 +171,57 @@ consider using the <a href="https://lubridate.tidyverse.org/" class="external-li
 specifying the number of hidden states with the <code>num_states</code>
 in the <code>model_settings</code> argument.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,                         
-              no_keyword_topics <span class="op">=</span> <span class="fl">3</span>,                                   
-              keywords          <span class="op">=</span> <span class="va">keywords</span>,                      
-              model             <span class="op">=</span> <span class="st">"dynamic"</span>,                           
-              model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,
-                                       num_states <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,                
-              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span></span>
+<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
+<span>  no_keyword_topics <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  keywords          <span class="op">=</span> <span class="va">keywords</span>,</span>
+<span>  model             <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
+<span>  model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,</span>
+<span>                           num_states <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Once you fit the model, you can save the model with
+<code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">base model</a>.</p>
+<p>You can <a href="Resume.html">resume</a> the iteration by specifying
+the <code>resume</code> argument.</p>
 </div>
 <div class="section level2">
 <h2 id="interpreting-results">Interpreting results<a class="anchor" aria-label="anchor" href="#interpreting-results"></a>
 </h2>
-<p>We can use the <code><a href="../../reference/top_words.html">top_words()</a></code>, <code><a href="../../reference/top_docs.html">top_docs()</a></code>,
-<code><a href="../../reference/plot_modelfit.html">plot_modelfit()</a></code>, <code><a href="../../reference/plot_alpha.html">plot_alpha()</a></code>, and
-<code><a href="../../reference/plot_pi.html">plot_pi()</a></code> functions as in <a href="keyATM_base.html">the
-base keyATM</a>.</p>
+<p>We can use the interpretation functions, such as
+<code><a href="../../reference/top_words.html">top_words()</a></code>, <code><a href="../../reference/top_docs.html">top_docs()</a></code>,
+<code><a href="../../reference/plot_modelfit.html">plot_modelfit()</a></code>, as in <a href="keyATM_base.html#interpreting-results">the base keyATM</a>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs</span>
-<span class="co">## 1          power        great   world [✓]           states           united</span>
-<span class="co">## 2           made        union   peace [✓]           public          country</span>
-<span class="co">## 3            now        every         new       government          war [✓]</span>
-<span class="co">## 4       laws [✓]          one freedom [✓] constitution [✓]          nations</span>
-<span class="co">## 5        law [✓] congress [✓]     america         citizens             best</span>
-<span class="co">## 6           many         duty         let       rights [✓]      foreign [✓]</span>
-<span class="co">## 7  executive [✓]       powers        work        interests           within</span>
-<span class="co">## 8            far       policy         one            state           duties</span>
-<span class="co">## 9         office        whole        know         national       confidence</span>
-<span class="co">## 10         order    political     history   administration             free</span>
-<span class="co">##       Other_1    Other_2  Other_3</span>
-<span class="co">## 1      people       just   nation</span>
-<span class="co">## 2  government    country     time</span>
-<span class="co">## 3      spirit      first american</span>
-<span class="co">## 4       among principles    every</span>
-<span class="co">## 5        much     common      men</span>
-<span class="co">## 6    progress       well     life</span>
-<span class="co">## 7      system       make  justice</span>
-<span class="co">## 8     service      equal    great</span>
-<span class="co">## 9         yet   republic    years</span>
-<span class="co">## 10      force       like    human</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs</span></span>
+<span><span class="co">## 1          power        great   world [✓]           states           united</span></span>
+<span><span class="co">## 2           made        union   peace [✓]           public          country</span></span>
+<span><span class="co">## 3            now        every         new       government          war [✓]</span></span>
+<span><span class="co">## 4       laws [✓]          one freedom [✓] constitution [✓]          nations</span></span>
+<span><span class="co">## 5        law [✓] congress [✓]     america         citizens             best</span></span>
+<span><span class="co">## 6           many         duty         let       rights [✓]      foreign [✓]</span></span>
+<span><span class="co">## 7  executive [✓]       powers        work        interests           within</span></span>
+<span><span class="co">## 8            far       policy         one            state           duties</span></span>
+<span><span class="co">## 9         office        whole        know         national       confidence</span></span>
+<span><span class="co">## 10         order    political     history   administration             free</span></span>
+<span><span class="co">##       Other_1    Other_2  Other_3</span></span>
+<span><span class="co">## 1      people       just   nation</span></span>
+<span><span class="co">## 2  government    country     time</span></span>
+<span><span class="co">## 3      spirit      first american</span></span>
+<span><span class="co">## 4       among principles    every</span></span>
+<span><span class="co">## 5        much     common      men</span></span>
+<span><span class="co">## 6    progress       well     life</span></span>
+<span><span class="co">## 7      system       make  justice</span></span>
+<span><span class="co">## 8     service      equal    great</span></span>
+<span><span class="co">## 9         yet   republic    years</span></span>
+<span><span class="co">## 10      force       like    human</span></span></code></pre>
 <p>Since each state has a unique prior for the document-topic
 distributions, the <code><a href="../../reference/plot_alpha.html">plot_alpha()</a></code> function produces a
 different figure from <a href="keyATM_base.html">the base
 keyATM</a>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fig_alpha</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/plot_alpha.html">plot_alpha</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span>
-<span class="va">fig_alpha</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fig_alpha</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/plot_alpha.html">plot_alpha</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
+<span><span class="va">fig_alpha</span></span></code></pre></div>
 <p><img src="keyATM_dynamic_files/figure-html/unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>Finally, we can plot the time trend of topics with the
 <code><a href="../../reference/plot_timetrend.html">plot_timetrend()</a></code> function. With the
@@ -223,15 +229,17 @@ keyATM</a>.</p>
 Note that <code>store_theta</code> option in the <code><a href="../../reference/keyATM.html">keyATM()</a></code>
 function should be <code>TRUE</code> to show 90% credible intervals.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span>docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,                         
-              no_keyword_topics <span class="op">=</span> <span class="fl">3</span>,                                   
-              keywords          <span class="op">=</span> <span class="va">keywords</span>,                      
-              model             <span class="op">=</span> <span class="st">"dynamic"</span>,                           
-              model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,
-                                       num_states <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,                
-              options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span>, store_theta <span class="op">=</span> <span class="cn">TRUE</span>, thinning <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span>
-<span class="va">fig_timetrend</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/plot_timetrend.html">plot_timetrend</a></span><span class="op">(</span><span class="va">out</span>, time_index_label <span class="op">=</span> <span class="va">vars</span><span class="op">$</span><span class="va">Year</span>, xlab <span class="op">=</span> <span class="st">"Year"</span><span class="op">)</span>
-<span class="va">fig_timetrend</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span></span>
+<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
+<span>  no_keyword_topics <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  keywords          <span class="op">=</span> <span class="va">keywords</span>,</span>
+<span>  model             <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
+<span>  model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,</span>
+<span>                           num_states <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span>, store_theta <span class="op">=</span> <span class="cn">TRUE</span>, thinning <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">fig_timetrend</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/plot_timetrend.html">plot_timetrend</a></span><span class="op">(</span><span class="va">out</span>, time_index_label <span class="op">=</span> <span class="va">vars</span><span class="op">$</span><span class="va">Year</span>, xlab <span class="op">=</span> <span class="st">"Year"</span><span class="op">)</span></span>
+<span><span class="va">fig_timetrend</span></span></code></pre></div>
 <p><img src="keyATM_dynamic_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
@@ -240,8 +248,8 @@ function should be <code>TRUE</code> to show 90% credible intervals.</p>
 <ul>
 <li>Chib, S. (1998). “Estimation and comparison of multiple change-point
 models.” <em>Journal of econometrics</em>, 86(2), 221-241.</li>
-<li>Eshima, S., Imai, K., &amp; Sasaki, T. (2020). Keyword Assisted
-Topic Models. arXiv preprint arXiv:2004.05964.</li>
+<li>Eshima, S., Imai, K., &amp; Sasaki, T. (2023). “Keyword Assisted
+Topic Models.” <em>American Journal of Political Science</em>.</li>
 </ul>
 </div>
   </div>

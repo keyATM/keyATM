@@ -2,9 +2,9 @@
 #'
 #' @keywords internal
 #' @import magrittr
-keyATM_output <- function(model, keep)
+keyATM_output <- function(model, keep, used_iter)
 {
-  message("Creating an output object. It may take time...")
+  cli::cli_progress_step("Creating an output object", spinner = TRUE)
 
   check_arg_type(model, "keyATM_fitted")
 
@@ -39,10 +39,7 @@ keyATM_output <- function(model, keep)
   if (model$options$store_theta) {
     values_iter$theta_iter <- keyATM_output_theta_iter(model, info)
   }
-  # used_iter is useful quantity
-  total_iter <- 1:(model$options$iterations)
-  thinning <- model$options$thinning
-  values_iter$used_iter <- total_iter[(total_iter %% thinning == 0) | (total_iter == 1) | total_iter == max(total_iter)]
+  values_iter$used_iter <- used_iter  # created in `get_used_iter()`
   info$used_iter <- values_iter$used_iter
 
   # Phi (topic-word distribution)
@@ -57,7 +54,7 @@ keyATM_output <- function(model, keep)
     values_iter$time_index <- model$model_settings$time_index
   }
 
-  if ((model$model %in% c("base", "lda", "label"))) {
+  if ((model$model %in% c("base", "lda"))) {
     if (model$options$estimate_alpha)
       values_iter$alpha_iter <- keyATM_output_alpha_iter_base(model, info)
   }
@@ -73,7 +70,7 @@ keyATM_output <- function(model, keep)
   }
 
   # pi
-  if (model$model %in% c("base", "cov", "hmm", "label")) {
+  if (model$model %in% c("base", "cov", "hmm")) {
     pi_estimated <- keyATM_output_pi(model$Z, model$S, model$priors$gamma)
   } else {
     pi_estimated <- NULL
@@ -122,6 +119,11 @@ keyATM_output <- function(model, keep)
     kept_values$stored_values$Z_tables <- NULL  # duplicate information
   }
 
+  # Additional information
+  if (model$model %in% c("hmm", "ldahmm")) {
+    values_iter$R_iter_last <- model$stored_values$R_iter[[length(model$stored_values$R_iter)]] + 1L  # maps time_index -> state
+  }
+
   # Make an object to return
   ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
              V = length(model$vocab), N = length(model$Z),
@@ -158,7 +160,7 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
 
   # Check used topics
   if (nrow(temp) != nrow(prior)) {
-    warning("Some of the topics are not used.")
+    cli::cli_alert_warning("Some of the topics are not used.")
     missing <- setdiff(1:nrow(prior), temp$Topic)
     temp %>%
       tibble::add_row(Topic = missing, count = 0, sums = 0) %>%
@@ -173,7 +175,7 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
   p <- (a + s) / (a + b + n)
   temp %>%
     dplyr::mutate(Proportion = p * 100) %>%
-    dplyr::select(-.data$sums) -> pi_estimated
+    dplyr::select(-tidyselect::all_of("sums")) -> pi_estimated
   return(pi_estimated)
 }
 
@@ -215,7 +217,7 @@ keyATM_output_theta <- function(model, info)
 
   } else if (model$model %in% c("cov", "ldacov") & info$covmodel == "PG") {
     theta <-  model$model_settings$PG_params$theta_last
-  } else if (model$model %in% c("base", "lda", "label")) {
+  } else if (model$model %in% c("base", "lda")) {
     if (model$options$estimate_alpha) {
       alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]
     } else {
@@ -244,11 +246,10 @@ keyATM_output_theta <- function(model, info)
   }
 
   theta <- as.matrix(theta)
-  colnames(theta) <- info$tnames # label seeded topics
+  colnames(theta) <- info$tnames # label keyword topics
   if (!is.null(info$keyATMdoc_meta$docnames)) {
     if (nrow(theta) != length(info$keyATMdoc_meta$docnames)) {
-      warning("The length of stored document names do not match with the number of documents fitted.
-              Check if any document has a length 0.")
+      cli::cli_alert_warning("The length of stored document names do not match with the number of documents fitted. Check if any document has a length 0.")
     } else {
       row.names(theta) <- info$keyATMdoc_meta$docnames
     }
@@ -312,7 +313,7 @@ keyATM_output_phi <- function(model, info)
   all_words <- model$vocab[as.integer(unlist(model$W, use.names = FALSE)) + 1L]
   all_topics <- as.integer(unlist(model$Z, use.names = FALSE))
 
-  if (model$model %in% c("base", "cov", "hmm", "label")) {
+  if (model$model %in% c("base", "cov", "hmm")) {
     pi_estimated <- keyATM_output_pi(model$Z, model$S, model$priors$gamma)
     all_s <- as.integer(unlist(model$S, use.names = FALSE))
 
@@ -627,7 +628,7 @@ top_words <- function(x, n = 10, measure = c("probability", "lift"),
 top_words.strata_topicword <- function(x, n = 10, measure = c("probability", "lift"),
                                   show_keyword = TRUE)
 {
-  measure <- match.arg(measure)
+  measure <- rlang::arg_match(measure)
   top_words <- lapply(x$phi,  # list of phis
                       function(obj) {
                        top_words_calc(
@@ -647,7 +648,7 @@ top_words.keyATM_output <- function(x, n = 10, measure = c("probability", "lift"
 {
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
-  measure <- match.arg(measure)
+  measure <- rlang::arg_match(measure)
 
   if (modelname %in% c("lda", "ldacov", "ldahmm"))
      show_keyword <- FALSE

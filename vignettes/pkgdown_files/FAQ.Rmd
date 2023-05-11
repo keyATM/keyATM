@@ -3,6 +3,7 @@ title: "FAQ"
 output:
   html_document:
     toc: true
+    toc_depth: 2
 ---
 
 ```{r, include=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
@@ -46,8 +47,7 @@ The table below summarizes keyATM models and other popular models based on the i
 |----------------------------------:|:---------:|:----------:|:--------------:|
 |[keyATM Base](keyATM_base.html)  |     ○    |     ×     |        ×      |
 |[keyATM Covariate](keyATM_cov.html)|     ○    |     ○     |        △      |
-|    [keyATM HMM](keyATM_hmm.html)  |     ○    |     ×     |        ○      |
-|[keyATM Label](keyATM_label.html)  |     ○    |     ×     |        ×      |
+|[keyATM Dynamic](keyATM_dynamic.html)  |     ○    |     ×     |        ○      |
 |            LDA Weighted           |     ×    |     ×     |        ×      |
 |          LDA Weighted Cov         |     ×    |     ○     |        ×      |
 |          LDA Weighted HMM         |     ×    |     ×     |        ○      |
@@ -60,10 +60,9 @@ The next table compares inference methods and speeds. CGS stands for Collapsed G
 
 |                                   |        Inference      |                  Speed                 |
 |----------------------------------:|:----------------------|:---------------------------------------|
-|[keyATM Base](keyATM_base.html)    |        CGS + SS       |                  Fast                  |
-|[keyATM Covariate](keyATM_cov.html)|        CGS + SS / PG  | Moderate  (Depends on # of covariates) |
-|[keyATM HMM](keyATM_hmm.html)      |        CGS + SS       |                  Fast                  |
-|[keyATM Label](keyATM_label.html)  |        CGS + SS       |                  Fast                  |
+|[keyATM Base](keyATM_base.html)    |       CGS + SS        |                  Fast                  |
+|[keyATM Covariate](keyATM_cov.html)|       CGS + SS / PG   | Moderate  (Depends on # of covariates) |
+|[keyATM Dynamic](keyATM_dynamic.html)|        CGS + SS     |                  Fast                  |
 |            LDA Weighted           |        CGS + SS       |                  Fast                  |
 |          LDA Weighted Cov         |        CGS + SS       |  Moderate (Depends on # of covariates) |
 |          LDA Weighted HMM         |        CGS + SS       |                  Fast                  |
@@ -95,7 +94,7 @@ keywords_n2 <- list(Government = c("federal_government", "vice_president"),
                     Peace      = c("peace_world"))
 ```
 
-Then, you can fit the keyATM models (here we use [the base]((keyATM_base.html) model).
+Then, you can fit the keyATM models (here we use [the base](keyATM_base.html) model).
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(docs              = keyATM_docs_n2,    # text input
               no_keyword_topics = 3,                 # number of topics without keywords
@@ -105,6 +104,25 @@ out <- keyATM(docs              = keyATM_docs_n2,    # text input
 top_words(out, 5)
 ```
 
+# Keywords
+
+
+## Can we use a wildcard character in keywords list?
+
+We can use the `dfm_select()` function from the **quanteda** package.
+```{r, eval = FALSE, warning=FALSE, message=FALSE}
+keyATM_docs <- keyATM_read(texts = data_dfm)
+
+law_all <- colnames(dfm_select(data_dfm, pattern = "law*"))  # terms start with `law`
+keywords <- list(
+  Government     = c(law_all, "executive"),
+  Constitution   = c("constitution", "rights"),
+  ForeignAffairs = c("foreign", "war")
+)
+```
+
+Please also consider the `read_keywords()` function to read a dictionary object from quanteda to a named list.
+
 
 # Fitting
 
@@ -113,8 +131,7 @@ Please note that the number of unique words, the total lenght of documents, and 
 
 If you want to speed up fitting, the first thing you can do is to review preprocessing processes. Usually, documents include a lot of low frequency words that do not help interpretation. **quanteda** provides various functions to trim those words.
 
-**keyATM** also provides [the Pólya-Gamma augmentation](keyATM_cov.html#keyatm-covariate-with-pólya-gamma-augmentation) as an alternative modeling approach for topic assignments.
-
+**keyATM** can [resume fittng](Resume.html).
 
 ## Can I run keyATM on cloud computing services?
 Yes! For example, [Professor Louis Aslett](http://www.louisaslett.com/) provides an easy to use Amazon Machine Image of RStudio [here](http://www.louisaslett.com/RStudio_AMI/). When you select an instance, please note that **keyATM** does not need multiple cores (one or two cores would be enough because we cannot parallelize Collapsed Gibbs Sampling), but make sure the memory can handle your data.

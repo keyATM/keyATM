@@ -17,13 +17,13 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     User's Guide
      
     <span class="caret"></span>
@@ -44,13 +44,13 @@
       <a href="../articles/pkgdown_files/keyATM_dynamic.html">keyATM Dynamic</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_files/keyATM_label.html">keyATM Label</a>
-    </li>
-    <li>
       <a href="../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_files/Plot.html">Customizing Plots</a>
+      <a href="../articles/pkgdown_files/Resume.html">Resume Fitting</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown_files/Plot.html">Plot Customization</a>
     </li>
     <li>
       <a href="../articles/pkgdown_files/Options.html">Options</a>
@@ -90,15 +90,15 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">weightedLDA</span><span class="op">(</span>
-  <span class="va">docs</span>,
-  <span class="va">model</span>,
-  <span class="va">number_of_topics</span>,
-  model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,
-  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,
-  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,
-  keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">weightedLDA</span><span class="op">(</span></span>
+<span>  <span class="va">docs</span>,</span>
+<span>  <span class="va">model</span>,</span>
+<span>  <span class="va">number_of_topics</span>,</span>
+<span>  model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -198,36 +198,20 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://keyatm.github.io/keyATM/" class="external-link">keyATM</a></span><span class="op">)</span></span>
-<span class="r-in">  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://quanteda.io" class="external-link">quanteda</a></span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">keyATM_data_bills</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">bills_dfm</span> <span class="op">&lt;-</span> <span class="va">keyATM_data_bills</span><span class="op">$</span><span class="va">doc_dfm</span>  <span class="co"># quanteda dfm object</span></span>
-<span class="r-in">  <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu"><a href="keyATM_read.html">keyATM_read</a></span><span class="op">(</span><span class="va">bills_dfm</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Weighted LDA</span></span>
-<span class="r-in">  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">weightedLDA</span><span class="op">(</span>docs <span class="op">=</span> <span class="va">keyATM_docs</span>, model <span class="op">=</span> <span class="st">"base"</span>,</span>
-<span class="r-in">                     number_of_topics <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Weighted LDA Covariates</span></span>
-<span class="r-in">  <span class="va">bills_cov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">keyATM_data_bills</span><span class="op">$</span><span class="va">cov</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">weightedLDA</span><span class="op">(</span>docs <span class="op">=</span> <span class="va">keyATM_docs</span>, model <span class="op">=</span> <span class="st">"covariates"</span>,</span>
-<span class="r-in">                     number_of_topics <span class="op">=</span> <span class="fl">5</span>,</span>
-<span class="r-in">                     model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>covariates_data <span class="op">=</span> <span class="va">bills_cov</span>,</span>
-<span class="r-in">                                           covariates_formula <span class="op">=</span> <span class="op">~</span> <span class="va">RepParty</span><span class="op">)</span><span class="op">)</span>                   </span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Weighted LDA Dynamic</span></span>
-<span class="r-in">  <span class="va">bills_time_index</span> <span class="op">&lt;-</span> <span class="va">keyATM_data_bills</span><span class="op">$</span><span class="va">time_index</span></span>
-<span class="r-in">  <span class="co"># Time index should start from 1 and increase by 1</span></span>
-<span class="r-in">  <span class="va">bills_time_index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">bills_time_index</span> <span class="op">-</span> <span class="fl">100</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">weightedLDA</span><span class="op">(</span>docs <span class="op">=</span> <span class="va">keyATM_docs</span>, model <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
-<span class="r-in">                     number_of_topics <span class="op">=</span> <span class="fl">5</span>,</span>
-<span class="r-in">                     model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">5</span>,</span>
-<span class="r-in">                                           time_index <span class="op">=</span> <span class="va">bills_time_index</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># Visit our website for full examples: https://keyatm.github.io/keyATM/</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://keyatm.github.io/keyATM/" class="external-link">keyATM</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://quanteda.io" class="external-link">quanteda</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">keyATM_data_bills</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">bills_dfm</span> <span class="op">&lt;-</span> <span class="va">keyATM_data_bills</span><span class="op">$</span><span class="va">doc_dfm</span>  <span class="co"># quanteda dfm object</span></span></span>
+<span class="r-in"><span>  <span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu"><a href="keyATM_read.html">keyATM_read</a></span><span class="op">(</span><span class="va">bills_dfm</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Weighted LDA</span></span></span>
+<span class="r-in"><span>  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">weightedLDA</span><span class="op">(</span>docs <span class="op">=</span> <span class="va">keyATM_docs</span>, model <span class="op">=</span> <span class="st">"base"</span>,</span></span>
+<span class="r-in"><span>                     number_of_topics <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Visit our website for full examples: https://keyatm.github.io/keyATM/</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

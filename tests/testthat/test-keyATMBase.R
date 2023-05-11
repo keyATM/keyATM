@@ -9,7 +9,6 @@ bills_dfm <- keyATM_data_bills$doc_dfm
 bills_keywords <- keyATM_data_bills$keywords
 bills_cov <- keyATM_data_bills$cov
 bills_time_index <- keyATM_data_bills$time_index
-labels_use <- keyATM_data_bills$labels
 keyATM_docs <- keyATM_read(bills_dfm)
 
 # Base
@@ -31,6 +30,15 @@ test_that("keyATM base", {
   expect_equal(base$pi$Proportion[3], 6.403216, tolerance = 0.00001)
 })
 
+test_that("keyATM: make sure it runs without the seed", {
+  expect_no_error({
+    temp <- keyATM(docs = keyATM_docs,
+               no_keyword_topics = 3,
+               keywords = bills_keywords,
+               model = "base",
+               options = list(iterations = 30))
+  })
+})
 
 # Only one keyword
 out <- keyATM(docs = keyATM_docs,
@@ -46,13 +54,13 @@ test_that("keyATM onle one keyword topic", {
 
 # Overlapping keywords
 bills_keywords2 <- list(
-                        Education = c("education", "child", "student"),	
-                              Law = c("court", "law", "attorney"),	
-                           Health = c("public", "health", "student"),	
-                             Drug = c("drug", "court")	
+                        Education = c("education", "child", "student"),
+                              Law = c("court", "law", "attorney"),
+                           Health = c("public", "health", "student"),
+                             Drug = c("drug", "court")
                        )
 
-out <- keyATM(docs = keyATM_docs, 
+out <- keyATM(docs = keyATM_docs,
               no_keyword_topics = 3,
               keywords = bills_keywords2,
               model = "base",

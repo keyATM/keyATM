@@ -1,12 +1,12 @@
 # a more than usually informative error message for handing in the
 # wrong type to a function
 check_arg_type <- function(arg, typename, message = NULL) {
-  argname <- deparse(match.call()[['arg']])
+  argname <- deparse(match.call()[["arg"]])
   if (!inherits(arg, typename)) {
     if (is.null(message)) {
-      stop(paste0('`', argname, '` is not a ', typename))
+      cli::cli_abort(paste0("`", argname, "` is not a ", typename))
     } else {
-      stop(message)
+      cli::cli_abort(message)
     }
   }
 }
@@ -17,43 +17,38 @@ is.formula <- function(x) {
 }
 
 
-full_model_name <- function(model = c("base", "covariates", "dynamic", "label"),
+full_model_name <- function(model = c("base", "covariates", "dynamic"),
                             type = c("keyATM", "lda"))
 {
-  model <- match.arg(model)
-  type <- match.arg(type)
+  model <- rlang::arg_match(model)
+  type <- rlang::arg_match(type)
 
   if (type == "keyATM") {
 
     if (model == "base") {
-      return("base") 
+      return("base")
     } else if (model == "covariates") {
-      return("cov") 
+      return("cov")
     } else if (model == "dynamic") {
-      return("hmm") 
-    } else if (model == "label") {
-      return("label")
+      return("hmm")
     } else {
-      stop("Please select a correct model.") 
+      cli::cli_abort("Please select a correct model.")
     }
-  
-  
+
   } else if (type == "lda") {
 
     if (model == "base") {
-      return("lda") 
+      return("lda")
     } else if (model == "covariates") {
-      return("ldacov") 
+      return("ldacov")
     } else if (model == "dynamic") {
-      return("ldahmm") 
-    # } else if (model == "label") {
-    #   stop("Label LDA is currently not available.")
+      return("ldahmm")
     } else {
-      stop("Please select a correct model.") 
-    }     
-  
+      cli::cli_abort("Please select a correct model.")
+    }
+
   } else {
-    stop("Please select a correct type") 
+    cli::cli_abort("Please select a correct type")
   }
 
 }
@@ -63,17 +58,14 @@ abb_model_name <- function(fullname)
 {
   # Get abbribiation from the full name
   if (fullname %in% c("base", "lda")) {
-    return("base") 
+    return("base")
   } else if (fullname %in% c("cov", "ldacov")) {
-    return("covariates") 
+    return("covariates")
   } else if (fullname %in% c("hmm", "ldahmm")) {
-    return("dynamic") 
-  } else if (fullname %in% "label") {
-    return("label")
+    return("dynamic")
   } else {
-    stop("Invalid full model name.") 
+    cli::cli_abort("Invalid full model name.")
   }
-
 }
 
 
@@ -81,21 +73,18 @@ extract_full_model_name <- function(obj)
 {
   # Get model full name from S3 class
   if ("base" %in% class(obj)) {
-    return("base") 
+    return("base")
   } else if ("cov" %in% class(obj)) {
-    return("cov") 
+    return("cov")
   } else if ("hmm" %in% class(obj)) {
-    return("hmm") 
+    return("hmm")
   } else if ("lda" %in% class(obj)) {
-    return("lda") 
+    return("lda")
   } else if ("ldacov" %in% class(obj)) {
-    return("ldacov") 
+    return("ldacov")
   } else if ("ldahmm" %in% class(obj)) {
-    return("ldahmm") 
-  } else if ("label" %in% class(obj)) {
-    return("label")
+    return("ldahmm")
   }
-
 }
 
 
@@ -108,12 +97,8 @@ rdirichlet <- function(alpha, n = 1) {
 
 
 rmvn <- function(n = 1, mu, Sigma)
-{  # Edited version of the code in LaplacesDemon package
+{ # Edited version of the code in LaplacesDemon package
   mu <- rbind(mu)
-  # if(missing(Sigma)) Sigma <- diag(ncol(mu))
-  # if(!is.matrix(Sigma)) Sigma <- matrix(Sigma)
-  # if(!is.positive.definite(Sigma))
-       # stop("Matrix Sigma is not positive-definite.")
   k <- ncol(Sigma)
   if(n > nrow(mu)) mu <- matrix(mu, n, k, byrow = TRUE)
   z <- matrix(stats::rnorm(n*k), n, k) %*% chol(Sigma)
@@ -123,7 +108,7 @@ rmvn <- function(n = 1, mu, Sigma)
 
 
 rmvn1 <- function(mu, Sigma)
-{  # Edited version of the code in LaplacesDemon package
+{ # Edited version of the code in LaplacesDemon package
   mu <- as.numeric(mu)
   k <- ncol(Sigma)
   z <- stats::rnorm(k) %*% chol(Sigma)
@@ -133,21 +118,21 @@ rmvn1 <- function(mu, Sigma)
 
 
 rnorminvwishart <- function(n = 1, mu0, lambda, S, nu)
-{  # Edited version of the code in LaplacesDemon package
+{ # Edited version of the code in LaplacesDemon package
   Sigma <- rinvwishart(nu, S)
   mu <- rmvn(n, mu0, 1/lambda*Sigma)
   return(list(mu = mu, Sigma = Sigma))
 }
 
 rinvwishart <- function(nu, S)
-{  # Edited version of the code in LaplacesDemon package
+{ # Edited version of the code in LaplacesDemon package
   S <- chol2inv(chol(S))
   k <- nrow(S)
   Z <- matrix(0, k, k)
   x <- stats::rchisq(k, nu:{nu - k + 1})
   x[which(x == 0)] <- 1e-100
   diag(Z) <- sqrt(x)
-  if(k > 1) {
+  if (k > 1) {
       kseq <- 1:(k-1)
       Z[rep(k*kseq, kseq) +
            unlist(lapply(kseq, seq))] <- stats::rnorm(k*{k - 1}/2)
@@ -186,10 +171,10 @@ standardize <- function(x) {return((x - mean(x)) / stats::sd(x))}
 
 covariates_standardize <- function(data, type, cov_formula = NULL) {
   if (is.null(cov_formula)) {
-    warning("`covariates_formula` is not provided. keyATM uses the matrix as it is.", immediate. = TRUE) 
+    cli::cli_warn("`covariates_formula` is not provided. keyATM uses the matrix as it is.", immediate. = TRUE)
     return(as.matrix(data))
   } else if (is.formula(cov_formula)) {
-    message("Convert covariates data using `model_settings$covariates_formula`.") 
+    cli::cli_alert_info("Convert covariates data using `model_settings$covariates_formula`.")
     covariates_data_use <- stats::model.matrix(cov_formula,
                                                as.data.frame(data))
   }
@@ -208,13 +193,13 @@ covariates_standardize <- function(data, type, cov_formula = NULL) {
   }
 
   if (type == "non-factor") {
-    # Ignore columns created from the factor 
+    # Ignore columns created from the factor
     factor_cols <- names(Filter(is.factor, data))
     standardize_cols <- colnames_keep[!grepl(paste(c("^\\(Intercept\\)", paste0("^", factor_cols)), collapse = "|"), colnames_keep)]
   }
 
   if (length(standardize_cols) == 0) {
-    return(covariates_data_use) 
+    return(covariates_data_use)
   } else {
     covariates_data_use <- sapply(colnames_keep, function(col) {
                                   if (!col %in% standardize_cols)
@@ -241,7 +226,7 @@ covariates_standardize <- function(data, type, cov_formula = NULL) {
 #' \dontrun{
 #'   library(keyATM)
 #'   library(quanteda)
-#'   ## using the moral foundation dictiionary example from quanteda
+#'   ## using the moral foundation dictionary example from quanteda
 #'   dictfile <- tempfile()
 #'   download.file("http://bit.ly/37cV95h", dictfile)
 #'   data(keyATM_data_bills)
@@ -263,12 +248,12 @@ read_keywords <- function(file = NULL, docs = NULL, dictionary = NULL, split = T
     }
     resolve_glob <- function(dict_slot, wd_names, split, separator) {
         if (is.list(dict_slot[[1]])) {
-            stop("Only one-level dictionary is supported.")
+            cli::cli_abort("Only one-level dictionary is supported.")
         }
         unlist(lapply(dict_slot[[1]], glob_select, wd_names = wd_names, split = split, separator = separator))
     }
     if (is.null(file) & is.null(dictionary)) {
-        stop("Both file and dictionary cannot be NULL. Please provide at least one of them.")
+        cli::cli_abort("Both file and dictionary cannot be NULL. Please provide at least one of them.")
     }
     if (!is.null(file)) {
         dictionary <- quanteda::dictionary(file = file, ...)

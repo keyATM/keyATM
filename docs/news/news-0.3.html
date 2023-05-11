@@ -17,13 +17,13 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     User's Guide
      
     <span class="caret"></span>
@@ -44,13 +44,13 @@
       <a href="../articles/pkgdown_files/keyATM_dynamic.html">keyATM Dynamic</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_files/keyATM_label.html">keyATM Label</a>
-    </li>
-    <li>
       <a href="../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../articles/pkgdown_files/Plot.html">Customizing Plots</a>
+      <a href="../articles/pkgdown_files/Resume.html">Resume Fitting</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown_files/Plot.html">Plot Customization</a>
     </li>
     <li>
       <a href="../articles/pkgdown_files/Options.html">Options</a>
@@ -92,7 +92,7 @@
 <ul><li>Use the Highest Density Interval as a default (<code>method = "hdi"</code>) in <code><a href="../reference/plot.strata_doctopic.html">plot.strata_doctopic()</a></code>, <code><a href="../reference/plot_timetrend.html">plot_timetrend()</a></code>, and <code><a href="../reference/plot_pi.html">plot_pi()</a></code>. The previous version uses the Equal-tailed Interval (<code>method = "eti"</code>).</li>
 <li>Add <code>read_keywords</code> for reading dictionary files (e.g. YAML, LIWC).</li>
 <li>Add the <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> function for the covariate keyATM (thank you <a href="https://sanjahajdinjak.wordpress.com/" class="external-link">Sanja Hajdinjak</a> for the suggestion!).</li>
-<li>Detailed options for standardization in the covariate keyATM
+<li>Detailed options for standardization in the covariate keyATM:
 <ul><li>The <code>standardize</code> option in <code>model_settings</code> argument of the <code><a href="../reference/keyATM.html">keyATM()</a></code> function now takes one of <code>"all"</code>, <code>"none"</code>, or <code>"non-factor"</code> (default).</li>
 <li>
 <code>"all"</code> standardizes all covariates (except the intercept), <code>"none"</code> does not standardize any covariates, and <code>"non-factor"</code> standardizes non-factor covariates.</li>
@@ -100,18 +100,18 @@
 </ul></li>
 <li>A bug fix in the <code><a href="../reference/by_strata_DocTopic.html">by_strata_DocTopic()</a></code> function.</li>
 <li>The output of the <code><a href="../reference/keyATM.html">keyATM()</a></code> includes the index of documents used for fitting (this will be useful if the input includes documents with zero length).</li>
-<li>Add a <code>progress_bar</code> option in the <code><a href="../reference/keyATM_read.html">keyATM_read()</a></code> function (thank you <a href="https://jaeyk.github.io/" class="external-link">Jae Yeon Kim</a> for the suggestion!)</li>
+<li>Add a <code>progress_bar</code> option in the <code><a href="../reference/keyATM_read.html">keyATM_read()</a></code> function (thank you <a href="https://jaeyk.github.io/" class="external-link">Jae Yeon Kim</a> for the suggestion!).</li>
 </ul></div>
 <div class="section level4">
 <h4 id="bug-fix-0-3-0">Bug fix<a class="anchor" aria-label="anchor" href="#bug-fix-0-3-0"></a></h4>
-<ul><li>Fix checking time index input (thank you <a href="https://jaeyk.github.io/" class="external-link">Jae Yeon Kim</a> for pointing out this issue!)</li>
+<ul><li>Fix checking time index input (thank you <a href="https://jaeyk.github.io/" class="external-link">Jae Yeon Kim</a> for pointing out this issue!).</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.1" id="keyatm-031">keyATM 0.3.1<small>2020-07-29</small><a class="anchor" aria-label="anchor" href="#keyatm-031"></a></h2>
 <div class="section level4">
 <h4 id="major-changes-0-3-1">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-0-3-1"></a></h4>
-<ul><li>Changes related to release of dplyr 1.0.1</li>
+<ul><li>Changes related to release of dplyr 1.0.1.</li>
 </ul></div>
 </div>
   </div>
