@@ -81,17 +81,22 @@ dyn <- keyATM(docs = keyATM_docs,
               options = list(seed = 250, verbose = FALSE, store_theta = TRUE, iterations = 20, thinning = 1))
 
 test_that("Plot time series: with intervals", {
-  p <- plot_timetrend(dyn) ; expect_s3_class(p, "keyATM_fig")
-  p <- plot_timetrend(dyn, time_index_label = bills_time_index, method = "eti")
-  p2 <- plot_timetrend(dyn, time_index_label = bills_time_index, method = "hdi", ci = 0.89)
-  expect_s3_class(p, "keyATM_fig")
+  p1 <- plot_timetrend(dyn) ; expect_s3_class(p1, "keyATM_fig")
+  p2 <- plot_timetrend(dyn, time_index_label = bills_time_index, method = "eti")
+  p3 <- plot_timetrend(dyn, time_index_label = bills_time_index, method = "hdi", ci = 0.89)
+  expect_s3_class(p2, "keyATM_fig")
 
   skip_on_cran()
-  expect_message(save_fig(p, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
+  expect_message(save_fig(p2, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
 
   skip_on_os("linux") ; skip_on_cran()
-  expect_equal(values_fig(p)$Lower[2], 0.04844414, tolerance = 0.00001)
-  expect_equal(values_fig(p2)$Upper[2], 0.1310682, tolerance = 0.00001)
+  expect_equal(values_fig(p2)$Lower[2], 0.04844414, tolerance = 0.00001)
+  expect_equal(values_fig(p3)$Upper[2], 0.1310682, tolerance = 0.00001)
+
+  expect_equal(values_fig(p3)$state_id[56], 5, tolerance = 0.00001)
+
+  expect_equal(values_fig(p1)$time_index[36], 9, tolerance = 0.00001)
+  expect_equal(values_fig(p3)$time_index[36], 109, tolerance = 0.00001)
 
   p <- plot_topicprop(dyn) ; expect_s3_class(p, "keyATM_fig")
 })
