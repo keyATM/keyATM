@@ -10,10 +10,10 @@ Authors@R: c(person("Shusei", "Eshima", email = "shuseieshima@gmail.com", role =
     person("William", "Lowe", email = "wlowe@princeton.edu", role = c("ctb")),
     person("Seo-young Silvia", "Kim", email = "sy.silvia.kim@gmail.com", role = c("ctb"), comment = c(ORCID = "0000-0002-8801-9210")))
 License: GPL-3
-Depends: R (>= 3.6)
+Depends: R (>= 4.0)
 Imports: Rcpp (>= 1.0.7),
   cli (>= 3.6.1),
-  dplyr (>= 1.0.0),
+  dplyr (>= 1.1.0),
   fastmap,
   future.apply,
   fs (>= 1.6.0),
@@ -25,18 +25,18 @@ Imports: Rcpp (>= 1.0.7),
   MASS,
   pgdraw,
   purrr (>= 1.0.0),
-  quanteda (>= 2.0.0),
+  quanteda (>= 3.3.0),
   rlang (>= 1.1.0),
-  scales (>= 1.2.1),
-  stats,
   stringr,
   tibble,
-  tidyr (>= 1.0.0)
+  tidyr (>= 1.0.0),
+  tidyselect (>= 1.2.0)
 LinkingTo: Rcpp,
   RcppEigen,
   cli
 Suggests:
     readtext,
+    stats,
     testthat (>= 3.1.5)
 URL: https://keyatm.github.io/keyATM/
 Encoding: UTF-8

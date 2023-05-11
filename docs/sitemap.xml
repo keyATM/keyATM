@@ -28,6 +28,9 @@
     <loc>/articles/pkgdown_files/Preparation.html</loc>
   </url>
   <url>
+    <loc>/articles/pkgdown_files/Resume.html</loc>
+  </url>
+  <url>
     <loc>/articles/pkgdown_files/Weighted_LDA.html</loc>
   </url>
   <url>
@@ -71,6 +74,9 @@
   </url>
   <url>
     <loc>/news/news-0.4.html</loc>
+  </url>
+  <url>
+    <loc>/news/news-0.5.html</loc>
   </url>
   <url>
     <loc>/reference/by_strata_DocTopic.html</loc>
@@ -125,6 +131,9 @@
   </url>
   <url>
     <loc>/reference/keyATM_fit_label.html</loc>
+  </url>
+  <url>
+    <loc>/reference/keyATM_initialize.html</loc>
   </url>
   <url>
     <loc>/reference/keyATM_output.html</loc>

@@ -58,7 +58,7 @@ Researchers are often interested in investigating how the prevalence of topics c
 over time. The **keyATM** can use time stamps for the prior for
 document-topic distribution through Hidden Markov Model ([Chib 1998](https://doi.org/10.1016/S0304-4076(97)00115-2)).
 
-Section 4 of [Eshima et al. (2020)](https://arxiv.org/abs/2004.05964) explains the dynamic keyATM in details.
+Section 4 of <a href="https://doi.org/10.1111/ajps.12779" target="_blank">Eshima et al. (2023)</a> explains the dynamic keyATM in details.
 As explained in [keyATM Covariates](keyATM_cov.html), we recommend researchers to
 construct a numeric or an integer vector of time stamps after preprocessing texts.
 
@@ -100,11 +100,13 @@ out <- keyATM(
 )
 ```
 
+Once you fit the model, you can save the model with `save()` for replication. This is the same as the [base model](keyATM_base.html#saving-the-model).
+
+You can [resume](Resume.html) the iteration by specifying the `resume` argument.
 
 ## Interpreting results
-We can use the `top_words()`, `top_docs()`, `plot_modelfit()`, `plot_alpha()`,
-and `plot_pi()` functions
-as in [the base keyATM](keyATM_base.html).
+We can use the interpretation functions, such as `top_words()`, `top_docs()`, `plot_modelfit()`,
+as in [the base keyATM](keyATM_base.html#interpreting-results).
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 top_words(out)
@@ -139,4 +141,4 @@ fig_timetrend
 
 ## Reference
 * Chib, S. (1998). "Estimation and comparison of multiple change-point models." *Journal of econometrics*, 86(2), 221-241.
-* Eshima, S., Imai, K., & Sasaki, T. (2020). Keyword Assisted Topic Models. arXiv preprint arXiv:2004.05964.
+* Eshima, S., Imai, K., & Sasaki, T. (2023). "Keyword Assisted Topic Models." *American Journal of Political Science*.

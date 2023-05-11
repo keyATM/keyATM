@@ -20,13 +20,13 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 * [keyATM Base](articles/pkgdown_files/keyATM_base.html)
 * [keyATM Covariates](articles/pkgdown_files/keyATM_cov.html)
 * [keyATM Dynamic](articles/pkgdown_files/keyATM_dynamic.html)
-* [Customizing Plots](articles/pkgdown_files/Plot.html)
+* [Resume Fitting](articles/pkgdown_files/Resume.html)
+* [Plot Customization](articles/pkgdown_files/Plot.html)
 * [FAQ](articles/pkgdown_files/FAQ.html)
 
 
 ## How to cite
-*  Shusei Eshima, Kosuke Imai, and Tomoya Sasaki. 2023. ``Keyword Assisted Topic Models.'' __American Journal of Political Science__.  <a href="https://doi.org/10.1111/ajps.12779">Paper</a> / <a href="http://arxiv.org/abs/2004.05964">arXiv</a>.
-* Shusei Eshima, Tomoya Sasaki, and Kosuke Imai. 2019. keyATM: Keyword Assisted Topic Models. R package version 0.5.0. https://keyatm.github.io/keyATM/
+*  <a href="https://shusei-e.github.io/" target="_blank">Shusei Eshima</a>, <a href="https://imai.fas.harvard.edu/" target="_blank">Kosuke Imai</a>, and <a href="https://tomoya-sasaki.github.io/" target="_blank">Tomoya Sasaki</a>. 2023. "Keyword Assisted Topic Models." *American Journal of Political Science*.  <a href="https://doi.org/10.1111/ajps.12779" target="_blank">Paper</a>  (<a href="http://arxiv.org/abs/2004.05964" target="_blank">arXiv</a>).
 
 ## How to report a bug
 We recommend you to post bug reports and wish lists on [GitHub Issue](https://github.com/keyATM/keyATM/issues) for faster response. It also helps other users. When you post, please follow the following format (it will appear as a template in GitHub Issue).

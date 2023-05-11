@@ -190,6 +190,8 @@ keywords <- list(
 A set of keywords should be stored in a list object, and we recommend users to name each topic for clarity.
 Each keyword-topic can have a different number of keywords.
 
+You can also use the `read_keywords()` function to read a dictionary object from quanteda to a named list.
+
 ### Checking keywords
 Keywords should appear reasonable times (typically more than 0.1% of the corpus) in the documents.
 The `visualize_keywords()` function plots the frequency of keywords by topic.
@@ -286,5 +288,3 @@ You can find details in [FAQ](FAQ.html#which-model-to-use).
 
 ## Reference
 * King, Gary, Patrick Lam and Margaret E. Roberts. (2017). Computer-Assisted Keyword and Document Set Discovery from Unstructured Text. _American Journal of Political Science_ 61:971–988.
-
-

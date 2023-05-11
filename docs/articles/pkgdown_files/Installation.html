@@ -34,14 +34,14 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     User's Guide
      
     <span class="caret"></span>
@@ -63,13 +63,13 @@
       <a href="../../articles/pkgdown_files/keyATM_dynamic.html">keyATM Dynamic</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_files/keyATM_label.html">keyATM Label</a>
-    </li>
-    <li>
       <a href="../../articles/pkgdown_files/Weighted_LDA.html">Weighted LDA</a>
     </li>
     <li>
-      <a href="../../articles/pkgdown_files/Plot.html">Customizing Plots</a>
+      <a href="../../articles/pkgdown_files/Resume.html">Resume Fitting</a>
+    </li>
+    <li>
+      <a href="../../articles/pkgdown_files/Plot.html">Plot Customization</a>
     </li>
     <li>
       <a href="../../articles/pkgdown_files/Options.html">Options</a>
@@ -120,14 +120,14 @@
 CRAN has a stable version while GitHub stores the latest version and
 developing version.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Install release version from CRAN (updating keyATM is the same command)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"keyATM"</span><span class="op">)</span>
-
-<span class="co"># Install development version from GitHub</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"keyATM/keyATM"</span>, ref <span class="op">=</span> <span class="st">"v0.5.0"</span><span class="op">)</span>  <span class="co"># specify a branch</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Install release version from CRAN (updating keyATM is the same command)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"keyATM"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Install development version from GitHub</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"keyATM/keyATM"</span>, ref <span class="op">=</span> <span class="st">"v0.5.0"</span><span class="op">)</span>  <span class="co"># specify a branch</span></span></code></pre></div>
 <p>If you want to try the latest development version, please specify the
 name of the branch with <code>ref</code> argument in
-<code><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">devtools::install_github</a></code>. You can find branches in our <a href="https://github.com/keyATM/keyATM/branches" class="external-link">GitHub
+<code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">devtools::install_github</a></code>. You can find branches in our <a href="https://github.com/keyATM/keyATM/branches" class="external-link">GitHub
 repository</a>.</p>
 <p>Please visit <a href="Preparation.html">Preparation</a> to check how
 to prepare text data to fit models with <strong>keyATM</strong>.</p>

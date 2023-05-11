@@ -21,7 +21,8 @@ my_options <- list(
   thinning      = 5,
   store_theta   = FALSE,
   store_pi      = FALSE,
-  parallel_init = FALSE
+  parallel_init = FALSE,
+  resume        = NULL
 )
 
 out <- keyATM(
@@ -75,6 +76,10 @@ The default value is `FALSE`. Storing the value of $\pi_k$ for all $k$ (the prob
 
 ### `parallel_init`
 Parallelize processes to speed up initialization. Default is `FALSE`. Note that even if you use the same `seed`, the initialization will become different between with and without parallelization.
+
+
+### `resume`
+The resume argument is used to save and load the intermediate results of the keyATM fitting process, allowing you to resume the fitting from a previous state. The default value is `NULL` (do not resume).
 
 
 # Priors

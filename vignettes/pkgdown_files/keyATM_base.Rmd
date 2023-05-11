@@ -79,6 +79,8 @@ out <- keyATM(
 ```
 The default number of iterations is `1500`. Please check [this page](Options.html) for available options.
 
+You can [resume](Resume.html) the iteration by specifying the `resume` argument.
+
 
 ## Saving the model
 

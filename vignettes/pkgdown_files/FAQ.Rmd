@@ -3,6 +3,7 @@ title: "FAQ"
 output:
   html_document:
     toc: true
+    toc_depth: 2
 ---
 
 ```{r, include=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
@@ -93,7 +94,7 @@ keywords_n2 <- list(Government = c("federal_government", "vice_president"),
                     Peace      = c("peace_world"))
 ```
 
-Then, you can fit the keyATM models (here we use [the base]((keyATM_base.html) model).
+Then, you can fit the keyATM models (here we use [the base](keyATM_base.html) model).
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(docs              = keyATM_docs_n2,    # text input
               no_keyword_topics = 3,                 # number of topics without keywords
@@ -120,6 +121,8 @@ keywords <- list(
 )
 ```
 
+Please also consider the `read_keywords()` function to read a dictionary object from quanteda to a named list.
+
 
 # Fitting
 
@@ -128,8 +131,7 @@ Please note that the number of unique words, the total lenght of documents, and 
 
 If you want to speed up fitting, the first thing you can do is to review preprocessing processes. Usually, documents include a lot of low frequency words that do not help interpretation. **quanteda** provides various functions to trim those words.
 
-**keyATM** also provides [the Pólya-Gamma augmentation](keyATM_cov.html#keyatm-covariate-with-pólya-gamma-augmentation) as an alternative modeling approach for topic assignments.
-
+**keyATM** can [resume fittng](Resume.html).
 
 ## Can I run keyATM on cloud computing services?
 Yes! For example, [Professor Louis Aslett](http://www.louisaslett.com/) provides an easy to use Amazon Machine Image of RStudio [here](http://www.louisaslett.com/RStudio_AMI/). When you select an instance, please note that **keyATM** does not need multiple cores (one or two cores would be enough because we cannot parallelize Collapsed Gibbs Sampling), but make sure the memory can handle your data.
