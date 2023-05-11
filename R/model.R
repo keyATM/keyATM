@@ -425,7 +425,8 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
                         doc_index = info$use_doc_index, keyATMdoc_meta = docs[-c(1, 3)])
 
   if (model %in% c("base", "multi-base" ,"lda", "label")) {
-    if (!is.null(options$estimate_alpha)){
+    # if (!is.null(options$estimate_alpha)){
+    if (options$estimate_alpha){
       stored_values$alpha_iter <- list()
     }
   }
