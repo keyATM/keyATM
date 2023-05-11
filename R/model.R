@@ -425,8 +425,9 @@ keyATM_fit <- function(docs, model, no_keyword_topics,
                         doc_index = info$use_doc_index, keyATMdoc_meta = docs[-c(1, 3)])
 
   if (model %in% c("base", "multi-base" ,"lda", "label")) {
-    if (options$estimate_alpha)
+    if (!is.null(options$estimate_alpha)){
       stored_values$alpha_iter <- list()
+    }
   }
 
   if (model %in% c("hmm", "ldahmm")) {
@@ -883,7 +884,7 @@ check_arg_priors <- function(obj, model, info)
       if (is.null(obj$alpha)) {
         obj$alpha <- array(1/info$total_k, c(info$total_k, info$num_corpus))
       }
-      if (identical(dim(obj$alpha), c(as.integer(info$total_k),
+      if (!identical(dim(obj$alpha), c(as.integer(info$total_k),
                                       as.integer(info$num_corpus)))) {
         stop("Starting alpha must be a matrix of dimensions ", c(info$total_k, info$num_corpus))
       }
@@ -970,7 +971,7 @@ check_arg_options <- function(obj, model, info)
 
 
   # Estimate alpha
-  if (model %in% c("base", "lda", "label")) {
+  if (model %in% c("base", "multi-base", "lda", "label")) {
     if (is.null(obj$estimate_alpha)) {
       obj$estimate_alpha <- 1L
     } else {

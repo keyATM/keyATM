@@ -66,7 +66,7 @@ abb_model_name <- function(fullname)
   # Get abbribiation from the full name
   if (fullname %in% c("base", "lda")) {
     return("base") 
-  } else if ("multi-base") {
+  } else if (fullname %in% "multi-base") {
     return("multi-base")
   } else if (fullname %in% c("cov", "ldacov")) {
     return("covariates") 
@@ -86,7 +86,7 @@ extract_full_model_name <- function(obj)
   # Get model full name from S3 class
   if ("base" %in% class(obj)) {
     return("base") 
-  } else if ("multi-base") {
+  } else if ("multi-base" %in% class(obj)) {
     return("multi-base")
   } else if ("cov" %in% class(obj)) {
     return("cov") 
