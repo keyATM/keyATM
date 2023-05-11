@@ -234,7 +234,7 @@ keyATM_output_theta <- function(model, info)
         (tt + alpha_vec) / (sum(tt) + sum(alpha_vec)) # posterior mean
       }
       e_alpha <- alpha[,model$model_settings$corpus_id]
-      theta <- bind_tables(mapply(posterior_z_base, model$Z, split(e_alpha, c(col(e_alpha)))))
+      theta <- bind_tables(as.data.frame(t(mapply(posterior_z_base, model$Z, split(e_alpha, c(col(e_alpha)))))))
     }
 
   } else if (model$model %in% c("hmm", "ldahmm")) {
@@ -253,6 +253,7 @@ keyATM_output_theta <- function(model, info)
 
   theta <- as.matrix(theta)
   colnames(theta) <- info$tnames # label seeded topics
+  
   if (!is.null(info$keyATMdoc_meta$docnames)) {
     if (nrow(theta) != length(info$keyATMdoc_meta$docnames)) {
       warning("The length of stored document names do not match with the number of documents fitted.
@@ -320,7 +321,7 @@ keyATM_output_phi <- function(model, info)
   all_words <- model$vocab[as.integer(unlist(model$W, use.names = FALSE)) + 1L]
   all_topics <- as.integer(unlist(model$Z, use.names = FALSE))
 
-  if (model$model %in% c("base", "cov", "hmm", "label")) {
+  if (model$model %in% c("base", "multi-base", "cov", "hmm", "label")) {
     pi_estimated <- keyATM_output_pi(model$Z, model$S, model$priors$gamma)
     all_s <- as.integer(unlist(model$S, use.names = FALSE))
 
@@ -365,6 +366,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
   all_keywords <- unique(unlist(model$keywords_raw, use.names = FALSE))
   beta_s1 <- matrix(priors$beta_s, nrow = length(model$keywords), ncol = length(all_keywords))
   colnames(beta_s1) <- sort(all_keywords)
+  
   if ("beta_s1" %in% names(priors)) {
     for (k in 1:length(model$keywords_raw)) {
       keywords_k <- model$keywords_raw[[k]]
@@ -437,6 +439,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
       phi_ <- matrix(0, nrow = length(tnames),
                      ncol = length(vocab))
       colnames(phi_) <- vocab_sorted
+      
       phi_[1:nrow(phi), which(colnames(phi_) %in% colnames(phi))] <-
           phi[, which(colnames(phi) %in% colnames(phi_))]
       phi <- phi_
