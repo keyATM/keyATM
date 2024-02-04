@@ -584,7 +584,6 @@ check_arg_model_settings <- function(obj, model, info)
         cli::cli_abort("`model_settings$slice_max` should be a positive value.")
       }
     }
-
     allowed_arguments <- c(allowed_arguments, "slice_min", "slice_max")
   }
 
@@ -748,7 +747,7 @@ check_arg_priors <- function(obj, model, info)
 {
   check_arg_type(obj, "list")
   # Base arguments
-  allowed_arguments <- c("beta")
+  allowed_arguments <- c("beta", "eta_1", "eta_2", "eta_1_regular", "eta_2_regular")
 
   # prior of pi
   if (model %in% info$models_keyATM) {
@@ -770,7 +769,6 @@ check_arg_priors <- function(obj, model, info)
         obj$gamma[(info$keyword_k+1):info$total_k, ] <- 0
       }
     }
-
     allowed_arguments <- c(allowed_arguments, "gamma")
   }
 
@@ -779,7 +777,7 @@ check_arg_priors <- function(obj, model, info)
     obj$beta <- 0.01
   }
 
-  if (model %in% info$models_keyATM) {
+  if (model %in% info$models_keyATM) {  # models with keywords
     if (!"beta_s" %in% names(obj)) {
       obj$beta_s <- 0.1
     }
@@ -795,7 +793,20 @@ check_arg_priors <- function(obj, model, info)
       cli::cli_abort("Starting alpha must be a vector of length ", info$total_k)
     }
     allowed_arguments <- c(allowed_arguments, "alpha")
+  }
 
+  # eta
+  if (!"eta_1" %in% names(obj)) {
+    obj$eta_1 <- 1.0
+  }
+  if (!"eta_2" %in% names(obj)) {
+    obj$eta_2 <- 1.0
+  }
+  if (!"eta_1_regular" %in% names(obj)) {
+    obj$eta_1_regular <- 2.0
+  }
+  if (!"eta_2_regular" %in% names(obj)) {
+    obj$eta_2_regular <- 1.0
   }
 
   show_unused_arguments(obj, "`priors`", allowed_arguments)
@@ -879,7 +890,6 @@ check_arg_options <- function(obj, model, info)
       if (!obj$estimate_alpha %in% c(0, 1)) {
         cli::cli_abort("An invalid value in `options$estimate_alpha`")
       }
-
     }
     allowed_arguments <- c(allowed_arguments, "estimate_alpha")
   }
