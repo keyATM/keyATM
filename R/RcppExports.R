@@ -46,7 +46,7 @@ keyATMvb_call <- function(model) {
 #' Read files from the quanteda dfm (this is the same as dgCMatrix)
 #'
 #' @param dfm a dfm input (sparse Matrix)
-#' @param W_raw an object to return
+#' @param W_read an object to return
 #' @param vocab a vector of vocabulary
 #' @param split split proportion
 #'
