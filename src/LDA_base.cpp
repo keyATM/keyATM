@@ -35,6 +35,11 @@ void LDAbase::read_data_common()
   priors_list = model["priors"];
   beta = priors_list["beta"];
 
+  eta_1 = priors_list["eta_1"];
+  eta_2 = priors_list["eta_2"];
+  eta_1_regular = priors_list["eta_1_regular"];
+  eta_2_regular = priors_list["eta_2_regular"];
+
   // Stored values
   stored_values = model["stored_values"];
 
@@ -51,11 +56,7 @@ void LDAbase::read_data_common()
 
 void LDAbase::initialize_common()
 {
-  // Parameters
-  eta_1 = 1.0;
-  eta_2 = 1.0;
-  eta_1_regular = 2.0;
-  eta_2_regular = 1.0;
+  // Prior values are set in `LDAbase::read_data_common()`
 
   // Slice sampling initialization
   max_shrink_time = 200;

@@ -7,9 +7,11 @@
 make_wsz_cpp(docs_, info_, initialized_)
 }
 \arguments{
-\item{info}{Various information}
+\item{docs_}{Documents}
 
-\item{initialized}{Store initialized objects (W, S and Z)}
+\item{info_}{Various information}
+
+\item{initialized_}{Store initialized objects (W, S and Z)}
 }
 \description{
 Initialize assignments
