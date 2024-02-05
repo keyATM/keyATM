@@ -101,6 +101,9 @@ Prior for the keyword topic-word distribution.
 ### `gamma`
 Prior for the probability of using keywords in a topic.
 
+### `eta_1`, `eta_2`, `eta_1_regular`, and `eta_2_regular`
+Hyperprior for the `alpha` (used in the base and the dynamic models).
+
 
 # Keep
 You can specify which output to keep (cf. Calculating [heterogeneity](keyATM_cov.html#covariates-and-topic-word-distribution)).
