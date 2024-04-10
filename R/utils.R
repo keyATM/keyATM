@@ -17,7 +17,7 @@ is.formula <- function(x) {
 }
 
 
-full_model_name <- function(model = c("base", "covariates", "dynamic"),
+full_model_name <- function(model = c("base", "covariates", "dynamic", "multi-base", "multi-cov"),
                             type = c("keyATM", "lda"))
 {
   model <- rlang::arg_match(model)
@@ -31,6 +31,10 @@ full_model_name <- function(model = c("base", "covariates", "dynamic"),
       return("cov")
     } else if (model == "dynamic") {
       return("hmm")
+    } else if (model == "multi-base") {
+      return("multi-base")
+    } else if (model == "multi-cov") {
+      return("multi-cov") 
     } else {
       cli::cli_abort("Please select a correct model.")
     }
@@ -59,6 +63,10 @@ abb_model_name <- function(fullname)
   # Get abbribiation from the full name
   if (fullname %in% c("base", "lda")) {
     return("base")
+  } else if (fullname %in% c("multi-base")) {
+    return("multi-base")
+  } else if (fullname %in% c("multi-cov")) {
+    return("multi-cov") 
   } else if (fullname %in% c("cov", "ldacov")) {
     return("covariates")
   } else if (fullname %in% c("hmm", "ldahmm")) {
@@ -74,6 +82,10 @@ extract_full_model_name <- function(obj)
   # Get model full name from S3 class
   if ("base" %in% class(obj)) {
     return("base")
+  } else if ("multi-base" %in% class(obj)) {
+    return("multi-base") 
+  } else if ("multi-cov" %in% class(obj)) {
+    return("multi-cov") 
   } else if ("cov" %in% class(obj)) {
     return("cov")
   } else if ("hmm" %in% class(obj)) {
@@ -197,7 +209,7 @@ covariates_standardize <- function(data, type, cov_formula = NULL) {
     factor_cols <- names(Filter(is.factor, data))
     standardize_cols <- colnames_keep[!grepl(paste(c("^\\(Intercept\\)", paste0("^", factor_cols)), collapse = "|"), colnames_keep)]
   }
-
+  
   if (length(standardize_cols) == 0) {
     return(covariates_data_use)
   } else {

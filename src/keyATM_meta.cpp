@@ -294,7 +294,7 @@ void keyATMmeta::resume_initialize()
 
 void keyATMmeta::iteration()
 {
-  // Calculation thte number of iterations
+  // Calculation the number of iterations
   iter = options_list["iterations"];  // total number of iterations after this fitting, defined at the class level
   int iter_new = options_list["iter_new"];  // how many iterations to add
   int iter_start = iter - iter_new;  // starting iteration number

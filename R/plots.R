@@ -3,7 +3,7 @@
 #' @param x the keyATM_fig object.
 #' @param filename file name to create on disk.
 #' @param ... other arguments passed on to the [ggplot2::ggsave()][ggplot2::ggsave] function.
-#' @seealso [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [plot_topicprop()], [by_strata_DocTopic()], [values_fig()]
+#' @seealso [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_psi()], [plot_timetrend()], [plot_topicprop()], [by_strata_DocTopic()], [values_fig()]
 #' @export
 save_fig <- function(x, filename, ...) {
   UseMethod("save_fig")
@@ -13,7 +13,7 @@ save_fig <- function(x, filename, ...) {
 #' Get values used to create a figure
 #'
 #' @param x the keyATM_fig object.
-#' @seealso [save_fig()], [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_timetrend()], [plot_topicprop()], [by_strata_DocTopic()]
+#' @seealso [save_fig()], [visualize_keywords()], [plot_alpha()], [plot_modelfit()], [plot_pi()], [plot_psi()], [plot_timetrend()], [plot_topicprop()], [by_strata_DocTopic()]
 #' @export
 values_fig <- function(x) {
   UseMethod("values_fig")
@@ -83,7 +83,7 @@ plot_alpha <- function(x, start = 0, show_topic = NULL, scales = "fixed")
     dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
     tidyr::pivot_wider(names_from = "Topic", values_from = "alpha")
 
-  if (modelname %in% c("base", "lda")) {
+  if (modelname %in% c("base", "lda", "multi-base")) {
     res_alpha <- temp %>% dplyr::rename(tidyselect::all_of(tnames)) %>%
       tidyr::pivot_longer(-"Iteration", names_to = "Topic", values_to = "alpha")
 
@@ -232,6 +232,54 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
   return(p)
 }
 
+#' Show a diagnosis plot of psi
+#'
+#' @param x the output from a keyATM model (see [keyATM()]).
+#' @param show_topic an integer or a vector. Indicate topics to visualize. Default is \code{NULL}.
+#' @param corpus integer.
+#' @return keyATM_fig object.
+#' @import ggplot2
+#' @import magrittr
+#' @importFrom rlang .data
+#' @seealso [save_fig()]
+#' @export
+plot_psi <- function(x, show_topic = NULL, corpus = NA)
+{
+  check_arg_type(x, "keyATM_output")
+  modelname <- extract_full_model_name(x)
+
+  if (!(modelname %in% c("multi-base", "multi-cov"))) {
+    cli::cli_abort(paste0("This is not a multiple corpora model."))
+  }
+
+  if (is.na(corpus)) {
+    cli::cli_abort(paste0("Please provide corpus index."))
+  }
+
+  K <- x$keyword_k + x$no_keyword_topics
+  if (is.null(show_topic)) {
+    show_topic <- 1:K
+  }
+
+  tnames <- c(names(x$keywords_raw))[show_topic]
+
+  x$psi[[corpus]] %>%
+    dplyr::mutate(Probability = .data$Proportion / 100) %>%
+    dplyr::filter(.data$Topic %in% (!!show_topic)) %>%
+    dplyr::mutate(Topic = tnames) -> temp
+
+  p <- ggplot(temp, aes(x = .data$Topic, y = .data$Probability)) +
+        geom_bar(stat = "identity") +
+        theme_bw() +
+        xlab("Topic") + ylab("Probability") +
+        ggtitle("Probability of non-keywords drawn from common topic-word distribution") +
+        theme(plot.title = element_text(hjust = 0.5))
+  
+  p <- list(figure = p, values = temp)
+  class(p) <- c("keyATM_fig", class(p))
+  return(p)
+}
+
 
 #' Show the expected proportion of the corpus belonging to each topic
 #'
@@ -251,6 +299,7 @@ plot_pi <- function(x, show_topic = NULL, start = 0, ci = 0.9, method = c("hdi",
 plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, label_topic = NULL, order = c("proportion", "topicid"), xmax = NULL)
 {
   check_arg_type(x, "keyATM_output")
+  modelname <- extract_full_model_name(x)
   order <- rlang::arg_match(order)
 
   total_k <- x$keyword_k + x$no_keyword_topics
@@ -262,7 +311,11 @@ plot_topicprop <- function(x, n = 3, show_topic = NULL, show_topwords = TRUE, la
     }
   }
 
-  topwords <- top_words(x, n = n)[, show_topic]
+  if (modelname %in% c("multi-base", "multi-cov")) {
+    topwords <- top_words(x, n = n, phi_type = "common_key")[, show_topic]
+  } else {
+    topwords <- top_words(x, n = n)[, show_topic]
+  }
 
   if (!is.null(label_topic)) {
     if (length(label_topic) != ncol(topwords)) {

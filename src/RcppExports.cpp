@@ -87,6 +87,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// keyATM_fit_multi_base
+List keyATM_fit_multi_base(List model, bool resume);
+RcppExport SEXP _keyATM_keyATM_fit_multi_base(SEXP modelSEXP, SEXP resumeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< bool >::type resume(resumeSEXP);
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_multi_base(model, resume));
+    return rcpp_result_gen;
+END_RCPP
+}
+// keyATM_fit_multi_cov
+List keyATM_fit_multi_cov(List model, bool resume);
+RcppExport SEXP _keyATM_keyATM_fit_multi_cov(SEXP modelSEXP, SEXP resumeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< bool >::type resume(resumeSEXP);
+    rcpp_result_gen = Rcpp::wrap(keyATM_fit_multi_cov(model, resume));
+    return rcpp_result_gen;
+END_RCPP
+}
 // keyATM_fit_cov
 List keyATM_fit_cov(List model, bool resume);
 RcppExport SEXP _keyATM_keyATM_fit_cov(SEXP modelSEXP, SEXP resumeSEXP) {
@@ -167,6 +191,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_keyATM_keyATMvb_call", (DL_FUNC) &_keyATM_keyATMvb_call, 1},
     {"_keyATM_read_dfm_cpp", (DL_FUNC) &_keyATM_read_dfm_cpp, 4},
     {"_keyATM_keyATM_fit_base", (DL_FUNC) &_keyATM_keyATM_fit_base, 2},
+    {"_keyATM_keyATM_fit_multi_base", (DL_FUNC) &_keyATM_keyATM_fit_multi_base, 2},
+    {"_keyATM_keyATM_fit_multi_cov", (DL_FUNC) &_keyATM_keyATM_fit_multi_cov, 2},
     {"_keyATM_keyATM_fit_cov", (DL_FUNC) &_keyATM_keyATM_fit_cov, 2},
     {"_keyATM_keyATM_fit_covPG", (DL_FUNC) &_keyATM_keyATM_fit_covPG, 2},
     {"_keyATM_keyATM_fit_HMM", (DL_FUNC) &_keyATM_keyATM_fit_HMM, 2},

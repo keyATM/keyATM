@@ -65,6 +65,26 @@ keyATM_fit_base <- function(model, resume = FALSE) {
     .Call(`_keyATM_keyATM_fit_base`, model, resume)
 }
 
+#' Run the Collapsed Gibbs sampler for the multi-keyATM Base
+#'
+#' @param model A initialized model
+#' @param resume resume or not
+#'
+#' @keywords internal
+keyATM_fit_multi_base <- function(model, resume = FALSE) {
+    .Call(`_keyATM_keyATM_fit_multi_base`, model, resume)
+}
+
+#' Run the Collapsed Gibbs sampler for the multi-keyATM covariates (Dir-Multi)
+#'
+#' @param model A initialized model
+#' @param resume resume or not
+#'
+#' @keywords internal
+keyATM_fit_multi_cov <- function(model, resume = FALSE) {
+    .Call(`_keyATM_keyATM_fit_multi_cov`, model, resume)
+}
+
 #' Run the Collapsed Gibbs sampler for the keyATM covariates (Dir-Multi)
 #'
 #' @param model A initialized model
