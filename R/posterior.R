@@ -591,18 +591,6 @@ summary.keyATM_output <- function(object, ...)
 }
 
 
-#' Save a keyATM_output object
-#'
-#' @param x a keyATM_output object (see [keyATM()]).
-#' @param file file name to create on disk.
-#' @seealso [keyATM()], [weightedLDA()], [keyATMvb()]
-#' @export
-save.keyATM_output <- function(x, file = stop("'file' must be specified"))
-{
-  saveRDS(x, file = file)
-}
-
-
 #' Show the top words for each topic
 #'
 #' If \code{show_keyword} is \code{TRUE} then words in their keyword topics
