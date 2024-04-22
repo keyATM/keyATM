@@ -84,9 +84,9 @@ You can [resume](Resume.html) the iteration by specifying the `resume` argument.
 
 ## Saving the model
 
-Once you fit the model, you can save the model with the `save()` function for replication. We strongly recommend to save the fitted model.
+Once you fit the model, you can save the model with the `saveRDS()` function for replication. We strongly recommend to save the fitted model.
 ```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
-save(out, file = "SAVENAME.rds")
+saveRDS(out, file = "SAVENAME.rds")
 ```
 
 To load the model, you can use `readRDS()` function.

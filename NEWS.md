@@ -1,3 +1,8 @@
+# keyATM 0.5.2
+### Minor changes
+* Updating the paper information
+* Deleting the `save()` function (thank you [@AMindToThink](https://github.com/AMindToThink) for repoting this error in [#214](https://github.com/keyATM/keyATM/issues/214))
+
 # keyATM 0.5.1
 
 ### Minor changes

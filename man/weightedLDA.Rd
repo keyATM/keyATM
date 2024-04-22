@@ -72,5 +72,5 @@ Fit weighted LDA models.
 
 }
 \seealso{
-\code{\link[=save.keyATM_output]{save.keyATM_output()}}, \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+\url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 }
