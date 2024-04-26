@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -154,17 +154,17 @@
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##    Topic_1      Topic_2  Topic_3    Topic_4    Topic_5</span></span>
-<span><span class="co">## 1    world       states      war      great     people</span></span>
-<span><span class="co">## 2      new      country      men      every government</span></span>
-<span><span class="co">## 3   nation constitution   spirit government     public</span></span>
-<span><span class="co">## 4   people       united    never       made       laws</span></span>
-<span><span class="co">## 5  freedom        union     long   congress        law</span></span>
-<span><span class="co">## 6  america     citizens progress       just       duty</span></span>
-<span><span class="co">## 7    peace       rights   common       best  interests</span></span>
-<span><span class="co">## 8      let          one  purpose      power  political</span></span>
-<span><span class="co">## 9     time        power american       much    nations</span></span>
-<span><span class="co">## 10    life          now      yet       part     policy</span></span></code></pre>
+<pre><code><span><span class="co">##     Topic_1      Topic_2    Topic_3    Topic_4  Topic_5</span></span>
+<span><span class="co">## 1     world   government      every     people  country</span></span>
+<span><span class="co">## 2    nation       states   citizens        one    great</span></span>
+<span><span class="co">## 3       new       people   national       time      war</span></span>
+<span><span class="co">## 4   freedom       public     rights       free congress</span></span>
+<span><span class="co">## 5   america constitution      never        let     laws</span></span>
+<span><span class="co">## 6     peace        union       well      years      law</span></span>
+<span><span class="co">## 7  american       united       just government     best</span></span>
+<span><span class="co">## 8       men        power     common    liberty      now</span></span>
+<span><span class="co">## 9      life         duty confidence       work     many</span></span>
+<span><span class="co">## 10  nations    interests       less      great     made</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="weighted-lda-covariates">Weighted LDA Covariates<a class="anchor" aria-label="anchor" href="#weighted-lda-covariates"></a>
@@ -200,17 +200,17 @@
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##     Topic_1 Topic_2 Topic_3   Topic_4      Topic_5</span></span>
-<span><span class="co">## 1    people  united   world   country   government</span></span>
-<span><span class="co">## 2     peace     now     new     great       states</span></span>
-<span><span class="co">## 3   nations     war  nation      made       people</span></span>
-<span><span class="co">## 4     every  policy freedom  congress       public</span></span>
-<span><span class="co">## 5      free    part america      laws constitution</span></span>
-<span><span class="co">## 6     years    good     let       law        union</span></span>
-<span><span class="co">## 7       men  nation    time      best        power</span></span>
-<span><span class="co">## 8   justice   every    life      well     national</span></span>
-<span><span class="co">## 9      just  spirit     one     among       rights</span></span>
-<span><span class="co">## 10 american     far    work political     citizens</span></span></code></pre>
+<pre><code><span><span class="co">##       Topic_1    Topic_2 Topic_3   Topic_4      Topic_5</span></span>
+<span><span class="co">## 1      people government   world   country       states</span></span>
+<span><span class="co">## 2         now      great  nation      best       people</span></span>
+<span><span class="co">## 3       great     united     new     right       public</span></span>
+<span><span class="co">## 4    american   congress   peace   nations        power</span></span>
+<span><span class="co">## 5       years       laws freedom political constitution</span></span>
+<span><span class="co">## 6         men        law america      part        union</span></span>
+<span><span class="co">## 7  government   national    time     party        every</span></span>
+<span><span class="co">## 8        just        war     let      ever       rights</span></span>
+<span><span class="co">## 9        know      among   every    office     citizens</span></span>
+<span><span class="co">## 10       much     policy    life   justice         duty</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="weighted-lda-dynamic">Weighted LDA Dynamic<a class="anchor" aria-label="anchor" href="#weighted-lda-dynamic"></a>
@@ -231,17 +231,17 @@
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##       Topic_1 Topic_2      Topic_3</span></span>
-<span><span class="co">## 1  government   world       states</span></span>
-<span><span class="co">## 2       great  nation       people</span></span>
-<span><span class="co">## 3       every  people      country</span></span>
-<span><span class="co">## 4         war   peace        power</span></span>
-<span><span class="co">## 5        made     new       public</span></span>
-<span><span class="co">## 6        laws    time constitution</span></span>
-<span><span class="co">## 7         law nations       united</span></span>
-<span><span class="co">## 8        well freedom        union</span></span>
-<span><span class="co">## 9   interests america     national</span></span>
-<span><span class="co">## 10       many    free       rights</span></span></code></pre>
+<pre><code><span><span class="co">##     Topic_1      Topic_2 Topic_3</span></span>
+<span><span class="co">## 1     world   government  people</span></span>
+<span><span class="co">## 2    nation       states   every</span></span>
+<span><span class="co">## 3     peace       public   power</span></span>
+<span><span class="co">## 4       new      country     war</span></span>
+<span><span class="co">## 5      time        great    made</span></span>
+<span><span class="co">## 6   nations constitution    good</span></span>
+<span><span class="co">## 7   freedom       united  spirit</span></span>
+<span><span class="co">## 8   america        union   never</span></span>
+<span><span class="co">## 9  american     national    well</span></span>
+<span><span class="co">## 10      let       rights   right</span></span></code></pre>
 </div>
   </div>
 

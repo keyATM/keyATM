@@ -83,9 +83,9 @@ test_that("Doc Topic", {
   p <- plot(strata_topic, var_name = "Period", show_topic = c(1, 2, 3, 4))
   expect_s3_class(p, "keyATM_fig")
   skip_on_os("linux")
-  expect_equal(summary(strata_topic)[[2]]$Point[1], 0.09026675, tolerance = 0.000001)
-  expect_equal(summary(strata_topic)[[2]]$Upper[2], 0.08066711, tolerance = 0.000001)
-  expect_equal(summary(strata_topic)[[2]]$Lower[3], 0.1319587, tolerance = 0.000001)
+  expect_equal(summary(strata_topic)[[2]]$Point[1], 0.08544458, tolerance = 0.000001)
+  expect_equal(summary(strata_topic)[[2]]$Upper[2], 0.136887, tolerance = 0.000001)
+  expect_equal(summary(strata_topic)[[2]]$Lower[3], 0.2036373, tolerance = 0.000001)
 })
 
 
@@ -95,5 +95,5 @@ test_that("Topic Word", {
   top <- top_words(strata_tw, n = 3)
   expect_equivalent(top$Democratic[1, 3], "world [\U2713]")
   expect_equivalent(top$Republican[1, 5], "war [\U2713]")
-  expect_equivalent(top$Republican[3, 7], "done")
+  expect_equivalent(top$Republican[3, 7], "american")
 })

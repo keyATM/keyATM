@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -167,10 +167,10 @@ beginning and save the intermediate result as
 cases.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">model_fit</span><span class="op">$</span><span class="va">Perplexity</span>, <span class="fl">1</span><span class="op">)</span>  <span class="co"># 50 iterations all at once</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1833.178</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 1864.717</span></span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">resumed</span><span class="op">$</span><span class="va">model_fit</span><span class="op">$</span><span class="va">Perplexity</span>, <span class="fl">1</span><span class="op">)</span>  <span class="co"># using the `resume` argument</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1833.178</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 1864.717</span></span></code></pre>
 <p>Please note that the intermediate results are saved only after the
 completion of the specified number of iterations. For instance, if you
 set <code>iterations = 1000</code> and specify the <code>resume</code>

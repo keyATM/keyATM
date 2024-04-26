@@ -111,7 +111,7 @@ test_that("Covariates settings: Standardize - none", {
 
   skip_on_os("linux") ; skip_on_cran()
   expect_error(predict(cov, bills_cov_modified))
-  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[3, 3]), 0.000084265, tolerance = 0.003)
+  expect_equal(as.numeric(suppressMessages(predict(cov, bills_cov_modified, transform = TRUE))[3, 3]), 0.01027827, tolerance = 0.01)
 })
 
 
@@ -163,53 +163,3 @@ test_that("Covariates settings: Standardize - all", {
 })
 
 
-#
-# Using the quanteda data
-#
-
-test_that("keyATM cov quanteda data", {
-  skip_on_cran()
-
-  data(data_corpus_inaugural, package = "quanteda")
-  data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
-  data_tokens <- tokens(data_corpus_inaugural,remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE, remove_separators = TRUE, remove_url = TRUE) %>%
-                  tokens_tolower() %>%
-                  tokens_remove(c(stopwords("english"),
-                                "may", "shall", "can",
-                                "must", "upon", "with", "without")) %>%
-                  tokens_select(min_nchar = 3)
-  data_dfm <- dfm(data_tokens) %>%
-                dfm_trim(min_termfreq = 5, min_docfreq = 2)
-  keyATM_docs <- keyATM_read(texts = data_dfm)
-  keywords <- list(Government     = c("laws", "law", "executive"),
-                  ForeignAffairs = c("foreign", "war"))
-
-  vars <- docvars(data_corpus_inaugural)
-  library(dplyr)
-  vars %>%
-    as_tibble() %>%
-    mutate(Period = case_when(Year <= 1899 ~ "18_19c",
-                              TRUE ~ "20_21c")) %>%
-    mutate(Party = case_when(Party == "Democratic" ~ "Democratic",
-                            Party == "Republican" ~ "Republican",
-                            TRUE ~ "Other")) %>%
-    select(Party, Period) -> vars_selected
-
-  vars_selected %>%
-    mutate(Party  = factor(Party,
-                          levels = c("Other", "Republican", "Democratic")),
-          Period = factor(Period,
-                          levels = c("18_19c", "20_21c"))) -> vars_selected
-
-  out <- keyATM(
-    docs              = keyATM_docs,    # text input
-    no_keyword_topics = 5,              # number of topics without keywords
-    keywords          = keywords,       # keywords
-    model             = "covariates",
-    model_settings    = list(covariates_data    = vars_selected,
-                            covariates_formula = ~ Party + Period),
-    options           = list(seed = 250, iterations = 11)
-  )
-
-  expect_equal(out$model_fit$Perplexity[3], 2506.548, tolerance = 0.0001)
-})

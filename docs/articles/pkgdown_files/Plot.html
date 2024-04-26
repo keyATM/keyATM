@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -139,16 +139,16 @@ create the plot.</p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 290 × 7</span></span></span>
 <span><span class="co">##    time_index Topic             Lower  Point  Upper time_index_raw state_id</span></span>
 <span><span class="co">##         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>       <span style="text-decoration: underline;">1</span>789 1_Government     0.100  0.113  0.125               1        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>       <span style="text-decoration: underline;">1</span>789 2_Congress       0.154  0.182  0.211               1        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>       <span style="text-decoration: underline;">1</span>789 3_Peace          0.044<span style="text-decoration: underline;">1</span> 0.061<span style="text-decoration: underline;">8</span> 0.080<span style="text-decoration: underline;">0</span>              1        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>       <span style="text-decoration: underline;">1</span>789 4_Constitution   0.215  0.232  0.254               1        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>       <span style="text-decoration: underline;">1</span>789 5_ForeignAffairs 0.121  0.148  0.173               1        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>       <span style="text-decoration: underline;">1</span>793 1_Government     0.209  0.247  0.287               2        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>       <span style="text-decoration: underline;">1</span>793 2_Congress       0.020<span style="text-decoration: underline;">7</span> 0.069<span style="text-decoration: underline;">9</span> 0.099<span style="text-decoration: underline;">1</span>              2        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>       <span style="text-decoration: underline;">1</span>793 3_Peace          0.057<span style="text-decoration: underline;">4</span> 0.087<span style="text-decoration: underline;">6</span> 0.112               2        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>       <span style="text-decoration: underline;">1</span>793 4_Constitution   0.257  0.312  0.388               2        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>       <span style="text-decoration: underline;">1</span>793 5_ForeignAffairs 0.052<span style="text-decoration: underline;">2</span> 0.081<span style="text-decoration: underline;">9</span> 0.112               2        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>       <span style="text-decoration: underline;">1</span>789 1_Government     0.199  0.214  0.235               1        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>       <span style="text-decoration: underline;">1</span>789 2_Congress       0.098<span style="text-decoration: underline;">4</span> 0.109  0.121               1        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>       <span style="text-decoration: underline;">1</span>789 3_Peace          0.027<span style="text-decoration: underline;">6</span> 0.039<span style="text-decoration: underline;">7</span> 0.051<span style="text-decoration: underline;">1</span>              1        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>       <span style="text-decoration: underline;">1</span>789 4_Constitution   0.172  0.184  0.200               1        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>       <span style="text-decoration: underline;">1</span>789 5_ForeignAffairs 0.159  0.177  0.202               1        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>       <span style="text-decoration: underline;">1</span>793 1_Government     0.133  0.156  0.180               2        2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>       <span style="text-decoration: underline;">1</span>793 2_Congress       0.075<span style="text-decoration: underline;">6</span> 0.096<span style="text-decoration: underline;">6</span> 0.125               2        2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>       <span style="text-decoration: underline;">1</span>793 3_Peace          0.052<span style="text-decoration: underline;">6</span> 0.086<span style="text-decoration: underline;">0</span> 0.117               2        2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>       <span style="text-decoration: underline;">1</span>793 4_Constitution   0.200  0.257  0.312               2        2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>       <span style="text-decoration: underline;">1</span>793 5_ForeignAffairs 0.133  0.149  0.184               2        2</span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 280 more rows</span></span></span></code></pre>
 <p>We can use it to customize the figure.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">

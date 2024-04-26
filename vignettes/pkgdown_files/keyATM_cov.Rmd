@@ -43,7 +43,7 @@ keyATM_docs <- keyATM_read(data_dfm)
 Scholars often have meta information about documents (e.g., authorship).
 The **keyATM** provides a way to incorporate covariate for document-topic distribution, using a
 Dirichlet-Multinomial regression ([Mimno and McCallum 2008](https://dl.acm.org/doi/abs/10.5555/3023476.3023525)).
-Section 3 of <a href="https://doi.org/10.1111/ajps.12779" target="_blank">Eshima et al. (2023)</a> explains the covariate keyATM in details.
+Section 3 of <a href="https://doi.org/10.1111/ajps.12779" target="_blank">Eshima et al. (2024)</a> explains the covariate keyATM in details.
 
 
 ## Preparing covariates
@@ -129,7 +129,7 @@ out <- keyATM(
 )
 ```
 
-Once you fit the model, you can save the model with `save()` for replication. This is the same as the [base model](keyATM_base.html#saving-the-model).
+Once you fit the model, you can save the model with `saveRDS()` for replication. This is the same as the [base model](keyATM_base.html#saving-the-model).
 
 You can [resume](Resume.html) the iteration by specifying the `resume` argument.
 
@@ -331,5 +331,5 @@ top_words(out)
 ```
 
 ## Reference
-* Eshima, S., Imai, K., & Sasaki, T. (2023). "Keyword Assisted Topic Models." *American Journal of Political Science*.
-* Mimno D. McCallum A. (2008). “Topic models conditioned on arbitrary features with Dirichlet-Multinomial regression.” In *Proceedings of the 24th Conference on Uncertainty in Artificial Intelligence*, pp. 411–418.
+* Eshima, S., Imai, K., & Sasaki, T. (2024). "Keyword Assisted Topic Models." *American Journal of Political Science* 68(2): 730-750.
+* Mimno D. McCallum A. (2008). “Topic models conditioned on arbitrary features with Dirichlet-Multinomial regression.” In *Proceedings of the 24th Conference on Uncertainty in Artificial Intelligence*, pp. 411-418.

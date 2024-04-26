@@ -39,6 +39,13 @@ test_that("keyATM: make sure it runs without the seed", {
   })
 })
 
+test_that("keyATM: Save", {
+  skip_on_cran()
+  saveRDS(base, file = file.path(tempdir(), "base.rds"))
+  base_load <- readRDS(file = file.path(tempdir(), "base.rds"))
+  expect_equal(base_load$model_fit$Perplexity[3], base$model_fit$Perplexity[3], tolerance = 0.00001)
+})
+
 # Only one keyword
 out <- keyATM(docs = keyATM_docs,
               no_keyword_topics = 3,
