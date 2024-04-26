@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -152,10 +152,10 @@ the <code>resume</code> argument.</p>
 <h2 id="saving-the-model">Saving the model<a class="anchor" aria-label="anchor" href="#saving-the-model"></a>
 </h2>
 <p>Once you fit the model, you can save the model with the
-<code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code> function for replication. We strongly recommend to
-save the fitted model.</p>
+<code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS()</a></code> function for replication. We strongly recommend
+to save the fitted model.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">out</span>, file <span class="op">=</span> <span class="st">"SAVENAME.rds"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">out</span>, file <span class="op">=</span> <span class="st">"SAVENAME.rds"</span><span class="op">)</span></span></code></pre></div>
 <p>To load the model, you can use <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS()</a></code> function.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"SAVENAME.rds"</span><span class="op">)</span></span></code></pre></div>
@@ -182,27 +182,27 @@ the <em>Government</em> topic, while “peace” appears in top words of the
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs</span></span>
-<span><span class="co">## 1        law [✓]        great   world [✓]           states           public</span></span>
-<span><span class="co">## 2       laws [✓]      justice         new       government            union</span></span>
-<span><span class="co">## 3          state congress [✓] freedom [✓] constitution [✓]          war [✓]</span></span>
-<span><span class="co">## 4  executive [✓]       united     america            power          nations</span></span>
-<span><span class="co">## 5         policy      service         let         citizens      foreign [✓]</span></span>
-<span><span class="co">## 6          whole    party [✓]   peace [✓]       rights [✓]       principles</span></span>
-<span><span class="co">## 7       american        force        life             duty           duties</span></span>
-<span><span class="co">## 8        however       office        time        interests             good</span></span>
-<span><span class="co">## 9         spirit        means        work           united             just</span></span>
-<span><span class="co">## 10          full   prosperity    american           powers         interest</span></span>
-<span><span class="co">##      Other_1        Other_2   Other_3  Other_4    Other_5</span></span>
-<span><span class="co">## 1      years       national   country   nation     people</span></span>
-<span><span class="co">## 2     fellow      political peace [3]      men government</span></span>
-<span><span class="co">## 3    purpose administration      time     hope      every</span></span>
-<span><span class="co">## 4  president         system   support    first        one</span></span>
-<span><span class="co">## 5     spirit     confidence    secure progress        now</span></span>
-<span><span class="co">## 6        day        federal important      man       made</span></span>
-<span><span class="co">## 7        yet        liberty     since    power      right</span></span>
-<span><span class="co">## 8   strength          whose   respect  country       well</span></span>
-<span><span class="co">## 9       come           take    future   change       many</span></span>
-<span><span class="co">## 10   believe          given resources     find       much</span></span></code></pre>
+<span><span class="co">## 1          great      country   world [✓]           states       government</span></span>
+<span><span class="co">## 2            one     national         new constitution [✓]            union</span></span>
+<span><span class="co">## 3       american congress [✓]     america            great          war [✓]</span></span>
+<span><span class="co">## 4     government         made      nation            power           united</span></span>
+<span><span class="co">## 5           make       policy         let       rights [✓]           public</span></span>
+<span><span class="co">## 6       laws [✓]         best   peace [✓]          nations        interests</span></span>
+<span><span class="co">## 7        law [✓]         duty freedom [✓]   administration            state</span></span>
+<span><span class="co">## 8           hope    party [✓]        work            whole      foreign [✓]</span></span>
+<span><span class="co">## 9       citizens       office        know     institutions           powers</span></span>
+<span><span class="co">## 10 executive [✓]        order        life        necessary       principles</span></span>
+<span><span class="co">##       Other_1   Other_2 Other_3   Other_4 Other_5</span></span>
+<span><span class="co">## 1  government   justice  people    spirit    free</span></span>
+<span><span class="co">## 2   peace [3]      much     now    nation   first</span></span>
+<span><span class="co">## 3     support       men   every      well    long</span></span>
+<span><span class="co">## 4      public    system    time  citizens     man</span></span>
+<span><span class="co">## 5   political      part   years       one   power</span></span>
+<span><span class="co">## 6        good      many    just      high     yet</span></span>
+<span><span class="co">## 7     federal     force   among     trust  others</span></span>
+<span><span class="co">## 8  prosperity    action  future character   means</span></span>
+<span><span class="co">## 9      secure important    ever     since    even</span></span>
+<span><span class="co">## 10     proper resources   equal     honor  change</span></span></code></pre>
 <p>Researchers can also examine how likely each topic appears in the
 corpus with <code><a href="../../reference/plot_topicprop.html">plot_topicprop()</a></code>. This function creates a
 figure that shows the expected proportions of the corpus belonging to
@@ -221,27 +221,27 @@ among all other documents.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_docs.html">top_docs</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##    1_Government 2_Congress 3_Peace 4_Constitution 5_ForeignAffairs Other_1</span></span>
-<span><span class="co">## 1             9         31      52              2                5      46</span></span>
-<span><span class="co">## 2            14         35      47             15               10      47</span></span>
-<span><span class="co">## 3             8         34      53             12               11      54</span></span>
-<span><span class="co">## 4            26         32      58             11                6      48</span></span>
-<span><span class="co">## 5            16         36      46             14                3      53</span></span>
-<span><span class="co">## 6            13         29      40             18               15      49</span></span>
-<span><span class="co">## 7            19         28      57             19                7      50</span></span>
-<span><span class="co">## 8            12         41      51              9                8      56</span></span>
-<span><span class="co">## 9            28         33      50             23               20      57</span></span>
-<span><span class="co">## 10           36         30      54             17               16      43</span></span>
+<span><span class="co">## 1            58         28      46             19               16      31</span></span>
+<span><span class="co">## 2            53         21      53             18               10      36</span></span>
+<span><span class="co">## 3            32         22      47             23               11      27</span></span>
+<span><span class="co">## 4            55         29      52             15               12      26</span></span>
+<span><span class="co">## 5            54         37      50              9               15      25</span></span>
+<span><span class="co">## 6            51         34      54             14                8       2</span></span>
+<span><span class="co">## 7            52         31      51             24                7      28</span></span>
+<span><span class="co">## 8            57         23      55             12                1      23</span></span>
+<span><span class="co">## 9            45         25      44             17               13      24</span></span>
+<span><span class="co">## 10           50         26      57              6                5      35</span></span>
 <span><span class="co">##    Other_2 Other_3 Other_4 Other_5</span></span>
-<span><span class="co">## 1        1      28      45      19</span></span>
-<span><span class="co">## 2       31       8      44      21</span></span>
-<span><span class="co">## 3       27       6      38       2</span></span>
-<span><span class="co">## 4       11      31      58       4</span></span>
-<span><span class="co">## 5       36      35      51      20</span></span>
-<span><span class="co">## 6       33      22      30       1</span></span>
-<span><span class="co">## 7       23      23      55      53</span></span>
-<span><span class="co">## 8       17      10      39      32</span></span>
-<span><span class="co">## 9       37       9      46      45</span></span>
-<span><span class="co">## 10      25      16      52      58</span></span></code></pre>
+<span><span class="co">## 1       41      47      14      44</span></span>
+<span><span class="co">## 2       30      20       6      43</span></span>
+<span><span class="co">## 3       35      21       3      45</span></span>
+<span><span class="co">## 4       32      57       1      48</span></span>
+<span><span class="co">## 5       37       2      17      56</span></span>
+<span><span class="co">## 6       36      45      39      42</span></span>
+<span><span class="co">## 7       33      48       4      51</span></span>
+<span><span class="co">## 8       31      50      32      52</span></span>
+<span><span class="co">## 9       29      46       2      49</span></span>
+<span><span class="co">## 10       8      53       7      40</span></span></code></pre>
 <p>Researchers may want to obtain the entire document-topic distribution
 and topic-word distribution. The output of the <code><a href="../../reference/keyATM.html">keyATM()</a></code>
 function contains both quantities.</p>
