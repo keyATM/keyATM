@@ -247,8 +247,9 @@ void keyATMinitialize::initialize_LDA()
 
 //' Initialize assignments
 //'
-//' @param info Various information
-//' @param initialized Store initialized objects (W, S and Z)
+//' @param docs_ Documents
+//' @param info_ Various information
+//' @param initialized_ Store initialized objects (W, S and Z)
 //'
 //' @keywords internal
 // [[Rcpp::export]]

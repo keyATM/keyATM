@@ -13,7 +13,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
 <meta property="og:title" content="Keyword Assisted Topic Models">
-<meta property="og:description" content="Fits keyword assisted topic models (keyATM) using collapsed Gibbs samplers. The keyATM combines the latent dirichlet allocation (LDA) models with a small number of keywords selected by researchers in order to improve the interpretability and topic classification of the LDA. The keyATM can also incorporate covariates and directly model time trends. The keyATM is proposed in Eshima, Imai, and Sasaki (2023) &lt;doi:10.1111/ajps.12779&gt;.">
+<meta property="og:description" content="Fits keyword assisted topic models (keyATM) using collapsed Gibbs samplers. The keyATM combines the latent dirichlet allocation (LDA) models with a small number of keywords selected by researchers in order to improve the interpretability and topic classification of the LDA. The keyATM can also incorporate covariates and directly model time trends. The keyATM is proposed in Eshima, Imai, and Sasaki (2024) &lt;doi:10.1111/ajps.12779&gt;.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -109,7 +109,6 @@
 <p><img src="https://keyatm.github.io/keyATM/reference/figures/keyATM_logoFull.svg" alt="keyATM: Keyword Assisted Topic Models" width="290"></p>
 <!-- badges: start -->
 
-<p><br><strong>We are still updating this website. Please use the <a href="https://github.com/keyATM/keyATM/labels/website" class="external-link">website</a> label in <a href="https://github.com/keyATM/keyATM/issues" class="external-link">GitHub Issues</a> if you find any error or have suggestions!</strong></p>
 <div class="section level2">
 <h2 id="how-to-use">How to use<a class="anchor" aria-label="anchor" href="#how-to-use"></a>
 </h2>
@@ -129,13 +128,13 @@
 </h2>
 <ul>
 <li>
-<a href="https://shusei-e.github.io/" target="_blank" class="external-link">Shusei Eshima</a>, <a href="https://imai.fas.harvard.edu/" target="_blank" class="external-link">Kosuke Imai</a>, and <a href="https://tomoya-sasaki.github.io/" target="_blank" class="external-link">Tomoya Sasaki</a>. 2023. “Keyword Assisted Topic Models.” <em>American Journal of Political Science</em>. <a href="https://doi.org/10.1111/ajps.12779" target="_blank" class="external-link">Paper</a> (<a href="http://arxiv.org/abs/2004.05964" target="_blank" class="external-link">arXiv</a>).</li>
+<a href="https://shusei-e.github.io/" target="_blank" class="external-link">Shusei Eshima</a>, <a href="https://imai.fas.harvard.edu/" target="_blank" class="external-link">Kosuke Imai</a>, and <a href="https://tomoya-sasaki.github.io/" target="_blank" class="external-link">Tomoya Sasaki</a>. 2024. “Keyword Assisted Topic Models.” <em>American Journal of Political Science</em> 68(2): 730-750. <a href="https://doi.org/10.1111/ajps.12779" target="_blank" class="external-link">Paper</a> (<a href="http://arxiv.org/abs/2004.05964" target="_blank" class="external-link">arXiv</a>).</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="how-to-report-a-bug">How to report a bug<a class="anchor" aria-label="anchor" href="#how-to-report-a-bug"></a>
 </h2>
-<p>We recommend you to post bug reports and wish lists on <a href="https://github.com/keyATM/keyATM/issues" class="external-link">GitHub Issue</a> for faster response. It also helps other users. When you post, please follow the following format (it will appear as a template in GitHub Issue).</p>
+<p>We recommend posting bug reports and wish lists on <a href="https://github.com/keyATM/keyATM/issues" class="external-link">GitHub Issue</a> for faster response. This also helps other users. Please follow the template provided there when you make your post.</p>
 <pre><code>## Problem summary (required):
 
 ## Environment information (required):
@@ -200,7 +199,7 @@ Please wrap your code with triple backticks.</code></pre>
 <ul class="list-unstyled">
 <li><a href="https://CRAN.R-project.org/package=keyATM" class="external-link"><img src="https://www.r-pkg.org/badges/version/keyATM" alt="CRAN status"></a></li>
 <li><a href="https://cran.r-project.org/package=keyATM" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/keyATM" alt="metacran downloads"></a></li>
-<li><a href="https://www.tidyverse.org/lifecycle/#maturing" class="external-link"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://lifecycle.r-lib.org/articles/figures/lifecycle-stable.svg" alt="Lifecycle: stable"></a></li>
 <li><a href="https://github.com/keyATM/keyATM/actions" class="external-link"><img src="https://github.com/keyATM/keyATM/actions/workflows/R-CMD-check.yml/badge.svg" alt="R build status"></a></li>
 <li><a href="https://mergify.io" class="external-link"><img src="https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/keyATM/keyATM&amp;style=flat" alt="Mergify Status"></a></li>
 <li><a href="https://github.com/keyATM/keyATM/projects/3" class="external-link"><img src="https://img.shields.io/badge/Dev-v0.5.x-orange" alt="DevVersion"></a></li>

@@ -15,8 +15,10 @@ using namespace std;
 //'
 //' Same as utils::calc_PGtheta, but this is for calling from R
 //'
-//' @param model A initialized model
-//' @param iter Required number of iterations
+//' @param theta_tilda Parameters
+//' @param theta Parameters
+//' @param num_doc Number of documents
+//' @param num_topics Number of topics
 //'
 //' @keywords internal
 // [[Rcpp::export]]

@@ -1,3 +1,15 @@
+# keyATM 0.5.2
+### Minor changes
+* Updating the paper information
+* Deleting the `save()` function (thank you [@AMindToThink](https://github.com/AMindToThink) for repoting this error in [#214](https://github.com/keyATM/keyATM/issues/214))
+
+# keyATM 0.5.1
+
+### Minor changes
+* Adding options to set the hyperparameters `eta`.
+* Documentation updates to pass CRAN checks.
+
+
 # keyATM 0.5.0
 ### Major changes
 * Migrating to C++17 to follow [the new CRAN check](https://developer.r-project.org/blosxom.cgi/R-devel/2023/01/27#n2023-01-27). We edited `shuffled_indexes()` that internally used `std::random_shuffle()`. This change does not guarantee backward compatibility across all platforms.

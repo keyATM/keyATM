@@ -16,8 +16,10 @@ word_in_doc <- function(doc, word) {
 #'
 #' Same as utils::calc_PGtheta, but this is for calling from R
 #'
-#' @param model A initialized model
-#' @param iter Required number of iterations
+#' @param theta_tilda Parameters
+#' @param theta Parameters
+#' @param num_doc Number of documents
+#' @param num_topics Number of topics
 #'
 #' @keywords internal
 calc_PGtheta_R <- function(theta_tilda, theta, num_doc, num_topics) {
@@ -26,8 +28,9 @@ calc_PGtheta_R <- function(theta_tilda, theta, num_doc, num_topics) {
 
 #' Initialize assignments
 #'
-#' @param info Various information
-#' @param initialized Store initialized objects (W, S and Z)
+#' @param docs_ Documents
+#' @param info_ Various information
+#' @param initialized_ Store initialized objects (W, S and Z)
 #'
 #' @keywords internal
 make_wsz_cpp <- function(docs_, info_, initialized_) {
@@ -46,7 +49,7 @@ keyATMvb_call <- function(model) {
 #' Read files from the quanteda dfm (this is the same as dgCMatrix)
 #'
 #' @param dfm a dfm input (sparse Matrix)
-#' @param W_raw an object to return
+#' @param W_read an object to return
 #' @param vocab a vector of vocabulary
 #' @param split split proportion
 #'

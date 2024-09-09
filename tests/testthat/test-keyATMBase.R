@@ -2,7 +2,6 @@ if (compareVersion(paste0(version$major, ".", version$minor), "3.6") < 0) {
   skip("Randomization algorithm has changed from R 3.6")
 }
 
-
 # Read Data
 data(keyATM_data_bills)
 bills_dfm <- keyATM_data_bills$doc_dfm
@@ -38,6 +37,13 @@ test_that("keyATM: make sure it runs without the seed", {
                model = "base",
                options = list(iterations = 30))
   })
+})
+
+test_that("keyATM: Save", {
+  skip_on_cran()
+  saveRDS(base, file = file.path(tempdir(), "base.rds"))
+  base_load <- readRDS(file = file.path(tempdir(), "base.rds"))
+  expect_equal(base_load$model_fit$Perplexity[3], base$model_fit$Perplexity[3], tolerance = 0.00001)
 })
 
 # Only one keyword
@@ -93,4 +99,23 @@ test_that("keyATM same keywords in multiple topics", {
   expect_equal(top_words(out)[1, 1], "education [\U2713]")
   expect_equal(top_words(out)[2, 5], "follow")
   expect_equal(top_words(out)[9, 6], "law [\U2713]")
+})
+
+
+# Base, changing the priors
+base <- keyATM(docs = keyATM_docs, no_keyword_topics = 3, keywords = bills_keywords,
+               model = "base",
+               priors = list(eta_1 = 2, eta_2 = 2, eta_1_regular = 3, eta_2_regular = 2),
+               options = list(seed = 250, store_theta = TRUE, iterations = 30,
+                              store_pi = 1, use_weights = 1))
+
+test_that("keyATM base, optional eta", {
+  expect_s3_class(plot_alpha(base, start = 10), "keyATM_fig")
+  expect_s3_class(plot_pi(base, method = "eti"), "keyATM_fig")
+
+  skip_on_os("linux") ; skip_on_cran()
+  expect_equal(base$priors$eta_1, 2, tolerance = 0.00001)
+  expect_equal(base$priors$eta_2, 2, tolerance = 0.00001)
+  expect_equal(base$priors$eta_1_regular, 3, tolerance = 0.00001)
+  expect_equal(base$priors$eta_2_regular, 2, tolerance = 0.00001)
 })

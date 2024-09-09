@@ -7,9 +7,13 @@
 calc_PGtheta_R(theta_tilda, theta, num_doc, num_topics)
 }
 \arguments{
-\item{model}{A initialized model}
+\item{theta_tilda}{Parameters}
 
-\item{iter}{Required number of iterations}
+\item{theta}{Parameters}
+
+\item{num_doc}{Number of documents}
+
+\item{num_topics}{Number of topics}
 }
 \description{
 Same as utils::calc_PGtheta, but this is for calling from R

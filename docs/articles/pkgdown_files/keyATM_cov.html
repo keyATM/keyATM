@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -122,7 +122,7 @@ covariate for document-topic distribution, using a Dirichlet-Multinomial
 regression (<a href="https://dl.acm.org/doi/abs/10.5555/3023476.3023525" class="external-link">Mimno and
 McCallum 2008</a>). Section 3 of
 <a href="https://doi.org/10.1111/ajps.12779" target="_blank" class="external-link">Eshima et
-al. (2023)</a> explains the covariate keyATM in details.</p>
+al. (2024)</a> explains the covariate keyATM in details.</p>
 <div class="section level2">
 <h2 id="preparing-covariates">Preparing covariates<a class="anchor" aria-label="anchor" href="#preparing-covariates"></a>
 </h2>
@@ -216,7 +216,7 @@ argument. The text data is the same as what we use in the <a href="keyATM_base.h
 <span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Once you fit the model, you can save the model with
-<code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">base model</a>.</p>
+<code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">base model</a>.</p>
 <p>You can <a href="Resume.html">resume</a> the iteration by specifying
 the <code>resume</code> argument.</p>
 <p><strong>keyATM</strong> automatically standardizes non-factor
@@ -336,9 +336,9 @@ the relative increase or decrease from the 18th and 19th century to the
 <span><span class="va">theta_diff_quantile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">theta_diff</span>, <span class="fl">2</span>, <span class="va">quantile</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.5</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">theta_diff_quantile</span></span></code></pre></div>
 <pre><code><span><span class="co">##     4_Constitution 5_ForeignAffairs</span></span>
-<span><span class="co">## 5%       0.0906182       0.06250426</span></span>
-<span><span class="co">## 50%      0.1153357       0.08576355</span></span>
-<span><span class="co">## 95%      0.1424101       0.11659573</span></span></code></pre>
+<span><span class="co">## 5%       0.1114047       0.02581989</span></span>
+<span><span class="co">## 50%      0.1439915       0.04607707</span></span>
+<span><span class="co">## 95%      0.1711520       0.07218872</span></span></code></pre>
 <p>Furthermore, we can use the <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> function to get
 the predicted mean of the document-topic distribution for three party
 categories.</p>
@@ -411,34 +411,34 @@ different parties using the <code>Party</code> covariate.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">strata_tw</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $Other</span></span>
-<span><span class="co">##   1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs</span></span>
-<span><span class="co">## 1       people congress [✓]   world [✓]           states       government</span></span>
-<span><span class="co">## 2          one      justice freedom [✓] constitution [✓]            union</span></span>
-<span><span class="co">## 3       fellow        means         let           people           powers</span></span>
-<span><span class="co">##   Other_1   Other_2 Other_3 Other_4 Other_5</span></span>
-<span><span class="co">## 1   great      made  public  nation   power</span></span>
-<span><span class="co">## 2  united peace [3] country   first    free</span></span>
-<span><span class="co">## 3   every  national nations     men   might</span></span>
+<span><span class="co">##    1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs</span></span>
+<span><span class="co">## 1         great   government   peace [✓]           states          country</span></span>
+<span><span class="co">## 2 executive [✓]       people   world [✓]            union          war [✓]</span></span>
+<span><span class="co">## 3          part congress [✓] freedom [✓] constitution [✓]            state</span></span>
+<span><span class="co">##        Other_1    Other_2 Other_3 Other_4 Other_5</span></span>
+<span><span class="co">## 1    necessary       much   among    full  people</span></span>
+<span><span class="co">## 2 institutions      every   first   order     one</span></span>
+<span><span class="co">## 3        whose government justice  reason  spirit</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $Democratic</span></span>
-<span><span class="co">##   1_Government 2_Congress   3_Peace   4_Constitution 5_ForeignAffairs Other_1</span></span>
-<span><span class="co">## 1       people government world [✓]           states       government   great</span></span>
-<span><span class="co">## 2          now    service       new           people            union   every</span></span>
-<span><span class="co">## 3     american    justice       let constitution [✓]      foreign [✓]  united</span></span>
-<span><span class="co">##    Other_2    Other_3 Other_4 Other_5</span></span>
-<span><span class="co">## 1 national     public  nation   power</span></span>
-<span><span class="co">## 2     made    country     men    free</span></span>
-<span><span class="co">## 3    right confidence  spirit   never</span></span>
+<span><span class="co">##   1_Government 2_Congress   3_Peace   4_Constitution 5_ForeignAffairs</span></span>
+<span><span class="co">## 1        great government world [✓]           states          country</span></span>
+<span><span class="co">## 2          now     people       new           public            every</span></span>
+<span><span class="co">## 3       action   national    nation constitution [✓]           united</span></span>
+<span><span class="co">##        Other_1    Other_2 Other_3 Other_4 Other_5</span></span>
+<span><span class="co">## 1   prosperity      every     men   trade  people</span></span>
+<span><span class="co">## 2 institutions   american justice     men    time</span></span>
+<span><span class="co">## 3        whose government  change   moral  spirit</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $Republican</span></span>
-<span><span class="co">##   1_Government   2_Congress   3_Peace   4_Constitution 5_ForeignAffairs Other_1</span></span>
-<span><span class="co">## 1       people congress [✓] world [✓]           states       government   great</span></span>
-<span><span class="co">## 2          now   government       new constitution [✓]            union  united</span></span>
-<span><span class="co">## 3          one      justice   america           people          war [✓]   every</span></span>
-<span><span class="co">##    Other_2   Other_3 Other_4 Other_5</span></span>
-<span><span class="co">## 1     made   country  nation   power</span></span>
-<span><span class="co">## 2 national    public     men    free</span></span>
-<span><span class="co">## 3    right political country   never</span></span></code></pre>
+<span><span class="co">##   1_Government   2_Congress   3_Peace   4_Constitution 5_ForeignAffairs</span></span>
+<span><span class="co">## 1        great   government world [✓]           states          country</span></span>
+<span><span class="co">## 2      law [✓]       people       new           public          war [✓]</span></span>
+<span><span class="co">## 3          now congress [✓] peace [✓] constitution [✓]          nations</span></span>
+<span><span class="co">##     Other_1    Other_2 Other_3 Other_4 Other_5</span></span>
+<span><span class="co">## 1 necessary   american justice  secure  people</span></span>
+<span><span class="co">## 2     given      every   among   order     one</span></span>
+<span><span class="co">## 3 party [2] government     man    full    time</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -464,39 +464,40 @@ option.</p>
 <span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##     1_Government 2_Congress     3_Peace   4_Constitution 5_ForeignAffairs</span></span>
-<span><span class="co">## 1         states      power   world [✓]       government          country</span></span>
-<span><span class="co">## 2         public      every   peace [✓] constitution [✓]             duty</span></span>
-<span><span class="co">## 3          great  interests freedom [✓]              one            state</span></span>
-<span><span class="co">## 4          union principles     nations       rights [✓]      foreign [✓]</span></span>
-<span><span class="co">## 5       laws [✓]   citizens         men             much           powers</span></span>
-<span><span class="co">## 6        law [✓]     spirit        life             part           policy</span></span>
-<span><span class="co">## 7           made confidence        free           within            whole</span></span>
-<span><span class="co">## 8           best  party [✓]        know   administration     institutions</span></span>
-<span><span class="co">## 9  executive [✓]       time     history           system          general</span></span>
-<span><span class="co">## 10        duties     nation       human          support           proper</span></span>
-<span><span class="co">##     Other_1   Other_2  Other_3 Other_4  Other_5</span></span>
-<span><span class="co">## 1   justice    people   people     new      now</span></span>
-<span><span class="co">## 2  progress   country  war [5]  nation american</span></span>
-<span><span class="co">## 3    action      make national america    never</span></span>
-<span><span class="co">## 4  business  citizens    right     let     good</span></span>
-<span><span class="co">## 5     given      long   united    time  purpose</span></span>
-<span><span class="co">## 6    toward president     less    work      yet</span></span>
-<span><span class="co">## 7      also     still      far   great    power</span></span>
-<span><span class="co">## 8       use    always    force   today  believe</span></span>
-<span><span class="co">## 9   whether     place    equal   every    among</span></span>
-<span><span class="co">## 10  success      find     give     god   change</span></span></code></pre>
+<pre><code><span><span class="co">##      1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs</span></span>
+<span><span class="co">## 1      government        great   world [✓]           people            union</span></span>
+<span><span class="co">## 2          states       united      people          country          war [✓]</span></span>
+<span><span class="co">## 3          public congress [✓]   peace [✓] constitution [✓]            power</span></span>
+<span><span class="co">## 4        laws [✓]    interests freedom [✓]       rights [✓]             duty</span></span>
+<span><span class="co">## 5             now    party [✓]        time             made            state</span></span>
+<span><span class="co">## 6        national       spirit      future             best       government</span></span>
+<span><span class="co">## 7   executive [✓]         high    progress            among      foreign [✓]</span></span>
+<span><span class="co">## 8          policy        might       faith              one           powers</span></span>
+<span><span class="co">## 9         law [✓]         well        good       principles           duties</span></span>
+<span><span class="co">## 10 administration     commerce         way          support            whole</span></span>
+<span><span class="co">##    Other_1  Other_2  Other_3 Other_4    Other_5</span></span>
+<span><span class="co">## 1  nations    never    every    make        new</span></span>
+<span><span class="co">## 2     free    right citizens     one    america</span></span>
+<span><span class="co">## 3      men     part   nation    work     nation</span></span>
+<span><span class="co">## 4  justice   secure     time     day        let</span></span>
+<span><span class="co">## 5     hope    order     many  always government</span></span>
+<span><span class="co">## 6    human     take     long liberty        now</span></span>
+<span><span class="co">## 7  purpose business   system    land       know</span></span>
+<span><span class="co">## 8    force     like   common    just    history</span></span>
+<span><span class="co">## 9     life question  service    home      today</span></span>
+<span><span class="co">## 10  action     oath    still  change        god</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>
 </h2>
 <ul>
-<li>Eshima, S., Imai, K., &amp; Sasaki, T. (2023). “Keyword Assisted
-Topic Models.” <em>American Journal of Political Science</em>.</li>
+<li>Eshima, S., Imai, K., &amp; Sasaki, T. (2024). “Keyword Assisted
+Topic Models.” <em>American Journal of Political Science</em> 68(2):
+730-750.</li>
 <li>Mimno D. McCallum A. (2008). “Topic models conditioned on arbitrary
 features with Dirichlet-Multinomial regression.” In <em>Proceedings of
 the 24th Conference on Uncertainty in Artificial Intelligence</em>,
-pp. 411–418.</li>
+pp. 411-418.</li>
 </ul>
 </div>
   </div>

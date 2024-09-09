@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -122,7 +122,7 @@ stamps for the prior for document-topic distribution through Hidden
 Markov Model (<a href="https://doi.org/10.1016/S0304-4076(97)00115-2" class="external-link">Chib 1998</a>).</p>
 <p>Section 4 of
 <a href="https://doi.org/10.1111/ajps.12779" target="_blank" class="external-link">Eshima et
-al. (2023)</a> explains the dynamic keyATM in details. As explained in
+al. (2024)</a> explains the dynamic keyATM in details. As explained in
 <a href="keyATM_cov.html">keyATM Covariates</a>, we recommend
 researchers to construct a numeric or an integer vector of time stamps
 after preprocessing texts.</p>
@@ -181,7 +181,7 @@ in the <code>model_settings</code> argument.</p>
 <span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Once you fit the model, you can save the model with
-<code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">base model</a>.</p>
+<code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">base model</a>.</p>
 <p>You can <a href="Resume.html">resume</a> the iteration by specifying
 the <code>resume</code> argument.</p>
 </div>
@@ -193,28 +193,28 @@ the <code>resume</code> argument.</p>
 <code><a href="../../reference/plot_modelfit.html">plot_modelfit()</a></code>, as in <a href="keyATM_base.html#interpreting-results">the base keyATM</a>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##     1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs</span></span>
-<span><span class="co">## 1          power        great   world [✓]           states           united</span></span>
-<span><span class="co">## 2           made        union   peace [✓]           public          country</span></span>
-<span><span class="co">## 3            now        every         new       government          war [✓]</span></span>
-<span><span class="co">## 4       laws [✓]          one freedom [✓] constitution [✓]          nations</span></span>
-<span><span class="co">## 5        law [✓] congress [✓]     america         citizens             best</span></span>
-<span><span class="co">## 6           many         duty         let       rights [✓]      foreign [✓]</span></span>
-<span><span class="co">## 7  executive [✓]       powers        work        interests           within</span></span>
-<span><span class="co">## 8            far       policy         one            state           duties</span></span>
-<span><span class="co">## 9         office        whole        know         national       confidence</span></span>
-<span><span class="co">## 10         order    political     history   administration             free</span></span>
-<span><span class="co">##       Other_1    Other_2  Other_3</span></span>
-<span><span class="co">## 1      people       just   nation</span></span>
-<span><span class="co">## 2  government    country     time</span></span>
-<span><span class="co">## 3      spirit      first american</span></span>
-<span><span class="co">## 4       among principles    every</span></span>
-<span><span class="co">## 5        much     common      men</span></span>
-<span><span class="co">## 6    progress       well     life</span></span>
-<span><span class="co">## 7      system       make  justice</span></span>
-<span><span class="co">## 8     service      equal    great</span></span>
-<span><span class="co">## 9         yet   republic    years</span></span>
-<span><span class="co">## 10      force       like    human</span></span></code></pre>
+<pre><code><span><span class="co">##    1_Government   2_Congress     3_Peace   4_Constitution 5_ForeignAffairs</span></span>
+<span><span class="co">## 1    government     national   world [✓] constitution [✓]          country</span></span>
+<span><span class="co">## 2        states        great         new            union           united</span></span>
+<span><span class="co">## 3        public congress [✓]      nation            power            every</span></span>
+<span><span class="co">## 4      laws [✓]    political freedom [✓]       rights [✓]          war [✓]</span></span>
+<span><span class="co">## 5       law [✓]         made     america           people          nations</span></span>
+<span><span class="co">## 6      citizens       policy         let              now      foreign [✓]</span></span>
+<span><span class="co">## 7           one      support        time             duty             free</span></span>
+<span><span class="co">## 8     interests    party [✓]   peace [✓]          present       principles</span></span>
+<span><span class="co">## 9         state         time         one          general           duties</span></span>
+<span><span class="co">## 10       powers       office  government         interest             just</span></span>
+<span><span class="co">##     Other_1        Other_2  Other_3</span></span>
+<span><span class="co">## 1   liberty          right   people</span></span>
+<span><span class="co">## 2      work           many    great</span></span>
+<span><span class="co">## 3      hope           much     good</span></span>
+<span><span class="co">## 4     every       progress      men</span></span>
+<span><span class="co">## 5      long           ever   spirit</span></span>
+<span><span class="co">## 6  citizens            yet  justice</span></span>
+<span><span class="co">## 7  strength         secure    never</span></span>
+<span><span class="co">## 8   believe          order american</span></span>
+<span><span class="co">## 9    fellow           take    first</span></span>
+<span><span class="co">## 10     land responsibility   future</span></span></code></pre>
 <p>Since each state has a unique prior for the document-topic
 distributions, the <code><a href="../../reference/plot_alpha.html">plot_alpha()</a></code> function produces a
 different figure from <a href="keyATM_base.html">the base
@@ -248,8 +248,9 @@ function should be <code>TRUE</code> to show 90% credible intervals.</p>
 <ul>
 <li>Chib, S. (1998). “Estimation and comparison of multiple change-point
 models.” <em>Journal of econometrics</em>, 86(2), 221-241.</li>
-<li>Eshima, S., Imai, K., &amp; Sasaki, T. (2023). “Keyword Assisted
-Topic Models.” <em>American Journal of Political Science</em>.</li>
+<li>Eshima, S., Imai, K., &amp; Sasaki, T. (2024). “Keyword Assisted
+Topic Models.” <em>American Journal of Political Science</em> 68(2):
+730-750.</li>
 </ul>
 </div>
   </div>

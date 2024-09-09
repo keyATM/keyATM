@@ -53,7 +53,7 @@
 #'     \item{information}{information about the fitting}
 #'   }
 #'
-#' @seealso [save.keyATM_output()], \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+#' @seealso \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 #'
 #' @examples
 #' \dontrun{
@@ -154,7 +154,7 @@ keyATM <- function(docs, model, no_keyword_topics,
 #'     \item{information}{information about the fitting}
 #'   }
 #'
-#' @seealso [save.keyATM_output()], \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
+#' @seealso \url{https://keyatm.github.io/keyATM/articles/pkgdown_files/Options.html}
 #'
 #' @examples
 #' \dontrun{

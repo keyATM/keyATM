@@ -9,11 +9,11 @@ read_dfm_cpp(dfm, W_read, vocab, split)
 \arguments{
 \item{dfm}{a dfm input (sparse Matrix)}
 
+\item{W_read}{an object to return}
+
 \item{vocab}{a vector of vocabulary}
 
 \item{split}{split proportion}
-
-\item{W_raw}{an object to return}
 }
 \description{
 Read files from the quanteda dfm (this is the same as dgCMatrix)
