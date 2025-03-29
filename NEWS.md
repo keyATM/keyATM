@@ -1,6 +1,9 @@
+# keyATM 0.5.3
+### Bug fix
+* Fixing the semantic coherence function ([##220](https://github.com/keyATM/keyATM/pull/220))
+
 # keyATM 0.5.2
 ### Minor changes
-* Fixing the semantic coherence function (use sum(row1) in the denominator)
 * Updating the paper information
 * Deleting the `save()` function (thank you [@AMindToThink](https://github.com/AMindToThink) for repoting this error in [#214](https://github.com/keyATM/keyATM/issues/214))
 

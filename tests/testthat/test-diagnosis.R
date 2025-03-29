@@ -15,5 +15,5 @@ out <- keyATM(docs = keyATM_docs, no_keyword_topics = 5, keywords = keywords,
 test_that("Semantic coherence", {
   res <- semantic_coherence(out, keyATM_docs)
   skip_on_os(c("windows", "linux")) ; skip_on_cran()
-  expect_equal(as.numeric(res[3]), -35.252358, tolerance = 0.0001)
+  expect_equal(as.numeric(res[3]), -20.38699, tolerance = 0.0001)
 })
