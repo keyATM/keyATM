@@ -48,7 +48,6 @@
 * `by_strata_DocTopic()` takes the correct arguments ([#180](https://github.com/keyATM/keyATM/issues/180), thank you [@pmeiners](https://github.com/pmeiners) for reporting this!).
 
 # keyATM 0.4.0
-[Roadmap](https://github.com/keyATM/keyATM/projects/3) for this version.
 
 ### Major changes
 * Implementation of Polya-Gamma covariate keyATM.
@@ -66,7 +65,6 @@
 
 
 # keyATM 0.3.0
-[Roadmap](https://github.com/keyATM/keyATM/projects/2) for this version.
 
 ### Major changes
 * Use the Highest Density Interval as a default (`method = "hdi"`) in `plot.strata_doctopic()`, `plot_timetrend()`, and `plot_pi()`. The previous version uses the Equal-tailed Interval (`method = "eti"`).
@@ -93,7 +91,6 @@
 * Temporary update `test-Initialization.R` to deal with some errors.
 
 # keyATM 0.2.0
-[Roadmap](https://github.com/keyATM/keyATM/projects/1) for this version.
 
 ### Major changes
 * Update the `by_strata_DocTopic()` function.
