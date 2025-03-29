@@ -787,7 +787,7 @@ semantic_coherence <- function(x, docs, n = 10) {
             purrr::map_dbl(
               ~ word_in_doc(.x, combn_top_words[2, x])
             )
-          out <- log((sum(row1 & row2) + 1) / sum(row2))
+          out <- log((sum(row1 & row2) + 1) / sum(row1))
           return(out)
         }
       ) %>%
