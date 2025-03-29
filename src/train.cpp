@@ -13,6 +13,8 @@
 
 // keyATM models
 #include "keyATM_base.h"
+#include "keyATM_multibase.h"
+#include "keyATM_multicov.h"
 #include "keyATM_cov.h"
 #include "keyATM_covPG.h"
 #include "keyATM_HMM.h"
@@ -48,6 +50,44 @@ List keyATM_fit_base(List model, bool resume = false)
     keyATMbase_model.fit();
   }
   model = keyATMbase_model.return_model();
+  return model;
+}
+
+//' Run the Collapsed Gibbs sampler for the multi-keyATM Base
+//'
+//' @param model A initialized model
+//' @param resume resume or not
+//'
+//' @keywords internal
+// [[Rcpp::export]]
+List keyATM_fit_multi_base(List model, bool resume = false)
+{
+  keyATMmultibase keyATMmultibase_model(model);
+  if (resume) {
+    keyATMmultibase_model.resume_fit();
+  } else {
+    keyATMmultibase_model.fit();
+  }
+  model = keyATMmultibase_model.return_model();
+  return model;
+}
+
+//' Run the Collapsed Gibbs sampler for the multi-keyATM covariates (Dir-Multi)
+//'
+//' @param model A initialized model
+//' @param resume resume or not
+//'
+//' @keywords internal
+// [[Rcpp::export]]
+List keyATM_fit_multi_cov(List model, bool resume = false)
+{
+  keyATMmulticov keyATMmulticov_model(model);
+  if (resume) {
+    keyATMmulticov_model.resume_fit();
+  } else {
+    keyATMmulticov_model.fit();
+  }
+  model = keyATMmulticov_model.return_model();
   return model;
 }
 

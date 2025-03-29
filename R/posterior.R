@@ -54,7 +54,7 @@ keyATM_output <- function(model, keep, used_iter)
     values_iter$time_index <- model$model_settings$time_index
   }
 
-  if ((model$model %in% c("base", "lda"))) {
+  if ((model$model %in% c("base", "multi-base", "lda"))) {
     if (model$options$estimate_alpha)
       values_iter$alpha_iter <- keyATM_output_alpha_iter_base(model, info)
   }
@@ -70,10 +70,64 @@ keyATM_output <- function(model, keep, used_iter)
   }
 
   # pi
-  if (model$model %in% c("base", "cov", "hmm")) {
+  if (model$model %in% c("base", "multi-base", "multi-cov", "cov", "hmm")) {
     pi_estimated <- keyATM_output_pi(model$Z, model$S, model$priors$gamma)
   } else {
     pi_estimated <- NULL
+  }
+
+  if (model$model %in% c("multi-base", "multi-cov")) {
+    all_words <- model$vocab[as.integer(unlist(model$W, use.names = FALSE)) + 1L]
+    all_topics <- as.integer(unlist(model$Z, use.names = FALSE))
+    all_s <- as.integer(unlist(model$S, use.names = FALSE))
+    all_c <- as.integer(unlist(model$C, use.names = FALSE))
+
+    all_corpus_id <- model$model_settings$corpus_id
+    all_corpus_id <- unlist(mapply(rep, all_corpus_id, sapply(model$Z, length)))
+    psi_estimated <- keyATM_output_psi(model$Z, model$C, model$priors$omega, all_corpus_id)
+
+    phi_corpus <- keyATM_output_phi_calc_key_multi(all_words, all_topics, all_s, all_c, all_corpus_id, 
+                                      pi_estimated, psi_estimated,
+                                      keywords_raw = model$keywords_raw,
+                                      vocab = model$vocab,
+                                      priors = model$priors,
+                                      tnames = info$tnames,
+                                      model = model,
+                                      type = "regular")$phi
+
+    phi_common <- keyATM_output_phi_calc_key_multi(all_words, all_topics, all_s, all_c, all_corpus_id, 
+                                      pi_estimated, psi_estimated,
+                                      keywords_raw = model$keywords_raw,
+                                      vocab = model$vocab,
+                                      priors = model$priors,
+                                      tnames = info$tnames,
+                                      model = model,
+                                      type = "common")$phi
+
+    phi_key <- keyATM_output_phi_calc_key_multi(all_words, all_topics, all_s, all_c, all_corpus_id, 
+                                      pi_estimated, psi_estimated,
+                                      keywords_raw = model$keywords_raw,
+                                      vocab = model$vocab,
+                                      priors = model$priors,
+                                      tnames = info$tnames,
+                                      model = model,
+                                      type = "key")$phi
+
+    phi_common_key <- keyATM_output_phi_calc_key_multi(all_words, all_topics, all_s, all_c, all_corpus_id, 
+                                      pi_estimated, psi_estimated,
+                                      keywords_raw = model$keywords_raw,
+                                      vocab = model$vocab,
+                                      priors = model$priors,
+                                      tnames = info$tnames,
+                                      model = model,
+                                      type = "common_key")$phi
+
+  } else {
+    psi_estimated <- NULL
+    phi_corpus <- NULL
+    phi_common <- NULL
+    phi_common_key <- NULL
+    phi_key <- NULL
   }
 
   if (length(model$stored_values$pi_vectors) > 0) {
@@ -81,7 +135,7 @@ keyATM_output <- function(model, keep, used_iter)
   }
 
   # Rescale lambda
-  if (model$model %in% c("cov", "ldacov")) {
+  if (model$model %in% c("cov", "ldacov", "multi-cov")) {
     values_iter$Lambda_iter <- model$stored_values$Lambda_iter
   }
 
@@ -125,7 +179,19 @@ keyATM_output <- function(model, keep, used_iter)
   }
 
   # Make an object to return
-  ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
+  if (model$model %in% c("multi-base", "multi-cov")) {
+    ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
+             V = length(model$vocab), N = length(model$Z),
+             model = abb_model_name(model$model),
+             theta = theta, phi = phi, phi_corpus = phi_corpus, phi_common = phi_common, phi_key = phi_key, phi_common_key = phi_common_key,
+             topic_counts = topic_counts, word_counts = word_counts,
+             doc_lens = info$doc_lens, vocab = model$vocab,
+             priors = model$priors, options = model$options,
+             keywords_raw = model$keywords_raw,
+             model_fit = modelfit, pi = pi_estimated, psi = psi_estimated,
+             values_iter = values_iter, information = information, kept_values = kept_values)
+  } else {
+    ll <- list(keyword_k = length(model$keywords), no_keyword_topics = model$no_keyword_topics,
              V = length(model$vocab), N = length(model$Z),
              model = abb_model_name(model$model),
              theta = theta, phi = phi,
@@ -133,8 +199,10 @@ keyATM_output <- function(model, keep, used_iter)
              doc_lens = info$doc_lens, vocab = model$vocab,
              priors = model$priors, options = model$options,
              keywords_raw = model$keywords_raw,
-             model_fit = modelfit, pi = pi_estimated,
+             model_fit = modelfit, pi = pi_estimated, psi = psi_estimated,
              values_iter = values_iter, information = information, kept_values = kept_values)
+  }
+
   class(ll) <- c("keyATM_output", model$model, class(ll))
   return(ll)
 }
@@ -179,6 +247,54 @@ keyATM_output_pi <- function(model_Z, model_S, prior)
   return(pi_estimated)
 }
 
+#' @noRd
+#' @import magrittr
+#' @importFrom rlang .data
+keyATM_output_psi <- function(model_Z, model_C, prior, all_corpus_id)
+{
+  # p(p | S=s, n, a, b) \propto Be(a+s, b+(n-s))
+  #   p(S=s | n, p) p(p | a, b)
+  # Expectation is (a+s) / (a+b+n)
+
+  data <- tibble::tibble(Z = unlist(model_Z, use.names = FALSE),
+                         C = unlist(model_C, use.names = FALSE),
+                         corpus_id = all_corpus_id)
+
+  psi <- list()
+
+  for (corpus in unique(all_corpus_id)) {
+    data %>%
+      dplyr::filter(.data$corpus_id == corpus) %>%
+      dplyr::mutate(Topic = .data$Z+1L) %>%
+      dplyr::select(-dplyr::starts_with("Z")) %>%
+      dplyr::group_by(.data$Topic) %>%
+      dplyr::summarize(count = (dplyr::n()), sums = sum(.data$C)) %>%
+      dplyr::ungroup() -> temp
+
+    # Check used topics
+    if (nrow(temp) != nrow(prior)) {
+      cli::cli_alert_warning("Some of the topics are not used.")
+      missing <- setdiff(1:nrow(prior), temp$Topic)
+      temp %>%
+        tibble::add_row(Topic = missing, count = 0, sums = 0) %>%
+        dplyr::arrange(.data$Topic) -> temp
+    }
+
+    # Get p
+    n <- temp$count
+    s <- temp$sums
+    a <- prior[, 1]
+    b <- prior[, 2]
+    p <- (a + s) / (a + b + n)
+    temp %>%
+      dplyr::mutate(Proportion = p * 100) %>%
+      dplyr::select(-tidyselect::all_of("sums")) -> psi_estimated
+
+    psi[[corpus + 1]] <- psi_estimated
+  }
+  
+  return(psi)
+}
 
 #' @noRd
 #' @keywords internal
@@ -217,7 +333,25 @@ keyATM_output_theta <- function(model, info)
 
   } else if (model$model %in% c("cov", "ldacov") & info$covmodel == "PG") {
     theta <-  model$model_settings$PG_params$theta_last
-  } else if (model$model %in% c("base", "lda")) {
+  } else if (model$model %in% c("multi-cov")) {
+    Alpha_all <- list()
+    for (corpus in 1:model$model_settings$num_corpus) {
+      Alpha_all[[corpus]] <- exp(model$model_settings$covariates_data_use[[as.character(corpus)]] %*% t(model$stored_values$Lambda_iter[[corpus]][[length(model$stored_values$Lambda_iter[[corpus]])]]))
+    }
+
+    posterior_z_cov <- function(docid) {
+      corpus <- model$model_settings$corpus_id[docid] + 1L
+      corpus_docid <- model$stored_values$doc_lookup_global[[docid]] + 1L
+      zvec <- model$Z[[docid]]
+      alpha <- Alpha_all[[corpus]][corpus_docid, ]
+      tt <- table(factor(zvec, levels = 1:(info$allK) - 1L))
+      (tt + alpha) / (sum(tt) + sum(alpha)) # posterior mean
+    }
+
+    theta <- bind_tables(lapply(1:length(model$Z), posterior_z_cov))
+    print(theta)
+
+  } else if (model$model %in% c("base", "lda", "multi-base")) {
     if (model$options$estimate_alpha) {
       alpha <- model$stored_values$alpha_iter[[length(model$stored_values$alpha_iter)]]
     } else {
@@ -305,7 +439,6 @@ keyATM_output_theta_iter <- function(model, info)
   return(theta_iter)
 }
 
-
 #' @noRd
 #' @import magrittr
 keyATM_output_phi <- function(model, info)
@@ -318,6 +451,23 @@ keyATM_output_phi <- function(model, info)
     all_s <- as.integer(unlist(model$S, use.names = FALSE))
 
     obj <- keyATM_output_phi_calc_key(all_words, all_topics, all_s, pi_estimated,
+                                      keywords_raw = model$keywords_raw,
+                                      vocab = model$vocab,
+                                      priors = model$priors,
+                                      tnames = info$tnames,
+                                      model = model)
+  } else if (model$model %in% c("multi-base", "multi-cov")) {
+    pi_estimated <- keyATM_output_pi(model$Z, model$S, model$priors$gamma)
+    all_s <- as.integer(unlist(model$S, use.names = FALSE))
+    all_c <- as.integer(unlist(model$C, use.names = FALSE))
+    doc_lens <- sapply(model$Z, length)
+    all_corpus_id <- model$model_settings$corpus_id
+    all_corpus_id <- unlist(mapply(rep, all_corpus_id, doc_lens))
+
+    psi_estimated <- keyATM_output_psi(model$Z, model$C, model$priors$omega, all_corpus_id)
+
+    obj <- keyATM_output_phi_calc_key_multi(all_words, all_topics, all_s, all_c, all_corpus_id, 
+                                      pi_estimated, psi_estimated,
                                       keywords_raw = model$keywords_raw,
                                       vocab = model$vocab,
                                       priors = model$priors,
@@ -337,11 +487,12 @@ keyATM_output_phi <- function(model, info)
 keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimated,
                                        keywords_raw, vocab, priors, tnames, model)
 {
+
   res_tibble <- tibble::tibble(
-                        Word = all_words,
-                        Topic = all_topics,
-                        Switch = all_s
-                       )
+                            Word = all_words,
+                            Topic = all_topics,
+                            Switch = all_s
+                          )
 
   prob1 <- pi_estimated %>% dplyr::pull(.data$Proportion) / 100
   prob0 <- 1 - prob1
@@ -380,9 +531,9 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
     }
 
     temp <- res_tibble %>%
-              dplyr::filter(.data$Switch == switch_val) %>%
-              dplyr::group_by(.data$Topic, .data$Word) %>%
-              dplyr::summarize(Count = dplyr::n())
+      dplyr::filter(.data$Switch == switch_val) %>%
+      dplyr::group_by(.data$Topic, .data$Word) %>%
+      dplyr::summarize(Count = dplyr::n())
 
     temp %>% tidyr::spread(key = "Word", value = "Count") -> phi
 
@@ -496,6 +647,227 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
   return(list(phi = phi, topic_counts = topic_counts, word_counts = word_counts))
 }
 
+#' @noRd
+#' @import magrittr
+keyATM_output_phi_calc_key_multi <- function(all_words, all_topics, all_s, all_c, all_corpus_id,
+                                       pi_estimated, psi_estimated, keywords_raw, vocab, priors, tnames, model, type="all")
+{
+  get_phi <- function(res_tibble, switch_val, c_val, model)
+  {
+    if (switch_val == 0) {
+      # Use no-keyword topic-word dist
+      if (c_val == 0) {
+        prior <- beta_s0
+      } else {
+        prior <- beta_c1
+      }
+    } else if (switch_val == 1) {
+      # Use keyword topic-word dist
+      prior <- beta_s1
+    }
+    
+    if (switch_val == 0) {
+      temp <- res_tibble %>%
+        dplyr::filter(.data$Switch == switch_val) %>%
+        dplyr::filter(.data$C == c_val) %>%
+        dplyr::group_by(.data$Topic, .data$Word) %>%
+        dplyr::summarize(Count = dplyr::n())
+    } else {
+      temp <- res_tibble %>%
+        dplyr::filter(.data$Switch == switch_val) %>%
+        dplyr::group_by(.data$Topic, .data$Word) %>%
+        dplyr::summarize(Count = dplyr::n())
+    }
+
+    temp %>% tidyr::spread(key = "Word", value = "Count") -> phi
+
+    # Check unused topic
+    if (nrow(phi) != length(tnames)) {
+      missing <- setdiff(0:(length(tnames)-1L), phi$Topic)
+      phi %>%
+        dplyr::ungroup() %>%
+        dplyr::add_row(Topic = missing) %>%
+        dplyr::arrange(.data$Topic) -> phi
+    }
+
+    # Deal with NAs
+    phi <- apply(phi, 2, function(x) {ifelse(is.na(x), 0, x)})
+
+    if (!is.matrix(phi)) {
+      phi <- t(phi)
+    }
+
+    phi <- phi[, 2:ncol(phi), drop = FALSE]
+    topic_counts <- Matrix::rowSums(phi)
+
+    rownames(phi) <- tnames[1:nrow(phi)]
+
+    if (switch_val == 1) {
+      # keyword topic-word dist
+      phi_ <- phi
+      all_keywords <- unique(unlist(model$keywords_raw, use.names = FALSE))
+      phi <- matrix(0.0, nrow = length(model$keywords), ncol = length(all_keywords))
+      colnames(phi) <- sort(all_keywords)
+
+      for (k in 1:length(model$keywords_raw)) {
+        phi[k, which(colnames(phi) %in% colnames(phi_))] <- phi_[k, ]
+      }
+
+      phi <- phi[, sort(colnames(phi)), drop = FALSE]
+      for (k in 1:length(keywords_raw)) {
+        phi[k, ] <- phi[k, ] + prior[k, ]
+      }
+      phi <- phi / Matrix::rowSums(phi)
+      phi <- apply(phi, c(1,2), function(x) {ifelse(is.na(x), 0, x)})
+
+      phi_ <- matrix(0, nrow = length(tnames),
+                     ncol = length(vocab))
+      colnames(phi_) <- vocab_sorted
+      phi_[1:nrow(phi), which(colnames(phi_) %in% colnames(phi))] <-
+          phi[, which(colnames(phi) %in% colnames(phi_))]
+      phi <- phi_
+    } else {
+      # no-keyword topic-word dist
+      # Should have the same dimension as vocab
+      phi_ <- matrix(0, nrow = length(tnames),
+                     ncol = length(vocab))
+      colnames(phi_) <- vocab_sorted
+      phi <- phi[, sort(colnames(phi)), drop = FALSE]
+      rownames(phi_) <- tnames
+
+      # phi with all words
+      phi_[, which(colnames(phi_) %in% colnames(phi))] <-
+            phi[, which(colnames(phi) %in% colnames(phi_))]
+
+
+      phi <- phi_ + prior  # add scalar (don't use label or matrix)
+      phi <- phi / Matrix::rowSums(phi)
+    }
+    return(phi)
+  }
+
+  prob1 <- pi_estimated %>% dplyr::pull(.data$Proportion) / 100
+  prob0 <- 1 - prob1
+  vocab_sorted <- sort(vocab)
+
+  if ("beta_s0" %in% names(priors)) {
+    beta_s0 <- priors$beta_s0
+    colnames(beta_s0) <- vocab
+    beta_s0 <- beta_s0[, vocab_sorted]
+  } else {
+    beta_s0 <- priors$beta
+  }
+
+  if ("beta_c1" %in% names(priors)) {
+    beta_c1 <- priors$beta_c1
+    colnames(beta_c1) <- vocab
+    beta_c1 <- beta_c1[, vocab_sorted]
+  } else {
+    beta_c1 <- priors$beta_c
+  }
+
+  all_keywords <- unique(unlist(model$keywords_raw, use.names = FALSE))
+  beta_s1 <- matrix(priors$beta_s, nrow = length(model$keywords), ncol = length(all_keywords))
+  colnames(beta_s1) <- sort(all_keywords)
+  if ("beta_s1" %in% names(priors)) {
+    for (k in 1:length(model$keywords_raw)) {
+      keywords_k <- model$keywords_raw[[k]]
+
+      for (keyword in keywords_k) {
+        index <- match(keyword, vocab)
+        beta_s1[k, keyword] <- priors$beta_s1[k, index]
+      }
+    }
+  }
+
+  phi_all = list()
+  topic_counts_all = list()
+  word_counts_all = list()
+
+  for (corpus_id in unique(all_corpus_id)) {
+    prob1_c <- psi_estimated[[corpus_id + 1]] %>% dplyr::pull(.data$Proportion) / 100
+    prob0_c <- 1 - prob1_c
+
+    res_tibble <- tibble::tibble(
+                            Word = all_words,
+                            Topic = all_topics,
+                            Switch = all_s,
+                            C = all_c
+                          )
+
+    # Keyword
+    phi1 <- get_phi(res_tibble, switch_val = 1, c_val = 0, model)
+    phi0_c1 <- get_phi(res_tibble, switch_val = 0, c_val = 1, model)
+
+    res_tibble <- res_tibble %>% add_column(Corpus = all_corpus_id)
+    res_tibble <- res_tibble %>%
+      dplyr::filter(.data$Corpus == corpus_id)
+    res_tibble <- res_tibble %>% select(Word, Topic, Switch, C)
+
+    # Regular
+    phi0_c0 <- get_phi(res_tibble, switch_val = 0, c_val = 0, model)
+
+    # Marginal out switch
+    blank_vec <- rep(0, length(vocab))
+    names(blank_vec) <- vocab_sorted
+
+    phi <- sapply(1:length(tnames),
+                  function(k) {
+                    regular <- blank_vec
+                    regular[colnames(phi0_c0)] <- phi0_c0[k, ]
+
+                    common <- blank_vec
+                    common[colnames(phi0_c1)] <- phi0_c1[k, ]
+
+                    key <- blank_vec
+                    key[colnames(phi1)] <- phi1[k, ]
+
+                    if (type == "all") {
+                      res <- prob0[k] * (prob0_c[k] * regular + prob1_c[k] * common) + key * prob1[k]
+                    } else if (type == "regular") {
+                      res <- regular
+                    } else if (type == "common") {
+                      res <- common
+                    } else if (type == "key") {
+                      res <- key
+                    } else if (type == "common_key") {
+                      res <- prob0[k] * common + key * prob1[k]
+                    }
+                    
+                    return(res)
+                  }) %>% t()
+    colnames(phi) <- vocab_sorted  # same as colnames(phi0), colnames(phi1)
+    rownames(phi) <- tnames
+
+    topic_counts <- res_tibble %>%
+                      dplyr::group_by(.data$Topic) %>%
+                      dplyr::summarize(Count = dplyr::n()) %>%
+                      dplyr::pull(.data$Count)
+
+    word_counts <- res_tibble %>%
+                      dplyr::group_by(.data$Word) %>%
+                      dplyr::summarize(Count = dplyr::n()) %>%
+                      dplyr::arrange(match(.data$Word, vocab)) %>%  # same order as vocab
+                      dplyr::pull(.data$Count)
+
+    if (ncol(phi) == length(vocab)) {
+      phi <- phi[, vocab]
+    } else {
+      # This can happen in `by_strata_TopicWord`, does nothing
+    }
+
+    phi_all[[corpus_id + 1]] <- phi
+    topic_counts_all[[corpus_id + 1]] <- topic_counts
+    word_counts_all[[corpus_id + 1]] <- word_counts
+  }
+
+  if (type %in% c("common", "key", "common_key")) {
+    return(list(phi = phi_all[[1]], topic_counts = topic_counts_all, word_counts = word_counts_all))
+  }
+
+  return(list(phi = phi_all, topic_counts = topic_counts_all, word_counts = word_counts_all))
+}
+
 
 #' @noRd
 #' @import magrittr
@@ -601,11 +973,13 @@ summary.keyATM_output <- function(object, ...)
 #' @param n integer. The number terms to visualize. Default is \code{10}.
 #' @param measure character. The way to sort the terms: \code{probability} (default) or \code{lift}.
 #' @param show_keyword logical. If \code{TRUE}, mark keywords. Default is \code{TRUE}.
+#' @param phi_type character.
+#' @param corpus integer.
 #'
 #' @return An n x k table of the top n words in each topic
 #' @export
 top_words <- function(x, n = 10, measure = c("probability", "lift"),
-                      show_keyword = TRUE)
+                      show_keyword = TRUE, phi_type = NA, corpus = NA)
 {
   UseMethod("top_words")
 }
@@ -632,7 +1006,7 @@ top_words.strata_topicword <- function(x, n = 10, measure = c("probability", "li
 #' @noRd
 #' @export
 top_words.keyATM_output <- function(x, n = 10, measure = c("probability", "lift"),
-                                    show_keyword = TRUE)
+                                    show_keyword = TRUE, phi_type = NA, corpus = NA)
 {
   check_arg_type(x, "keyATM_output")
   modelname <- extract_full_model_name(x)
@@ -641,8 +1015,30 @@ top_words.keyATM_output <- function(x, n = 10, measure = c("probability", "lift"
   if (modelname %in% c("lda", "ldacov", "ldahmm"))
      show_keyword <- FALSE
 
+  if (modelname %in% c("multi-base", "multi-cov")) {
+    if (phi_type == "common_key") {
+      phi <- x$phi_common_key
+    } else if (phi_type == "marginal") {
+      if (!is.na(corpus)) {
+        phi <- x$phi[[corpus]]
+      } else {
+        cli::cli_abort("Marginal topic-word distributions for multiKeyATM require corpus index.")
+      }
+    } else if (phi_type == "corpus_specific") {
+      if (!is.na(corpus)) {
+        phi <- x$phi_corpus[[corpus]]
+      } else {
+        cli::cli_abort("Corpus-specific topic-word distributions for multiKeyATM require corpus index.")
+      }
+    } else {
+      cli::cli_abort("Invalid phi_type.")
+    }
+  } else {
+    phi <- x$phi
+  }
+
   res <- top_words_calc(n, measure, show_keyword,
-                        theta = x$theta, phi = x$phi,
+                        theta = x$theta, phi = phi,
                         word_counts = x$word_counts, keywords_raw = x$keywords_raw)
   return(res)
 }
@@ -764,10 +1160,15 @@ top_docs <- function(x, n = 10)
 #' @importFrom utils combn
 #' @export
 semantic_coherence <- function(x, docs, n = 10) {
+  modelname <- extract_full_model_name(x)
   docs <- docs$W_raw # list whose elements are split texts. The length of the list equals to the number of doc.
 
   # Create combinations of top keywords
-  topic_top_words <- top_words(x, n = n, show_keyword = FALSE)
+  if (modelname %in% c("multi-base", "multi-cov")) {
+    topic_top_words <- top_words(x, n = n, show_keyword = FALSE, phi_type = "common_key")
+  } else {
+    topic_top_words <- top_words(x, n = n, show_keyword = FALSE)
+  }
   K <- ncol(topic_top_words)
 
   topic_coherence <- vector("list", length = K)

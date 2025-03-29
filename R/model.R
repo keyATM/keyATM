@@ -316,12 +316,12 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
 
   no_keyword_topics <- as.integer(no_keyword_topics)
 
-  if (!model %in% c("base", "cov", "hmm", "lda", "ldacov", "ldahmm")) {
+  if (!model %in% c("base", "cov", "hmm", "multi-base", "multi-cov", "lda", "ldacov", "ldahmm")) {
     cli::cli_abort("Please select a correct model.")
   }
 
   info <- list(
-                models_keyATM = c("base", "cov", "hmm"),
+                models_keyATM = c("base", "cov", "hmm", "multi-base", "multi-cov"),
                 models_lda = c("lda", "ldacov", "ldahmm")
               )
   keywords <- check_arg(keywords, "keywords", model, info)
@@ -380,22 +380,31 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
 
   # Assign S and Z
   if (model %in% info$models_keyATM) {
-    res <- make_sz_key(W, keywords, info)
-    S <- res$S
-    Z <- res$Z
+    if (is.null(model_settings$starting_values)) {
+      res <- make_sz_key(W, keywords, info)
+      S <- res$S
+      Z <- res$Z
+      rm(res)
+    } else {
+      S <- model_settings$starting_values$S
+      Z <- model_settings$starting_values$Z
+    }
   } else {
     # LDA based models
     res <- make_sz_lda(W, info)
     S <- res$S
     Z <- res$Z
+    rm(res)
   }
-  rm(res)
+  c_res <- make_c_key(W, info)
+  C <- c_res$C
+  rm(c_res)
 
   # Organize
   stored_values <- list(vocab_weights = rep(-1, length(info$wd_names)),
                         doc_index = info$use_doc_index, keyATMdoc_meta = docs[-c(1, 3)])
 
-  if (model %in% c("base", "lda")) {
+  if (model %in% c("base", "multi-base", "lda")) {
     if (options$estimate_alpha)
       stored_values$alpha_iter <- list()
   }
@@ -407,6 +416,21 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
 
   if (model %in% c("cov", "ldacov")) {
     stored_values$Lambda_iter <- list()
+  }
+
+  if (model %in% c("multi-cov")) {
+    stored_values$Lambda_iter <- list()
+    stored_values$doc_lookup <- list()
+    stored_values$doc_lookup_global <- list()
+    for (corpus in 1:model_settings$num_corpus) {
+      stored_values$Lambda_iter[[corpus]] <- list()
+      stored_values$doc_lookup[[corpus]] <- list()
+    }
+    for (i in 1:length(model_settings$corpus_id)) {
+      corpus_one_index <- model_settings$corpus_id[i] + 1
+      stored_values$doc_lookup[[corpus_one_index]] <- append(stored_values$doc_lookup[[corpus_one_index]], i - 1)
+      stored_values$doc_lookup_global <- append(stored_values$doc_lookup_global, length(stored_values$doc_lookup[[corpus_one_index]]) - 1)
+    }
   }
 
   if (model %in% c("hmm", "ldahmm")) {
@@ -430,7 +454,7 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
   }
 
   key_model <- list(
-    W = W, Z = Z, S = S,
+    W = W, Z = Z, S = S, C = C,
     model = abb_model_name(model),
     keywords = keywords_id, keywords_raw = keywords_raw,
     no_keyword_topics = no_keyword_topics,
@@ -445,6 +469,7 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
 
   keyATM_initialized <- list(model = key_model, model_name = model)
   class(keyATM_initialized) <- c("keyATM_initialized", class(keyATM_initialized))
+
   return(keyATM_initialized)
 }
 
@@ -469,6 +494,10 @@ keyATM_fit <- function(keyATM_initialized, resume = FALSE)
     key_model <- keyATM_fit_base(key_model, resume = resume)
   } else if (model_name == "hmm") {
     key_model <- keyATM_fit_HMM(key_model, resume = resume)
+  } else if (model_name == "multi-base") {
+    key_model <- keyATM_fit_multi_base(key_model, resume = resume)
+  } else if (model_name == "multi-cov") {
+    key_model <- keyATM_fit_multi_cov(key_model, resume = resume)
   } else if (model_name == "lda") {
     key_model <- keyATM_fit_LDA(key_model, resume = resume)
   } else if (model_name == "ldacov") {
@@ -561,7 +590,7 @@ check_arg_model_settings <- function(obj, model, info)
   check_arg_type(obj, "list")
   allowed_arguments <- c()
 
-  if (model %in% c("base", "lda", "hmm", "ldahmm")) {
+  if (model %in% c("base", "lda", "multi-base", "hmm", "ldahmm")) {
     # Slice Sampling Settings
     if (is.null(obj$slice_min)) {
       obj$slice_min <- 1e-9
@@ -587,9 +616,28 @@ check_arg_model_settings <- function(obj, model, info)
     allowed_arguments <- c(allowed_arguments, "slice_min", "slice_max")
   }
 
+  if (model %in% c("multi-base", "multi-cov")){
+    if ((is.null(obj$corpus_id)) || (length(obj$corpus_id) !=  info$num_doc)) {
+      stop("Please provide a vector of unique corpus identifiers for each document through `model_settings$corpus_id`.")
+    }
+    unique_corpora <- unique(obj$corpus_id)
+    obj$num_corpus <- dplyr::n_distinct(obj$corpus_id)
+    obj$corpus_id <- match(obj$corpus_id, unique_corpora) - 1
+    obj$global_id <- split(seq_len(info$num_doc) - 1, obj$corpus_id)
+    obj$docs_per_corpus <- table(obj$corpus_id)
+
+    if (is.null(obj$starting_values)) {
+      obj$starting_values <- NULL
+    } else if (is.null(obj$starting_values$S) || is.null(obj$starting_values$Z)) {
+      cli::cli_abort("`model_settings$starting_values` must specify S and Z.")
+    }
+
+    allowed_arguments <- c(allowed_arguments, "num_corpus", "corpus_id", "global_id", "docs_per_corpus", "starting_values")
+  }
+
   # check model settings for covariate model
   if (model %in% c("cov", "ldacov")) {
-     if (is.null(obj$covariates_data)) {
+    if (is.null(obj$covariates_data)) {
       cli::cli_abort("Please provide `obj$covariates_data`.")
     }
 
@@ -602,7 +650,7 @@ check_arg_model_settings <- function(obj, model, info)
     if (sum(is.na(obj$covariates_data)) != 0) {
       cli::cli_abort("Covariate data should not contain missing values.")
     }
-
+    
     if (is.null(obj$covariates_formula)) {
       obj$covariates_formula <- NULL  # do not need to change the matrix
     }
@@ -706,6 +754,91 @@ check_arg_model_settings <- function(obj, model, info)
                            "covariates_formula", "standardize", "info")
   }  # cov model end
 
+  if (model %in% c("multi-cov")) {
+    if (is.null(obj$covariates_data)) {
+      cli::cli_abort("Please provide `obj$covariates_data`.")
+    }
+
+    total_rows <- 0
+    for (corpus in unique_corpora) {
+      if (sum(is.na(obj$covariates_data[[corpus]])) != 0) {
+        cli::cli_abort("Covariate data should not contain missing values.")
+      }
+      total_rows <- total_rows + nrow(obj$covariates_data[[corpus]])
+    }
+
+    if (total_rows != info$num_doc) {
+      cli::cli_abort("The total rows of `model_settings$covariates_data` should be the same as the number of documents.")
+    }
+
+    if (is.null(obj$standardize))
+      obj$standardize <- "non-factor"
+    if (!obj$standardize %in% c("all", "none", "non-factor"))
+      cli::cli_abort('Unknown option in `standardize`. It should be one of "all", "none", or "non-factor".')
+
+    # Standardize
+    if (is.null(obj$covariates_formula)) {
+      obj$covariates_formula <- NULL  # do not need to change the matrix
+    } 
+
+    obj$covariates_data_use = list()
+    for (corpus in unique(obj$corpus_id)) {
+      corpus_one_index <- corpus + 1
+      corpus_name <- unique_corpora[corpus_one_index]
+      obj$covariates_data_use[[as.character(corpus_one_index)]] <- covariates_standardize(obj$covariates_data[[corpus_name]], obj$standardize, obj$covariates_formula[[corpus_name]])
+
+      # Check if it works as a valid regression
+      temp <- as.data.frame(obj$covariates_data_use[[as.character(corpus_one_index)]])
+      temp$y <- stats::rnorm(nrow(obj$covariates_data_use[[as.character(corpus_one_index)]]))
+
+      if ("(Intercept)" %in% colnames(obj$covariates_data_use[[as.character(corpus_one_index)]])) {
+        fit <- stats::lm(y ~ 0 + ., data = temp)  # data.frame already includes the intercept
+        if (NA %in% fit$coefficients) {
+          cli::cli_abort("Covariates are invalid.")
+        }
+      } else {
+        fit <- stats::lm(y ~ ., data = temp)  # data.frame does not have an itercept
+        if (NA %in% fit$coefficients) {
+          cli::cli_abort("Covariates are invalid.")
+        }
+      }
+    }
+
+    # Slice Sampling Settings
+    if (is.null(obj$slice_min)) {
+      obj$slice_min <- -5.0
+    } else {
+      if (!is.numeric(obj$slice_min)) {
+        cli::cli_abort("`model_settings$slice_min` should be a numeric value.")
+      }
+    }
+
+    if (is.null(obj$slice_max)) {
+      obj$slice_max <- 5.0
+    } else {
+      if (!is.numeric(obj$slice_max)) {
+        cli::cli_abort("`model_settings$slice_max` should be a numeric value.")
+      }
+    }
+
+    # MH option
+    if (is.null(obj$mh_use)) {
+      obj$mh_use <- 0
+    } else {
+      obj$mh_use <- as.integer(obj$mh_use)
+      if (!obj$mh_use %in% c(0, 1)) {
+        cli::cli_abort("`model_settings$mh_use` should be TRUE/FALSE (0/1)")
+      }
+    }
+
+    # Model
+    obj$covariates_model <- "DirMulti"
+
+    allowed_arguments <- c(allowed_arguments, "covariates_data", "covariates_data_use",
+                           "slice_min", "slice_max", "mh_use", "covariates_model",
+                           "covariates_formula", "standardize", "info")
+  }
+
   # check model settings for dynamic model
   if (model %in% c("hmm", "ldahmm")) {
     if (is.null(obj$num_states)) {
@@ -772,6 +905,22 @@ check_arg_priors <- function(obj, model, info)
     allowed_arguments <- c(allowed_arguments, "gamma")
   }
 
+  # prior of psi
+  if (model %in% c("multi-base", "multi-cov")) {
+    if (is.null(obj$omega)) {
+      obj$omega <- matrix(1.0, nrow = info$total_k, ncol = 2)
+    }
+
+    if (!is.null(obj$omega)) {
+      if (dim(obj$omega)[1] != info$total_k)
+        cli::cli_abort("Check the dimension of `priors$omega`")
+      if (dim(obj$omega)[2] != 2)
+        cli::cli_abort("Check the dimension of `priors$omega`")
+    }
+
+    allowed_arguments <- c(allowed_arguments, "omega")
+  }
+
   # beta
   if (!"beta" %in% names(obj)) {
     obj$beta <- 0.01
@@ -784,8 +933,15 @@ check_arg_priors <- function(obj, model, info)
     allowed_arguments <- c(allowed_arguments, "beta_s")
   }
 
+  if (model %in% c("multi-base", "multi-cov")) {
+    if (!"beta_c" %in% names(obj)) {
+      obj$beta_c <- 0.1
+    }
+    allowed_arguments <- c(allowed_arguments, "beta_c")
+  }
+
   # alpha
-  if (model %in% c("base", "lda")) {
+  if (model %in% c("base", "multi-base", "lda")) {
     if (is.null(obj$alpha)) {
       obj$alpha <- rep(1/info$total_k, info$total_k)
     }
@@ -882,7 +1038,7 @@ check_arg_options <- function(obj, model, info)
   }
 
   # Estimate alpha
-  if (model %in% c("base", "lda")) {
+  if (model %in% c("base", "multi-base", "lda")) {
     if (is.null(obj$estimate_alpha)) {
       obj$estimate_alpha <- 1L
     } else {
@@ -988,6 +1144,26 @@ check_vocabulary <- function(vocab)
   }
 }
 
+
+make_c_key <- function(W, info)
+{
+  # zs_assigner maps keywords to category ids
+  key_wdids <- info$keywords_id
+
+  ## ss indicates whether the word comes from a seed topic-word distribution or not
+  make_c <- function(w) {
+    c <- sample(0:1, length(w), prob = c(0.3, 0.7), replace = TRUE)
+    return(c)
+  }
+
+  if (info$parallel_init) {
+    C <- future.apply::future_lapply(W, make_c, future.seed = TRUE)
+  } else {
+    C <- lapply(W, make_c)
+  }
+
+  return(list(C = C))
+}
 
 make_sz_key <- function(W, keywords, info)
 {
