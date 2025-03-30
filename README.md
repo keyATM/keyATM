@@ -10,7 +10,6 @@ downloads](https://cranlogs.r-pkg.org/badges/grand-total/keyATM)](https://cran.r
 [![Lifecycle:
 stable](https://lifecycle.r-lib.org/articles/figures/lifecycle-stable.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R build status](https://github.com/keyATM/keyATM/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/keyATM/keyATM/actions)
-[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/keyATM/keyATM&style=flat)](https://mergify.io)
 <!-- badges: end -->
 
 # About

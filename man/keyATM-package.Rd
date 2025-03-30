@@ -28,6 +28,7 @@ Other contributors:
 \itemize{
   \item Chung-hong Chan \email{chainsawtiney@gmail.com} (\href{https://orcid.org/0000-0002-6232-7530}{ORCID}) [contributor]
   \item Romain François (\href{https://orcid.org/0000-0002-2444-4226}{ORCID}) [contributor]
+  \item Martin Feldkircher (\href{https://orcid.org/0000-0002-5511-9215}{ORCID}) [contributor]
   \item William Lowe \email{wlowe@princeton.edu} [contributor]
   \item Seo-young Silvia Kim \email{sy.silvia.kim@gmail.com} (\href{https://orcid.org/0000-0002-8801-9210}{ORCID}) [contributor]
 }
