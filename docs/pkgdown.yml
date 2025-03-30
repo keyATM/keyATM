@@ -1,18 +1,17 @@
 pandoc: 2.17.0.1
-pkgdown: 2.0.7
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
-  FAQ: pkgdown_files/FAQ.html
-  Installation: pkgdown_files/Installation.html
-  Options: pkgdown_files/Options.html
-  Plot: pkgdown_files/Plot.html
-  Preparation: pkgdown_files/Preparation.html
-  Resume: pkgdown_files/Resume.html
-  Weighted_LDA: pkgdown_files/Weighted_LDA.html
-  keyATMPG: pkgdown_files/keyATMPG.html
-  keyATM_base: pkgdown_files/keyATM_base.html
-  keyATM_cov: pkgdown_files/keyATM_cov.html
-  keyATM_dynamic: pkgdown_files/keyATM_dynamic.html
-  keyATMvb: pkgdown_files/keyATMvb.html
-last_built: 2024-04-26T00:10Z
-
+  pkgdown_files/FAQ: pkgdown_files/FAQ.html
+  pkgdown_files/Installation: pkgdown_files/Installation.html
+  pkgdown_files/keyATM_base: pkgdown_files/keyATM_base.html
+  pkgdown_files/keyATM_cov: pkgdown_files/keyATM_cov.html
+  pkgdown_files/keyATM_dynamic: pkgdown_files/keyATM_dynamic.html
+  pkgdown_files/keyATMPG: pkgdown_files/keyATMPG.html
+  pkgdown_files/keyATMvb: pkgdown_files/keyATMvb.html
+  pkgdown_files/Options: pkgdown_files/Options.html
+  pkgdown_files/Plot: pkgdown_files/Plot.html
+  pkgdown_files/Preparation: pkgdown_files/Preparation.html
+  pkgdown_files/Resume: pkgdown_files/Resume.html
+  pkgdown_files/Weighted_LDA: pkgdown_files/Weighted_LDA.html
+last_built: 2025-03-30T17:48Z

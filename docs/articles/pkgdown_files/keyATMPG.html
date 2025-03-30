@@ -6,21 +6,20 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>keyATM Covariate with Pólya-Gamma Augmentation • keyATM</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../../bootstrap-toc.css">
 <script src="../../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
 <script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
 <meta property="og:title" content="keyATM Covariate with Pólya-Gamma Augmentation">
-<meta property="og:description" content="keyATM">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -34,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
       </span>
     </div>
 
@@ -43,7 +42,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     User's Guide
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -90,7 +89,7 @@
 <li>
   <a href="https://github.com/keyATM/keyATM" class="external-link">
     <span class="fa fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -101,7 +100,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -127,121 +126,137 @@ Linderman et al. (2015) use it to develop models for categorical and
 multinomial data with dependencies among the multinomial parameters. We
 extend their method to incorporate covariates.</p>
 <p>We use the same notations as in the main text. Our corpus contains
-<span class="math inline">\(D\)</span> documents. We observe a matrix
-<span class="math inline">\(\mathbf{X}\)</span> of <span class="math inline">\(M\)</span> covariates whose dimension is <span class="math inline">\(D \times M\)</span>. Topic model assigns one of
-<span class="math inline">\(K\)</span> topics to each observed word.
-<span class="math inline">\(\mathbf{z}_d\)</span> is a vector of
-assigned topics for a document <span class="math inline">\(d\)</span>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
+documents. We observe a matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝐗</mi></mstyle><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
+of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>M</mi><annotation encoding="application/x-tex">M</annotation></semantics></math>
+covariates whose dimension is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>×</mo><mi>M</mi></mrow><annotation encoding="application/x-tex">D \times M</annotation></semantics></math>.
+Topic model assigns one of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+topics to each observed word.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝐳</mi></mstyle><mi>d</mi></msub><annotation encoding="application/x-tex">\mathbf{z}_d</annotation></semantics></math>
+is a vector of assigned topics for a document
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>.
 We introduce the stick-breaking representation of the multinomial
-distribution () described in Linderman et al. (2015), <span class="math display">\[\begin{align}
+distribution () described in Linderman et al. (2015),
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right"><msub><mstyle mathvariant="bold"><mi>𝐳</mi></mstyle><mi>d</mi></msub></mtd><mtd columnalign="left"><mo>∼</mo><mtext mathvariant="sans-serif">𝖲𝖡-𝖬𝗎𝗅𝗍𝗂</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mi>d</mi></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝛙</mi></mstyle><mi>d</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
   \mathbf{z}_{d} &amp;\sim \textsf{SB-Multi}(n_d, \boldsymbol{\psi}_d).
-\end{align}\]</span> rewrites the <span class="math inline">\(K\)</span>-dimensional multinomial distribution
-with <span class="math inline">\(K-1\)</span> binomial
-distributions.</p>
-<p><span class="math display">\[\begin{align}
+\end{align}</annotation></semantics></math> rewrites the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>-dimensional
+multinomial distribution with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">K-1</annotation></semantics></math>
+binomial distributions.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right"><mtext mathvariant="sans-serif">𝖲𝖡-𝖬𝗎𝗅𝗍𝗂</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝐳</mi></mstyle><mi>d</mi></msub><mo>∣</mo><msub><mi>n</mi><mi>d</mi></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝛙</mi></mstyle><mi>d</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left"><mo>=</mo><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow></munderover><mtext mathvariant="sans-serif">𝖡𝗂𝗇</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo>∣</mo><msub><mi>n</mi><mi>d</mi></msub><mo>−</mo><munder><mo>∑</mo><mrow><mi>k</mi><mi>′</mi><mo>&lt;</mo><mi>k</mi></mrow></munder><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi><mi>′</mi></mrow></msub><mo>,</mo><msub><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right"></mtd><mtd columnalign="left"><mo>=</mo><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow></munderover><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><msub><mi>N</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo minsize="2.4" maxsize="2.4" stretchy="false" form="prefix">(</mo><mfrac><mrow><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mn>1</mn><mo>+</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><msup><mo minsize="2.4" maxsize="2.4" stretchy="false" form="postfix">)</mo><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub></msup><mo minsize="2.4" maxsize="2.4" stretchy="false" form="prefix">(</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><msup><mo minsize="2.4" maxsize="2.4" stretchy="false" form="postfix">)</mo><mrow><msub><mi>N</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo>−</mo><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub></mrow></msup></mtd></mtr><mtr><mtd columnalign="right"></mtd><mtd columnalign="left"><mo>=</mo><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow></munderover><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><msub><mi>N</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mfrac><mrow><mo>exp</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub></msup></mrow><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>N</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub></msup></mfrac></mtd></mtr><mtr><mtd columnalign="right"><msub><mi>N</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub></mtd><mtd columnalign="left"><mo>=</mo><msub><mi>n</mi><mi>d</mi></msub><mo>−</mo><munder><mo>∑</mo><mrow><mi>k</mi><mi>′</mi><mo>&lt;</mo><mi>k</mi></mrow></munder><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi><mi>′</mi></mrow></msub></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
   \textsf{SB-Multi}(\mathbf{z}_d \mid n_d, \boldsymbol{\psi}_d)
-  &amp;= \prod_{k=1}^{K-1} \textsf{Bin}(n_{dk} \mid n_d -
-\textstyle\sum_{k' &lt; k} n_{dk'}, \psi_{dk}) \\
+  &amp;= \prod_{k=1}^{K-1} \textsf{Bin}(n_{dk} \mid n_d - \textstyle\sum_{k' &lt; k} n_{dk'}, \psi_{dk}) \\
   &amp;= \prod_{k=1}^{K-1} \binom{N_{dk}}{n_{dk}}
       \bigg( \frac{\exp(\psi_{dk})}{1 + \exp(\psi_{dk})} \bigg)^{n_{dk}}
       \bigg( \frac{1}{1 + \exp(\psi_{dk})} \bigg)^{N_{dk} - n_{dk}} \\
   &amp;= \prod_{k=1}^{K-1} \binom{N_{dk}}{n_{dk}}
-  \frac{\exp(\psi_{dk})^{n_{dk}}}{(1 + \exp(\psi_{dk}))^{N_{dk}}}
-\tag{1} \\ \label{eq:sb-multi}
+  \frac{\exp(\psi_{dk})^{n_{dk}}}{(1 + \exp(\psi_{dk}))^{N_{dk}}} \tag{1} \\ \label{eq:sb-multi}
    N_{dk} &amp;= n_d - \sum_{k' &lt; k} n_{dk'}
-\end{align}\]</span></p>
+\end{align}</annotation></semantics></math></p>
 <p>We model the parameters in with the covariates. First, we assume that
-coefficients follow the multivariate normal distribution. <span class="math inline">\(\boldsymbol{\lambda}\)</span> is a <span class="math inline">\(M \times (K-1)\)</span> matrix, so we introduce
-the vectorization transformation to draw all elements from a single draw
-of the multivariate normal distribution.</p>
-<p><span class="math display">\[\begin{align}
-  \text{vec}({\boldsymbol{\lambda}}) &amp;\sim
-\mathcal{N}(\text{vec}(\boldsymbol{\mu}_0), \boldsymbol{\Sigma}_0
-\otimes \boldsymbol{\Lambda}_0^{-1}) \tag{2} \\ \label{eq:prior_lambda}
-  \boldsymbol{\Sigma}_0 &amp;\sim \mathcal{W}^{-1}(\mathbf{V}_0,
-\boldsymbol{\nu}_0)
-\end{align}\]</span> where we have the priors <span class="math inline">\(\boldsymbol{\mu}_0 = \mathbf{0}\)</span>, and
-<span class="math inline">\(\boldsymbol{\Sigma}_0\)</span> is a <span class="math inline">\((K-1) \times (K-1)\)</span> identity matrix (for
-topics). <span class="math inline">\(\boldsymbol{\Lambda}_0\)</span> is
-a <span class="math inline">\(M \times M\)</span> identity matrix (for
-covariates). <span class="math inline">\(\boldsymbol{\Sigma}_0 \otimes
-\boldsymbol{\Lambda}_0^{-1}\)</span> becomes a diagonal matrix and
-equation (2) is the same as <span class="math inline">\(\boldsymbol{\lambda}_{k} \sim
-\mathcal{N}((\boldsymbol{\mu}_{0})_{k}, (\boldsymbol{\Sigma}_0)_{kk}
-\boldsymbol{\Lambda}_0^{-1}), \text{ for } k = 1, \ldots,
-K-1\)</span>.</p>
-<p>Next, we use covariates to model the parameters in . <span class="math display">\[\begin{align}
-  \boldsymbol{\psi}_d &amp;\sim \mathcal{N}(\boldsymbol{\lambda}^\top
-\mathbf{x}_d, \boldsymbol{\Sigma}_0)
-\end{align}\]</span> Social scientists often use categorical variables
-(e.g., authorship of the document) as covariates. Modeling the mean of
-the multivariate normal distribution with covariates allows us to create
-variation in the document-topic distribution when two or more documents
-have the same set of covariates. The multivariate normal distribution
-can be generalized to the matrix normal distribution. <span class="math display">\[\begin{align}
-  \boldsymbol{\Psi}\sim \mathcal{MN}(\mathbf{M}, \mathbf{U},
-\boldsymbol{\Sigma}_0),
-\end{align}\]</span> where <span class="math inline">\(\boldsymbol{\Psi}\)</span> is a <span class="math inline">\(D \times (K-1)\)</span> matrix, each row of <span class="math inline">\(\mathbf{M}\)</span> is equal to <span class="math inline">\(\boldsymbol{\lambda}^\top \mathbf{x}_d\)</span>,
-and <span class="math inline">\(\mathbf{U}\)</span> is the <span class="math inline">\(D\times D\)</span> identity matrix (documents are
-independent). This generalization will allow us to have a vectorized
-implementation.</p>
+coefficients follow the multivariate normal distribution.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝛌</mi></mstyle><annotation encoding="application/x-tex">\boldsymbol{\lambda}</annotation></semantics></math>
+is a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">M \times (K-1)</annotation></semantics></math>
+matrix, so we introduce the vectorization transformation to draw all
+elements from a single draw of the multivariate normal distribution.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right"><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mstyle mathvariant="bold"><mi>𝛌</mi></mstyle><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left"><mo>∼</mo><mstyle mathvariant="script"><mi>𝒩</mi></mstyle><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝛍</mi></mstyle><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mn>0</mn></msub><mo>⊗</mo><msubsup><mstyle mathvariant="bold"><mi>𝚲</mi></mstyle><mn>0</mn><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right"><msub><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mn>0</mn></msub></mtd><mtd columnalign="left"><mo>∼</mo><msup><mstyle mathvariant="script"><mi>𝒲</mi></mstyle><mrow><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝐕</mi></mstyle><mn>0</mn></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝛎</mi></mstyle><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+  \text{vec}({\boldsymbol{\lambda}}) &amp;\sim \mathcal{N}(\text{vec}(\boldsymbol{\mu}_0), \boldsymbol{\Sigma}_0 \otimes \boldsymbol{\Lambda}_0^{-1}) \tag{2} \\ \label{eq:prior_lambda}
+  \boldsymbol{\Sigma}_0 &amp;\sim \mathcal{W}^{-1}(\mathbf{V}_0, \boldsymbol{\nu}_0)
+\end{align}</annotation></semantics></math> where we have the priors
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝛍</mi></mstyle><mn>0</mn></msub><mo>=</mo><mstyle mathvariant="bold"><mn>0</mn></mstyle></mrow><annotation encoding="application/x-tex">\boldsymbol{\mu}_0 = \mathbf{0}</annotation></semantics></math>,
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mn>0</mn></msub><annotation encoding="application/x-tex">\boldsymbol{\Sigma}_0</annotation></semantics></math>
+is a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">(K-1) \times (K-1)</annotation></semantics></math>
+identity matrix (for topics).
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝚲</mi></mstyle><mn>0</mn></msub><annotation encoding="application/x-tex">\boldsymbol{\Lambda}_0</annotation></semantics></math>
+is a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>×</mo><mi>M</mi></mrow><annotation encoding="application/x-tex">M \times M</annotation></semantics></math>
+identity matrix (for covariates).
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mn>0</mn></msub><mo>⊗</mo><msubsup><mstyle mathvariant="bold"><mi>𝚲</mi></mstyle><mn>0</mn><mrow><mo>−</mo><mn>1</mn></mrow></msubsup></mrow><annotation encoding="application/x-tex">\boldsymbol{\Sigma}_0 \otimes \boldsymbol{\Lambda}_0^{-1}</annotation></semantics></math>
+becomes a diagonal matrix and equation (2) is the same as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝛌</mi></mstyle><mi>k</mi></msub><mo>∼</mo><mstyle mathvariant="script"><mi>𝒩</mi></mstyle><mrow><mo stretchy="true" form="prefix">(</mo><msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝛍</mi></mstyle><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>k</mi></msub><mo>,</mo><msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>k</mi><mi>k</mi></mrow></msub><msubsup><mstyle mathvariant="bold"><mi>𝚲</mi></mstyle><mn>0</mn><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> for </mtext><mspace width="0.333em"></mspace></mrow><mi>k</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\boldsymbol{\lambda}_{k} \sim \mathcal{N}((\boldsymbol{\mu}_{0})_{k}, (\boldsymbol{\Sigma}_0)_{kk} \boldsymbol{\Lambda}_0^{-1}), \text{ for } k = 1, \ldots, K-1</annotation></semantics></math>.</p>
+<p>Next, we use covariates to model the parameters in .
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right"><msub><mstyle mathvariant="bold"><mi>𝛙</mi></mstyle><mi>d</mi></msub></mtd><mtd columnalign="left"><mo>∼</mo><mstyle mathvariant="script"><mi>𝒩</mi></mstyle><mrow><mo stretchy="true" form="prefix">(</mo><msup><mstyle mathvariant="bold"><mi>𝛌</mi></mstyle><mi>⊤</mi></msup><msub><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mi>d</mi></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+  \boldsymbol{\psi}_d &amp;\sim \mathcal{N}(\boldsymbol{\lambda}^\top \mathbf{x}_d, \boldsymbol{\Sigma}_0)
+\end{align}</annotation></semantics></math> Social scientists often use
+categorical variables (e.g., authorship of the document) as covariates.
+Modeling the mean of the multivariate normal distribution with
+covariates allows us to create variation in the document-topic
+distribution when two or more documents have the same set of covariates.
+The multivariate normal distribution can be generalized to the matrix
+normal distribution.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right"><mstyle mathvariant="bold"><mi>𝚿</mi></mstyle><mo>∼</mo><mstyle mathvariant="script"><mi>ℳ</mi><mi>𝒩</mi></mstyle><mrow><mo stretchy="true" form="prefix">(</mo><mstyle mathvariant="bold"><mi>𝐌</mi></mstyle><mo>,</mo><mstyle mathvariant="bold"><mi>𝐔</mi></mstyle><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+  \boldsymbol{\Psi}\sim \mathcal{MN}(\mathbf{M}, \mathbf{U}, \boldsymbol{\Sigma}_0),
+\end{align}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝚿</mi></mstyle><annotation encoding="application/x-tex">\boldsymbol{\Psi}</annotation></semantics></math>
+is a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">D \times (K-1)</annotation></semantics></math>
+matrix, each row of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝐌</mi></mstyle><annotation encoding="application/x-tex">\mathbf{M}</annotation></semantics></math>
+is equal to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mstyle mathvariant="bold"><mi>𝛌</mi></mstyle><mi>⊤</mi></msup><msub><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mi>d</mi></msub></mrow><annotation encoding="application/x-tex">\boldsymbol{\lambda}^\top \mathbf{x}_d</annotation></semantics></math>,
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝐔</mi></mstyle><annotation encoding="application/x-tex">\mathbf{U}</annotation></semantics></math>
+is the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>×</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">D\times D</annotation></semantics></math>
+identity matrix (documents are independent). This generalization will
+allow us to have a vectorized implementation.</p>
 </div>
 <div class="section level2">
 <h2 id="estimation">Estimation<a class="anchor" aria-label="anchor" href="#estimation"></a>
 </h2>
-<p>We sample <span class="math inline">\(\boldsymbol{\lambda}\)</span>,
-<span class="math inline">\(\boldsymbol{\Psi}\)</span>, and Pólya-gamma
-auxiliary variables <span class="math inline">\(\boldsymbol{\omega}\)</span>.</p>
+<p>We sample
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝛌</mi></mstyle><annotation encoding="application/x-tex">\boldsymbol{\lambda}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝚿</mi></mstyle><annotation encoding="application/x-tex">\boldsymbol{\Psi}</annotation></semantics></math>,
+and Pólya-gamma auxiliary variables
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝛚</mi></mstyle><annotation encoding="application/x-tex">\boldsymbol{\omega}</annotation></semantics></math>.</p>
 <div class="section level3">
-<h3 id="sampling-boldsymbolpsi">Sampling <span class="math inline">\(\boldsymbol{\Psi}\)</span><a class="anchor" aria-label="anchor" href="#sampling-boldsymbolpsi"></a>
+<h3 id="sampling-boldsymbolpsi">Sampling
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝚿</mi></mstyle><annotation encoding="application/x-tex">\boldsymbol{\Psi}</annotation></semantics></math><a class="anchor" aria-label="anchor" href="#sampling-boldsymbolpsi"></a>
 </h3>
 <p>Equation (1) has the same form as Theorem 1 of Polson et al. (2013)
 and we can introduce P{'{o}}lya-gamma auxiliary variables.</p>
-<p><span class="math display">\[\begin{align}
-  p(\mathbf{z}_d, \boldsymbol{\omega}_d \mid n_d, \boldsymbol{\psi}_d)
-&amp;\propto
-  \prod_{k = 1}^{K - 1} \exp \big( (n_{dk} - {N_{dk}}/{2}) \psi_{dk} -
-\omega_{dk} \psi_{dk}^2 /2   \big) \\
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right"><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝐳</mi></mstyle><mi>d</mi></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝛚</mi></mstyle><mi>d</mi></msub><mo>∣</mo><msub><mi>n</mi><mi>d</mi></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝛙</mi></mstyle><mi>d</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left"><mo>∝</mo><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow></munderover><mo>exp</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo>−</mo><msub><mi>N</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mi>/</mi><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo>−</mo><msub><mi>ω</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><msubsup><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow><mn>2</mn></msubsup><mi>/</mi><mn>2</mn><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right"></mtd><mtd columnalign="left"><mo>=</mo><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow></munderover><mo>exp</mo><mo minsize="2.4" maxsize="2.4" stretchy="false" form="prefix">(</mo><mo>−</mo><mfrac><msub><mi>ω</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mn>2</mn></mfrac><mo minsize="2.4" maxsize="2.4" stretchy="false" form="prefix">(</mo><msubsup><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow><mn>2</mn></msubsup><mo>−</mo><mfrac><mn>2</mn><msub><mi>ω</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo>−</mo><msub><mi>N</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mi>/</mi><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo minsize="2.4" maxsize="2.4" stretchy="false" form="postfix">)</mo><mo minsize="2.4" maxsize="2.4" stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right"></mtd><mtd columnalign="left"><mo>∝</mo><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow></munderover><mo>exp</mo><mo minsize="2.4" maxsize="2.4" stretchy="false" form="prefix">(</mo><mo>−</mo><mfrac><msub><mi>ω</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mn>2</mn></mfrac><mo minsize="2.4" maxsize="2.4" stretchy="false" form="prefix">(</mo><msub><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo>−</mo><mfrac><mn>1</mn><msub><mi>ω</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo>−</mo><msub><mi>N</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mi>/</mi><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><msup><mo minsize="2.4" maxsize="2.4" stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mspace width="0.222em"></mspace><mo minsize="2.4" maxsize="2.4" stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right"></mtd><mtd columnalign="left"><mo>=</mo><mstyle mathvariant="script"><mi>𝒩</mi></mstyle><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝛙</mi></mstyle><mi>d</mi></msub><mo>∣</mo><msubsup><mstyle mathvariant="bold"><mi>𝛀</mi></mstyle><mi>d</mi><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><msub><mstyle mathvariant="bold"><mi>𝛋</mi></mstyle><mi>d</mi></msub><mo>,</mo><msubsup><mstyle mathvariant="bold"><mi>𝛀</mi></mstyle><mi>d</mi><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right"><msub><mi>ω</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub></mtd><mtd columnalign="left"><mo>∼</mo><mtext mathvariant="normal">PG</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>N</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>ψ</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> for </mtext><mspace width="0.333em"></mspace></mrow><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo>−</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="right"><msub><mi>κ</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub></mtd><mtd columnalign="left"><mo>=</mo><msub><mi>n</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mo>−</mo><mfrac><msub><mi>N</mi><mrow><mi>d</mi><mi>k</mi></mrow></msub><mn>2</mn></mfrac><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> for </mtext><mspace width="0.333em"></mspace></mrow><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo>−</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="right"><msub><mstyle mathvariant="bold"><mi>𝛀</mi></mstyle><mi>d</mi></msub></mtd><mtd columnalign="left"><mo>=</mo><mtext mathvariant="normal">diag</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>ω</mi><mrow><mi>d</mi><mn>1</mn></mrow></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>ω</mi><mrow><mi>d</mi><mo>,</mo><mi>K</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+  p(\mathbf{z}_d, \boldsymbol{\omega}_d \mid n_d, \boldsymbol{\psi}_d) &amp;\propto
+  \prod_{k = 1}^{K - 1} \exp \big( (n_{dk} - {N_{dk}}/{2}) \psi_{dk} - \omega_{dk} \psi_{dk}^2 /2   \big) \\
   &amp;= \prod_{k = 1}^{K - 1} \exp \bigg(  -\frac{\omega_{dk}}{2}
-  \bigg( \psi_{dk}^2 - \textstyle \frac{2}{\omega_{dk}} (n_{dk} -
-N_{dk}/2) \psi_{dk} \bigg)   \bigg) \\
-  &amp;\propto  \prod_{k = 1}^{K - 1} \exp  \bigg(
--\frac{\omega_{dk}}{2}
-  \bigg( \psi_{dk} - \textstyle \frac{1}{\omega_{dk}}(n_{dk} - N_{dk}/2)
-\bigg)^2 \  \bigg)  \\
-  &amp;= \mathcal{N}\big( \boldsymbol{\psi}_d \mid
-\boldsymbol{\Omega}_d^{-1} \boldsymbol{\kappa}_d,
-\boldsymbol{\Omega}_{d}^{-1}  \big) \\
-  \omega_{dk} &amp;\sim \text{PG}(N_{dk}, \psi_{dk}) \text{ for } 1,
-\ldots, K-1 \\
-  \kappa_{dk} &amp;= n_{dk} - \frac{N_{dk}}{2} \text{ for } 1, \ldots,
-K-1 \\
-  \boldsymbol{\Omega}_{d} &amp;= \text{diag}(\omega_{d1}, \ldots,
-\omega_{d, K-1})
-\end{align}\]</span> We can use the multivariate normal distribution to
-sample <span class="math inline">\(\boldsymbol{\psi}_d\)</span>. <span class="math display">\[\begin{align}
+  \bigg( \psi_{dk}^2 - \textstyle \frac{2}{\omega_{dk}} (n_{dk} - N_{dk}/2) \psi_{dk} \bigg)   \bigg) \\
+  &amp;\propto  \prod_{k = 1}^{K - 1} \exp  \bigg( -\frac{\omega_{dk}}{2}
+  \bigg( \psi_{dk} - \textstyle \frac{1}{\omega_{dk}}(n_{dk} - N_{dk}/2) \bigg)^2 \  \bigg)  \\
+  &amp;= \mathcal{N}\big( \boldsymbol{\psi}_d \mid \boldsymbol{\Omega}_d^{-1} \boldsymbol{\kappa}_d, \boldsymbol{\Omega}_{d}^{-1}  \big) \\
+  \omega_{dk} &amp;\sim \text{PG}(N_{dk}, \psi_{dk}) \text{ for } 1, \ldots, K-1 \\
+  \kappa_{dk} &amp;= n_{dk} - \frac{N_{dk}}{2} \text{ for } 1, \ldots, K-1 \\
+  \boldsymbol{\Omega}_{d} &amp;= \text{diag}(\omega_{d1}, \ldots, \omega_{d, K-1})
+\end{align}</annotation></semantics></math> We can use the multivariate
+normal distribution to sample
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝛙</mi></mstyle><mi>d</mi></msub><annotation encoding="application/x-tex">\boldsymbol{\psi}_d</annotation></semantics></math>.
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right"><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝛙</mi></mstyle><mi>d</mi></msub><mo>∣</mo><msub><mstyle mathvariant="bold"><mi>𝐳</mi></mstyle><mi>d</mi></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝛚</mi></mstyle><mi>d</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left"><mo>∝</mo><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝐳</mi></mstyle><mi>d</mi></msub><mo>∣</mo><msub><mstyle mathvariant="bold"><mi>𝛙</mi></mstyle><mi>d</mi></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝛋</mi></mstyle><mi>d</mi></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝛀</mi></mstyle><mi>d</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝛙</mi></mstyle><mi>d</mi></msub><mo>∣</mo><msub><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mn>0</mn></msub><mo>,</mo><mstyle mathvariant="bold"><mi>𝐗</mi></mstyle><mo>,</mo><mstyle mathvariant="bold"><mi>𝛌</mi></mstyle><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right"></mtd><mtd columnalign="left"><mo>∝</mo><mstyle mathvariant="script"><mi>𝒩</mi></mstyle><mrow><mo stretchy="true" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝛙</mi></mstyle><mi>d</mi></msub><mo>∣</mo><mover><mstyle mathvariant="bold"><mi>𝛍</mi></mstyle><mo accent="true">̃</mo></mover><mo>,</mo><mover><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mo accent="true">̃</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right"><mover><mstyle mathvariant="bold"><mi>𝛍</mi></mstyle><mo accent="true">̃</mo></mover></mtd><mtd columnalign="left"><mo>=</mo><mover><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">[</mo><msub><mstyle mathvariant="bold"><mi>𝛋</mi></mstyle><mi>d</mi></msub><mo>+</mo><msubsup><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mn>0</mn><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><msup><mstyle mathvariant="bold"><mi>𝛌</mi></mstyle><mi>⊤</mi></msup><msub><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mi>d</mi></msub><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right"><mover><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mo accent="true">̃</mo></mover></mtd><mtd columnalign="left"><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">[</mo><msub><mstyle mathvariant="bold"><mi>𝛀</mi></mstyle><mi>d</mi></msub><mo>+</mo><msubsup><mstyle mathvariant="bold"><mi>𝚺</mi></mstyle><mn>0</mn><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
   p(\boldsymbol{\psi}_d \mid \mathbf{z}_d, \boldsymbol{\omega}_d)
   &amp;\propto
-    p(\mathbf{z}_d \mid \boldsymbol{\psi}_d, \boldsymbol{\kappa}_d,
-\boldsymbol{\Omega}_d) p(\boldsymbol{\psi}_d \mid \boldsymbol{\Sigma}_0,
-\mathbf{X}, \boldsymbol{\lambda})\\
-  &amp;\propto \mathcal{N}(\boldsymbol{\psi}_d \mid
-\tilde{\boldsymbol{\mu}}, \tilde{\boldsymbol{\Sigma}}) \\
-  \tilde{\boldsymbol{\mu}} &amp;=
-\tilde{\boldsymbol{\Sigma}}[\boldsymbol{\kappa}_d +
-\boldsymbol{\Sigma}_0^{-1} \boldsymbol{\lambda}^\top \mathbf{x}_d] \\
-  \tilde{\boldsymbol{\Sigma}} &amp;= [\boldsymbol{\Omega}_d +
-\boldsymbol{\Sigma}_{0}^{-1}]^{-1},
-\end{align}\]</span> where the second proportion comes from Matrix Cook
-Book 8.1.8 (product of Gaussians).</p>
+    p(\mathbf{z}_d \mid \boldsymbol{\psi}_d, \boldsymbol{\kappa}_d, \boldsymbol{\Omega}_d) p(\boldsymbol{\psi}_d \mid \boldsymbol{\Sigma}_0, \mathbf{X}, \boldsymbol{\lambda})\\
+  &amp;\propto \mathcal{N}(\boldsymbol{\psi}_d \mid \tilde{\boldsymbol{\mu}}, \tilde{\boldsymbol{\Sigma}}) \\
+  \tilde{\boldsymbol{\mu}} &amp;= \tilde{\boldsymbol{\Sigma}}[\boldsymbol{\kappa}_d + \boldsymbol{\Sigma}_0^{-1} \boldsymbol{\lambda}^\top \mathbf{x}_d] \\
+  \tilde{\boldsymbol{\Sigma}} &amp;= [\boldsymbol{\Omega}_d + \boldsymbol{\Sigma}_{0}^{-1}]^{-1},
+\end{align}</annotation></semantics></math> where the second proportion
+comes from Matrix Cook Book 8.1.8 (product of Gaussians).</p>
 </div>
 <div class="section level3">
-<h3 id="sampling-boldsymbollambda">Sampling <span class="math inline">\(\boldsymbol{\lambda}\)</span><a class="anchor" aria-label="anchor" href="#sampling-boldsymbollambda"></a>
+<h3 id="sampling-boldsymbollambda">Sampling
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝛌</mi></mstyle><annotation encoding="application/x-tex">\boldsymbol{\lambda}</annotation></semantics></math><a class="anchor" aria-label="anchor" href="#sampling-boldsymbollambda"></a>
 </h3>
-<p>Sampling <span class="math inline">\(\boldsymbol{\lambda}\)</span>
-and <span class="math inline">\(\mathbf{X}\)</span> is the same as
-Bayesian multivariate linear regression in Rossi et al. (2012,
-pp.31-34).</p>
+<p>Sampling
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝛌</mi></mstyle><annotation encoding="application/x-tex">\boldsymbol{\lambda}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝐗</mi></mstyle><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
+is the same as Bayesian multivariate linear regression in Rossi et
+al. (2012, pp.31-34).</p>
 </div>
 </div>
 <div class="section level2">
@@ -276,9 +291,7 @@ Learning Research, 18(1), 7479-7511.</li>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -291,16 +304,16 @@ Learning Research, 18(1), 7479-7511.</li>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>

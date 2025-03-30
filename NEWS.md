@@ -1,6 +1,6 @@
 # keyATM 0.5.3
 ### Bug fix
-* Fixing the semantic coherence function ([##220](https://github.com/keyATM/keyATM/pull/220))
+* Fixing the semantic coherence function ([#220](https://github.com/keyATM/keyATM/pull/220))
 
 # keyATM 0.5.2
 ### Minor changes

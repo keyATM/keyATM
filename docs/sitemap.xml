@@ -1,225 +1,63 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/FAQ.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/Heterogeneity.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/Installation.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/Options.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/Plot.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/Preparation.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/Resume.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/Weighted_LDA.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/keyATMPG.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/keyATM_base.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/keyATM_cov.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/keyATM_dynamic.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/keyATM_label.html</loc>
-  </url>
-  <url>
-    <loc>/articles/pkgdown_files/keyATMvb.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/news-0.0.html</loc>
-  </url>
-  <url>
-    <loc>/news/news-0.1.html</loc>
-  </url>
-  <url>
-    <loc>/news/news-0.2.html</loc>
-  </url>
-  <url>
-    <loc>/news/news-0.3.html</loc>
-  </url>
-  <url>
-    <loc>/news/news-0.4.html</loc>
-  </url>
-  <url>
-    <loc>/news/news-0.5.html</loc>
-  </url>
-  <url>
-    <loc>/reference/by_strata_DocTopic.html</loc>
-  </url>
-  <url>
-    <loc>/reference/by_strata_TopicWord.html</loc>
-  </url>
-  <url>
-    <loc>/reference/calc_PGtheta_R.html</loc>
-  </url>
-  <url>
-    <loc>/reference/covariates_get.html</loc>
-  </url>
-  <url>
-    <loc>/reference/covariates_info.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM-package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_data_bills.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_fit.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_fit_HMM.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_fit_LDA.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_fit_LDAHMM.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_fit_LDAcov.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_fit_base.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_fit_cov.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_fit_covPG.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_fit_label.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_initialize.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_output.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATM_read.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATMvb.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATMvb_call.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keyATMvb_fit.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_wsz_cpp.html</loc>
-  </url>
-  <url>
-    <loc>/reference/multiPGreg.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.strata_doctopic.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_alpha.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_modelfit.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_p.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_pi.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_timetrend.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_topicprop.html</loc>
-  </url>
-  <url>
-    <loc>/reference/predict.keyATM_output.html</loc>
-  </url>
-  <url>
-    <loc>/reference/read_dfm_cpp.html</loc>
-  </url>
-  <url>
-    <loc>/reference/read_keywords.html</loc>
-  </url>
-  <url>
-    <loc>/reference/save.keyATM_output.html</loc>
-  </url>
-  <url>
-    <loc>/reference/save.keyATM_viz.html</loc>
-  </url>
-  <url>
-    <loc>/reference/save_fig.html</loc>
-  </url>
-  <url>
-    <loc>/reference/save_fig.keyATM_viz.html</loc>
-  </url>
-  <url>
-    <loc>/reference/semantic_coherence.html</loc>
-  </url>
-  <url>
-    <loc>/reference/top_docs.html</loc>
-  </url>
-  <url>
-    <loc>/reference/top_topics.html</loc>
-  </url>
-  <url>
-    <loc>/reference/top_words.html</loc>
-  </url>
-  <url>
-    <loc>/reference/values_fig.html</loc>
-  </url>
-  <url>
-    <loc>/reference/visualize_keywords.html</loc>
-  </url>
-  <url>
-    <loc>/reference/weightedLDA.html</loc>
-  </url>
-  <url>
-    <loc>/reference/word_in_doc.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/pkgdown_files/FAQ.html</loc></url>
+<url><loc>/articles/pkgdown_files/Installation.html</loc></url>
+<url><loc>/articles/pkgdown_files/Options.html</loc></url>
+<url><loc>/articles/pkgdown_files/Plot.html</loc></url>
+<url><loc>/articles/pkgdown_files/Preparation.html</loc></url>
+<url><loc>/articles/pkgdown_files/Resume.html</loc></url>
+<url><loc>/articles/pkgdown_files/Weighted_LDA.html</loc></url>
+<url><loc>/articles/pkgdown_files/keyATMPG.html</loc></url>
+<url><loc>/articles/pkgdown_files/keyATM_base.html</loc></url>
+<url><loc>/articles/pkgdown_files/keyATM_cov.html</loc></url>
+<url><loc>/articles/pkgdown_files/keyATM_dynamic.html</loc></url>
+<url><loc>/articles/pkgdown_files/keyATMvb.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/by_strata_DocTopic.html</loc></url>
+<url><loc>/reference/by_strata_TopicWord.html</loc></url>
+<url><loc>/reference/calc_PGtheta_R.html</loc></url>
+<url><loc>/reference/covariates_get.html</loc></url>
+<url><loc>/reference/covariates_info.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/keyATM-package.html</loc></url>
+<url><loc>/reference/keyATM.html</loc></url>
+<url><loc>/reference/keyATM_data_bills.html</loc></url>
+<url><loc>/reference/keyATM_fit_HMM.html</loc></url>
+<url><loc>/reference/keyATM_fit_LDA.html</loc></url>
+<url><loc>/reference/keyATM_fit_LDAHMM.html</loc></url>
+<url><loc>/reference/keyATM_fit_LDAcov.html</loc></url>
+<url><loc>/reference/keyATM_fit_base.html</loc></url>
+<url><loc>/reference/keyATM_fit_cov.html</loc></url>
+<url><loc>/reference/keyATM_fit_covPG.html</loc></url>
+<url><loc>/reference/keyATM_initialize.html</loc></url>
+<url><loc>/reference/keyATM_output.html</loc></url>
+<url><loc>/reference/keyATM_read.html</loc></url>
+<url><loc>/reference/keyATMvb.html</loc></url>
+<url><loc>/reference/keyATMvb_call.html</loc></url>
+<url><loc>/reference/keyATMvb_fit.html</loc></url>
+<url><loc>/reference/make_wsz_cpp.html</loc></url>
+<url><loc>/reference/multiPGreg.html</loc></url>
+<url><loc>/reference/plot.strata_doctopic.html</loc></url>
+<url><loc>/reference/plot_alpha.html</loc></url>
+<url><loc>/reference/plot_modelfit.html</loc></url>
+<url><loc>/reference/plot_pi.html</loc></url>
+<url><loc>/reference/plot_timetrend.html</loc></url>
+<url><loc>/reference/plot_topicprop.html</loc></url>
+<url><loc>/reference/predict.keyATM_output.html</loc></url>
+<url><loc>/reference/read_dfm_cpp.html</loc></url>
+<url><loc>/reference/read_keywords.html</loc></url>
+<url><loc>/reference/save_fig.html</loc></url>
+<url><loc>/reference/semantic_coherence.html</loc></url>
+<url><loc>/reference/top_docs.html</loc></url>
+<url><loc>/reference/top_topics.html</loc></url>
+<url><loc>/reference/top_words.html</loc></url>
+<url><loc>/reference/values_fig.html</loc></url>
+<url><loc>/reference/visualize_keywords.html</loc></url>
+<url><loc>/reference/weightedLDA.html</loc></url>
+<url><loc>/reference/word_in_doc.html</loc></url>
 </urlset>
+
