@@ -220,7 +220,7 @@ covariates_standardize <- function(data, type, cov_formula = NULL) {
 #' @param split boolean, if multi-word terms be seperated, e.g. "air force" splits into "air" and "force".
 #' @param ... additional parameters for [quanteda::dictionary()]
 #' @return a named list which can be used as keywords for e.g. [keyATM()]
-#' @seealso \code{\link{dictionary}}
+#' @seealso [quanteda::dictionary()]
 #' @export
 #' @examples
 #' \dontrun{

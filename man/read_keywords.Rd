@@ -37,5 +37,5 @@ This function converts or reads a dictionary object from quanteda to a named lis
 }
 }
 \seealso{
-\code{\link{dictionary}}
+\code{\link[quanteda:dictionary]{quanteda::dictionary()}}
 }
