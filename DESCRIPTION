@@ -43,6 +43,6 @@ URL: https://keyatm.github.io/keyATM/
 Encoding: UTF-8
 BugReports: https://github.com/keyATM/keyATM/issues
 LazyData: TRUE
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 SystemRequirements: C++17
 Roxygen: list(markdown = TRUE)
