@@ -94,7 +94,6 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
 
   # Set default values
   model_settings <- check_arg(model_settings, "model_settings", model, info)
-  priors <- check_arg(priors, "priors", model, info)
   options <- check_arg(options, "options", model, info)
   vb_options <- check_arg(vb_options, "vb_options", model, info)
   info$parallel_init <- options$parallel_init
@@ -113,8 +112,23 @@ keyATMvb_fit <- function(docs, model, no_keyword_topics,
     info$wd_names <- docs$wd_names
   }
 
-  # Check keywords
-  keywords <- check_keywords(info$wd_names, keywords, options$prune)
+  # Refine keywords / Check keywords
+  if (!options$drop_empty_topics) {
+    keywords <- check_keywords(info$wd_names, keywords, options$prune)
+  } else {
+    check_zero <- get_empty_index(info$wd_names, keywords, options$prune)
+    if (length(check_zero) == length(keywords)) {
+      cli::cli_abort("Nothing left in `keywords`!")
+    }
+    keywords <- keywords[setdiff(seq_along(keywords), check_zero)]
+    info$keyword_k <- length(keywords)
+    if (options$compensate_empty_topics) {
+      no_keyword_topics <- no_keyword_topics + length(check_zero)
+    }
+    info$total_k <- length(keywords) + no_keyword_topics
+  }
+  priors <- check_arg(priors, "priors", model, info)
+
   keywords_raw <- keywords  # keep raw keywords (not word_id)
   info$keywords_raw <- keywords_raw
 

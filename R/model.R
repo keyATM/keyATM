@@ -236,8 +236,7 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2)
   return(keyATM_viz)
 }
 
-
-check_keywords <- function(unique_words, keywords, prune)
+get_empty_index <- function(unique_words, keywords, prune = TRUE)
 {
   # Prune keywords that do not appear in the corpus
   keywords_flat <- unlist(keywords, use.names = FALSE, recursive = FALSE)
@@ -260,13 +259,15 @@ check_keywords <- function(unique_words, keywords, prune)
     if (length(non_existent) != 0) {
       cli::cli_abort("{?A keyword/Keywords} {?is/are} not found in the documents: {non_existent}", immediate. = TRUE)
     }
-
   }
-
-  # Check there is at least one keywords in each topic
   num_keywords <- unlist(lapply(keywords, length))
-  check_zero <- which(as.vector(num_keywords) == 0)
+  allzero_index <- which(as.vector(num_keywords) == 0)
+  return(allzero_index)
+}
 
+check_keywords <- function(unique_words, keywords, prune)
+{
+  check_zero <- get_empty_index(unique_words, keywords, prune)
   if (length(check_zero) != 0) {
     zero_names <- names(keywords)[check_zero]
     cli::cli_abort(paste0("All keywords are pruned. Please check: ", paste(zero_names, collapse = ", ")))
@@ -312,7 +313,7 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
   # Check type
   check_arg_type(docs, "keyATM_docs", "Please use `keyATM_read()` to read texts.")
   if (!is.integer(no_keyword_topics) & !is.numeric(no_keyword_topics))
-    cli::cli_abort("`no_keyword_topics` is neigher numeric nor integer.")
+    cli::cli_abort("`no_keyword_topics` is neither numeric nor integer.")
 
   no_keyword_topics <- as.integer(no_keyword_topics)
 
@@ -339,9 +340,8 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
   info$keyword_k <- length(keywords)
   info$total_k <- length(keywords) + no_keyword_topics
 
-  # Set default values
+  # Set default values ## defer the prior checking after total_k is finalized
   model_settings <- check_arg(model_settings, "model_settings", model, info)
-  priors <- check_arg(priors, "priors", model, info)
   options <- check_arg(options, "options", model, info)
   info$parallel_init <- options$parallel_init
 
@@ -371,8 +371,22 @@ keyATM_initialize <- function(docs, model, no_keyword_topics,
     W <- lapply(docs$W_raw, function(x) { myhashmap_getvec(info$wd_map, x) })
   }
 
-  # Check keywords
-  keywords <- check_keywords(info$wd_names, keywords, options$prune)
+  # Refine keywords / Check keywords
+  if (!options$drop_empty_topics) {
+    keywords <- check_keywords(info$wd_names, keywords, options$prune)
+  } else {
+    check_zero <- get_empty_index(info$wd_names, keywords, options$prune)
+    if (length(check_zero) == length(keywords)) {
+      cli::cli_abort("Nothing left in `keywords`!")
+    }
+    keywords <- keywords[setdiff(seq_along(keywords), check_zero)]
+    info$keyword_k <- length(keywords)
+    if (options$compensate_empty_topics) {
+      no_keyword_topics <- no_keyword_topics + length(check_zero)
+    }
+    info$total_k <- length(keywords) + no_keyword_topics
+  }
+  priors <- check_arg(priors, "priors", model, info)
 
   keywords_raw <- keywords  # keep raw keywords (not word_id)
   keywords_id <- lapply(keywords, function(x) { myhashmap_getvec(info$wd_map, x) })
@@ -541,7 +555,6 @@ check_arg_keywords <- function(keywords, model, info)
 
   return(keywords)
 }
-
 
 show_unused_arguments <- function(obj, name, allowed_arguments)
 {
@@ -821,7 +834,8 @@ check_arg_options <- function(obj, model, info)
                          "iterations", "iter_new", "verbose",
                          "use_weights", "weights_type",
                          "prune", "store_theta", "slice_shape",
-                         "parallel_init", "resume")
+                         "parallel_init", "resume", "drop_empty_topics",
+                         "compensate_empty_topics")
 
   # llk_per
   if (is.null(obj$llk_per))
@@ -932,6 +946,18 @@ check_arg_options <- function(obj, model, info)
     if (!obj$prune %in% c(0, 1)) {
       cli::cli_abort("An invalid value in `options$prune`")
     }
+  }
+
+  if (is.null(obj$drop_empty_topics)) {
+    obj$drop_empty_topics <- FALSE
+  } else {
+    check_arg_type(obj$drop_empty_topics, "logical")
+  }
+
+  if (is.null(obj$compensate_empty_topics)) {
+    obj$compensate_empty_topics <- FALSE
+  } else {
+    check_arg_type(obj$drop_empty_topics, "logical")
   }
 
   # Store transition matrix in Dynamic models

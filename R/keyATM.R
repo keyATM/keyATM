@@ -15,7 +15,9 @@
 #'      \item \strong{llk_per}: An integer. If the value is \code{j} \strong{keyATM} stores loglikelihood and perplexity every \eqn{j} iteration. Default value is \code{10} per iterations
 #'      \item \strong{use_weights}: If \code{TRUE} use weight. Default is \code{TRUE}.
 #'      \item \strong{weights_type}: There are four types of weights. Weights based on the information theory (\code{information-theory}) and inverse frequency (\code{inv-freq}) and normalized versions of them (\code{information-theory-normalized} and \code{inv-freq-normalized}). Default is \code{information-theory}.
-#'      \item \strong{prune}: If \code{TRUE} rume keywords that do not appear in the corpus. Default is \code{TRUE}.
+#'      \item \strong{prune}: If \code{TRUE} remove keywords that do not appear in the corpus. Default is \code{TRUE}.
+#'      \item \strong{drop_empty_topics}: If \code{TRUE}, fully pruned topics are dropped instead of error. Default is \code{FALSE}.
+#'      \item \strong{compensate_empty_topics}: If \code{TRUE}, number of fully pruned and dropped topics is added to \code{no_keyword_topics}. Default is \code{FALSE}.
 #'      \item \strong{store_theta}: If \code{TRUE} or \code{1}, it stores \eqn{\theta} (document-topic distribution) for the iteration specified by thinning. Default is \code{FALSE} (same as \code{0}).
 #'      \item \strong{store_pi}: If \code{TRUE} or \code{1}, it stores \eqn{\pi} (the probability of using keyword topic word distribution) for the iteration specified by thinning. Default is \code{FALSE} (same as \code{0}).
 #'      \item \strong{thinning}: An integer. If the value is \code{j} \strong{keyATM} stores following parameters every \code{j} iteration. The default is \code{5}. \itemize{
