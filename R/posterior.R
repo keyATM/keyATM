@@ -356,7 +356,7 @@ keyATM_output_phi_calc_key <- function(all_words, all_topics, all_s, pi_estimate
   }
 
   all_keywords <- unique(unlist(model$keywords_raw, use.names = FALSE))
-  beta_s1 <- matrix(priors$beta_s, nrow = length(model$keywords), ncol = length(all_keywords))
+  beta_s1 <- matrix(priors$beta_s, nrow = length(model$keywords_raw), ncol = length(all_keywords))
   colnames(beta_s1) <- sort(all_keywords)
   if ("beta_s1" %in% names(priors)) {
     for (k in 1:length(model$keywords_raw)) {
