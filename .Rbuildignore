@@ -20,3 +20,4 @@ __MACOSX
 ^\.git
 ^\.gitattributes$
 ^keyATM\.Rproj$
+^.editorconfig$
