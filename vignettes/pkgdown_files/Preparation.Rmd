@@ -23,7 +23,8 @@ library(readtext)
 
 # Read text files
 raw_docs <- readtext("PATH_TO_THE_FOLDER/*.txt",
-                     encoding = "UTF-8")
+  encoding = "UTF-8"
+)
 
 # Preprocessing with quanteda and create a dfm object
 key_corpus <- corpus(raw_docs, text_field = "text")
@@ -54,16 +55,17 @@ into a `token` object and to preprocess texts before creating a `dfm` object.
 The `tokens()` and related functions in the **quanteda** provide various preprocessing functions. Preprocessing can reduce the number of unique features (words) in the corpus, which is critical for increasing the interpretability. In the example below, we adopt some of the most common preprocessing steps.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 data_tokens <- tokens(
-    data_corpus_inaugural,
-    remove_numbers = TRUE,
-    remove_punct = TRUE,
-    remove_symbols = TRUE,
-    remove_separators = TRUE,
-    remove_url = TRUE
-  ) %>%
+  data_corpus_inaugural,
+  remove_numbers = TRUE,
+  remove_punct = TRUE,
+  remove_symbols = TRUE,
+  remove_separators = TRUE,
+  remove_url = TRUE
+) %>%
   tokens_tolower() %>%
   tokens_remove(
-    c(stopwords("english"),
+    c(
+      stopwords("english"),
       "may", "shall", "can",
       "must", "upon", "with", "without"
     )
@@ -83,8 +85,8 @@ with the `dfm()` function in the **quanteda**. We trim infrequent terms with the
 
 ```{r, warning=FALSE, message=FALSE}
 data_dfm <- dfm(data_tokens) %>%
-              dfm_trim(min_termfreq = 5, min_docfreq = 2)
-ncol(data_dfm)  # the number of unique words
+  dfm_trim(min_termfreq = 5, min_docfreq = 2)
+ncol(data_dfm) # the number of unique words
 ```
 
 Finally, `keyATM_read` function reads your data for **keyATM**.
@@ -248,23 +250,25 @@ need to select all keywords from the top words of the LDA.
 Researchers can use other methods such as a keyword selection algorithm proposed in
 King, Lam and Roberts (2017).
 ```{r, warning=FALSE, message=FALSE, fig.align='center', results = 'hide'}
-set.seed(225)  # set the seed before split the dfm
-docs_withSplit <- keyATM_read(texts = data_dfm,
-                              split = 0.3)  # split each document
+set.seed(225) # set the seed before split the dfm
+docs_withSplit <- keyATM_read(
+  texts = data_dfm,
+  split = 0.3
+) # split each document
 
 out <- weightedLDA(
-  docs              = docs_withSplit$W_split,  # 30% of the corpus
-  number_of_topics  = 10,  # the number of potential themes in the corpus
+  docs              = docs_withSplit$W_split, # 30% of the corpus
+  number_of_topics  = 10, # the number of potential themes in the corpus
   model             = "base",
   options           = list(seed = 250)
 )
-top_words(out)  # top words can aid selecting keywords
+top_words(out) # top words can aid selecting keywords
 
 out <- keyATM(
-  docs              = docs_withSplit,  # 70% of the corpus
-  no_keyword_topics = 5,               # number of topics without keywords
-  keywords          = keywords,        # selected keywords
-  model             = "base",          # select the model
+  docs              = docs_withSplit, # 70% of the corpus
+  no_keyword_topics = 5, # number of topics without keywords
+  keywords          = keywords, # selected keywords
+  model             = "base", # select the model
   options           = list(seed = 250)
 )
 ```
