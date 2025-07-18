@@ -3,30 +3,27 @@
 #define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 #include <RcppEigen.h>
 
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <string>
-#include <unordered_set>
 #include <unordered_map>
+#include <unordered_set>
 
 // Header files
-#include "sampler.h"
 #include "initialize.h"
+#include "sampler.h"
 
 // [[Rcpp::plugins(cpp17)]]
 // [[Rcpp::depends(RcppEigen)]]
-
 
 using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-
 //
 // Functions
 //
-keyATMinitialize::keyATMinitialize(List docs_, List info_, List initialized_)
-{
+keyATMinitialize::keyATMinitialize(List docs_, List info_, List initialized_) {
   // Constructor
   docs = docs_;
   info = info_;
@@ -43,15 +40,11 @@ keyATMinitialize::keyATMinitialize(List docs_, List info_, List initialized_)
   }
 }
 
-
-keyATMinitialize::~keyATMinitialize()
-{
+keyATMinitialize::~keyATMinitialize() {
   // Destructor
 }
 
-
-List keyATMinitialize::return_initialized()
-{
+List keyATMinitialize::return_initialized() {
   initialized["W"] = W;
   initialized["Z"] = Z;
 
@@ -64,13 +57,10 @@ List keyATMinitialize::return_initialized()
   return initialized;
 }
 
-
-
 //
 // Main functions
 //
-void keyATMinitialize::data_load()
-{
+void keyATMinitialize::data_load() {
   keyword_k = info["keyword_k"];
   total_k = info["total_k"];
 
@@ -97,10 +87,7 @@ void keyATMinitialize::data_load()
   }
 }
 
-
-
-void keyATMinitialize::initialize_keyATM()
-{
+void keyATMinitialize::initialize_keyATM() {
   initialize_keywords();
 
   CharacterVector doc;
@@ -137,7 +124,7 @@ void keyATMinitialize::initialize_keyATM()
 
         // Z
         if (keyword_num_appear == 1) {
-          z =  key_topic_map[wid][0];
+          z = key_topic_map[wid][0];
         } else {
           index = sampler::rcat_eqsize(keyword_num_appear);
           z = key_topic_map[wid][index];
@@ -164,12 +151,9 @@ void keyATMinitialize::initialize_keyATM()
     Z[doc_id] = Z_doc;
     S[doc_id] = S_doc;
   }
-
 }
 
-
-void keyATMinitialize::initialize_keywords()
-{
+void keyATMinitialize::initialize_keywords() {
   // key_topic_map: map keyword id to topic
   // key_count_map: map keyword id to the number of topics it appears
 
@@ -204,12 +188,9 @@ void keyATMinitialize::initialize_keywords()
 
     keywords_id[k] = keywords_id_k;
   }
-
 }
 
-
-void keyATMinitialize::initialize_LDA()
-{
+void keyATMinitialize::initialize_LDA() {
   CharacterVector doc;
   string word;
   int z;
@@ -237,9 +218,7 @@ void keyATMinitialize::initialize_LDA()
     W[doc_id] = W_doc;
     Z[doc_id] = Z_doc;
   }
-
 }
-
 
 //
 // Call from R
@@ -253,11 +232,8 @@ void keyATMinitialize::initialize_LDA()
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List make_wsz_cpp(List docs_, List info_, List initialized_)
-{
+List make_wsz_cpp(List docs_, List info_, List initialized_) {
   keyATMinitialize init_obj(docs_, info_, initialized_);
   initialized_ = init_obj.return_initialized();
   return initialized_;
 }
-
-
