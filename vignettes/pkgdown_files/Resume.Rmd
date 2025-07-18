@@ -17,25 +17,30 @@ data(data_corpus_inaugural, package = "quanteda")
 data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 
 data_tokens <- tokens(data_corpus_inaugural,
-                      remove_numbers = TRUE,
-                      remove_punct = TRUE,
-                      remove_symbols = TRUE,
-                      remove_separators = TRUE,
-                      remove_url = TRUE) %>%
-                 tokens_tolower() %>%
-                 tokens_remove(c(stopwords("english"),
-                               "may", "shall", "can",
-                               "must", "upon", "with", "without")) %>%
-                 tokens_select(min_nchar = 3)
+  remove_numbers = TRUE,
+  remove_punct = TRUE,
+  remove_symbols = TRUE,
+  remove_separators = TRUE,
+  remove_url = TRUE
+) %>%
+  tokens_tolower() %>%
+  tokens_remove(c(
+    stopwords("english"),
+    "may", "shall", "can",
+    "must", "upon", "with", "without"
+  )) %>%
+  tokens_select(min_nchar = 3)
 
 data_dfm <- dfm(data_tokens) %>%
-               dfm_trim(min_termfreq = 5, min_docfreq = 2)
+  dfm_trim(min_termfreq = 5, min_docfreq = 2)
 
-keywords <- list(Government     = c("laws", "law", "executive"),
-                 Congress       = c("congress", "party"),
-                 Peace          = c("peace", "world", "freedom"),
-                 Constitution   = c("constitution", "rights"),
-                 ForeignAffairs = c("foreign", "war"))
+keywords <- list(
+  Government = c("laws", "law", "executive"),
+  Congress = c("congress", "party"),
+  Peace = c("peace", "world", "freedom"),
+  Constitution = c("constitution", "rights"),
+  ForeignAffairs = c("foreign", "war")
+)
 
 keyATM_docs <- keyATM_read(data_dfm)
 ```
@@ -53,9 +58,9 @@ In the following code, the `resume` argument is used to save and load the result
 ```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
 # 50 iterations all at once
 out <- keyATM(
-  docs              = keyATM_docs,    # text input
-  no_keyword_topics = 5,              # number of topics without keywords
-  keywords          = keywords,       # keywords
+  docs              = keyATM_docs, # text input
+  no_keyword_topics = 5, # number of topics without keywords
+  keywords          = keywords, # keywords
   model             = "base",
   options           = list(seed = 250, iterations = 50)
 )
@@ -63,9 +68,9 @@ out <- keyATM(
 # Conducting 10 iterations five times to achieve the same result as above
 for (i in 1:5) {
   resumed <- keyATM(
-    docs              = keyATM_docs,    # text input
-    no_keyword_topics = 5,              # number of topics without keywords
-    keywords          = keywords,       # keywords
+    docs              = keyATM_docs, # text input
+    no_keyword_topics = 5, # number of topics without keywords
+    keywords          = keywords, # keywords
     model             = "base",
     options           = list(seed = 250, iterations = 10, resume = "./keyATM_resume.rds")
   )
@@ -76,18 +81,18 @@ When running the `keyATM()` function wit the `resume` argument, the **keyATM** f
 
 ```{r, include=FALSE, warning=FALSE, fig.align='center'}
 out <- keyATM(
-  docs              = keyATM_docs,    # text input
-  no_keyword_topics = 5,              # number of topics without keywords
-  keywords          = keywords,       # keywords
+  docs              = keyATM_docs, # text input
+  no_keyword_topics = 5, # number of topics without keywords
+  keywords          = keywords, # keywords
   model             = "base",
   options           = list(seed = 250, iterations = 50)
 )
 
 for (i in 1:5) {
   resumed <- keyATM(
-    docs              = keyATM_docs,    # text input
-    no_keyword_topics = 5,              # number of topics without keywords
-    keywords          = keywords,       # keywords
+    docs              = keyATM_docs, # text input
+    no_keyword_topics = 5, # number of topics without keywords
+    keywords          = keywords, # keywords
     model             = "base",
     options           = list(seed = 250, iterations = 10, resume = paste0(tempdir(), "/keyATM_resume.rds"))
   )
@@ -98,8 +103,8 @@ testthat::expect_equal(tail(out$model_fit$Perplexity, 1), tail(resumed$model_fit
 We can confirm that the last perplexity is the same for both cases.
 
 ```{r, warning=FALSE, fig.align='center'}
-tail(out$model_fit$Perplexity, 1)  # 50 iterations all at once
-tail(resumed$model_fit$Perplexity, 1)  # using the `resume` argument
+tail(out$model_fit$Perplexity, 1) # 50 iterations all at once
+tail(resumed$model_fit$Perplexity, 1) # using the `resume` argument
 ```
 
 Please note that the intermediate results are saved only after the completion of the specified number of iterations. For instance, if you set `iterations = 1000` and specify the `resume` argument, **keyATM** will only save the output after all 1000 iterations have been completed. It does not save the output intermittently during the iteration process.
