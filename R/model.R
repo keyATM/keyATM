@@ -287,8 +287,7 @@ visualize_keywords <- function(docs, keywords, prune = TRUE, label_size = 3.2) {
   return(keyATM_viz)
 }
 
-
-check_keywords <- function(unique_words, keywords, prune) {
+get_empty_index <- function(unique_words, keywords, prune = TRUE) {
   # Prune keywords that do not appear in the corpus
   keywords_flat <- unlist(keywords, use.names = FALSE, recursive = FALSE)
   non_existent <- keywords_flat[!keywords_flat %in% unique_words]
@@ -314,11 +313,13 @@ check_keywords <- function(unique_words, keywords, prune) {
       )
     }
   }
-
-  # Check there is at least one keywords in each topic
   num_keywords <- unlist(lapply(keywords, length))
-  check_zero <- which(as.vector(num_keywords) == 0)
+  allzero_index <- which(as.vector(num_keywords) == 0)
+  return(allzero_index)
+}
 
+check_keywords <- function(unique_words, keywords, prune) {
+  check_zero <- get_empty_index(unique_words, keywords, prune)
   if (length(check_zero) != 0) {
     zero_names <- names(keywords)[check_zero]
     cli::cli_abort(paste0(
@@ -330,6 +331,39 @@ check_keywords <- function(unique_words, keywords, prune) {
   return(keywords)
 }
 
+#' Refine keywords
+#'
+#' Refine keywords by dropping topics that does not have any occurence in the documents.
+#' @inheritParams keyATM
+#' @export
+#' @return a list of refined keywords
+#' @examples
+#' \dontrun{
+#'   library(quanteda)
+#'   data(keyATM_data_bills)
+#'   bills_keywords <- keyATM_data_bills$keywords
+#'   bills_dfm <- keyATM_data_bills$doc_dfm  # quanteda dfm object
+#'   keyATM_docs <- keyATM_read(bills_dfm)
+#'   bills_keywords$Videogame <- c("metroid", "castlevania", "balatro")
+#'   refine_keywords(bills_keywords, keyATM_docs)
+#' }
+refine_keywords <- function(keywords, docs) {
+  if (is.null(docs$wd_names)) {
+    unique_words <- unique(unlist(
+      docs$W_raw,
+      use.names = FALSE,
+      recursive = FALSE
+    ))
+    keyATM:::check_vocabulary(unique_words)
+  } else {
+    unique_words <- docs$wd_names
+  }
+  check_zero <- get_empty_index(unique_words, keywords, prune = TRUE)
+  if (length(check_zero) == length(keywords)) {
+    cli::cli_abort("Nothing left in `keywords`!")
+  }
+  return(keywords[setdiff(seq_along(keywords), check_zero)])
+}
 
 get_doc_index <- function(W_raw, check = FALSE) {
   len <- lapply(W_raw, length) %>% unlist(use.names = FALSE)
