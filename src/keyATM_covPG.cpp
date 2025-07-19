@@ -4,11 +4,9 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-# define PI_V   3.14159265358979323846  /* pi */
+#define PI_V 3.14159265358979323846 /* pi */
 
-
-void keyATMcovPG::read_data_specific()
-{
+void keyATMcovPG::read_data_specific() {
   // Covariate
   model_settings = model["model_settings"];
   NumericMatrix C_r = model_settings["covariates_data_use"];
@@ -18,33 +16,27 @@ void keyATMcovPG::read_data_specific()
   PG_params = model_settings["PG_params"];
 }
 
-void keyATMcovPG::initialize_specific()
-{
+void keyATMcovPG::initialize_specific() {
   theta = MatrixXd::Zero(num_doc, num_topics);
 }
 
-
-void keyATMcovPG::iteration_single(int it)
-{ // Single iteration
+void keyATMcovPG::iteration_single(int it) { // Single iteration
   int doc_id_;
   int doc_length;
   int w_, z_, s_;
   int new_z, new_s;
   int w_position;
 
-
   sample_parameters(it);
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
-
 
   for (int ii = 0; ii < num_doc; ++ii) {
     doc_id_ = doc_indexes[ii];
     doc_s = S[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
 
-    token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
-
+    token_indexes = sampler::shuffled_indexes(doc_length); // shuffle
 
     // Iterate each word in the document
     for (int jj = 0; jj < doc_length; ++jj) {
@@ -67,9 +59,7 @@ void keyATMcovPG::iteration_single(int it)
   }
 }
 
-
-void keyATMcovPG::sample_parameters(int it)
-{
+void keyATMcovPG::sample_parameters(int it) {
   sample_PG(it);
 
   // Store theta
@@ -89,9 +79,7 @@ void keyATMcovPG::sample_parameters(int it)
   }
 }
 
-
-void keyATMcovPG::sample_PG(int it)
-{
+void keyATMcovPG::sample_PG(int it) {
   // multiPGreg function
   Environment pkg = Environment::namespace_env("keyATM");
   Function PGreg_Rfun = pkg["multiPGreg"];
@@ -106,12 +94,11 @@ void keyATMcovPG::sample_PG(int it)
 
   PG_params = PGreg_Rfun(Y_r, C_r, num_topics, PG_params, 1, store_lambda);
   NumericMatrix theta_tilda_r = PG_params["theta_tilda"];
-  utils::calc_PGtheta(theta_tilda_r, theta, num_doc, num_topics);  // update theta
+  utils::calc_PGtheta(theta_tilda_r, theta, num_doc,
+                      num_topics); // update theta
 }
 
-
-int keyATMcovPG::sample_z_PG(int z, int s, int w, int doc_id)
-{
+int keyATMcovPG::sample_z_PG(int z, int s, int w, int doc_id) {
   int new_z;
   double numerator, denominator;
   double sum;
@@ -134,18 +121,18 @@ int keyATMcovPG::sample_z_PG(int z, int s, int w, int doc_id)
   if (s == 0) {
     for (int k = 0; k < num_topics; ++k) {
 
-      numerator = (beta + n_s0_kv(k, w)) *
-        (n_s0_k(k) + prior_gamma(k, 1)) *
-        theta(doc_id, k);
+      numerator = (beta + n_s0_kv(k, w)) * (n_s0_k(k) + prior_gamma(k, 1)) *
+                  theta(doc_id, k);
 
-      denominator = (Vbeta + n_s0_k(k)) *
-        (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
+      denominator = (Vbeta + n_s0_k(k)) * (n_s1_k(k) + prior_gamma(k, 0) +
+                                           n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
     }
 
     sum = z_prob_vec.sum(); // normalize
-    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum,
+                                            num_topics); // take a sample
 
   } else {
     for (int k = 0; k < num_topics; ++k) {
@@ -154,18 +141,18 @@ int keyATMcovPG::sample_z_PG(int z, int s, int w, int doc_id)
         continue;
       } else {
         numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
-          (n_s1_k(k) + prior_gamma(k, 0)) *
-          theta(doc_id, k);
-        denominator = (Lbeta_sk(k) + n_s1_k(k) ) *
-          (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
+                    (n_s1_k(k) + prior_gamma(k, 0)) * theta(doc_id, k);
+        denominator =
+            (Lbeta_sk(k) + n_s1_k(k)) *
+            (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
         z_prob_vec(k) = numerator / denominator;
       }
     }
 
     sum = z_prob_vec.sum();
-    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
-
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum,
+                                            num_topics); // take a sample
   }
 
   // add back data counts
@@ -184,9 +171,7 @@ int keyATMcovPG::sample_z_PG(int z, int s, int w, int doc_id)
   return new_z;
 }
 
-
-double keyATMcovPG::loglik_total()
-{
+double keyATMcovPG::loglik_total() {
   double loglik = 0.0;
   for (int k = 0; k < num_topics; ++k) {
     for (int v = 0; v < num_vocab; ++v) { // word
@@ -194,28 +179,31 @@ double keyATMcovPG::loglik_total()
     }
 
     // word normalization
-    loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_s0_k(k) );
+    loglik += mylgamma(beta * (double)num_vocab) -
+              mylgamma(beta * (double)num_vocab + n_s0_k(k));
 
     if (k < keyword_k) {
       // For keyword topics
 
       // n_s1_kv
-      for (SparseMatrix<double,RowMajor>::InnerIterator it(n_s1_kv, k); it; ++it) {
+      for (SparseMatrix<double, RowMajor>::InnerIterator it(n_s1_kv, k); it;
+           ++it) {
         loglik += mylgamma(beta_s + it.value()) - mylgamma(beta_s);
       }
-      loglik += mylgamma( beta_s * (double)keywords_num[k] ) - mylgamma(beta_s * (double)keywords_num[k] + n_s1_k(k) );
-
+      loglik += mylgamma(beta_s * (double)keywords_num[k]) -
+                mylgamma(beta_s * (double)keywords_num[k] + n_s1_k(k));
 
       // Normalization
-      loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
+      loglik += mylgamma(prior_gamma(k, 0) + prior_gamma(k, 1)) -
+                mylgamma(prior_gamma(k, 0)) - mylgamma(prior_gamma(k, 1));
 
       // s
-      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) )
-                - mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1))
-                + mylgamma( n_s1_k(k) + prior_gamma(k, 0) );
+      loglik += mylgamma(n_s0_k(k) + prior_gamma(k, 1)) -
+                mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) +
+                         prior_gamma(k, 1)) +
+                mylgamma(n_s1_k(k) + prior_gamma(k, 0));
     }
   }
-
 
   // z
   for (int d = 0; d < num_doc; ++d) {
@@ -226,6 +214,3 @@ double keyATMcovPG::loglik_total()
 
   return loglik;
 }
-
-
-

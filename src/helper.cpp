@@ -5,11 +5,9 @@
 // [[Rcpp::plugins(cpp17)]]
 // [[Rcpp::depends(RcppEigen)]]
 
-
 using namespace Rcpp;
 using namespace Eigen;
 using namespace std;
-
 
 //' Calculate the probability for Polya-Gamma Covariate Model
 //'
@@ -22,8 +20,9 @@ using namespace std;
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-NumericMatrix calc_PGtheta_R(const NumericMatrix &theta_tilda, Eigen::MatrixXd &theta, const int num_doc, const int num_topics)
-{
+NumericMatrix calc_PGtheta_R(const NumericMatrix &theta_tilda,
+                             Eigen::MatrixXd &theta, const int num_doc,
+                             const int num_topics) {
   double remaining = 1.0;
 
   for (int d = 0; d < num_doc; ++d) {
@@ -45,4 +44,3 @@ NumericMatrix calc_PGtheta_R(const NumericMatrix &theta_tilda, Eigen::MatrixXd &
   NumericMatrix theta_R = Rcpp::wrap(theta);
   return theta_R;
 }
-

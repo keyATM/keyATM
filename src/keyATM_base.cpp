@@ -4,9 +4,7 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-
-void keyATMbase::initialize_specific()
-{
+void keyATMbase::initialize_specific() {
   nv_alpha = priors_list["alpha"];
   alpha = Rcpp::as<Eigen::VectorXd>(nv_alpha);
 
@@ -18,9 +16,7 @@ void keyATMbase::initialize_specific()
   }
 }
 
-
-void keyATMbase::resume_initialize_specific()
-{
+void keyATMbase::resume_initialize_specific() {
   estimate_alpha = options_list["estimate_alpha"];
   if (estimate_alpha == 0) {
     nv_alpha = priors_list["alpha"];
@@ -28,15 +24,14 @@ void keyATMbase::resume_initialize_specific()
     store_alpha = 0;
   } else {
     List alpha_iter = stored_values["alpha_iter"];
-    NumericVector alpha_rvec = alpha_iter[alpha_iter.size() - 1];  // last estimated alpha
+    NumericVector alpha_rvec =
+        alpha_iter[alpha_iter.size() - 1]; // last estimated alpha
     alpha = Rcpp::as<Eigen::VectorXd>(alpha_rvec);
     store_alpha = 1;
   }
 }
 
-
-void keyATMbase::iteration_single(int it)
-{ // Single iteration
+void keyATMbase::iteration_single(int it) { // Single iteration
   int doc_id_;
   int doc_length;
   int w_, z_, s_;
@@ -50,7 +45,7 @@ void keyATMbase::iteration_single(int it)
     doc_s = S[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
 
-    token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
+    token_indexes = sampler::shuffled_indexes(doc_length); // shuffle
 
     // Iterate each word in the document
     for (int jj = 0; jj < doc_length; ++jj) {
@@ -72,11 +67,9 @@ void keyATMbase::iteration_single(int it)
     S[doc_id_] = doc_s;
   }
   sample_parameters(it);
-
 }
 
-void keyATMbase::sample_parameters(int it)
-{
+void keyATMbase::sample_parameters(int it) {
   if (estimate_alpha)
     sample_alpha();
 
@@ -92,9 +85,7 @@ void keyATMbase::sample_parameters(int it)
   }
 }
 
-
-void keyATMbase::sample_alpha()
-{
+void keyATMbase::sample_alpha() {
 
   double start, end, previous_p, new_p, newlikelihood, slice_;
   keep_current_param = alpha;
@@ -105,16 +96,16 @@ void keyATMbase::sample_alpha()
   for (int i = 0; i < num_topics; ++i) {
     k = topic_ids[i];
     store_loglik = alpha_loglik(k);
-    start = min_v ; // shrinked with shrinkp()
-    end = max_v;  // shrinked with shrinkp()
+    start = min_v; // shrinked with shrinkp()
+    end = max_v;   // shrinked with shrinkp()
 
     previous_p = alpha(k) / (1.0 + alpha(k)); // shrinkp
-    slice_ = store_loglik - 2.0 * log(1.0 - previous_p)
-            + log(unif_rand()); // <-- using R random uniform
+    slice_ = store_loglik - 2.0 * log(1.0 - previous_p) +
+             log(unif_rand()); // <-- using R random uniform
 
     for (int shrink_time = 0; shrink_time < max_shrink_time; ++shrink_time) {
       new_p = sampler::slice_uniform(start, end); // <-- using R function above
-      alpha(k) = new_p / (1.0 - new_p); // expandp
+      alpha(k) = new_p / (1.0 - new_p);           // expandp
 
       newalphallk = alpha_loglik(k);
       newlikelihood = newalphallk - 2.0 * log(1.0 - new_p);
@@ -134,18 +125,15 @@ void keyATMbase::sample_alpha()
   }
 }
 
-
-double keyATMbase::alpha_loglik(int k)
-{
+double keyATMbase::alpha_loglik(int k) {
   double loglik = 0.0;
   double fixed_part = 0.0;
 
   ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
   double alpha_sum_val = alpha.sum();
 
-
   fixed_part += mylgamma(alpha_sum_val); // first term numerator
-  fixed_part -= mylgamma(alpha(k)); // first term denominator
+  fixed_part -= mylgamma(alpha(k));      // first term denominator
   // Add prior
   if (k < keyword_k) {
     loglik += gammapdfln(alpha(k), eta_1, eta_2);
@@ -157,7 +145,7 @@ double keyATMbase::alpha_loglik(int k)
     loglik += fixed_part;
 
     // second term numerator
-    loglik += mylgamma(ndk_a(d,k));
+    loglik += mylgamma(ndk_a(d, k));
 
     // second term denominator
     loglik -= mylgamma(doc_each_len_weighted[d] + alpha_sum_val);
@@ -166,50 +154,52 @@ double keyATMbase::alpha_loglik(int k)
   return loglik;
 }
 
-
-double keyATMbase::loglik_total()
-{
+double keyATMbase::loglik_total() {
   double loglik = 0.0;
   double fixed_part = 0.0;
 
   for (int k = 0; k < num_topics; ++k) {
     for (int v = 0; v < num_vocab; ++v) { // word
-      loglik += mylgamma(beta + n_s0_kv(k, v) ) - mylgamma(beta);
+      loglik += mylgamma(beta + n_s0_kv(k, v)) - mylgamma(beta);
     }
 
     // word normalization
-    loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_s0_k(k) );
+    loglik += mylgamma(beta * (double)num_vocab) -
+              mylgamma(beta * (double)num_vocab + n_s0_k(k));
 
     if (k < keyword_k) {
       // For keyword topics
 
       // n_s1_kv
-      for (SparseMatrix<double,RowMajor>::InnerIterator it(n_s1_kv, k); it; ++it) {
+      for (SparseMatrix<double, RowMajor>::InnerIterator it(n_s1_kv, k); it;
+           ++it) {
         loglik += mylgamma(beta_s + it.value()) - mylgamma(beta_s);
       }
-      loglik += mylgamma( beta_s * (double)keywords_num[k] ) - mylgamma(beta_s * (double)keywords_num[k] + n_s1_k(k) );
+      loglik += mylgamma(beta_s * (double)keywords_num[k]) -
+                mylgamma(beta_s * (double)keywords_num[k] + n_s1_k(k));
 
       // Normalization
-      loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
+      loglik += mylgamma(prior_gamma(k, 0) + prior_gamma(k, 1)) -
+                mylgamma(prior_gamma(k, 0)) - mylgamma(prior_gamma(k, 1));
 
       // s
-      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) )
-                - mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1))
-                + mylgamma(n_s1_k(k) + prior_gamma(k, 0));
+      loglik += mylgamma(n_s0_k(k) + prior_gamma(k, 1)) -
+                mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) +
+                         prior_gamma(k, 1)) +
+                mylgamma(n_s1_k(k) + prior_gamma(k, 0));
     }
   }
 
   // z
   fixed_part = alpha.sum();
   for (int d = 0; d < num_doc; ++d) {
-    loglik += mylgamma( fixed_part ) - mylgamma( doc_each_len_weighted[d] + fixed_part );
+    loglik +=
+        mylgamma(fixed_part) - mylgamma(doc_each_len_weighted[d] + fixed_part);
 
     for (int k = 0; k < num_topics; ++k) {
-      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+      loglik += mylgamma(n_dk(d, k) + alpha(k)) - mylgamma(alpha(k));
     }
   }
 
   return loglik;
 }
-
-

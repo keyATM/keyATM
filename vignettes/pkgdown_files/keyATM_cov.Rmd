@@ -17,25 +17,30 @@ data(data_corpus_inaugural, package = "quanteda")
 data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 
 data_tokens <- tokens(data_corpus_inaugural,
-                      remove_numbers = TRUE,
-                      remove_punct = TRUE,
-                      remove_symbols = TRUE,
-                      remove_separators = TRUE,
-                      remove_url = TRUE) %>%
-                 tokens_tolower() %>%
-                 tokens_remove(c(stopwords("english"),
-                               "may", "shall", "can",
-                               "must", "upon", "with", "without")) %>%
-                 tokens_select(min_nchar = 3)
+  remove_numbers = TRUE,
+  remove_punct = TRUE,
+  remove_symbols = TRUE,
+  remove_separators = TRUE,
+  remove_url = TRUE
+) %>%
+  tokens_tolower() %>%
+  tokens_remove(c(
+    stopwords("english"),
+    "may", "shall", "can",
+    "must", "upon", "with", "without"
+  )) %>%
+  tokens_select(min_nchar = 3)
 
 data_dfm <- dfm(data_tokens) %>%
-               dfm_trim(min_termfreq = 5, min_docfreq = 2)
+  dfm_trim(min_termfreq = 5, min_docfreq = 2)
 
-keywords <- list(Government     = c("laws", "law", "executive"),
-                 Congress       = c("congress", "party"),
-                 Peace          = c("peace", "world", "freedom"),
-                 Constitution   = c("constitution", "rights"),
-                 ForeignAffairs  = c("foreign", "war"))
+keywords <- list(
+  Government = c("laws", "law", "executive"),
+  Congress = c("congress", "party"),
+  Peace = c("peace", "world", "freedom"),
+  Constitution = c("constitution", "rights"),
+  ForeignAffairs = c("foreign", "war")
+)
 
 keyATM_docs <- keyATM_read(data_dfm)
 ```
@@ -86,11 +91,15 @@ Republican, and Others.
 library(dplyr)
 vars %>%
   as_tibble() %>%
-  mutate(Period = case_when(Year <= 1899 ~ "18_19c",
-                            TRUE ~ "20_21c")) %>%
-  mutate(Party = case_when(Party == "Democratic" ~ "Democratic",
-                           Party == "Republican" ~ "Republican",
-                           TRUE ~ "Other")) %>%
+  mutate(Period = case_when(
+    Year <= 1899 ~ "18_19c",
+    TRUE ~ "20_21c"
+  )) %>%
+  mutate(Party = case_when(
+    Party == "Democratic" ~ "Democratic",
+    Party == "Republican" ~ "Republican",
+    TRUE ~ "Other"
+  )) %>%
   select(Party, Period) -> vars_selected
 table(vars_selected)
 ```
@@ -98,10 +107,14 @@ table(vars_selected)
 Since we have categorical variables, we set baselines with the `factor()` function.
 ```{r, warning=FALSE, message=FALSE}
 vars_selected %>%
-  mutate(Party  = factor(Party,
-                         levels = c("Other", "Republican", "Democratic")),
-         Period = factor(Period,
-                         levels = c("18_19c", "20_21c"))) -> vars_selected
+  mutate(
+    Party = factor(Party,
+      levels = c("Other", "Republican", "Democratic")
+    ),
+    Period = factor(Period,
+      levels = c("18_19c", "20_21c")
+    )
+  ) -> vars_selected
 ```
 
 The **keyATM** internally uses the `model.matrix()` function so that researchers can pass
@@ -119,13 +132,15 @@ The text data is the same as what we use in the [base model](keyATM_base.html).
 Please check [this page](Options.html) for available options.
 ```{r, warning=FALSE, message=FALSE, results="hide"}
 out <- keyATM(
-  docs              = keyATM_docs,
+  docs = keyATM_docs,
   no_keyword_topics = 5,
-  keywords          = keywords,
-  model             = "covariates",
-  model_settings    = list(covariates_data    = vars_selected,
-                           covariates_formula = ~ Party + Period),
-  options           = list(seed = 250)
+  keywords = keywords,
+  model = "covariates",
+  model_settings = list(
+    covariates_data = vars_selected,
+    covariates_formula = ~ Party + Period
+  ),
+  options = list(seed = 250)
 )
 ```
 
@@ -184,7 +199,8 @@ In this case, the `Period20_21c` equals zero indicates speeches in the 18th
 and 19th century and equals one for the speeches in the 20th and 21st century.
 ```{r, warning=FALSE, message=FALSE}
 strata_topic <- by_strata_DocTopic(
-  out, by_var = "Period20_21c",
+  out,
+  by_var = "Period20_21c",
   labels = c("18_19c", "20_21c")
 )
 ```
@@ -210,7 +226,8 @@ The plot below combines two panels in the previous plot and
 display in the same panel.
 ```{r, message=FALSE, warning=FALSE, fig.align='center'}
 fig_doctopic <- plot(
-  strata_topic, var_name = "Period",
+  strata_topic,
+  var_name = "Period",
   show_topic = c(4, 5), by = "covariate"
 )
 ```
@@ -224,9 +241,9 @@ baseline when constructing `factor` for this variable,
 the comparison is the relative increase or decrease
 from the 18th and 19th century to the 20th and 21st century.
 ```{r, warning=FALSE, message=FALSE}
-theta1 <- strata_topic$theta[[1]]  # 18_19c
-theta2 <- strata_topic$theta[[2]]  # 20_21c
-theta_diff <- theta1[, c(4, 5)] - theta2[, c(4, 5)]  # focus on two topics
+theta1 <- strata_topic$theta[[1]] # 18_19c
+theta2 <- strata_topic$theta[[2]] # 20_21c
+theta_diff <- theta1[, c(4, 5)] - theta2[, c(4, 5)] # focus on two topics
 theta_diff_quantile <- apply(theta_diff, 2, quantile, c(0.05, 0.5, 0.95))
 theta_diff_quantile
 ```
@@ -236,16 +253,18 @@ Furthermore, we can use the `predict()` function to get the predicted mean of
 the document-topic distribution for three party categories.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 strata_rep <- by_strata_DocTopic(
-  out, by_var = "PartyRepublican",
+  out,
+  by_var = "PartyRepublican",
   labels = c("Non-Republican", "Republican")
 )
 strata_dem <- by_strata_DocTopic(
-  out, by_var = "PartyDemocratic",
+  out,
+  by_var = "PartyDemocratic",
   labels = c("Non-Democratic", "Democratic")
 )
 
-est_rep <- summary(strata_rep)[["Republican"]]  # Republican data
-est_dem <- summary(strata_dem)[["Democratic"]]  # Democratic data
+est_rep <- summary(strata_rep)[["Republican"]] # Republican data
+est_dem <- summary(strata_dem)[["Democratic"]] # Democratic data
 ```
 
 Now we are missing the baseline (Others).
@@ -261,7 +280,7 @@ pred <- predict(out, new_data, label = "Others")
 Now, we combine three objects and make a plot.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 res <- bind_rows(est_rep, est_dem, pred) %>%
-          filter(TopicID %in% c(4, 5))  # Select two topics
+  filter(TopicID %in% c(4, 5)) # Select two topics
 labels <- unique(res$label)
 
 library(ggplot2)
@@ -288,14 +307,16 @@ different parties using the `Party` covariate.
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
 out <- keyATM(
-  docs              = keyATM_docs,
+  docs = keyATM_docs,
   no_keyword_topics = 5,
-  keywords          = keywords,
-  model             = "covariates",
-  model_settings    = list(covariates_data    = vars_selected,
-                           covariates_formula = ~ Party + Period),
-  options           = list(seed = 250),
-  keep              = c("Z", "S")
+  keywords = keywords,
+  model = "covariates",
+  model_settings = list(
+    covariates_data = vars_selected,
+    covariates_formula = ~ Party + Period
+  ),
+  options = list(seed = 250),
+  keep = c("Z", "S")
 )
 strata_tw <- by_strata_TopicWord(
   out, keyATM_docs,
@@ -318,14 +339,16 @@ Please read [technical details](keyATMPG.html) before use this option.
 To estimate keyATM Covariate with the Pólya-Gamma augmentation, set `covariates_model = "PG"`.
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(
-  docs              = keyATM_docs,
+  docs = keyATM_docs,
   no_keyword_topics = 5,
-  keywords          = keywords,
-  model             = "covariates",
-  model_settings    = list(covariates_data    = vars_selected,
-                           covariates_formula = ~ Party + Period,
-                           covariates_model = "PG"),
-  options           = list(seed = 250)
+  keywords = keywords,
+  model = "covariates",
+  model_settings = list(
+    covariates_data = vars_selected,
+    covariates_formula = ~ Party + Period,
+    covariates_model = "PG"
+  ),
+  options = list(seed = 250)
 )
 top_words(out)
 ```

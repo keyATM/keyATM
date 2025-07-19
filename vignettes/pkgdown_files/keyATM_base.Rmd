@@ -28,25 +28,30 @@ data(data_corpus_inaugural, package = "quanteda")
 data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 
 data_tokens <- tokens(data_corpus_inaugural,
-                      remove_numbers = TRUE,
-                      remove_punct = TRUE,
-                      remove_symbols = TRUE,
-                      remove_separators = TRUE,
-                      remove_url = TRUE) %>%
-                 tokens_tolower() %>%
-                 tokens_remove(c(stopwords("english"),
-                               "may", "shall", "can",
-                               "must", "upon", "with", "without")) %>%
-                 tokens_select(min_nchar = 3)
+  remove_numbers = TRUE,
+  remove_punct = TRUE,
+  remove_symbols = TRUE,
+  remove_separators = TRUE,
+  remove_url = TRUE
+) %>%
+  tokens_tolower() %>%
+  tokens_remove(c(
+    stopwords("english"),
+    "may", "shall", "can",
+    "must", "upon", "with", "without"
+  )) %>%
+  tokens_select(min_nchar = 3)
 
 data_dfm <- dfm(data_tokens) %>%
-               dfm_trim(min_termfreq = 5, min_docfreq = 2)
+  dfm_trim(min_termfreq = 5, min_docfreq = 2)
 
-keywords <- list(Government     = c("laws", "law", "executive"),
-                 Congress       = c("congress", "party"),
-                 Peace          = c("peace", "world", "freedom"),
-                 Constitution   = c("constitution", "rights"),
-                 ForeignAffairs = c("foreign", "war"))
+keywords <- list(
+  Government = c("laws", "law", "executive"),
+  Congress = c("congress", "party"),
+  Peace = c("peace", "world", "freedom"),
+  Constitution = c("constitution", "rights"),
+  ForeignAffairs = c("foreign", "war")
+)
 
 keyATM_docs <- keyATM_read(data_dfm)
 ```
@@ -70,10 +75,10 @@ for other options). The default number of iterations is 1,500.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center', results="hide"}
 out <- keyATM(
-  docs              = keyATM_docs,    # text input
-  no_keyword_topics = 5,              # number of topics without keywords
-  keywords          = keywords,       # keywords
-  model             = "base",         # select the model
+  docs              = keyATM_docs, # text input
+  no_keyword_topics = 5, # number of topics without keywords
+  keywords          = keywords, # keywords
+  model             = "base", # select the model
   options           = list(seed = 250)
 )
 ```
@@ -139,8 +144,8 @@ topic-word distribution. The output of the `keyATM()` function contains both
 quantities.
 
 ```{r, eval = FALSE, warning=FALSE, message=FALSE, fig.align='center'}
-out$theta  # Document-topic distribution
-out$phi    # Topic-word distribution
+out$theta # Document-topic distribution
+out$phi # Topic-word distribution
 ```
 
 The **keyATM** provides other functions to diagnose and explore the fitted model.

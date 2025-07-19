@@ -25,11 +25,13 @@ data_tokens <- tokens(
   remove_symbols = TRUE,
   remove_separators = TRUE,
   remove_url = TRUE
-  ) %>%
+) %>%
   tokens_tolower() %>%
-  tokens_remove(c(stopwords("english"),
-                "may", "shall", "can",
-                "must", "upon", "with", "without")) %>%
+  tokens_remove(c(
+    stopwords("english"),
+    "may", "shall", "can",
+    "must", "upon", "with", "without"
+  )) %>%
   tokens_select(min_nchar = 3)
 
 data_dfm <- dfm(data_tokens) %>%
@@ -40,9 +42,9 @@ keyATM_docs <- keyATM_read(texts = data_dfm)
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center', results="hide"}
 out <- weightedLDA(
-  docs              = keyATM_docs,    # text input
-  number_of_topics  = 5,              # number of topics without keywords
-  model             = "base",         # select the model
+  docs              = keyATM_docs, # text input
+  number_of_topics  = 5, # number of topics without keywords
+  model             = "base", # select the model
   options           = list(seed = 250)
 )
 ```
@@ -58,28 +60,38 @@ vars <- docvars(data_corpus_inaugural)
 library(dplyr)
 vars %>%
   as_tibble() %>%
-  mutate(Period = case_when(Year <= 1899 ~ "18_19c",
-                            TRUE ~ "20_21c")) %>%
-  mutate(Party = case_when(Party == "Democratic" ~ "Democratic",
-                           Party == "Republican" ~ "Republican",
-                           TRUE ~ "Other")) %>%
+  mutate(Period = case_when(
+    Year <= 1899 ~ "18_19c",
+    TRUE ~ "20_21c"
+  )) %>%
+  mutate(Party = case_when(
+    Party == "Democratic" ~ "Democratic",
+    Party == "Republican" ~ "Republican",
+    TRUE ~ "Other"
+  )) %>%
   select(Party, Period) -> vars_selected
 
 vars_selected %>%
-  mutate(Party  = factor(Party,
-                         levels = c("Other", "Republican", "Democratic")),
-         Period = factor(Period,
-                         levels = c("18_19c", "20_21c"))) -> vars_selected
+  mutate(
+    Party = factor(Party,
+      levels = c("Other", "Republican", "Democratic")
+    ),
+    Period = factor(Period,
+      levels = c("18_19c", "20_21c")
+    )
+  ) -> vars_selected
 ```
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center', results="hide"}
 out <- weightedLDA(
-  docs              = keyATM_docs,
-  number_of_topics  = 5,
-  model             = "covariates",
-  model_settings    = list(covariates_data    = vars_selected,
-                           covariates_formula = ~ Party + Period),
-  options           = list(seed = 250)
+  docs = keyATM_docs,
+  number_of_topics = 5,
+  model = "covariates",
+  model_settings = list(
+    covariates_data = vars_selected,
+    covariates_formula = ~ Party + Period
+  ),
+  options = list(seed = 250)
 )
 ```
 ```{r, warning=FALSE, message=FALSE}
@@ -98,14 +110,15 @@ vars %>%
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center', results="hide"}
 out <- weightedLDA(
-  docs             = keyATM_docs,
+  docs = keyATM_docs,
   number_of_topics = 3,
-  model            = "dynamic",
-  model_settings   = list(time_index = vars_period$Period,
-                          num_states = 5),
-  options          = list(seed = 250)
+  model = "dynamic",
+  model_settings = list(
+    time_index = vars_period$Period,
+    num_states = 5
+  ),
+  options = list(seed = 250)
 )
-
 ```
 
 ```{r, warning=FALSE, message=FALSE}

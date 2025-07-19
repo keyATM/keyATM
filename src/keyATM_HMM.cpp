@@ -4,8 +4,7 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-void keyATMhmm::read_data_specific()
-{
+void keyATMhmm::read_data_specific() {
   model_settings = model["model_settings"];
   num_states = model_settings["num_states"];
   index_states = num_states - 1;
@@ -13,7 +12,7 @@ void keyATMhmm::read_data_specific()
   IntegerVector time_index_R = model_settings["time_index"];
   time_index = Rcpp::as<Eigen::VectorXi>(time_index_R);
   num_time = time_index.maxCoeff();
-  time_index = time_index.array() - 1;  // adjust index
+  time_index = time_index.array() - 1; // adjust index
   time_doc_start = VectorXi::Zero(num_time);
   time_doc_end = VectorXi::Zero(num_time);
 
@@ -22,7 +21,7 @@ void keyATMhmm::read_data_specific()
   int index;
   int store_index = 0;
   for (int d = 0; d < num_doc; ++d) {
-     index = time_index[d];
+    index = time_index[d];
     if (index != index_prev) {
       time_doc_start[store_index] = d;
       index_prev = index;
@@ -30,17 +29,15 @@ void keyATMhmm::read_data_specific()
     }
   }
 
-  for (int s = 0; s < num_time-1; ++s) {
+  for (int s = 0; s < num_time - 1; ++s) {
     time_doc_end(s) = time_doc_start(s + 1) - 1;
   }
-  time_doc_end(num_time-1) = num_doc-1;
+  time_doc_end(num_time - 1) = num_doc - 1;
 
   store_transition_matrix = options_list["store_transition_matrix"];
 }
 
-
-void keyATMhmm::initialize_specific()
-{
+void keyATMhmm::initialize_specific() {
   // Initialize R_est
   // Use multinomial distribution (with flat probability)
   // to decide the number of each state
@@ -54,7 +51,7 @@ void keyATMhmm::initialize_specific()
     R_est_temp(i) = cumulative * (i + 1);
   }
 
-  for (int j = 0; j < num_time-num_states; ++j) {
+  for (int j = 0; j < num_time - num_states; ++j) {
     // `num_time - num_states` because all states have at least one time
     // `R_est_num` is initialized to 1
     u = R::runif(0, 1);
@@ -82,15 +79,15 @@ void keyATMhmm::initialize_specific()
   // Initializae P_est
   P_est = MatrixXd::Zero(num_states, num_states);
   double prob;
-  for (int i = 0; i <= (index_states-1); ++i) {
+  for (int i = 0; i <= (index_states - 1); ++i) {
     prob = R::rbeta(1.0, 1.0);
     P_est(i, i) = prob;
-    P_est(i, i + 1) = 1-prob;
+    P_est(i, i + 1) = 1 - prob;
   }
   P_est(index_states, index_states) = 1;
 
   // Initialize alphas
-  alphas = MatrixXd::Constant(num_states, num_topics, 50.0/num_topics);
+  alphas = MatrixXd::Constant(num_states, num_topics, 50.0 / num_topics);
 
   // Initialize variables we use in the sampling
   Prk = MatrixXd::Zero(num_time, num_states);
@@ -103,9 +100,7 @@ void keyATMhmm::initialize_specific()
   states_end = VectorXi::Zero(num_states);
 }
 
-
-void keyATMhmm::resume_initialize_specific()
-{
+void keyATMhmm::resume_initialize_specific() {
   // Resume R_est
   List R_iter = stored_values["R_iter"];
   NumericVector state_R = R_iter[R_iter.size() - 1];
@@ -143,10 +138,7 @@ void keyATMhmm::resume_initialize_specific()
   states_end = VectorXi::Zero(num_states);
 }
 
-
-
-int keyATMhmm::get_state_index(const int doc_id)
-{
+int keyATMhmm::get_state_index(const int doc_id) {
   // Which time segment the document belongs to
   int t;
   for (t = 0; t < num_time; ++t) {
@@ -154,12 +146,10 @@ int keyATMhmm::get_state_index(const int doc_id)
       break;
     }
   }
-  return(R_est(t));
+  return (R_est(t));
 }
 
-
-void keyATMhmm::iteration_single(int it)
-{ // Single iteration
+void keyATMhmm::iteration_single(int it) { // Single iteration
   int doc_id_;
   int doc_length;
   int w_, z_, s_;
@@ -168,17 +158,18 @@ void keyATMhmm::iteration_single(int it)
 
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
 
-  for (int ii = 0; ii < num_doc; ++ii){
+  for (int ii = 0; ii < num_doc; ++ii) {
     doc_id_ = doc_indexes[ii];
     doc_s = S[doc_id_], doc_z = Z[doc_id_], doc_w = W[doc_id_];
     doc_length = doc_each_len[doc_id_];
 
-    alpha = alphas.row(get_state_index(doc_id_)).transpose(); // select alpha for this document
+    alpha = alphas.row(get_state_index(doc_id_))
+                .transpose(); // select alpha for this document
 
-    token_indexes = sampler::shuffled_indexes(doc_length); //shuffle
+    token_indexes = sampler::shuffled_indexes(doc_length); // shuffle
 
     // Iterate each word in the document
-    for (int jj = 0; jj < doc_length; ++jj){
+    for (int jj = 0; jj < doc_length; ++jj) {
       w_position = token_indexes[jj];
       s_ = doc_s[w_position], z_ = doc_z[w_position], w_ = doc_w[w_position];
 
@@ -200,22 +191,18 @@ void keyATMhmm::iteration_single(int it)
   sample_parameters(it);
 }
 
-
-void keyATMhmm::verbose_special(int r_index)
-{
+void keyATMhmm::verbose_special(int r_index) {
   // If there is anything special to show, write here.
 }
 
-
-void keyATMhmm::sample_parameters(int it)
-{
+void keyATMhmm::sample_parameters(int it) {
   // alpha
   sample_alpha();
 
   // HMM
   sample_forward();  // calculate Prk
-  sample_backward();  // sample R_est
-  sample_P();  // sample P_est
+  sample_backward(); // sample R_est
+  sample_P();        // sample P_est
 
   // Store alpha, state, and the transition matrix
   int r_index = it + 1;
@@ -235,12 +222,9 @@ void keyATMhmm::sample_parameters(int it)
       keep_P_est();
     }
   }
-
 }
 
-
-void keyATMhmm::sample_alpha()
-{
+void keyATMhmm::sample_alpha() {
 
   // Retrieve start and end indexes of states in documents
   int index_start, index_end;
@@ -264,15 +248,11 @@ void keyATMhmm::sample_alpha()
   }
 
   for (int r = 0; r < num_states; ++r) {
-    sample_alpha_state(r, states_start(r),
-                          states_end(r));
+    sample_alpha_state(r, states_start(r), states_end(r));
   }
-
 }
 
-
-void keyATMhmm::sample_alpha_state(int state, int state_start, int state_end)
-{
+void keyATMhmm::sample_alpha_state(int state, int state_start, int state_end) {
 
   double start, end, previous_p, new_p, newlikelihood, slice_;
   double store_loglik;
@@ -283,34 +263,34 @@ void keyATMhmm::sample_alpha_state(int state, int state_start, int state_end)
   newalphallk = 0.0;
   int k;
 
-  alpha = alphas.row(state).transpose();  // select alpha to update
-
+  alpha = alphas.row(state).transpose(); // select alpha to update
 
   for (int i = 0; i < num_topics; ++i) {
     k = topic_ids[i];
     store_loglik = alpha_loglik(k, state_start, state_end);
-    start = min_v ; // shrinked with shrinkp()
-    end = max_v;  // shrinked with shrinkp()
+    start = min_v; // shrinked with shrinkp()
+    end = max_v;   // shrinked with shrinkp()
 
     previous_p = alpha(k) / (1.0 + alpha(k)); // shrinkp
-    slice_ = store_loglik - 2.0 * log(1.0 - previous_p)
-            + log(unif_rand()); // <-- using R random uniform
+    slice_ = store_loglik - 2.0 * log(1.0 - previous_p) +
+             log(unif_rand()); // <-- using R random uniform
 
-    for (int shrink_time = 0; shrink_time < max_shrink_time; ++shrink_time){
+    for (int shrink_time = 0; shrink_time < max_shrink_time; ++shrink_time) {
       new_p = sampler::slice_uniform(start, end); // <-- using R function above
-      alpha(k) = new_p / (1.0 - new_p); // expandp
+      alpha(k) = new_p / (1.0 - new_p);           // expandp
 
       newalphallk = alpha_loglik(k, state_start, state_end);
       newlikelihood = newalphallk - 2.0 * log(1.0 - new_p);
 
-      if (slice_ < newlikelihood){
+      if (slice_ < newlikelihood) {
         break;
-      } else if (previous_p < new_p){
+      } else if (previous_p < new_p) {
         end = new_p;
-      } else if (new_p < previous_p){
+      } else if (new_p < previous_p) {
         start = new_p;
       } else {
-        Rcpp::stop("Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
+        Rcpp::stop(
+            "Something goes wrong in sample_lambda_slice(). Adjust `A_slice`.");
         alpha(k) = keep_current_param(k);
         break;
       }
@@ -319,21 +299,17 @@ void keyATMhmm::sample_alpha_state(int state, int state_start, int state_end)
 
   // Set new alpha
   alphas.row(state) = alpha.transpose();
-
 }
 
-
-double keyATMhmm::alpha_loglik(int k, int state_start, int state_end)
-{
+double keyATMhmm::alpha_loglik(int k, int state_start, int state_end) {
   double loglik = 0.0;
   double fixed_part = 0.0;
 
   ndk_a = n_dk.rowwise() + alpha.transpose(); // Use Eigen Broadcasting
   double alpha_sum_val = alpha.sum();
 
-
   fixed_part += mylgamma(alpha_sum_val); // first term numerator
-  fixed_part -= mylgamma(alpha(k)); // first term denominator
+  fixed_part -= mylgamma(alpha(k));      // first term denominator
   // Add prior
   if (k < keyword_k) {
     loglik += gammapdfln(alpha(k), eta_1, eta_2);
@@ -345,7 +321,7 @@ double keyATMhmm::alpha_loglik(int k, int state_start, int state_end)
     loglik += fixed_part;
 
     // second term numerator
-    loglik += mylgamma(ndk_a(d,k));
+    loglik += mylgamma(ndk_a(d, k));
 
     // second term denominator
     loglik -= mylgamma(doc_each_len_weighted[d] + alpha_sum_val);
@@ -353,9 +329,7 @@ double keyATMhmm::alpha_loglik(int k, int state_start, int state_end)
   return loglik;
 }
 
-
-void keyATMhmm::sample_forward()
-{ // Calculate Prk (num_doc, num_states)
+void keyATMhmm::sample_forward() { // Calculate Prk (num_doc, num_states)
   double logsum;
   int added;
   double loglik;
@@ -375,11 +349,11 @@ void keyATMhmm::sample_forward()
     }
 
     // Prepare Pst
-    rt_1l = Prk.row(t-1);  // previous time block
+    rt_1l = Prk.row(t - 1); // previous time block
     rt_k = (rt_1l.transpose() * P_est);
-        // p(s_{t} = k), summation is done as matrix calculation
-        // Note that P has a lot of 0 elements
-        // This is a first term of the numerator in Eq.(6)
+    // p(s_{t} = k), summation is done as matrix calculation
+    // Note that P has a lot of 0 elements
+    // This is a first term of the numerator in Eq.(6)
 
     // Format numerator and calculate denominator at the same time
     logsum = 0.0;
@@ -391,7 +365,7 @@ void keyATMhmm::sample_forward()
         logsum = logsumexp(logsum, loglik, (added == 0));
         added += 1;
       } else {
-        logrt_k(r) = 0.0;  // place holder
+        logrt_k(r) = 0.0; // place holder
       }
     }
 
@@ -402,33 +376,30 @@ void keyATMhmm::sample_forward()
         Prk(t, r) = 0.0;
       }
     }
-
   }
-
 }
 
-
-double keyATMhmm::polyapdfln(int t, VectorXd &alpha)
-{ // Polya distribution: log-likelihood
+double
+keyATMhmm::polyapdfln(int t,
+                      VectorXd &alpha) { // Polya distribution: log-likelihood
   double loglik = 0.0;
 
   int doc_start, doc_end;
-  doc_start = time_doc_start(t);  // starting doc index of time segment t
+  doc_start = time_doc_start(t); // starting doc index of time segment t
   doc_end = time_doc_end(t);
 
   for (int d = doc_start; d <= doc_end; ++d) {
-    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
+    loglik += mylgamma(alpha.sum()) -
+              mylgamma(doc_each_len_weighted[d] + alpha.sum());
     for (int k = 0; k < num_topics; ++k) {
-      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+      loglik += mylgamma(n_dk(d, k) + alpha(k)) - mylgamma(alpha(k));
     }
   }
 
   return loglik;
 }
 
-
-void keyATMhmm::sample_backward()
-{
+void keyATMhmm::sample_backward() {
   int state_id;
 
   // sample R_est
@@ -439,46 +410,42 @@ void keyATMhmm::sample_backward()
 
   // Last document
   R_est(num_time - 1) = index_states;
-  R_count(index_states) += 1;  // last document
+  R_count(index_states) += 1; // last document
 
   for (int t = (num_time - 2); 0 <= t; --t) {
     state_id = R_est(t + 1);
 
-    state_prob_vec.array() = Prk.row(t).transpose().array() * P_est.col(state_id).array();
+    state_prob_vec.array() =
+        Prk.row(t).transpose().array() * P_est.col(state_id).array();
     state_prob_vec.array() = state_prob_vec.array() / state_prob_vec.sum();
 
     state_id = sampler::rcat(state_prob_vec, num_states); // new state id
     R_est(t) = state_id;
     R_count(state_id) += 1;
   }
-
 }
 
-
-void keyATMhmm::sample_P()
-{
+void keyATMhmm::sample_P() {
   double pii;
 
   // sample P_est
   // iterate until index_state - 2
   for (int r = 0; r <= (num_states - 2); ++r) {
     pii = R::rbeta(R_count(r), 2);
-      // First value is 1 + R_count(s) - 1.
-      // R_count(s) - 1: the number of transitions from state
-      // s to state s in the sequence of state
-      // ----------------------------------------------------
-      // "-1" because the first count in R_count is
-      // the transition from s-1 to s
-      // prior is Beta(1,1)
+    // First value is 1 + R_count(s) - 1.
+    // R_count(s) - 1: the number of transitions from state
+    // s to state s in the sequence of state
+    // ----------------------------------------------------
+    // "-1" because the first count in R_count is
+    // the transition from s-1 to s
+    // prior is Beta(1,1)
 
     P_est(r, r) = pii;
     P_est(r, r + 1) = 1.0 - pii;
   }
 }
 
-
-void keyATMhmm::store_R_est()
-{
+void keyATMhmm::store_R_est() {
   // Store state
   Rcpp::NumericVector state_R = Rcpp::wrap(R_est);
   List R_iter = stored_values["R_iter"];
@@ -486,9 +453,7 @@ void keyATMhmm::store_R_est()
   stored_values["R_iter"] = R_iter;
 }
 
-
-void keyATMhmm::store_P_est()
-{
+void keyATMhmm::store_P_est() {
   // Store transition matrix
   Rcpp::NumericMatrix mat_R = Rcpp::wrap(P_est);
   List P_iter = stored_values["P_iter"];
@@ -496,24 +461,20 @@ void keyATMhmm::store_P_est()
   stored_values["P_iter"] = P_iter;
 }
 
-
-void keyATMhmm::keep_P_est()
-{
+void keyATMhmm::keep_P_est() {
   // Keep the latest transition matrix
   Rcpp::NumericMatrix mat_R = Rcpp::wrap(P_est);
   List P_last = stored_values["P_last"];
   if (P_last.size() == 0) {
     P_last.push_back(mat_R);
   } else {
-    P_last.erase(0);   // only keep the latest one
+    P_last.erase(0); // only keep the latest one
     P_last.push_back(mat_R);
   }
   stored_values["P_last"] = P_last;
 }
 
-
-double keyATMhmm::loglik_total()
-{
+double keyATMhmm::loglik_total() {
   double loglik = 0.0;
   int state_id;
 
@@ -522,48 +483,51 @@ double keyATMhmm::loglik_total()
       loglik += mylgamma(beta + n_s0_kv(k, v)) - mylgamma(beta);
     }
 
-
-
     // word normalization
-    loglik += mylgamma( beta * (double)num_vocab ) - mylgamma(beta * (double)num_vocab + n_s0_k(k) );
+    loglik += mylgamma(beta * (double)num_vocab) -
+              mylgamma(beta * (double)num_vocab + n_s0_k(k));
 
     if (k < keyword_k) {
       // For keyword topics
 
       // n_s1_kv
-      for (SparseMatrix<double,RowMajor>::InnerIterator it(n_s1_kv, k); it; ++it) {
-        loglik += mylgamma(beta_s + it.value() / vocab_weights(it.index()) ) - mylgamma(beta_s);
+      for (SparseMatrix<double, RowMajor>::InnerIterator it(n_s1_kv, k); it;
+           ++it) {
+        loglik += mylgamma(beta_s + it.value() / vocab_weights(it.index())) -
+                  mylgamma(beta_s);
       }
-      loglik += mylgamma( beta_s * (double)keywords_num[k] ) - mylgamma(beta_s * (double)keywords_num[k] + n_s1_k(k) );
+      loglik += mylgamma(beta_s * (double)keywords_num[k]) -
+                mylgamma(beta_s * (double)keywords_num[k] + n_s1_k(k));
 
       // Normalization
-      loglik += mylgamma( prior_gamma(k, 0) + prior_gamma(k, 1)) - mylgamma( prior_gamma(k, 0)) - mylgamma( prior_gamma(k, 1));
+      loglik += mylgamma(prior_gamma(k, 0) + prior_gamma(k, 1)) -
+                mylgamma(prior_gamma(k, 0)) - mylgamma(prior_gamma(k, 1));
 
       // s
-      loglik += mylgamma( n_s0_k(k) + prior_gamma(k, 1) )
-                - mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1))
-                + mylgamma(n_s1_k(k) + prior_gamma(k, 0) );
+      loglik += mylgamma(n_s0_k(k) + prior_gamma(k, 1)) -
+                mylgamma(n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) +
+                         prior_gamma(k, 1)) +
+                mylgamma(n_s1_k(k) + prior_gamma(k, 0));
     }
   }
 
-
   for (int d = 0; d < num_doc; ++d) {
     // z
-    alpha = alphas.row(get_state_index(d)).transpose(); // Doc alpha, column vector
+    alpha =
+        alphas.row(get_state_index(d)).transpose(); // Doc alpha, column vector
 
-    loglik += mylgamma( alpha.sum() ) - mylgamma( doc_each_len_weighted[d] + alpha.sum() );
+    loglik += mylgamma(alpha.sum()) -
+              mylgamma(doc_each_len_weighted[d] + alpha.sum());
     for (int k = 0; k < num_topics; ++k) {
-      loglik += mylgamma( n_dk(d,k) + alpha(k) ) - mylgamma( alpha(k) );
+      loglik += mylgamma(n_dk(d, k) + alpha(k)) - mylgamma(alpha(k));
     }
-
   }
 
   // HMM part
   for (int t = 0; t < num_time; ++t) {
     state_id = R_est(t);
-    loglik += log( P_est(state_id, state_id) );
+    loglik += log(P_est(state_id, state_id));
   }
 
   return loglik;
 }
-

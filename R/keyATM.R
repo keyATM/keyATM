@@ -72,17 +72,25 @@
 #' }
 #'
 #' @export
-keyATM <- function(docs, model, no_keyword_topics,
-                   keywords = list(), model_settings = list(),
-                   priors = list(), options = list(), keep = c())
-{
+keyATM <- function(
+  docs,
+  model,
+  no_keyword_topics,
+  keywords = list(),
+  model_settings = list(),
+  priors = list(),
+  options = list(),
+  keep = c()
+) {
   # Check type
-  if (length(keep) != 0)
+  if (length(keep) != 0) {
     check_arg_type(keep, "character")
+  }
 
   model_name <- full_model_name(model, type = "keyATM")
-  if (is.null(options$seed))
+  if (is.null(options$seed)) {
     options$seed <- floor(stats::runif(1) * 1e5)
+  }
   set.seed(options$seed)
 
   # Check if there is a resume object
@@ -96,20 +104,28 @@ keyATM <- function(docs, model, no_keyword_topics,
   } else {
     resume <- FALSE
     initialized <- keyATM_initialize(
-      docs, model_name, no_keyword_topics,
-      keywords, model_settings, priors, options
+      docs,
+      model_name,
+      no_keyword_topics,
+      keywords,
+      model_settings,
+      priors,
+      options
     )
     fitted <- keyATM_fit(initialized)
     used_iter <- get_used_iter(fitted, resume)
   }
 
-  if ("resume" %in% names(options)) {  # first save or update
+  if ("resume" %in% names(options)) {
+    # first save or update
     fitted_save(options$resume, fitted, model_name, used_iter)
   }
 
   # 0 iterations
   if (fitted$options$iterations == 0) {
-    cli::cli_alert_info("`options$iterations` is 0. keyATM returns an initialized object.")
+    cli::cli_alert_info(
+      "`options$iterations` is 0. keyATM returns an initialized object."
+    )
     return(fitted)
   }
 
@@ -172,20 +188,27 @@ keyATM <- function(docs, model, no_keyword_topics,
 #' }
 #'
 #' @export
-weightedLDA <- function(docs, model, number_of_topics,
-                        model_settings = list(),
-                        priors = list(), options = list(), keep = c())
-{
+weightedLDA <- function(
+  docs,
+  model,
+  number_of_topics,
+  model_settings = list(),
+  priors = list(),
+  options = list(),
+  keep = c()
+) {
   # Check type
-  if (length(keep) != 0)
+  if (length(keep) != 0) {
     check_arg_type(keep, "character")
+  }
 
   model_name <- full_model_name(model, type = "lda")
-  if (is.null(options$seed))
+  if (is.null(options$seed)) {
     options$seed <- floor(stats::runif(1) * 1e5)
+  }
   set.seed(options$seed)
 
- # Check if there is a resume object
+  # Check if there is a resume object
   if ("resume" %in% names(options) && fs::file_exists(options$resume)) {
     resume <- TRUE
     fitted <- fitted_load(options$resume)
@@ -196,9 +219,13 @@ weightedLDA <- function(docs, model, number_of_topics,
   } else {
     resume <- FALSE
     initialized <- keyATM_initialize(
-      docs, model_name, number_of_topics,
-      keywords = list(), model_settings = model_settings,
-      priors = priors, options = options
+      docs,
+      model_name,
+      number_of_topics,
+      keywords = list(),
+      model_settings = model_settings,
+      priors = priors,
+      options = options
     )
     fitted <- keyATM_fit(initialized)
     used_iter <- get_used_iter(fitted, resume)
@@ -210,7 +237,9 @@ weightedLDA <- function(docs, model, number_of_topics,
 
   # 0 iterations
   if (fitted$options$iterations == 0) {
-    cli::cli_alert_info("`options$iterations` is 0. keyATM returns an initialized object.")
+    cli::cli_alert_info(
+      "`options$iterations` is 0. keyATM returns an initialized object."
+    )
     return(fitted)
   }
 
@@ -226,19 +255,23 @@ weightedLDA <- function(docs, model, number_of_topics,
 # Resume related functions
 fitted_load <- function(filename) {
   fitted <- readRDS(filename)
-  if (! "keyATM_resume" %in% class(fitted))
+  if (!"keyATM_resume" %in% class(fitted)) {
     cli::cli_abort("The file is not a keyATM object.")
+  }
   cli::cli_alert_success("The fitted model is loaded from {.file {filename}}.")
   return(fitted)
 }
 
 fitted_update_iterations <- function(fitted, new_options) {
-  if (! "keyATM_resume" %in% class(fitted))
+  if (!"keyATM_resume" %in% class(fitted)) {
     cli::cli_abort("The file is not a keyATM object.")
-  if (! "iterations" %in% names(new_options))
+  }
+  if (!"iterations" %in% names(new_options)) {
     cli::cli_abort("The `options` argument must contain `iterations`.")
-  fitted$model$options$iterations <- fitted$model$options$iterations + new_options$iterations  # total after the fitting
-  fitted$model$options$iter_new <- new_options$iterations  # iterations to add
+  }
+  fitted$model$options$iterations <- fitted$model$options$iterations +
+    new_options$iterations # total after the fitting
+  fitted$model$options$iter_new <- new_options$iterations # iterations to add
   return(fitted)
 }
 
@@ -260,11 +293,19 @@ get_used_iter <- function(fitted, resume, exists = NULL) {
   if (resume) {
     exists_max <- max(exists)
     total_iter <- (exists_max + 1):(fitted$options$iterations)
-    total_iter <- total_iter[(total_iter %% thinning == 0) | (total_iter == 1) | total_iter == max(total_iter)]
+    total_iter <- total_iter[
+      (total_iter %% thinning == 0) |
+        (total_iter == 1) |
+        total_iter == max(total_iter)
+    ]
     used_iter <- c(exists, total_iter)
   } else {
     total_iter <- 1:(fitted$options$iterations)
-    used_iter <- total_iter[(total_iter %% thinning == 0) | (total_iter == 1) | total_iter == max(total_iter)]
+    used_iter <- total_iter[
+      (total_iter %% thinning == 0) |
+        (total_iter == 1) |
+        total_iter == max(total_iter)
+    ]
   }
   return(used_iter)
 }

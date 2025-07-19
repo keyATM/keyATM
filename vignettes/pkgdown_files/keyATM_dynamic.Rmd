@@ -30,25 +30,30 @@ data(data_corpus_inaugural, package = "quanteda")
 data_corpus_inaugural <- head(data_corpus_inaugural, n = 58)
 
 data_tokens <- tokens(data_corpus_inaugural,
-                      remove_numbers = TRUE,
-                      remove_punct = TRUE,
-                      remove_symbols = TRUE,
-                      remove_separators = TRUE,
-                      remove_url = TRUE) %>%
-                 tokens_tolower() %>%
-                 tokens_remove(c(stopwords("english"),
-                               "may", "shall", "can",
-                               "must", "upon", "with", "without")) %>%
-                 tokens_select(min_nchar = 3)
+  remove_numbers = TRUE,
+  remove_punct = TRUE,
+  remove_symbols = TRUE,
+  remove_separators = TRUE,
+  remove_url = TRUE
+) %>%
+  tokens_tolower() %>%
+  tokens_remove(c(
+    stopwords("english"),
+    "may", "shall", "can",
+    "must", "upon", "with", "without"
+  )) %>%
+  tokens_select(min_nchar = 3)
 
 data_dfm <- dfm(data_tokens) %>%
-               dfm_trim(min_termfreq = 5, min_docfreq = 2)
+  dfm_trim(min_termfreq = 5, min_docfreq = 2)
 
-keywords <- list(Government     = c("laws", "law", "executive"),
-                 Congress       = c("congress", "party"),
-                 Peace          = c("peace", "world", "freedom"),
-                 Constitution   = c("constitution", "rights"),
-                 ForeignAffairs  = c("foreign", "war"))
+keywords <- list(
+  Government = c("laws", "law", "executive"),
+  Congress = c("congress", "party"),
+  Peace = c("peace", "world", "freedom"),
+  Constitution = c("constitution", "rights"),
+  ForeignAffairs = c("foreign", "war")
+)
 
 keyATM_docs <- keyATM_read(data_dfm)
 ```
@@ -90,13 +95,15 @@ the number of hidden states with the `num_states` in the
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(
-  docs              = keyATM_docs,
+  docs = keyATM_docs,
   no_keyword_topics = 3,
-  keywords          = keywords,
-  model             = "dynamic",
-  model_settings    = list(time_index = vars_period$Period,
-                           num_states = 5),
-  options           = list(seed = 250)
+  keywords = keywords,
+  model = "dynamic",
+  model_settings = list(
+    time_index = vars_period$Period,
+    num_states = 5
+  ),
+  options = list(seed = 250)
 )
 ```
 
@@ -126,13 +133,15 @@ in the `keyATM()` function should be `TRUE` to show 90% credible intervals.
 
 ```{r, warning=FALSE, message=FALSE, fig.align='center'}
 out <- keyATM(
-  docs              = keyATM_docs,
+  docs = keyATM_docs,
   no_keyword_topics = 3,
-  keywords          = keywords,
-  model             = "dynamic",
-  model_settings    = list(time_index = vars_period$Period,
-                           num_states = 5),
-  options           = list(seed = 250, store_theta = TRUE, thinning = 5)
+  keywords = keywords,
+  model = "dynamic",
+  model_settings = list(
+    time_index = vars_period$Period,
+    num_states = 5
+  ),
+  options = list(seed = 250, store_theta = TRUE, thinning = 5)
 )
 fig_timetrend <- plot_timetrend(out, time_index_label = vars$Year, xlab = "Year")
 fig_timetrend

@@ -1,6 +1,6 @@
 ---
 title: "Installation"
-output: 
+output:
   html_document:
     toc: false
 ---
@@ -12,7 +12,7 @@ You can install **keyATM** from either CRAN or GitHub. CRAN has a stable version
 install.packages("keyATM")
 
 # Install development version from GitHub
-devtools::install_github("keyATM/keyATM", ref = "v0.5.0")  # specify a branch
+devtools::install_github("keyATM/keyATM", ref = "v0.5.0") # specify a branch
 ```
 
 If you want to try the latest development version, please specify the name of the branch with `ref` argument in `devtools::install_github`. You can find branches in our [GitHub repository](https://github.com/keyATM/keyATM/branches).

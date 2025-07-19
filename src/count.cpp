@@ -13,8 +13,7 @@ using namespace Rcpp;
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-bool word_in_doc(StringVector doc, std::string word)
-{
+bool word_in_doc(StringVector doc, std::string word) {
   int size = doc.length();
   for (int i = 0; i < size; ++i) {
     if (doc[i] == word) {

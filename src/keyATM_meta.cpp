@@ -4,52 +4,43 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-# define PI_V   3.14159265358979323846  /* pi */
+#define PI_V 3.14159265358979323846 /* pi */
 
-keyATMmeta::keyATMmeta(List model_)
-{
+keyATMmeta::keyATMmeta(List model_) {
   // Constructor
   model = model_;
 }
 
-
-keyATMmeta::~keyATMmeta()
-{
+keyATMmeta::~keyATMmeta() {
   // Destructor
 }
 
-
-void keyATMmeta::fit()
-{
+void keyATMmeta::fit() {
   // Read data, initialize the model and fit the model
   read_data();
   initialize();
   iteration();
 }
 
-
-void keyATMmeta::resume_fit()
-{
+void keyATMmeta::resume_fit() {
   // Resume from the saved object
   read_data();
   resume_initialize();
   iteration();
 }
 
-
-void keyATMmeta::read_data()
-{
+void keyATMmeta::read_data() {
   // `common` reads data required in all models
   // `specific` reads model specific data
   read_data_common();
   read_data_specific();
 }
 
-
-void keyATMmeta::read_data_common()
-{
+void keyATMmeta::read_data_common() {
   // Read data
-  W = model["W"]; Z = model["Z"]; S = model["S"];
+  W = model["W"];
+  Z = model["Z"];
+  S = model["S"];
   vocab = model["vocab"];
   regular_k = model["no_keyword_topics"];
   keywords_list = model["keywords"];
@@ -101,18 +92,14 @@ void keyATMmeta::read_data_common()
   max_v = shrinkp(max_v);
 }
 
-
-void keyATMmeta::initialize()
-{
+void keyATMmeta::initialize() {
   // `common`: common initialization
   // `specific`: model specific initialization
   initialize_common();
   initialize_specific();
 }
 
-
-void keyATMmeta::initialize_common()
-{
+void keyATMmeta::initialize_common() {
   // Prior values are set in `keyATMmeta::read_data_common()`
 
   // Slice sampling initialization for alpha
@@ -136,7 +123,7 @@ void keyATMmeta::initialize_common()
   }
 
   for (int i = keyword_k; i < num_topics; ++i) {
-    std::unordered_set<int> keywords_set{ -1 };
+    std::unordered_set<int> keywords_set{-1};
 
     keywords_num.push_back(0);
     keywords.push_back(keywords_set);
@@ -174,8 +161,7 @@ void keyATMmeta::initialize_common()
     // Inverse frequency
     weights_invfreq();
   } else if (weights_type == "information-theory" ||
-             weights_type == "information-theory-normalized")
-  {
+             weights_type == "information-theory-normalized") {
     // Information theory
     weights_inftheory();
   }
@@ -188,7 +174,8 @@ void keyATMmeta::initialize_common()
 
   // Do you want to use weights?
   if (use_weights == 0) {
-    Rcpp::Rcout << "Not using weights!! Check `options$use_weights`." << std::endl;
+    Rcpp::Rcout << "Not using weights!! Check `options$use_weights`."
+                << std::endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
 
@@ -201,11 +188,10 @@ void keyATMmeta::initialize_common()
   stored_values["vocab_weights"] = vocab_weights_R;
   model["stored_values"] = stored_values;
 
-
   //
   // Construct data matrices
   //
-  vector<Triplet> trip_s1;  // for a sparse matrix
+  vector<Triplet> trip_s1; // for a sparse matrix
   total_words_weighted = 0.0;
   double temp;
 
@@ -215,7 +201,7 @@ void keyATMmeta::initialize_common()
 
     for (int w_position = 0; w_position < doc_len; ++w_position) {
       s = doc_s[w_position], z = doc_z[w_position], w = doc_w[w_position];
-      if (s == 0){
+      if (s == 0) {
         n_s0_kv(z, w) += vocab_weights(w);
         n_s0_k(z) += vocab_weights(w);
       } else {
@@ -232,7 +218,6 @@ void keyATMmeta::initialize_common()
   }
   n_s1_kv.setFromTriplets(trip_s1.begin(), trip_s1.end());
 
-
   // Use during the iteration
   z_prob_vec = VectorXd::Zero(num_topics);
 
@@ -242,28 +227,21 @@ void keyATMmeta::initialize_common()
   for (int k = 0; k < num_topics; ++k) {
     Lbeta_sk(k) = (double)keywords_num[k] * beta_s;
   }
-
 }
 
-
-void keyATMmeta::weights_invfreq()
-{
+void keyATMmeta::weights_invfreq() {
   // Inverse frequency
   vocab_weights = (double)total_words / vocab_weights.array();
 }
 
-
-void keyATMmeta::weights_inftheory()
-{
+void keyATMmeta::weights_inftheory() {
   // Information Theory
   vocab_weights = vocab_weights.array() / (double)total_words;
   vocab_weights = vocab_weights.array().log();
-  vocab_weights = - vocab_weights.array() / log(2);
+  vocab_weights = -vocab_weights.array() / log(2);
 }
 
-
-void keyATMmeta::weights_normalize_total()
-{
+void keyATMmeta::weights_normalize_total() {
   // Normalize weights so that the total weighted count
   // is the same as the total length of documents
 
@@ -282,23 +260,20 @@ void keyATMmeta::weights_normalize_total()
   vocab_weights = vocab_weights.array() * (double)total_words / total_weights;
 }
 
-
 //
 // Initializing using the resume data
 //
-void keyATMmeta::resume_initialize()
-{
+void keyATMmeta::resume_initialize() {
   initialize_common();
   resume_initialize_specific();
 }
 
-
-void keyATMmeta::iteration()
-{
+void keyATMmeta::iteration() {
   // Calculation thte number of iterations
-  iter = options_list["iterations"];  // total number of iterations after this fitting, defined at the class level
-  int iter_new = options_list["iter_new"];  // how many iterations to add
-  int iter_start = iter - iter_new;  // starting iteration number
+  iter = options_list["iterations"]; // total number of iterations after this
+                                     // fitting, defined at the class level
+  int iter_new = options_list["iter_new"]; // how many iterations to add
+  int iter_start = iter - iter_new;        // starting iteration number
 
   // Iteration
   SEXP progress_bar = PROTECT(cli_progress_bar(iter_new, NULL));
@@ -334,9 +309,7 @@ void keyATMmeta::iteration()
   model["model_fit"] = model_fit;
 }
 
-
-void keyATMmeta::sampling_store(int r_index)
-{
+void keyATMmeta::sampling_store(int r_index) {
   // Store likelihood and perplexity during the sampling
 
   double loglik;
@@ -353,15 +326,13 @@ void keyATMmeta::sampling_store(int r_index)
     string verbose_out = "[" + to_string(r_index) +
                          "] log likelihood: " + utils::to_string_prec(loglik) +
                          " (perplexity: " + utils::to_string_prec(perplexity) +
-                          ")";
+                         ")";
     SEXP verbose_out_R = wrap(verbose_out);
     Rcpp::message(verbose_out_R);
   }
 }
 
-
-void keyATMmeta::parameters_store(int r_index)
-{
+void keyATMmeta::parameters_store(int r_index) {
   if (store_theta)
     store_theta_iter(r_index);
 
@@ -369,18 +340,14 @@ void keyATMmeta::parameters_store(int r_index)
     store_pi_iter(r_index);
 }
 
-
-void keyATMmeta::store_theta_iter(int r_index)
-{
+void keyATMmeta::store_theta_iter(int r_index) {
   Z_tables = stored_values["Z_tables"];
   NumericMatrix Z_table = Rcpp::wrap(n_dk_noWeight);
   Z_tables.push_back(Z_table);
   stored_values["Z_tables"] = Z_tables;
 }
 
-
-void keyATMmeta::store_pi_iter(int r_index)
-{
+void keyATMmeta::store_pi_iter(int r_index) {
   List pi_vectors = stored_values["pi_vectors"];
   // calculate
   VectorXd numer = n_s1_k.array() + prior_gamma.col(0).array();
@@ -393,19 +360,14 @@ void keyATMmeta::store_pi_iter(int r_index)
   stored_values["pi_vectors"] = pi_vectors;
 }
 
-
-void keyATMmeta::verbose_special(int r_index)
-{
+void keyATMmeta::verbose_special(int r_index) {
   // If there is anything special to show, write here.
 }
-
 
 //
 // Sampling
 //
-int keyATMmeta::sample_z(VectorXd &alpha, int z, int s,
-                         int w, int doc_id)
-{
+int keyATMmeta::sample_z(VectorXd &alpha, int z, int s, int w, int doc_id) {
   int new_z;
   double numerator, denominator;
   double sum;
@@ -428,18 +390,18 @@ int keyATMmeta::sample_z(VectorXd &alpha, int z, int s,
   if (s == 0) {
     for (int k = 0; k < num_topics; ++k) {
 
-      numerator = (beta + n_s0_kv(k, w)) *
-        (n_s0_k(k) + prior_gamma(k, 1)) *
-        (n_dk(doc_id, k) + alpha(k));
+      numerator = (beta + n_s0_kv(k, w)) * (n_s0_k(k) + prior_gamma(k, 1)) *
+                  (n_dk(doc_id, k) + alpha(k));
 
-      denominator = (Vbeta + n_s0_k(k)) *
-        (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
+      denominator = (Vbeta + n_s0_k(k)) * (n_s1_k(k) + prior_gamma(k, 0) +
+                                           n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
     }
 
     sum = z_prob_vec.sum(); // normalize
-    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum,
+                                            num_topics); // take a sample
 
   } else {
     for (int k = 0; k < num_topics; ++k) {
@@ -448,18 +410,19 @@ int keyATMmeta::sample_z(VectorXd &alpha, int z, int s,
         continue;
       } else {
         numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
-          (n_s1_k(k) + prior_gamma(k, 0)) *
-          (n_dk(doc_id, k) + alpha(k));
-        denominator = (Lbeta_sk(k) + n_s1_k(k) ) *
-          (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
+                    (n_s1_k(k) + prior_gamma(k, 0)) *
+                    (n_dk(doc_id, k) + alpha(k));
+        denominator =
+            (Lbeta_sk(k) + n_s1_k(k)) *
+            (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
         z_prob_vec(k) = numerator / denominator;
       }
     }
 
     sum = z_prob_vec.sum();
-    new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
-
+    new_z = sampler::rcat_without_normalize(z_prob_vec, sum,
+                                            num_topics); // take a sample
   }
 
   // add back data counts
@@ -478,9 +441,7 @@ int keyATMmeta::sample_z(VectorXd &alpha, int z, int s,
   return new_z;
 }
 
-
-int keyATMmeta::sample_s(int z, int s, int w, int doc_id)
-{
+int keyATMmeta::sample_s(int z, int s, int w, int doc_id) {
   int new_s;
   double numerator, denominator;
   double s0_prob;
@@ -498,23 +459,22 @@ int keyATMmeta::sample_s(int z, int s, int w, int doc_id)
 
   // newprob_s1()
 
-  numerator = (beta_s + n_s1_kv.coeffRef(z, w)) *
-    ( n_s1_k(z) + prior_gamma(z, 0) );
-  denominator = (Lbeta_sk(z) + n_s1_k(z) );
+  numerator =
+      (beta_s + n_s1_kv.coeffRef(z, w)) * (n_s1_k(z) + prior_gamma(z, 0));
+  denominator = (Lbeta_sk(z) + n_s1_k(z));
   s1_prob = numerator / denominator;
 
   // newprob_s0()
-  numerator = (beta + n_s0_kv(z, w)) *
-    (n_s0_k(z) + prior_gamma(z, 1));
+  numerator = (beta + n_s0_kv(z, w)) * (n_s0_k(z) + prior_gamma(z, 1));
 
-  denominator = (Vbeta + n_s0_k(z) );
+  denominator = (Vbeta + n_s0_k(z));
   s0_prob = numerator / denominator;
 
   // Normalize
   sum = s0_prob + s1_prob;
 
   s1_prob = s1_prob / sum;
-  new_s = R::runif(0,1) <= s1_prob;  //new_s = Bern(s0_prob, s1_prob);
+  new_s = R::runif(0, 1) <= s1_prob; // new_s = Bern(s0_prob, s1_prob);
 
   // add back data counts
   if (new_s == 0) {
@@ -528,30 +488,24 @@ int keyATMmeta::sample_s(int z, int s, int w, int doc_id)
   return new_s;
 }
 
-
 // Utilities
 //
-double keyATMmeta::gammapdfln(const double x, const double a, const double b)
-{
+double keyATMmeta::gammapdfln(const double x, const double a, const double b) {
   // a: shape, b: scale
-  return - a * log(b) - mylgamma(a) + (a-1.0) * log(x) - x/b;
+  return -a * log(b) - mylgamma(a) + (a - 1.0) * log(x) - x / b;
 }
 
-
-double keyATMmeta::betapdf(const double x, const double a, const double b)
-{
-  return tgamma(a+b) / (tgamma(a) * tgamma(b)) * pow(x, a-1) * pow(1-x, b-1);
+double keyATMmeta::betapdf(const double x, const double a, const double b) {
+  return tgamma(a + b) / (tgamma(a) * tgamma(b)) * pow(x, a - 1) *
+         pow(1 - x, b - 1);
 }
 
-
-double keyATMmeta::betapdfln(const double x, const double a, const double b)
-{
-  return (a-1)*log(x) + (b-1)*log(1.0-x) + mylgamma(a+b) - mylgamma(a) - mylgamma(b);
+double keyATMmeta::betapdfln(const double x, const double a, const double b) {
+  return (a - 1) * log(x) + (b - 1) * log(1.0 - x) + mylgamma(a + b) -
+         mylgamma(a) - mylgamma(b);
 }
 
-
-NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int num_topics)
-{
+NumericVector keyATMmeta::alpha_reformat(VectorXd &alpha, int num_topics) {
   NumericVector alpha_rvec(num_topics);
 
   for (int i = 0; i < num_topics; ++i) {
@@ -561,9 +515,7 @@ NumericVector keyATMmeta::alpha_reformat(VectorXd& alpha, int num_topics)
   return alpha_rvec;
 }
 
-
-double keyATMmeta::gammaln_frac(const double value, const int count)
-{
+double keyATMmeta::gammaln_frac(const double value, const int count) {
   // Calculate \log \frac{\gamma(value + count)}{\gamma(\value)}
   // Not very fast
   double gammaln_val;
@@ -581,9 +533,7 @@ double keyATMmeta::gammaln_frac(const double value, const int count)
   }
 }
 
-
-List keyATMmeta::return_model()
-{
+List keyATMmeta::return_model() {
   // Return output to R
   return model;
 }

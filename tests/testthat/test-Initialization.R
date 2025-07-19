@@ -17,17 +17,24 @@ test_that("Visualizing keywords", {
   expect_s3_class(p, "keyATM_viz")
   expect_identical(values_fig(p)$WordCount[2], 318L)
   skip_on_cran()
-  expect_message(save_fig(p, paste0(tempdir(), "/test.pdf")), "Saving 7 x 7 in image")
+  expect_message(
+    save_fig(p, paste0(tempdir(), "/test.pdf")),
+    "Saving 7 x 7 in image"
+  )
 })
 
 
 test_that("Parallel initialization", {
-  skip_on_cran() ; skip_on_travis() ; skip_on_os("linux");
-  out <- keyATM(docs = keyATM_docs,  # text input
-                no_keyword_topics = 3,  # number of regular topics
-                keywords = bills_keywords,  # keywords
-                model = "base",  # select the model
-                options = list(seed = 250, iterations = 0, parallel_init = TRUE))
+  skip_on_cran()
+  skip_on_travis()
+  skip_on_os("linux")
+  out <- keyATM(
+    docs = keyATM_docs, # text input
+    no_keyword_topics = 3, # number of regular topics
+    keywords = bills_keywords, # keywords
+    model = "base", # select the model
+    options = list(seed = 250, iterations = 0, parallel_init = TRUE)
+  )
   expect_identical(out$Z[[1]][3], 1L)
   expect_identical(out$Z[[140]][15], 3L)
 })
@@ -36,13 +43,17 @@ test_that("Parallel initialization", {
 # Time index
 test_that("keyATM Dynamic: Initialization (correct time index)", {
   expect_message(
-    out <- keyATM(docs = keyATM_docs,  # text input
-                  no_keyword_topics = 3,  # number of regular topics
-                  keywords = bills_keywords,  # keywords
-                  model = "dynamic",
-                  model_settings = list(time_index = bills_time_index - 100,
-                                        num_states = 5),
-                  options = list(seed = 250, iterations = 0))
+    out <- keyATM(
+      docs = keyATM_docs, # text input
+      no_keyword_topics = 3, # number of regular topics
+      keywords = bills_keywords, # keywords
+      model = "dynamic",
+      model_settings = list(
+        time_index = bills_time_index - 100,
+        num_states = 5
+      ),
+      options = list(seed = 250, iterations = 0)
+    )
   )
 })
 
@@ -51,13 +62,17 @@ test_that("keyATM Dynamic: Initialization (wrong time index)", {
   bills_time_index_wrong <- bills_time_index
   bills_time_index_wrong[11] <- 103
   expect_error(
-    out <- keyATM(docs = keyATM_docs,  # text input
-                  no_keyword_topics = 3,  # number of regular topics
-                  keywords = bills_keywords,  # keywords
-                  model = "dynamic",
-                  model_settings = list(time_index = bills_time_index_wrong - 100,
-                                        num_states = 5),
-                  options = list(seed = 250, iterations = 0))
+    out <- keyATM(
+      docs = keyATM_docs, # text input
+      no_keyword_topics = 3, # number of regular topics
+      keywords = bills_keywords, # keywords
+      model = "dynamic",
+      model_settings = list(
+        time_index = bills_time_index_wrong - 100,
+        num_states = 5
+      ),
+      options = list(seed = 250, iterations = 0)
+    )
   )
 })
 
@@ -67,12 +82,13 @@ test_that("Keep document names", {
   docs <- keyATM_read(bills_dfm, keep_docnames = TRUE)
   expect_identical(docs$docnames[10], "101th-congress_senate-bill_1726")
 
-  out <- keyATM(docs = docs,  # text input
-                no_keyword_topics = 3,  # number of regular topics
-                keywords = bills_keywords,  # keywords
-                model = "base",
-                options = list(seed = 250, iterations = 3))
-
+  out <- keyATM(
+    docs = docs, # text input
+    no_keyword_topics = 3, # number of regular topics
+    keywords = bills_keywords, # keywords
+    model = "base",
+    options = list(seed = 250, iterations = 3)
+  )
 
   expect_identical(row.names(out$theta)[10], "101th-congress_senate-bill_1726")
 })
@@ -90,20 +106,24 @@ test_that("Documents with length 0: base", {
 
   skip_on_cran()
   expect_warning(
-    out <- keyATM(docs = docs0,  # text input
-                  no_keyword_topics = 3,  # number of regular topics
-                  keywords = bills_keywords,  # keywords
-                  model = "base",  # select the model
-                  options = list(seed = 250, iterations = 0))
+    out <- keyATM(
+      docs = docs0, # text input
+      no_keyword_topics = 3, # number of regular topics
+      keywords = bills_keywords, # keywords
+      model = "base", # select the model
+      options = list(seed = 250, iterations = 0)
+    )
   )
   expect_identical(length(out$Z), 138L)
 
   expect_warning(
-    out <- keyATM(docs = docs0,  # text input
-                  no_keyword_topics = 3,  # number of regular topics
-                  keywords = bills_keywords,  # keywords
-                  model = "base",  # select the model
-                  options = list(seed = 250, iterations = 1))
+    out <- keyATM(
+      docs = docs0, # text input
+      no_keyword_topics = 3, # number of regular topics
+      keywords = bills_keywords, # keywords
+      model = "base", # select the model
+      options = list(seed = 250, iterations = 1)
+    )
   )
   expect_identical(length(out$kept_values$doc_index_used), 138L)
 })
@@ -114,26 +134,38 @@ test_that("Documents with length 0: covariate", {
 
   skip_on_cran()
   expect_warning(
-    out <- keyATM(docs = docs0,  # text input
-                  no_keyword_topics = 3,  # number of regular topics
-                  keywords = bills_keywords,  # keywords
-                  model = "covariates",
-                  model_settings = list(covariates_data = bills_cov, standardize = "all",
-                                      covariates_formula = ~., covariates_model = "DirMulti"),
-                  options = list(seed = 250, iterations = 0))
+    out <- keyATM(
+      docs = docs0, # text input
+      no_keyword_topics = 3, # number of regular topics
+      keywords = bills_keywords, # keywords
+      model = "covariates",
+      model_settings = list(
+        covariates_data = bills_cov,
+        standardize = "all",
+        covariates_formula = ~.,
+        covariates_model = "DirMulti"
+      ),
+      options = list(seed = 250, iterations = 0)
+    )
   )
 
   expect_identical(length(out$Z), 138L)
   expect_identical(nrow(out$model_settings$covariates_data_use), 138L)
 
   expect_warning(
-    out <- keyATM(docs = docs0,  # text input
-                  no_keyword_topics = 3,  # number of regular topics
-                  keywords = bills_keywords,  # keywords
-                  model = "covariates",
-                  model_settings = list(covariates_data = bills_cov, standardize = "all",
-                                      covariates_formula = ~., covariates_model = "DirMulti"),
-                  options = list(seed = 250, iterations = 1))
+    out <- keyATM(
+      docs = docs0, # text input
+      no_keyword_topics = 3, # number of regular topics
+      keywords = bills_keywords, # keywords
+      model = "covariates",
+      model_settings = list(
+        covariates_data = bills_cov,
+        standardize = "all",
+        covariates_formula = ~.,
+        covariates_model = "DirMulti"
+      ),
+      options = list(seed = 250, iterations = 1)
+    )
   )
   expect_identical(length(out$kept_values$doc_index_used), 138L)
 })
@@ -144,26 +176,34 @@ test_that("Documents with length 0: dynamic", {
 
   skip_on_cran()
   expect_warning(
-    out <- keyATM(docs = docs0,  # text input
-                  no_keyword_topics = 3,  # number of regular topics
-                  keywords = bills_keywords,  # keywords
-                  model = "dynamic",
-                  model_settings = list(time_index = bills_time_index - 100,
-                                        num_states = 5),
-                  options = list(seed = 250, iterations = 0))
+    out <- keyATM(
+      docs = docs0, # text input
+      no_keyword_topics = 3, # number of regular topics
+      keywords = bills_keywords, # keywords
+      model = "dynamic",
+      model_settings = list(
+        time_index = bills_time_index - 100,
+        num_states = 5
+      ),
+      options = list(seed = 250, iterations = 0)
+    )
   )
 
   expect_identical(length(out$Z), 138L)
   expect_identical(length(out$model_settings$time_index), 138L)
 
   expect_warning(
-    out <- keyATM(docs = docs0,  # text input
-                  no_keyword_topics = 3,  # number of regular topics
-                  keywords = bills_keywords,  # keywords
-                  model = "dynamic",
-                  model_settings = list(time_index = bills_time_index - 100,
-                                        num_states = 5),
-                  options = list(seed = 250, iterations = 1))
+    out <- keyATM(
+      docs = docs0, # text input
+      no_keyword_topics = 3, # number of regular topics
+      keywords = bills_keywords, # keywords
+      model = "dynamic",
+      model_settings = list(
+        time_index = bills_time_index - 100,
+        num_states = 5
+      ),
+      options = list(seed = 250, iterations = 1)
+    )
   )
   expect_identical(length(out$kept_values$doc_index_used), 138L)
   expect_identical(length(out$kept_values$model_settings$time_index), 138L)
@@ -173,14 +213,15 @@ test_that("Documents with length 0: dynamic", {
 test_that("Initialize without setting seed", {
   skip_on_cran()
   expect_no_error(
-    out <- keyATM(docs = keyATM_docs,  # text input
-                  no_keyword_topics = 3,  # number of regular topics
-                  keywords = bills_keywords,  # keywords
-                  model = "base",  # select the model
-                  options = list(iterations = 0))
+    out <- keyATM(
+      docs = keyATM_docs, # text input
+      no_keyword_topics = 3, # number of regular topics
+      keywords = bills_keywords, # keywords
+      model = "base", # select the model
+      options = list(iterations = 0)
+    )
   )
 })
-
 
 
 # Check `get_doc_index()` function

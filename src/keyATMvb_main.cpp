@@ -4,31 +4,23 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-
-keyATMvb::keyATMvb(List model_)
-{
+keyATMvb::keyATMvb(List model_) {
   // Constructor
   model = model_;
 }
 
-
-keyATMvb::~keyATMvb()
-{
+keyATMvb::~keyATMvb() {
   // Destructor
 }
 
-
-void keyATMvb::fit()
-{
+void keyATMvb::fit() {
   // Read data, initialize the model and fit the model
   read_data();
   initialize();
   iteration();
 }
 
-
-void keyATMvb::read_data()
-{
+void keyATMvb::read_data() {
   // `common` reads data required in all models
   // `specific` reads model specific data
   read_data_specific();
@@ -38,11 +30,10 @@ void keyATMvb::read_data()
   read_data_words();
 }
 
-
-void keyATMvb::read_data_common()
-{
+void keyATMvb::read_data_common() {
   // Read data
-  W = model["W"]; Z = model["Z"];
+  W = model["W"];
+  Z = model["Z"];
   vocab = model["vocab"];
   model_name = Rcpp::as<std::string>(model["model"]);
   stored_values = model["stored_values"];
@@ -72,9 +63,7 @@ void keyATMvb::read_data_common()
   vocab_weights = Rcpp::as<Eigen::VectorXd>(vocab_weights_R);
 }
 
-
-void keyATMvb::read_data_specific()
-{
+void keyATMvb::read_data_specific() {
   // For keyATM
   S = model["S"];
   regular_k = model["no_keyword_topics"];
@@ -86,9 +75,7 @@ void keyATMvb::read_data_specific()
   beta_s = priors_list["beta_s"];
 }
 
-
-void keyATMvb::read_data_common_alpha()
-{
+void keyATMvb::read_data_common_alpha() {
   // Make D \times K alpha matrix
   alphas = MatrixXd::Zero(num_doc, num_topics);
 
@@ -105,9 +92,7 @@ void keyATMvb::read_data_common_alpha()
   alpha_d = alphas.rowwise().sum();
 }
 
-
-void keyATMvb::read_data_common_alpha_base()
-{
+void keyATMvb::read_data_common_alpha_base() {
   //
   // Reorganize alpha in the base model
   //
@@ -126,7 +111,7 @@ void keyATMvb::read_data_common_alpha_base()
 
     divide += 1;
   }
-  alpha = alpha.array() / (double)divide;  // take a mean
+  alpha = alpha.array() / (double)divide; // take a mean
 
   // Into a D \times K form
   for (int d = 0; d < num_doc; ++d) {
@@ -134,9 +119,7 @@ void keyATMvb::read_data_common_alpha_base()
   }
 }
 
-
-void keyATMvb::read_data_common_alpha_cov()
-{
+void keyATMvb::read_data_common_alpha_cov() {
   //
   // Reorganize alpha in the cov model
   //
@@ -161,15 +144,13 @@ void keyATMvb::read_data_common_alpha_cov()
 
     divide += 1;
   }
-  Lambda = Lambda.array() / (double)divide;  // take a mean
+  Lambda = Lambda.array() / (double)divide; // take a mean
 
   // Get Alpha
   alphas = (use_data * Lambda.transpose()).array().exp();
 }
 
-
-void keyATMvb::read_data_common_alpha_hmm()
-{
+void keyATMvb::read_data_common_alpha_hmm() {
   //
   // Reorganize alpha in the HMM model
   //
@@ -189,7 +170,7 @@ void keyATMvb::read_data_common_alpha_hmm()
   // alpha
   List alpha_iter = stored_values["alpha_iter"];
   int total = alpha_iter.size();
-  int num_states = R.maxCoeff() + 1;  // adjust index
+  int num_states = R.maxCoeff() + 1; // adjust index
   MatrixXd alpha_t = MatrixXd::Zero(num_states, num_topics);
 
   int divide = 0;
@@ -209,23 +190,17 @@ void keyATMvb::read_data_common_alpha_hmm()
   // Into a D \times K form
   int time, state;
   for (int d = 0; d < num_doc; ++d) {
-    time =  time_index(d);
+    time = time_index(d);
     state = R(time);
     alphas.row(d) = alpha_t.row(state);
   }
-
 }
 
-
-void keyATMvb::read_data_words()
-{
-  read_data_keywords();  // for keyATM
-
+void keyATMvb::read_data_words() {
+  read_data_keywords(); // for keyATM
 }
 
-
-void keyATMvb::read_data_keywords()
-{
+void keyATMvb::read_data_keywords() {
   int wd_id;
   IntegerVector wd_ids;
   for (int ii = 0; ii < keyword_k; ++ii) {
@@ -243,25 +218,19 @@ void keyATMvb::read_data_keywords()
   }
 
   for (int i = keyword_k; i < num_topics; ++i) {
-    std::unordered_set<int> keywords_set{ -1 };
+    std::unordered_set<int> keywords_set{-1};
 
     keywords_num.push_back(0);
     keywords.push_back(keywords_set);
   }
 }
 
-
-
-
-void keyATMvb::initialize()
-{
+void keyATMvb::initialize() {
   initialize_common();
   initialize_specific();
 }
 
-
-void keyATMvb::initialize_common()
-{
+void keyATMvb::initialize_common() {
   initialize_weightedlen();
   initialize_common_MCMCcount();
   initialize_common_q();
@@ -273,13 +242,10 @@ void keyATMvb::initialize_common()
   s0_temp = VectorXd::Zero(num_topics);
   s1_temp = VectorXd::Zero(num_topics);
 
-
   // Initialize weights
 }
 
-
-void keyATMvb::initialize_common_MCMCcount()
-{
+void keyATMvb::initialize_common_MCMCcount() {
   // Counts from MCMC used in initialize_common_q
   int w, z, s;
   int doc_len;
@@ -296,7 +262,7 @@ void keyATMvb::initialize_common_MCMCcount()
 
     for (int w_position = 0; w_position < doc_len; ++w_position) {
       s = doc_s[w_position], z = doc_z[w_position], w = doc_w[w_position];
-      if (s == 0){
+      if (s == 0) {
         n_s0_kv(z, w) += vocab_weights(w);
         n_s0_k(z) += vocab_weights(w);
       } else {
@@ -306,12 +272,9 @@ void keyATMvb::initialize_common_MCMCcount()
       n_dk(doc_id, z) += 1.0;
     }
   }
-
 }
 
-
-void keyATMvb::initialize_common_q()
-{
+void keyATMvb::initialize_common_q() {
   // Initialization using MCMC results
 
   List doc_z;
@@ -324,7 +287,7 @@ void keyATMvb::initialize_common_q()
 
   for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_len = doc_each_len[doc_id];
-    std::vector<std::vector<double>> qzd;  // store document level qz
+    std::vector<std::vector<double>> qzd; // store document level qz
     doc_z = Z[doc_id];
 
     std::vector<std::vector<double>> qsd;
@@ -345,7 +308,6 @@ void keyATMvb::initialize_common_q()
       std::vector<double> qsds(2, 0.0);
       initialize_common_qs(doc_id, w, z, s, qsds);
       qsd.push_back(qsds);
-
     }
 
     qz.push_back(qzd);
@@ -353,21 +315,20 @@ void keyATMvb::initialize_common_q()
   }
 }
 
-
-void keyATMvb::initialize_common_qz(int doc_id, int w, int z, int s, vector<double> &qzdk)
-{
+void keyATMvb::initialize_common_qz(int doc_id, int w, int z, int s,
+                                    vector<double> &qzdk) {
   double numerator, denominator;
   double sum;
 
   if (s == 0) {
     for (int k = 0; k < num_topics; ++k) {
 
-      numerator = (beta + n_s0_kv(k, w)) *
-        (n_s0_k(k) + prior_gamma(k, 1)) *
-        (n_dk(doc_id, k) + alphas(doc_id, k));
+      numerator = (beta + n_s0_kv(k, w)) * (n_s0_k(k) + prior_gamma(k, 1)) *
+                  (n_dk(doc_id, k) + alphas(doc_id, k));
 
-      denominator = ((double)num_vocab * beta + n_s0_k(k)) *
-        (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
+      denominator =
+          ((double)num_vocab * beta + n_s0_k(k)) *
+          (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
     }
@@ -379,29 +340,27 @@ void keyATMvb::initialize_common_qz(int doc_id, int w, int z, int s, vector<doub
         continue;
       } else {
         numerator = (beta_s + n_s1_kv.coeffRef(k, w)) *
-          (n_s1_k(k) + prior_gamma(k, 0)) *
-          (n_dk(doc_id, k) + alphas(doc_id, k));
+                    (n_s1_k(k) + prior_gamma(k, 0)) *
+                    (n_dk(doc_id, k) + alphas(doc_id, k));
       }
-      denominator = ((double)keywords_num[k] * beta_s + n_s1_k(k) ) *
-        (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
+      denominator =
+          ((double)keywords_num[k] * beta_s + n_s1_k(k)) *
+          (n_s1_k(k) + prior_gamma(k, 0) + n_s0_k(k) + prior_gamma(k, 1));
 
       z_prob_vec(k) = numerator / denominator;
     }
-
   }
 
   sum = z_prob_vec.sum();
   z_prob_vec = z_prob_vec.array() / sum;
 
   for (int k = 0; k < num_topics; ++k) {
-    qzdk[k]  = z_prob_vec(k);
+    qzdk[k] = z_prob_vec(k);
   }
-
 }
 
-
-void keyATMvb::initialize_common_qs(int doc_id, int w, int z, int s, vector<double> &qsds)
-{
+void keyATMvb::initialize_common_qs(int doc_id, int w, int z, int s,
+                                    vector<double> &qsds) {
   double numerator, denominator;
   double s0_prob, s1_prob;
   double sum;
@@ -416,16 +375,15 @@ void keyATMvb::initialize_common_qs(int doc_id, int w, int z, int s, vector<doub
     qsds[1] = 0.00001;
   } else {
     // One of the keywords
-    numerator = (beta_s + n_s1_kv.coeffRef(z, w)) *
-      ( n_s1_k(z) + prior_gamma(z, 0) );
-    denominator = ((double)keywords_num[z] * beta_s + n_s1_k(z) );
+    numerator =
+        (beta_s + n_s1_kv.coeffRef(z, w)) * (n_s1_k(z) + prior_gamma(z, 0));
+    denominator = ((double)keywords_num[z] * beta_s + n_s1_k(z));
     s1_prob = numerator / denominator;
 
     // newprob_s0()
-    numerator = (beta + n_s0_kv(z, w)) *
-      (n_s0_k(z) + prior_gamma(z, 1));
+    numerator = (beta + n_s0_kv(z, w)) * (n_s0_k(z) + prior_gamma(z, 1));
 
-    denominator = ((double)num_vocab * beta + n_s0_k(z) );
+    denominator = ((double)num_vocab * beta + n_s0_k(z));
     s0_prob = numerator / denominator;
 
     // Normalize
@@ -438,9 +396,7 @@ void keyATMvb::initialize_common_qs(int doc_id, int w, int z, int s, vector<doub
   }
 }
 
-
-void keyATMvb::initialize_common_expectation()
-{
+void keyATMvb::initialize_common_expectation() {
   // Calculate a lot of expectations
   int w;
   int doc_len;
@@ -451,7 +407,6 @@ void keyATMvb::initialize_common_expectation()
   n_s1_k = VectorXd::Zero(num_topics);
   n_dk = MatrixXd::Zero(num_doc, num_topics);
 
-
   for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
@@ -459,12 +414,16 @@ void keyATMvb::initialize_common_expectation()
     for (int w_position = 0; w_position < doc_len; ++w_position) {
       w = doc_w[w_position];
 
-      for (int k = 0; k < num_topics; ++k){
-        n_s0_kv(k, w) += qz[doc_id][w_position][k] * qs[doc_id][w_position][0] * vocab_weights(w);
-        n_s1_kv(k, w) += qz[doc_id][w_position][k] * qs[doc_id][w_position][1] * vocab_weights(w);
+      for (int k = 0; k < num_topics; ++k) {
+        n_s0_kv(k, w) += qz[doc_id][w_position][k] * qs[doc_id][w_position][0] *
+                         vocab_weights(w);
+        n_s1_kv(k, w) += qz[doc_id][w_position][k] * qs[doc_id][w_position][1] *
+                         vocab_weights(w);
 
-        n_s0_k(k) += qz[doc_id][w_position][k] * qs[doc_id][w_position][0] * vocab_weights(w);
-        n_s1_k(k) += qz[doc_id][w_position][k] * qs[doc_id][w_position][1] * vocab_weights(w);
+        n_s0_k(k) += qz[doc_id][w_position][k] * qs[doc_id][w_position][0] *
+                     vocab_weights(w);
+        n_s1_k(k) += qz[doc_id][w_position][k] * qs[doc_id][w_position][1] *
+                     vocab_weights(w);
 
         n_dk(doc_id, k) += qz[doc_id][w_position][k];
       }
@@ -472,9 +431,7 @@ void keyATMvb::initialize_common_expectation()
   }
 }
 
-
-void keyATMvb::initialize_weightedlen()
-{
+void keyATMvb::initialize_weightedlen() {
   // Construct vocab weights
   int doc_len;
   double doc_len_weighted;
@@ -498,18 +455,11 @@ void keyATMvb::initialize_weightedlen()
 
     total_words += doc_len;
   }
-
 }
 
+void keyATMvb::initialize_specific() {}
 
-void keyATMvb::initialize_specific()
-{
-
-}
-
-
-void keyATMvb::iteration()
-{
+void keyATMvb::iteration() {
   // Convergence settings
   double convtol = vb_options["convtol"];
   double change_rate = 1.00;
@@ -553,7 +503,6 @@ void keyATMvb::iteration()
       Rcpp::Rcout << "Convergence [" << count << "]: " << change_rate << endl;
     }
 
-
     // Check keybord interruption to cancel the iteration
     checkUserInterrupt();
 
@@ -563,15 +512,9 @@ void keyATMvb::iteration()
   }
 }
 
+void keyATMvb::iteration_single() { update_q(); }
 
-void keyATMvb::iteration_single()
-{
-  update_q();
-}
-
-
-void keyATMvb::update_q()
-{
+void keyATMvb::update_q() {
   doc_indexes = sampler::shuffled_indexes(num_doc); // shuffle
   int doc_id;
   int doc_len;
@@ -591,28 +534,31 @@ void keyATMvb::update_q()
       // Update qz
       //
       for (int k = 0; k < num_topics; ++k) {
-        z_prob_vec(k) = exp(
-                          qs[doc_id][w_position][0] *
-                              (
-                               // log(n_s0_kv(k, v) + beta) - log(n_s0_k(k) + Vbeta)
-                               //   + log(n_s0_k(k) + prior_gamma(k, 1))
-                               //   - log(n_s0_k(k) + n_s1_k(k) + prior_gamma(k, 0) + prior_gamma(k, 1))
-                               log( (n_s0_kv(k, v) + beta) / (n_s0_k(k) + Vbeta)
-                                     * (n_s0_k(k) + prior_gamma(k, 1))
-                                     / (n_s0_k(k) + n_s1_k(k) + prior_gamma(k, 0) + prior_gamma(k, 1)) )
-                              )
+        z_prob_vec(k) =
+            exp(qs[doc_id][w_position][0] *
+                    (
+                        // log(n_s0_kv(k, v) + beta) - log(n_s0_k(k) + Vbeta)
+                        //   + log(n_s0_k(k) + prior_gamma(k, 1))
+                        //   - log(n_s0_k(k) + n_s1_k(k) + prior_gamma(k, 0) +
+                        //   prior_gamma(k, 1))
+                        log((n_s0_kv(k, v) + beta) / (n_s0_k(k) + Vbeta) *
+                            (n_s0_k(k) + prior_gamma(k, 1)) /
+                            (n_s0_k(k) + n_s1_k(k) + prior_gamma(k, 0) +
+                             prior_gamma(k, 1))))
 
-                          + qs[doc_id][w_position][1] *
-                              (
-                               // log(n_s1_kv(k, v) + beta_s) - log(n_s1_k(k) + (double)keywords_num[k] * beta_s)
-                               //   + log(n_s1_k(k) + prior_gamma(k, 0))
-                               //   - log(n_s0_k(k) + n_s1_k(k) + prior_gamma(k, 0) + prior_gamma(k, 1))
-                               log( (n_s1_kv(k, v) + beta_s) / (n_s1_k(k) + (double)keywords_num[k] * beta_s)
-                                     * (n_s1_k(k) + prior_gamma(k, 0))
-                                     / (n_s0_k(k) + n_s1_k(k) + prior_gamma(k, 0) + prior_gamma(k, 1)) )
-                              )
-                        )
-                        * (n_dk(doc_id, k) + alphas(doc_id, k));
+                + qs[doc_id][w_position][1] *
+                      (
+                          // log(n_s1_kv(k, v) + beta_s) - log(n_s1_k(k) +
+                          // (double)keywords_num[k] * beta_s)
+                          //   + log(n_s1_k(k) + prior_gamma(k, 0))
+                          //   - log(n_s0_k(k) + n_s1_k(k) + prior_gamma(k, 0) +
+                          //   prior_gamma(k, 1))
+                          log((n_s1_kv(k, v) + beta_s) /
+                              (n_s1_k(k) + (double)keywords_num[k] * beta_s) *
+                              (n_s1_k(k) + prior_gamma(k, 0)) /
+                              (n_s0_k(k) + n_s1_k(k) + prior_gamma(k, 0) +
+                               prior_gamma(k, 1))))) *
+            (n_dk(doc_id, k) + alphas(doc_id, k));
       }
 
       temp_sum = z_prob_vec.sum();
@@ -620,7 +566,6 @@ void keyATMvb::update_q()
         // Normalize
         qz[doc_id][w_position][k] = z_prob_vec(k) / temp_sum;
       }
-
 
       //
       // Update qs
@@ -634,21 +579,20 @@ void keyATMvb::update_q()
 
         for (int k = 0; k < num_topics; ++k) {
           s0_temp(k) = qz[doc_id][w_position][k] *
-                          (
-                            // log(n_s0_kv(k, v) + beta) - log(n_s0_k(k) + Vbeta)
-                            //   + log(n_s0_k(k) + prior_gamma(k, 1))
-                            log( (n_s0_kv(k, v) + beta) / (n_s0_k(k) + Vbeta)
-                                  * (n_s0_k(k) + prior_gamma(k, 1)) )
-                          );
+                       (
+                           // log(n_s0_kv(k, v) + beta) - log(n_s0_k(k) + Vbeta)
+                           //   + log(n_s0_k(k) + prior_gamma(k, 1))
+                           log((n_s0_kv(k, v) + beta) / (n_s0_k(k) + Vbeta) *
+                               (n_s0_k(k) + prior_gamma(k, 1))));
 
           s1_temp(k) = qz[doc_id][w_position][k] *
-                          (
-                            // log(n_s1_kv(k, v) + beta_s) - log(n_s1_k(k) + (double)keywords_num[k] * beta_s)
-                              // + log(n_s1_k(k) + prior_gamma(k, 0))
-                            log( (n_s1_kv(k, v) + beta_s) / (n_s1_k(k) + (double)keywords_num[k] * beta_s)
-                                  *  (n_s1_k(k) + prior_gamma(k, 0)) )
-                          );
-
+                       (
+                           // log(n_s1_kv(k, v) + beta_s) - log(n_s1_k(k) +
+                           // (double)keywords_num[k] * beta_s)
+                           // + log(n_s1_k(k) + prior_gamma(k, 0))
+                           log((n_s1_kv(k, v) + beta_s) /
+                               (n_s1_k(k) + (double)keywords_num[k] * beta_s) *
+                               (n_s1_k(k) + prior_gamma(k, 0))));
         }
 
         s_prob_vec(0) = exp(s0_temp.sum());
@@ -659,25 +603,22 @@ void keyATMvb::update_q()
           // Normalize
           qs[doc_id][w_position][s] = s_prob_vec(s) / temp_sum;
         }
-
       }
 
       update_increase_count(doc_id, w_position, v);
     }
-
   }
-
 }
 
-
-void keyATMvb::update_decrese_count(int doc_id, int w_position, int v)
-{
+void keyATMvb::update_decrese_count(int doc_id, int w_position, int v) {
   double temp0;
   double temp1;
 
-  for(int k = 0; k < num_topics; ++k) {
-    temp0 = qz[doc_id][w_position][k] * qs[doc_id][w_position][0] * vocab_weights(v);
-    temp1 = qz[doc_id][w_position][k] * qs[doc_id][w_position][1] * vocab_weights(v);
+  for (int k = 0; k < num_topics; ++k) {
+    temp0 = qz[doc_id][w_position][k] * qs[doc_id][w_position][0] *
+            vocab_weights(v);
+    temp1 = qz[doc_id][w_position][k] * qs[doc_id][w_position][1] *
+            vocab_weights(v);
     n_s0_kv(k, v) -= temp0;
     n_s1_kv(k, v) -= temp1;
 
@@ -688,15 +629,15 @@ void keyATMvb::update_decrese_count(int doc_id, int w_position, int v)
   }
 }
 
-
-void keyATMvb::update_increase_count(int doc_id, int w_position, int v)
-{
+void keyATMvb::update_increase_count(int doc_id, int w_position, int v) {
   double temp0;
   double temp1;
 
-  for(int k = 0; k < num_topics; ++k) {
-    temp0 = qz[doc_id][w_position][k] * qs[doc_id][w_position][0] * vocab_weights(v);
-    temp1 = qz[doc_id][w_position][k] * qs[doc_id][w_position][1] * vocab_weights(v);
+  for (int k = 0; k < num_topics; ++k) {
+    temp0 = qz[doc_id][w_position][k] * qs[doc_id][w_position][0] *
+            vocab_weights(v);
+    temp1 = qz[doc_id][w_position][k] * qs[doc_id][w_position][1] *
+            vocab_weights(v);
 
     n_s0_kv(k, v) += temp0;
     n_s1_kv(k, v) += temp1;
@@ -708,9 +649,7 @@ void keyATMvb::update_increase_count(int doc_id, int w_position, int v)
   }
 }
 
-
-double keyATMvb::calc_perplexity(int iter)
-{
+double keyATMvb::calc_perplexity(int iter) {
   double llk = 0.0;
   double llk_v = 0.0;
   double ppl;
@@ -732,18 +671,20 @@ double keyATMvb::calc_perplexity(int iter)
 
       // Word
       for (int k = 0; k < num_topics; ++k) {
-        llk_v += (
-                   (n_s0_kv(k, v) + beta) / (n_s0_k(k) + Vbeta)
-                    * (n_s0_k(k) + prior_gamma(k, 1)) / (n_s0_k(k) + prior_gamma(k, 1) + n_s1_k(k) + prior_gamma(k, 0))
-                  +
-                   (n_s1_kv(k, v) + beta_s) / (n_s1_k(k) + (double)keywords_num[k] * beta_s)
-                    * (n_s1_k(k) + prior_gamma(k, 0)) / (n_s0_k(k) + prior_gamma(k, 1) + n_s1_k(k) + prior_gamma(k, 0))
-                 )
-                  * (n_dk(doc_id, k) + alphas(doc_id, k)) / (doc_each_len_weighted[doc_id] + alpha_d(doc_id));
+        llk_v += ((n_s0_kv(k, v) + beta) / (n_s0_k(k) + Vbeta) *
+                      (n_s0_k(k) + prior_gamma(k, 1)) /
+                      (n_s0_k(k) + prior_gamma(k, 1) + n_s1_k(k) +
+                       prior_gamma(k, 0)) +
+                  (n_s1_kv(k, v) + beta_s) /
+                      (n_s1_k(k) + (double)keywords_num[k] * beta_s) *
+                      (n_s1_k(k) + prior_gamma(k, 0)) /
+                      (n_s0_k(k) + prior_gamma(k, 1) + n_s1_k(k) +
+                       prior_gamma(k, 0))) *
+                 (n_dk(doc_id, k) + alphas(doc_id, k)) /
+                 (doc_each_len_weighted[doc_id] + alpha_d(doc_id));
       }
       llk += log(llk_v);
     }
-
   }
 
   ppl = exp(-llk / ppl_words);
@@ -754,9 +695,7 @@ double keyATMvb::calc_perplexity(int iter)
   return ppl;
 }
 
-
-void keyATMvb::store_perplexity(int iter, double ppl)
-{
+void keyATMvb::store_perplexity(int iter, double ppl) {
   Perplexity_value.push_back(ppl);
   Perplexity_iter.push_back(iter);
   Perplexity["value"] = Perplexity_value;
@@ -765,9 +704,7 @@ void keyATMvb::store_perplexity(int iter, double ppl)
   vb_options["Perplexity_VB"] = Perplexity;
 }
 
-
-List keyATMvb::return_model()
-{
+List keyATMvb::return_model() {
   // Return output to R
   get_QOI();
 
@@ -777,8 +714,7 @@ List keyATMvb::return_model()
   return model;
 }
 
-void keyATMvb::get_QOI()
-{
+void keyATMvb::get_QOI() {
   // Get z and s from qz and qs, respectively, and use it as the last iteration
   int z, s;
   int doc_len;
@@ -788,9 +724,11 @@ void keyATMvb::get_QOI()
     doc_z = Z[doc_id];
     doc_s = S[doc_id];
 
-    for (int i = 0; i < doc_len; ++i){
-      z = max_element(qz[doc_id][i].begin(), qz[doc_id][i].end()) - qz[doc_id][i].begin();
-      s = max_element(qs[doc_id][i].begin(), qs[doc_id][i].end()) - qs[doc_id][i].begin();
+    for (int i = 0; i < doc_len; ++i) {
+      z = max_element(qz[doc_id][i].begin(), qz[doc_id][i].end()) -
+          qz[doc_id][i].begin();
+      s = max_element(qs[doc_id][i].begin(), qs[doc_id][i].end()) -
+          qs[doc_id][i].begin();
 
       doc_z[i] = z;
       doc_s[i] = s;
@@ -800,4 +738,3 @@ void keyATMvb::get_QOI()
     S[doc_id] = doc_s;
   }
 }
-
