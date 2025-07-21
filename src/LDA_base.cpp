@@ -4,11 +4,10 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-
-void LDAbase::read_data_common()
-{
+void LDAbase::read_data_common() {
   // Read data
-  W = model["W"]; Z = model["Z"];
+  W = model["W"];
+  Z = model["Z"];
   vocab = model["vocab"];
   regular_k = model["no_keyword_topics"];
   model_fit = model["model_fit"];
@@ -53,9 +52,7 @@ void LDAbase::read_data_common()
   max_v = shrinkp(max_v);
 }
 
-
-void LDAbase::initialize_common()
-{
+void LDAbase::initialize_common() {
   // Prior values are set in `LDAbase::read_data_common()`
 
   // Slice sampling initialization
@@ -69,7 +66,6 @@ void LDAbase::initialize_common()
   int z, w;
   int doc_len;
   IntegerVector doc_z, doc_w;
-
 
   // Construct vocab weights
   for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
@@ -87,7 +83,8 @@ void LDAbase::initialize_common()
   if (weights_type == "inv-freq" || weights_type == "inv-freq-normalized") {
     // Inverse frequency
     weights_invfreq();
-  } else if (weights_type == "information-theory" || weights_type == "information-theory-normalized") {
+  } else if (weights_type == "information-theory" ||
+             weights_type == "information-theory-normalized") {
     // Information theory
     weights_inftheory();
   }
@@ -100,10 +97,10 @@ void LDAbase::initialize_common()
 
   // Do you want to use weights?
   if (use_weights == 0) {
-    Rcpp::Rcout << "Not using weights!! Check `options$use_weights`." << std::endl;
+    Rcpp::Rcout << "Not using weights!! Check `options$use_weights`."
+                << std::endl;
     vocab_weights = VectorXd::Constant(num_vocab, 1.0);
   }
-
 
   //
   // Construct data matrices
@@ -115,11 +112,11 @@ void LDAbase::initialize_common()
 
   total_words_weighted = 0.0;
   double temp;
-  for(int doc_id = 0; doc_id < num_doc; ++doc_id){
+  for (int doc_id = 0; doc_id < num_doc; ++doc_id) {
     doc_z = Z[doc_id], doc_w = W[doc_id];
     doc_len = doc_each_len[doc_id];
 
-    for(int w_position = 0; w_position < doc_len; ++w_position){
+    for (int w_position = 0; w_position < doc_len; ++w_position) {
       z = doc_z[w_position], w = doc_w[w_position];
 
       n_kv(z, w) += vocab_weights(w);
@@ -133,22 +130,16 @@ void LDAbase::initialize_common()
     total_words_weighted += temp;
   }
 
-
   // Use during the iteration
   z_prob_vec = VectorXd::Zero(num_topics);
-
 }
 
-
-void LDAbase::parameters_store(int r_index)
-{
+void LDAbase::parameters_store(int r_index) {
   if (store_theta)
     store_theta_iter(r_index);
 }
 
-
-int LDAbase::sample_z(VectorXd &alpha, int z, int s, int w, int doc_id)
-{
+int LDAbase::sample_z(VectorXd &alpha, int z, int s, int w, int doc_id) {
   int new_z;
   double numerator, denominator;
   double sum;
@@ -163,17 +154,16 @@ int LDAbase::sample_z(VectorXd &alpha, int z, int s, int w, int doc_id)
 
   for (int k = 0; k < num_topics; ++k) {
 
-    numerator = (beta + n_kv(k, w)) *
-      (n_dk(doc_id, k) + alpha(k));
+    numerator = (beta + n_kv(k, w)) * (n_dk(doc_id, k) + alpha(k));
 
-    denominator = ((double)num_vocab * beta + n_k(k)) ;
+    denominator = ((double)num_vocab * beta + n_k(k));
 
     z_prob_vec(k) = numerator / denominator;
   }
 
   sum = z_prob_vec.sum(); // normalize
-  new_z = sampler::rcat_without_normalize(z_prob_vec, sum, num_topics); // take a sample
-
+  new_z = sampler::rcat_without_normalize(z_prob_vec, sum,
+                                          num_topics); // take a sample
 
   // add back data counts
   n_kv(new_z, w) += vocab_weights(w);
@@ -183,4 +173,3 @@ int LDAbase::sample_z(VectorXd &alpha, int z, int s, int w, int doc_id)
 
   return new_z;
 }
-

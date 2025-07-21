@@ -1,3 +1,6 @@
+# keyATM 0.5.4
+* Adding the `refine_keywords()` function to refine keywords by dropping topics that do not have any occurrence in the documents ([#222](https://github.com/keyATM/keyATM/issues/222))
+
 # keyATM 0.5.3
 ### Bug fix
 * Fixing the semantic coherence function ([#220](https://github.com/keyATM/keyATM/pull/220))

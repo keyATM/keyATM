@@ -15,8 +15,14 @@ test_that("keyATM_read: split dfm", {
 
 test_that("keyATM_docs: check print function", {
   expect_message(print(keyATM_docs), "keyATM_docs object of 140 documents.")
-  expect_message(print(keyATM_docsSplit), "keyATM_docs object of 140 documents.")
-  expect_message(print(keyATM_docsSplit$W_split), "keyATM_docs object of 140 documents.")
+  expect_message(
+    print(keyATM_docsSplit),
+    "keyATM_docs object of 140 documents."
+  )
+  expect_message(
+    print(keyATM_docsSplit$W_split),
+    "keyATM_docs object of 140 documents."
+  )
 })
 
 test_that("keyATM_docs: check summary function", {
@@ -46,7 +52,11 @@ test_that("keyATM_read: reading from files", {
     close(fileConn)
   }
 
-  textfiles <- list.files(tempdir(), pattern = "test_.*\\.txt", full.names = TRUE)
+  textfiles <- list.files(
+    tempdir(),
+    pattern = "test_.*\\.txt",
+    full.names = TRUE
+  )
   temp <- keyATM_read(textfiles)
   expect_identical(keyATM_docs, temp)
 })

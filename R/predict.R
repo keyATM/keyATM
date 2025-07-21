@@ -13,29 +13,57 @@
 #' @param raw_values a logical. Returns raw values. The default is \code{FALSE}.
 #' @param ... additional arguments not used.
 #' @export
-predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = NULL, parallel = TRUE,
-                                  posterior_mean = TRUE, ci = 0.9, method = c("hdi", "eti"),
-                                  point = c("mean", "median"), label = NULL, raw_values = FALSE, ...)
-{
+predict.keyATM_output <- function(
+  object,
+  newdata,
+  transform = FALSE,
+  burn_in = NULL,
+  parallel = TRUE,
+  posterior_mean = TRUE,
+  ci = 0.9,
+  method = c("hdi", "eti"),
+  point = c("mean", "median"),
+  label = NULL,
+  raw_values = FALSE,
+  ...
+) {
   method <- rlang::arg_match(method)
   point <- rlang::arg_match(point)
 
-  if (object$model != "covariates" | !("keyATM_output" %in% class(object)))
+  if (object$model != "covariates" | !("keyATM_output" %in% class(object))) {
     cli::cli_abort("This is not an output of covariate model")
+  }
 
   if (transform) {
-    if (!identical(colnames(newdata), colnames(object$kept_values$model_settings$covariates_data)))
-      cli::cli_abort("Column names in `newdata` are different from the data provided to `keyATM()` when fitting the model.")
-    newdata <- covariates_standardize(newdata, type = object$kept_values$model_settings$standardize,
-                                      cov_formula = object$kept_values$model_settings$covariates_formula)
+    if (
+      !identical(
+        colnames(newdata),
+        colnames(object$kept_values$model_settings$covariates_data)
+      )
+    ) {
+      cli::cli_abort(
+        "Column names in `newdata` are different from the data provided to `keyATM()` when fitting the model."
+      )
+    }
+    newdata <- covariates_standardize(
+      newdata,
+      type = object$kept_values$model_settings$standardize,
+      cov_formula = object$kept_values$model_settings$covariates_formula
+    )
   }
 
   data_used <- covariates_get(object)
-  if (dim(newdata)[1] != dim(data_used)[1] | dim(newdata)[2] != dim(data_used)[2])
-    cli::cli_abort("Dimension of the `newdata` should match with the fitted data. Check the output of `covariates_get()`")
+  if (
+    dim(newdata)[1] != dim(data_used)[1] | dim(newdata)[2] != dim(data_used)[2]
+  ) {
+    cli::cli_abort(
+      "Dimension of the `newdata` should match with the fitted data. Check the output of `covariates_get()`"
+    )
+  }
 
-  if (is.null(burn_in))
+  if (is.null(burn_in)) {
     burn_in <- floor(max(object$model_fit$Iteration) / 2)
+  }
 
   used_iter <- object$values_iter$used_iter
   used_iter <- used_iter[used_iter > burn_in]
@@ -49,96 +77,111 @@ predict.keyATM_output <- function(object, newdata, transform = FALSE, burn_in = 
 
     if (posterior_mean) {
       # Draw from the mean
-      obj <- do.call(dplyr::bind_rows,
-                     future.apply::future_lapply(1:length(use_index),
-                        function(s) {
-                          Mu <- newdata %*% Lambda_iter[[s]]
-                          D <- nrow(newdata)
-                          K <- ncol(Lambda_iter[[s]]) + 1
-                          Phi <- Mu
-                          theta_tilda <- exp(Phi) / (1 + exp(Phi))
-                          thetas <- matrix(rep(0, D*K), nrow = D, ncol = K)
-                          thetas <- calc_PGtheta_R(theta_tilda, thetas, D, K)
-                          thetas <- as.data.frame(thetas)
-                          colnames(thetas) <- tnames
-                          thetas$Iteration <- used_iter[s]
-                          return(thetas)
-                        },
-                        future.seed = TRUE)
-                     )
+      obj <- do.call(
+        dplyr::bind_rows,
+        future.apply::future_lapply(
+          1:length(use_index),
+          function(s) {
+            Mu <- newdata %*% Lambda_iter[[s]]
+            D <- nrow(newdata)
+            K <- ncol(Lambda_iter[[s]]) + 1
+            Phi <- Mu
+            theta_tilda <- exp(Phi) / (1 + exp(Phi))
+            thetas <- matrix(rep(0, D * K), nrow = D, ncol = K)
+            thetas <- calc_PGtheta_R(theta_tilda, thetas, D, K)
+            thetas <- as.data.frame(thetas)
+            colnames(thetas) <- tnames
+            thetas$Iteration <- used_iter[s]
+            return(thetas)
+          },
+          future.seed = TRUE
+        )
+      )
     } else {
       # Draw from the mean
-      obj <- do.call(dplyr::bind_rows,
-                     future.apply::future_lapply(1:length(use_index),
-                        function(s) {
-                          Mu <- newdata %*% Lambda_iter[[s]]
-                          Sigma <- Sigma_iter[[s]]
-                          D <- nrow(newdata)
-                          K <- ncol(Lambda_iter[[s]]) + 1
-                          Phi <- sapply(1:D, function(d) {
-                                          Phi_d <- rmvn1(mu = Mu[d, ], Sigma = Sigma)
-                                        })
-                          Phi <- t(Phi)
-                          theta_tilda <- exp(Phi) / (1 + exp(Phi))
-                          thetas <- matrix(rep(0, D*K), nrow = D, ncol = K)
-                          thetas <- calc_PGtheta_R(theta_tilda, thetas, D, K)
-                          thetas <- as.data.frame(thetas)
-                          colnames(thetas) <- tnames
-                          thetas$Iteration <- used_iter[s]
-                          return(thetas)
-                        },
-                        future.seed = TRUE)
-                     )
+      obj <- do.call(
+        dplyr::bind_rows,
+        future.apply::future_lapply(
+          1:length(use_index),
+          function(s) {
+            Mu <- newdata %*% Lambda_iter[[s]]
+            Sigma <- Sigma_iter[[s]]
+            D <- nrow(newdata)
+            K <- ncol(Lambda_iter[[s]]) + 1
+            Phi <- sapply(1:D, function(d) {
+              Phi_d <- rmvn1(mu = Mu[d, ], Sigma = Sigma)
+            })
+            Phi <- t(Phi)
+            theta_tilda <- exp(Phi) / (1 + exp(Phi))
+            thetas <- matrix(rep(0, D * K), nrow = D, ncol = K)
+            thetas <- calc_PGtheta_R(theta_tilda, thetas, D, K)
+            thetas <- as.data.frame(thetas)
+            colnames(thetas) <- tnames
+            thetas$Iteration <- used_iter[s]
+            return(thetas)
+          },
+          future.seed = TRUE
+        )
+      )
     }
   } else if (covariates_model == "DirMulti") {
     Lambda_iter <- object$values_iter$Lambda_iter
 
-
     if (posterior_mean) {
       # Dir-Multi Posterior Mean
-      obj <- do.call(dplyr::bind_rows,
-                     future.apply::future_lapply(1:length(use_index),
-                        function(s) {
-                          Alpha <- exp(Matrix::tcrossprod(
-                                         newdata,
-                                         Lambda_iter[[use_index[s]]]
-                                       ))
-                          rowsum <- Matrix::rowSums(Alpha)
-                          thetas <- Alpha / rowsum
-                          thetas <- as.data.frame(thetas)
-                          colnames(thetas) <- tnames
-                          thetas$Iteration <- used_iter[s]
-                          return(thetas)
-                        },
-                        future.seed = TRUE
-                       )
-                    )
-    } else{
+      obj <- do.call(
+        dplyr::bind_rows,
+        future.apply::future_lapply(
+          1:length(use_index),
+          function(s) {
+            Alpha <- exp(Matrix::tcrossprod(
+              newdata,
+              Lambda_iter[[use_index[s]]]
+            ))
+            rowsum <- Matrix::rowSums(Alpha)
+            thetas <- Alpha / rowsum
+            thetas <- as.data.frame(thetas)
+            colnames(thetas) <- tnames
+            thetas$Iteration <- used_iter[s]
+            return(thetas)
+          },
+          future.seed = TRUE
+        )
+      )
+    } else {
       # Dir-Multi Posterior Draw
-      obj <- do.call(dplyr::bind_rows,
-                     future.apply::future_lapply(1:length(use_index),
-                          function(s) {
-                            Alpha <- exp(Matrix::tcrossprod(
-                                           newdata,
-                                           Lambda_iter[[use_index[s]]]
-                                         ))
-                            thetas <- t(apply(Alpha, 1, rdirichlet))
-                            thetas <- Matrix::colMeans(thetas)
-                            thetas <- t(as.data.frame(thetas))
-                            thetas <- as.data.frame(thetas)
-                            colnames(thetas) <- tnames
-                            thetas$Iteration <- used_iter[s]
-                            return(thetas)
-                          },
-                          future.seed = TRUE
-                         )
-                    )
+      obj <- do.call(
+        dplyr::bind_rows,
+        future.apply::future_lapply(
+          1:length(use_index),
+          function(s) {
+            Alpha <- exp(Matrix::tcrossprod(
+              newdata,
+              Lambda_iter[[use_index[s]]]
+            ))
+            thetas <- t(apply(Alpha, 1, rdirichlet))
+            thetas <- Matrix::colMeans(thetas)
+            thetas <- t(as.data.frame(thetas))
+            thetas <- as.data.frame(thetas)
+            colnames(thetas) <- tnames
+            thetas$Iteration <- used_iter[s]
+            return(thetas)
+          },
+          future.seed = TRUE
+        )
+      )
     }
   }
 
   if (raw_values) {
     return(obj)
   } else {
-    return(strata_doctopic_CI(obj[, 1:(ncol(obj)-1)], ci = ci, method, point, label))
+    return(strata_doctopic_CI(
+      obj[, 1:(ncol(obj) - 1)],
+      ci = ci,
+      method,
+      point,
+      label
+    ))
   }
 }

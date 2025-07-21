@@ -3,8 +3,8 @@
 #define EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 #include <RcppEigen.h>
 
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <string>
 
 // Progress bar
@@ -17,7 +17,6 @@ using namespace Eigen;
 using namespace Rcpp;
 using namespace std;
 
-
 //' Read files from the quanteda dfm (this is the same as dgCMatrix)
 //'
 //' @param dfm a dfm input (sparse Matrix)
@@ -27,10 +26,9 @@ using namespace std;
 //'
 //' @keywords internal
 // [[Rcpp::export]]
-List read_dfm_cpp(Eigen::SparseMatrix<int> dfm,
-                  List W_read, StringVector vocab, double split)
-{
-  dfm = dfm.transpose();  // SparseMatrix is colmajor
+List read_dfm_cpp(Eigen::SparseMatrix<int> dfm, List W_read, StringVector vocab,
+                  double split) {
+  dfm = dfm.transpose(); // SparseMatrix is colmajor
   int doc_num = dfm.cols();
   string word_id;
   int count;

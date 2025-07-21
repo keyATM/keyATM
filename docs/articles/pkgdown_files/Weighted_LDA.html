@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
       </span>
     </div>
 
@@ -133,11 +133,13 @@
 <span>  remove_symbols <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  remove_separators <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  remove_url <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://quanteda.io/reference/tokens_tolower.html" class="external-link">tokens_tolower</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html" class="external-link">tokens_remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/stopwords/man/stopwords.html" class="external-link">stopwords</a></span><span class="op">(</span><span class="st">"english"</span><span class="op">)</span>,</span>
-<span>                <span class="st">"may"</span>, <span class="st">"shall"</span>, <span class="st">"can"</span>,</span>
-<span>                <span class="st">"must"</span>, <span class="st">"upon"</span>, <span class="st">"with"</span>, <span class="st">"without"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html" class="external-link">tokens_remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/stopwords/man/stopwords.html" class="external-link">stopwords</a></span><span class="op">(</span><span class="st">"english"</span><span class="op">)</span>,</span>
+<span>    <span class="st">"may"</span>, <span class="st">"shall"</span>, <span class="st">"can"</span>,</span>
+<span>    <span class="st">"must"</span>, <span class="st">"upon"</span>, <span class="st">"with"</span>, <span class="st">"without"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html" class="external-link">tokens_select</a></span><span class="op">(</span>min_nchar <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">data_dfm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html" class="external-link">dfm</a></span><span class="op">(</span><span class="va">data_tokens</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -146,9 +148,9 @@
 <span><span class="va">keyATM_docs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_dfm</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span></span>
-<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,    <span class="co"># text input</span></span>
-<span>  number_of_topics  <span class="op">=</span> <span class="fl">5</span>,              <span class="co"># number of topics without keywords</span></span>
-<span>  model             <span class="op">=</span> <span class="st">"base"</span>,         <span class="co"># select the model</span></span>
+<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>, <span class="co"># text input</span></span>
+<span>  number_of_topics  <span class="op">=</span> <span class="fl">5</span>, <span class="co"># number of topics without keywords</span></span>
+<span>  model             <span class="op">=</span> <span class="st">"base"</span>, <span class="co"># select the model</span></span>
 <span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -176,26 +178,36 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="va">vars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Period <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">Year</span> <span class="op">&lt;=</span> <span class="fl">1899</span> <span class="op">~</span> <span class="st">"18_19c"</span>,</span>
-<span>                            <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"20_21c"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Party <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">Party</span> <span class="op">==</span> <span class="st">"Democratic"</span> <span class="op">~</span> <span class="st">"Democratic"</span>,</span>
-<span>                           <span class="va">Party</span> <span class="op">==</span> <span class="st">"Republican"</span> <span class="op">~</span> <span class="st">"Republican"</span>,</span>
-<span>                           <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"Other"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Period <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="va">Year</span> <span class="op">&lt;=</span> <span class="fl">1899</span> <span class="op">~</span> <span class="st">"18_19c"</span>,</span>
+<span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"20_21c"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Party <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="va">Party</span> <span class="op">==</span> <span class="st">"Democratic"</span> <span class="op">~</span> <span class="st">"Democratic"</span>,</span>
+<span>    <span class="va">Party</span> <span class="op">==</span> <span class="st">"Republican"</span> <span class="op">~</span> <span class="st">"Republican"</span>,</span>
+<span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"Other"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Party</span>, <span class="va">Period</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_selected</span></span>
 <span></span>
 <span><span class="va">vars_selected</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Party  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Party</span>,</span>
-<span>                         levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Other"</span>, <span class="st">"Republican"</span>, <span class="st">"Democratic"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>         Period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Period</span>,</span>
-<span>                         levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"18_19c"</span>, <span class="st">"20_21c"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_selected</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    Party <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Party</span>,</span>
+<span>      levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Other"</span>, <span class="st">"Republican"</span>, <span class="st">"Democratic"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    Period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Period</span>,</span>
+<span>      levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"18_19c"</span>, <span class="st">"20_21c"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_selected</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span></span>
-<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
-<span>  number_of_topics  <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  model             <span class="op">=</span> <span class="st">"covariates"</span>,</span>
-<span>  model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>covariates_data    <span class="op">=</span> <span class="va">vars_selected</span>,</span>
-<span>                           covariates_formula <span class="op">=</span> <span class="op">~</span> <span class="va">Party</span> <span class="op">+</span> <span class="va">Period</span><span class="op">)</span>,</span>
-<span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
+<span>  docs <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
+<span>  number_of_topics <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"covariates"</span>,</span>
+<span>  model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    covariates_data <span class="op">=</span> <span class="va">vars_selected</span>,</span>
+<span>    covariates_formula <span class="op">=</span> <span class="op">~</span> <span class="va">Party</span> <span class="op">+</span> <span class="va">Period</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
@@ -221,12 +233,14 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Period <span class="op">=</span> <span class="op">(</span><span class="va">vars</span><span class="op">$</span><span class="va">Year</span> <span class="op">-</span> <span class="fl">1780</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%/%</a></span> <span class="fl">10</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">vars_period</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span></span>
-<span>  docs             <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
+<span>  docs <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
 <span>  number_of_topics <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  model            <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
-<span>  model_settings   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,</span>
-<span>                          num_states <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
-<span>  options          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
+<span>  model <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
+<span>  model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,</span>
+<span>    num_states <span class="op">=</span> <span class="fl">5</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
@@ -259,7 +273,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer>
