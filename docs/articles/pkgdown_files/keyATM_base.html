@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
       </span>
     </div>
 
@@ -136,10 +136,10 @@ in the <code>option</code> argument (see <a href="Options.html">here</a>
 for other options). The default number of iterations is 1,500.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span></span>
-<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,    <span class="co"># text input</span></span>
-<span>  no_keyword_topics <span class="op">=</span> <span class="fl">5</span>,              <span class="co"># number of topics without keywords</span></span>
-<span>  keywords          <span class="op">=</span> <span class="va">keywords</span>,       <span class="co"># keywords</span></span>
-<span>  model             <span class="op">=</span> <span class="st">"base"</span>,         <span class="co"># select the model</span></span>
+<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>, <span class="co"># text input</span></span>
+<span>  no_keyword_topics <span class="op">=</span> <span class="fl">5</span>, <span class="co"># number of topics without keywords</span></span>
+<span>  keywords          <span class="op">=</span> <span class="va">keywords</span>, <span class="co"># keywords</span></span>
+<span>  model             <span class="op">=</span> <span class="st">"base"</span>, <span class="co"># select the model</span></span>
 <span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The default number of iterations is <code>1500</code>. Please check
@@ -245,8 +245,8 @@ among all other documents.</p>
 and topic-word distribution. The output of the <code><a href="../../reference/keyATM.html">keyATM()</a></code>
 function contains both quantities.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">out</span><span class="op">$</span><span class="va">theta</span>  <span class="co"># Document-topic distribution</span></span>
-<span><span class="va">out</span><span class="op">$</span><span class="va">phi</span>    <span class="co"># Topic-word distribution</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">out</span><span class="op">$</span><span class="va">theta</span> <span class="co"># Document-topic distribution</span></span>
+<span><span class="va">out</span><span class="op">$</span><span class="va">phi</span> <span class="co"># Topic-word distribution</span></span></code></pre></div>
 <p>The <strong>keyATM</strong> provides other functions to diagnose and
 explore the fitted model. First, it is important to check the model
 fitting. If the model is working as expected, we would observe an
@@ -294,7 +294,7 @@ Values of these parameters should also stabilize over time.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer>

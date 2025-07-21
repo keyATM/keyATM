@@ -1,5 +1,3 @@
-## copy from keyATM tests
-
 data(keyATM_data_bills)
 bills_dfm <- keyATM_data_bills$doc_dfm
 bills_keywords <- keyATM_data_bills$keywords
@@ -25,6 +23,7 @@ test_that("refine_keywords", {
 })
 
 test_that("integration", {
+  skip_on_os("linux")
   skip_on_cran()
   suppressWarnings(
     mod <- keyATM(

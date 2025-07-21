@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
       </span>
     </div>
 
@@ -171,13 +171,15 @@ specifying the number of hidden states with the <code>num_states</code>
 in the <code>model_settings</code> argument.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span></span>
-<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
+<span>  docs <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
 <span>  no_keyword_topics <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  keywords          <span class="op">=</span> <span class="va">keywords</span>,</span>
-<span>  model             <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
-<span>  model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,</span>
-<span>                           num_states <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
-<span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
+<span>  keywords <span class="op">=</span> <span class="va">keywords</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
+<span>  model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,</span>
+<span>    num_states <span class="op">=</span> <span class="fl">5</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Once you fit the model, you can save the model with
 <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS()</a></code> for replication. This is the same as the <a href="keyATM_base.html#saving-the-model">base model</a>.</p>
@@ -229,13 +231,15 @@ Note that <code>store_theta</code> option in the <code><a href="../../reference/
 function should be <code>TRUE</code> to show 90% credible intervals.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span></span>
-<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
+<span>  docs <span class="op">=</span> <span class="va">keyATM_docs</span>,</span>
 <span>  no_keyword_topics <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  keywords          <span class="op">=</span> <span class="va">keywords</span>,</span>
-<span>  model             <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
-<span>  model_settings    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,</span>
-<span>                           num_states <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
-<span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span>, store_theta <span class="op">=</span> <span class="cn">TRUE</span>, thinning <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span>  keywords <span class="op">=</span> <span class="va">keywords</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"dynamic"</span>,</span>
+<span>  model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    time_index <span class="op">=</span> <span class="va">vars_period</span><span class="op">$</span><span class="va">Period</span>,</span>
+<span>    num_states <span class="op">=</span> <span class="fl">5</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span>, store_theta <span class="op">=</span> <span class="cn">TRUE</span>, thinning <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">fig_timetrend</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/plot_timetrend.html">plot_timetrend</a></span><span class="op">(</span><span class="va">out</span>, time_index_label <span class="op">=</span> <span class="va">vars</span><span class="op">$</span><span class="va">Year</span>, xlab <span class="op">=</span> <span class="st">"Year"</span><span class="op">)</span></span>
 <span><span class="va">fig_timetrend</span></span></code></pre></div>
@@ -269,7 +273,7 @@ Topic Models.” <em>American Journal of Political Science</em> 68(2):
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer>

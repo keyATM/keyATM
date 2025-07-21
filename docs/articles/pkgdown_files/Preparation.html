@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
       </span>
     </div>
 
@@ -146,7 +146,8 @@ object from a <code>token</code> object.</p>
 <span></span>
 <span><span class="co"># Read text files</span></span>
 <span><span class="va">raw_docs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/readtext/man/readtext.html" class="external-link">readtext</a></span><span class="op">(</span><span class="st">"PATH_TO_THE_FOLDER/*.txt"</span>,</span>
-<span>                     encoding <span class="op">=</span> <span class="st">"UTF-8"</span><span class="op">)</span></span>
+<span>  encoding <span class="op">=</span> <span class="st">"UTF-8"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Preprocessing with quanteda and create a dfm object</span></span>
 <span><span class="va">key_corpus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus.html" class="external-link">corpus</a></span><span class="op">(</span><span class="va">raw_docs</span>, text_field <span class="op">=</span> <span class="st">"text"</span><span class="op">)</span></span>
@@ -184,16 +185,17 @@ interpretability. In the example below, we adopt some of the most common
 preprocessing steps.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_tokens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens.html" class="external-link">tokens</a></span><span class="op">(</span></span>
-<span>    <span class="va">data_corpus_inaugural</span>,</span>
-<span>    remove_numbers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    remove_punct <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    remove_symbols <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    remove_separators <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    remove_url <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="va">data_corpus_inaugural</span>,</span>
+<span>  remove_numbers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  remove_punct <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  remove_symbols <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  remove_separators <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  remove_url <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://quanteda.io/reference/tokens_tolower.html" class="external-link">tokens_tolower</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://quanteda.io/reference/tokens_select.html" class="external-link">tokens_remove</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/stopwords/man/stopwords.html" class="external-link">stopwords</a></span><span class="op">(</span><span class="st">"english"</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/stopwords/man/stopwords.html" class="external-link">stopwords</a></span><span class="op">(</span><span class="st">"english"</span><span class="op">)</span>,</span>
 <span>      <span class="st">"may"</span>, <span class="st">"shall"</span>, <span class="st">"can"</span>,</span>
 <span>      <span class="st">"must"</span>, <span class="st">"upon"</span>, <span class="st">"with"</span>, <span class="st">"without"</span></span>
 <span>    <span class="op">)</span></span>
@@ -215,8 +217,8 @@ infrequent terms with the <code><a href="https://quanteda.io/reference/dfm_trim.
 aim for 7000 to 10000 unique words at the maximum.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_dfm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html" class="external-link">dfm</a></span><span class="op">(</span><span class="va">data_tokens</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>              <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html" class="external-link">dfm_trim</a></span><span class="op">(</span>min_termfreq <span class="op">=</span> <span class="fl">5</span>, min_docfreq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">data_dfm</span><span class="op">)</span>  <span class="co"># the number of unique words</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html" class="external-link">dfm_trim</a></span><span class="op">(</span>min_termfreq <span class="op">=</span> <span class="fl">5</span>, min_docfreq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">data_dfm</span><span class="op">)</span> <span class="co"># the number of unique words</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 2569</span></span></code></pre>
 <p>Finally, <code>keyATM_read</code> function reads your data for
 <strong>keyATM</strong>.</p>
@@ -405,23 +407,25 @@ researchers need to select all keywords from the top words of the LDA.
 Researchers can use other methods such as a keyword selection algorithm
 proposed in King, Lam and Roberts (2017).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">225</span><span class="op">)</span>  <span class="co"># set the seed before split the dfm</span></span>
-<span><span class="va">docs_withSplit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span>texts <span class="op">=</span> <span class="va">data_dfm</span>,</span>
-<span>                              split <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>  <span class="co"># split each document</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">225</span><span class="op">)</span> <span class="co"># set the seed before split the dfm</span></span>
+<span><span class="va">docs_withSplit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM_read.html">keyATM_read</a></span><span class="op">(</span></span>
+<span>  texts <span class="op">=</span> <span class="va">data_dfm</span>,</span>
+<span>  split <span class="op">=</span> <span class="fl">0.3</span></span>
+<span><span class="op">)</span> <span class="co"># split each document</span></span>
 <span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/weightedLDA.html">weightedLDA</a></span><span class="op">(</span></span>
-<span>  docs              <span class="op">=</span> <span class="va">docs_withSplit</span><span class="op">$</span><span class="va">W_split</span>,  <span class="co"># 30% of the corpus</span></span>
-<span>  number_of_topics  <span class="op">=</span> <span class="fl">10</span>,  <span class="co"># the number of potential themes in the corpus</span></span>
+<span>  docs              <span class="op">=</span> <span class="va">docs_withSplit</span><span class="op">$</span><span class="va">W_split</span>, <span class="co"># 30% of the corpus</span></span>
+<span>  number_of_topics  <span class="op">=</span> <span class="fl">10</span>, <span class="co"># the number of potential themes in the corpus</span></span>
 <span>  model             <span class="op">=</span> <span class="st">"base"</span>,</span>
 <span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span>  <span class="co"># top words can aid selecting keywords</span></span>
+<span><span class="fu"><a href="../../reference/top_words.html">top_words</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span> <span class="co"># top words can aid selecting keywords</span></span>
 <span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span></span>
-<span>  docs              <span class="op">=</span> <span class="va">docs_withSplit</span>,  <span class="co"># 70% of the corpus</span></span>
-<span>  no_keyword_topics <span class="op">=</span> <span class="fl">5</span>,               <span class="co"># number of topics without keywords</span></span>
-<span>  keywords          <span class="op">=</span> <span class="va">keywords</span>,        <span class="co"># selected keywords</span></span>
-<span>  model             <span class="op">=</span> <span class="st">"base"</span>,          <span class="co"># select the model</span></span>
+<span>  docs              <span class="op">=</span> <span class="va">docs_withSplit</span>, <span class="co"># 70% of the corpus</span></span>
+<span>  no_keyword_topics <span class="op">=</span> <span class="fl">5</span>, <span class="co"># number of topics without keywords</span></span>
+<span>  keywords          <span class="op">=</span> <span class="va">keywords</span>, <span class="co"># selected keywords</span></span>
+<span>  model             <span class="op">=</span> <span class="st">"base"</span>, <span class="co"># select the model</span></span>
 <span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -486,7 +490,7 @@ Text. <em>American Journal of Political Science</em> 61:971–988.</li>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer>

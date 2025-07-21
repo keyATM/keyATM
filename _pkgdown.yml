@@ -57,6 +57,7 @@ reference:
   contents:
   - '`keyATM_read`'
   - '`read_keywords`'
+  - '`refine_keywords`'
   - '`visualize_keywords`'
 - title: Fitting models
   desc: ~

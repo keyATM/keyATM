@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">keyATM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
       </span>
     </div>
 
@@ -137,9 +137,9 @@ will be saved in your current working directory.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 50 iterations all at once</span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span></span>
-<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,    <span class="co"># text input</span></span>
-<span>  no_keyword_topics <span class="op">=</span> <span class="fl">5</span>,              <span class="co"># number of topics without keywords</span></span>
-<span>  keywords          <span class="op">=</span> <span class="va">keywords</span>,       <span class="co"># keywords</span></span>
+<span>  docs              <span class="op">=</span> <span class="va">keyATM_docs</span>, <span class="co"># text input</span></span>
+<span>  no_keyword_topics <span class="op">=</span> <span class="fl">5</span>, <span class="co"># number of topics without keywords</span></span>
+<span>  keywords          <span class="op">=</span> <span class="va">keywords</span>, <span class="co"># keywords</span></span>
 <span>  model             <span class="op">=</span> <span class="st">"base"</span>,</span>
 <span>  options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span>, iterations <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -147,9 +147,9 @@ will be saved in your current working directory.</p>
 <span><span class="co"># Conducting 10 iterations five times to achieve the same result as above</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">resumed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/keyATM.html">keyATM</a></span><span class="op">(</span></span>
-<span>    docs              <span class="op">=</span> <span class="va">keyATM_docs</span>,    <span class="co"># text input</span></span>
-<span>    no_keyword_topics <span class="op">=</span> <span class="fl">5</span>,              <span class="co"># number of topics without keywords</span></span>
-<span>    keywords          <span class="op">=</span> <span class="va">keywords</span>,       <span class="co"># keywords</span></span>
+<span>    docs              <span class="op">=</span> <span class="va">keyATM_docs</span>, <span class="co"># text input</span></span>
+<span>    no_keyword_topics <span class="op">=</span> <span class="fl">5</span>, <span class="co"># number of topics without keywords</span></span>
+<span>    keywords          <span class="op">=</span> <span class="va">keywords</span>, <span class="co"># keywords</span></span>
 <span>    model             <span class="op">=</span> <span class="st">"base"</span>,</span>
 <span>    options           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">250</span>, iterations <span class="op">=</span> <span class="fl">10</span>, resume <span class="op">=</span> <span class="st">"./keyATM_resume.rds"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -165,10 +165,10 @@ beginning and save the intermediate result as
 <p>We can confirm that the last perplexity is the same for both
 cases.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">model_fit</span><span class="op">$</span><span class="va">Perplexity</span>, <span class="fl">1</span><span class="op">)</span>  <span class="co"># 50 iterations all at once</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">model_fit</span><span class="op">$</span><span class="va">Perplexity</span>, <span class="fl">1</span><span class="op">)</span> <span class="co"># 50 iterations all at once</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 1864.717</span></span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">resumed</span><span class="op">$</span><span class="va">model_fit</span><span class="op">$</span><span class="va">Perplexity</span>, <span class="fl">1</span><span class="op">)</span>  <span class="co"># using the `resume` argument</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">resumed</span><span class="op">$</span><span class="va">model_fit</span><span class="op">$</span><span class="va">Perplexity</span>, <span class="fl">1</span><span class="op">)</span> <span class="co"># using the `resume` argument</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 1864.717</span></span></code></pre>
 <p>Please note that the intermediate results are saved only after the
 completion of the specified number of iterations. For instance, if you
@@ -193,7 +193,7 @@ intermittently during the iteration process.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer>
