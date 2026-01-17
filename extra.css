@@ -1,0 +1,23 @@
+/* Edit pkgdown/extra.css to customize the theme */
+
+.navbar-brand {
+    background-image: url(https://keyatm.github.io/keyATM/reference/figures/keyATM_logo.png);
+    background-repeat: no-repeat;
+    background-position: 12.5px 2.0px;
+    background-size: 100px auto;
+    width: 170px;
+}
+.navbar-brand > .navbar-link {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    display: block;
+    font-size: 1.7em;
+    line-height: 1em;
+}
+
+.navbar-brand > .label {
+    margin-left: 105px;
+}
+
+
