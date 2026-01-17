@@ -1,5 +1,5 @@
 # keyATM 0.5.5
-* Updating the `refine_keywords()` function ([#232](https://github.com/keyATM/keyATM/issues/232))
+* Updating the `refine_keywords()` function (thank you [@bshor](https://github.com/bshor) for reporting this in [#232](https://github.com/keyATM/keyATM/issues/232))
 
 # keyATM 0.5.4
 * Adding the `refine_keywords()` function to refine keywords by dropping topics that do not have any occurrence in the documents ([#222](https://github.com/keyATM/keyATM/issues/222))
