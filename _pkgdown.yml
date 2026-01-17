@@ -1,8 +1,11 @@
 destination: docs
 
 template:
+  bootstrap: 3
   params:
     bootswatch: spacelab
+
+url: https://keyatm.github.io/keyATM/
 
 authors:
   Shusei Eshima:

@@ -14,4 +14,7 @@ articles:
   pkgdown_files/Preparation: pkgdown_files/Preparation.html
   pkgdown_files/Resume: pkgdown_files/Resume.html
   pkgdown_files/Weighted_LDA: pkgdown_files/Weighted_LDA.html
-last_built: 2025-07-21T13:12Z
+last_built: 2026-01-17T21:09Z
+urls:
+  reference: https://keyatm.github.io/keyATM/reference
+  article: https://keyatm.github.io/keyATM/articles

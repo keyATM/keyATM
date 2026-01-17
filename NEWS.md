@@ -1,3 +1,6 @@
+# keyATM 0.5.5
+* Updating the `refine_keywords()` function (thank you [@bshor](https://github.com/bshor) for reporting this in [#232](https://github.com/keyATM/keyATM/issues/232))
+
 # keyATM 0.5.4
 * Adding the `refine_keywords()` function to refine keywords by dropping topics that do not have any occurrence in the documents ([#222](https://github.com/keyATM/keyATM/issues/222))
 
@@ -25,7 +28,7 @@
 * Stopped support for the `label` model in `keyATM()` (it was an experimental feature).
 
 ### Minor changes
-* Supporting [tidyselect 1.2.0](https://www.tidyverse.org/blog/2022/10/tidyselect-1-2-0/#using-data-inside-selections). Updating some internal functions.
+* Supporting [tidyselect 1.2.0](https://tidyverse.org/blog/2022/10/tidyselect-1-2-0/#using-data-inside-selections). Updating some internal functions.
 * Including the state information of HMM in the `plot_timetrend()` output (thank you [@WenHanGao](https://github.com/WenHanGao) for the suggestion in [#188](https://github.com/keyATM/keyATM/issues/188)).
 
 ### Bug fix
@@ -108,7 +111,7 @@
 * Log-likelihood of dynamic models.
 * Saving figures
 * Topic labels when there is no keyword topic.
-* `summary.strata_doctopic()`: the last topic is removed when the number of no-keyword topic is 0 (thank you [Emma Ebowe](https://www.gov.harvard.edu/directory/emma-ebowe/) for pointing out this issue!).
+* `summary.strata_doctopic()`: the last topic is removed when the number of no-keyword topic is 0 (thank you [Emma Ebowe](https://emmaebowe.com/) for pointing out this issue!).
 
 # keyATM 0.1.0
 ### Major changes

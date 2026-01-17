@@ -149,7 +149,7 @@ keyATMvb_fit <- function(
   }
 
   # Check keywords
-  keywords <- check_keywords(info$wd_names, keywords, options$prune)
+  keywords <- check_keywords(info$wd_names, keywords, options$prune)$keywords
   keywords_raw <- keywords # keep raw keywords (not word_id)
   info$keywords_raw <- keywords_raw
 

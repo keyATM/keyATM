@@ -11,8 +11,35 @@ test_that("refine_keywords", {
   ## add a videogame topic
   bills_keywords$Videogame <- c("metroid", "castlevania", "balatro")
   expect_true("Videogame" %in% names(bills_keywords))
+
+  ## prune = TRUE (default)
   expect_warning(new_keywords <- refine_keywords(bills_keywords, keyATM_docs))
-  expect_false("Videogame" %in% new_keywords)
+  expect_false("Videogame" %in% names(new_keywords))
+
+  ## prune = TRUE (explicit)
+  expect_warning(
+    new_keywords_explicit <- refine_keywords(
+      bills_keywords,
+      keyATM_docs,
+      prune = TRUE
+    )
+  )
+  expect_equal(new_keywords, new_keywords_explicit)
+
+  ## prune = FALSE
+  expect_error(
+    refine_keywords(bills_keywords, keyATM_docs, prune = FALSE),
+    "not found in the documents"
+  )
+
+  ## prune = FALSE (correct keywords)
+  valid_keywords <- keyATM_data_bills$keywords
+  expect_silent(
+    out <- refine_keywords(valid_keywords, keyATM_docs, prune = FALSE)
+  )
+  expect_equal(out, valid_keywords)
+
+  ## All topics are pruned
   videogame_keywords <- list(
     "Videogame" = c("metroid", "castlevania", "balatro")
   )
