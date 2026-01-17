@@ -28,7 +28,7 @@
 * Stopped support for the `label` model in `keyATM()` (it was an experimental feature).
 
 ### Minor changes
-* Supporting [tidyselect 1.2.0](https://www.tidyverse.org/blog/2022/10/tidyselect-1-2-0/#using-data-inside-selections). Updating some internal functions.
+* Supporting [tidyselect 1.2.0](https://tidyverse.org/blog/2022/10/tidyselect-1-2-0/#using-data-inside-selections). Updating some internal functions.
 * Including the state information of HMM in the `plot_timetrend()` output (thank you [@WenHanGao](https://github.com/WenHanGao) for the suggestion in [#188](https://github.com/keyATM/keyATM/issues/188)).
 
 ### Bug fix
